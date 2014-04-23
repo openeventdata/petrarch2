@@ -255,7 +255,42 @@ def raise_parsing_error(call_location_string):
 	if not DoValidation: NParseErrors += 1
 	raise UnbalancedTree(errorstring)
 
-	
+# ========================== DEBUGGING FUNCTIONS ========================== #	
+
+def show_tree_string(sent):
+# indexes the () or (~in a string tree and prints as an indented list. Also prints the
+# totals
+# call with ' '.join(list) to handle the list versions of the string
+	newlev = False
+	level = -1
+	prevlevel = -1
+	ka = 0
+	nopen = 0
+	nclose = 0
+	sout = ''
+	while ka < len(sent):
+		if sent[ka] == '(':
+			level += 1
+			nopen += 1
+			newlev = True
+			if level != prevlevel: sout += '\n' + level*'  '  # new line only with change in level
+#			sout += '\n' + level*'  '                         # new line for every (
+			sout += '(-'+str(level)+' '
+		elif sent[ka] == ')' or sent[ka] == '~' :
+			nclose += 1
+			prevlevel = level
+			if not newlev: sout += '\n' + level*'  '
+			if sent[ka] == ')': sout += str(level) + '-)'
+			else: sout += str(level) +'~'
+			level -= 1
+			newlev = False
+		else: sout += sent[ka]
+		ka += 1
+	print sout
+	if nopen == nclose: print "Balanced:",
+	else: print "Unbalanced:", 
+	print "Open",nopen,"Close",nclose,'\n'	
+
 # ========================== TAG EVAULATION FUNCTIONS ========================== #	
 # <13.11.23> These can get moved to PETRreader once they stabilize
 	
@@ -380,13 +415,14 @@ def evaluate_validation_record():
 			if len(ValidInclude) > 0 and SentenceCat not in ValidInclude: 
 				raise SkipRecord
 				return True
+				
 			if len(ValidExclude) > 0 and SentenceCat in ValidExclude: 
 				raise SkipRecord
 				return True				
 			
 		if ('<EventCoding ' in line): 
 			extract_EventCoding_info(line)
-			print "EVR-2:",ValidEvents
+#			print "EVR-2:",ValidEvents
 			
 		if ('<Text>' in line): 
 			SentenceText = ''
@@ -397,7 +433,7 @@ def evaluate_validation_record():
 				line = PETRreader.read_FIN_line()
 				
 		if ('<Skip ' in line):  # handle skipping -- leave fin at end of tree
-			print "EVR-1: <Skip"
+#			print "EVR-1: <Skip"
 			raise SkipRecord
 			return True
 			
@@ -660,17 +696,21 @@ def open_validation_file():
 	PETRreader.read_actor_dictionary(PETRglobals.ActorFileList[0])
 	print 'Agent dictionary:',PETRglobals.AgentFileName
 	PETRreader.read_agent_dictionary()
+#	sys.exit()
 	
 
 # ================== TEXTFILE INPUT ================== #	
 
-
 def get_NE(NPphrase):
-# convert (NP...) ) to NE
+# convert (NP...) ) to NE: copies any (NEC phrases with markup, remainder of the phrase
+# without any markup
 # can raise UnbalancedTree, though that should have been hit before this
 	nplist = ['(NE --- ']
 	seg = NPphrase.split()
-	if ShowNEParsing: print 'gNE',seg
+	if ShowNEParsing: 
+		print "gNE input tree",
+		show_tree_string(NPphrase)
+		print 'List:',seg
 	ka = 1
 	while ka < len(seg):
 		if seg[ka] == '(NEC':  # copy the phrase 
@@ -684,17 +724,16 @@ def get_NE(NPphrase):
 				nplist.append(seg[ka])
 #				print 'gNE1',nplist
 				ka += 1
-		elif seg[ka][0] == '(':
-			if ka + 1 >= len(seg): raise_parsing_error('get_NE()-2')
-			nplist.append(seg[ka+1])
-			ka += 3
-		else:
-			nplist.append(')')
+		elif seg[ka][0] != '(' and seg[ka] != ')':  # copy the phrase without the markup
+			nplist.append(seg[ka])
+#			print 'gNE2',nplist
 			ka += 1
-			while ka < len(seg):
-				nplist.append(seg[ka])
-				ka += 1
-			return nplist
+		else: ka += 1
+			
+	nplist.append(')')
+#	print 'gNE3',nplist
+	return nplist
+			
 			
 
 def read_TreeBank():
@@ -750,7 +789,9 @@ def read_TreeBank():
 	3. The prepositional phrase structure (NP (NP ... )) (PP ) NP( ... )) is converted 
 			to an NE; the preposition (IN ...) is retained 
 			
-	4. (VP and complex (NP are indexed so that the end of the phrase can be identified
+	4. The text of an (SBAR inside an (NP is retained
+	
+	5. (VP and complex (NP are indexed so that the end of the phrase can be identified
 			so these have the form (XXn and ~XXn
 			
 	Errors:
@@ -785,7 +826,7 @@ def read_TreeBank():
 	global ncindex   
 	
 	def get_forward_bounds(ka):
-	# returns the bounds of a phrase in treestr that begins at ka, including  final space
+	# returns the bounds of a phrase in treestr that begins at ka, including final space
 	# can raise UnbalancedTree error
 		global treestr #  <13.12.07> see note above
 		kb = ka+1
@@ -833,6 +874,30 @@ def read_TreeBank():
 				treestr = treestr[:ka+3] + 'P' + treestr[ka+3:]   # convert CC to CCP
 				if ShowMarkCompd: print '\nMC3:',treestr[kb:]
 				
+	def reduce_SBAR(kstart):
+	# collapse SBAR beginning at kstart to a string without any markup;
+	# change clause marker to SBR, which is subsequently eliminated
+
+		global treestr
+		
+		bds = get_enclosing_bounds(kstart+5)
+#		print 'RS1:',treestr[bds[0]:bds[1]]
+		frag = ''
+		segm = treestr[bds[0]:bds[1]]
+		kc = 0
+		while kc < len(segm):
+			kc = segm.find(' ',kc)
+			if kc < 0: break
+			if segm[kc+1] != '(':  # skip markup, just get words
+				kd = segm.find(' )',kc)
+				frag += segm[kc:kd]
+				kc = kd + 3
+			else: kc += 2
+#		print 'RS2:',frag
+		treestr = treestr[:bds[0]] + '(SBR ' + frag + treestr[bds[1]-2:] # bound with '(SBR ' and ' )'
+#		print 'RS3:',treestr
+		
+				
 	def process_preposition(ka):
 	# process (NP containing a (PP and return an nephrase: 
 	# if this doesn't have a simple structure of  (NP (NP ...) (PP...) (NP/NEC ...)) 
@@ -860,6 +925,7 @@ def read_TreeBank():
 #		print 'PPP2: ',nepph, '\n     ',ka,bds[1],treestr[ka+4:bds[1]]
 		kp = treestr.find('(NP ',ka+4,bds[1]) # find first (NP or (NEC after prep
 		kec = treestr.find('(NEC ',ka+4,bds[1])
+#		print 'PPP1.5', kp, kec
 		if kp <  0 and kec < 0: 
 #			print 'PPP2a: No NP or NEC'
 			return '' # not what we are expecting, so bail
@@ -867,21 +933,28 @@ def read_TreeBank():
 		if kec <  0: kec = len(treestr)
 		if kp < kec:  
 			kb = kp
-#			print 'PPP2a: got NEC', treestr[kb:]
+#			print 'PPP2a: got NP', treestr[kb:bds[1]]
 		else:
 			kb = kec
-#		 	print 'PPP2a: got NP', treestr[kb:]
+#		 	print 'PPP2a: got NEC', treestr[kb:bds[1]]
 		npbds = get_forward_bounds(kb)  # 
 		if '(PP' in treestr[npbds[0]:npbds[1]]: 
 #			print 'PPP2b: Embedded (PP'			 
-			return '' # there's another level of (PP here
+			return '' # there's another level of (PP here  <14.04.21: can't we just reduce this per (SBR?
 		if treestr[kb+2] == 'E': # leave the (NEC in place. <14.01.15> It should be possible to add an index here, right?			
-			nepph += treestr[kb :npbds[1] + 3 ] # pick up two ') '
-		else: nepph += treestr[npbds[0]+4 :npbds[1] + 1 ] # skip the (NP and pick up the final ' ' (we're using this to close the original (NP
-		exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
+			nepph += treestr[kb :npbds[1] + 1 ] # pick up a ') '
+		else: nepph += treestr[npbds[0]+4 :npbds[1] - 1 ] # skip the (NP and pick up the final ' ' (we're using this to close the original (NP
+		if '(SBR' in treestr[npbds[1]:]:  # transfer the phrase
+#			print 'PPP2c: Embedded (SBR'
+			kc = treestr.find('(SBR',npbds[1])	
+		 	nepph += treestr[kc:treestr.find(') ',kc)+2]
+		nepph += ')'  # close the phrase		
+#		exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
 #		print 'PPP3: ',exst
 		return nepph
 
+	ShowRTTrees = True  # displays parse trees
+	ShowRTTrees = False 
 				
 	fullline = '' 
 	vpindex = 1
@@ -894,14 +967,29 @@ def read_TreeBank():
 		line = line.replace(')',' ) ')
 		treestr += line.upper()
 		line = PETRreader.read_FIN_line() 
-#	print 'RT1:', treestr # debug
+	if ShowRTTrees: 
+		print 'RT1:', treestr # debug
+		show_tree_string(treestr)
+	kopen = 0; kclose = 0
+	for item in ParseList:
+		if item.startswith('('): kopen += 1
+		if item == ')': kclose += 1
+	if ShowRTTrees: print 'RT1 count:',treestr.count('('), treestr.count(')')
 
 	mark_compounds()
 	
+	if ShowRTTrees: print 'RT1.5 count:',treestr.count('('), treestr.count(')')
+
 	ka = 0
 	while ka < len(treestr):
 		if treestr.startswith('(NP ',ka):
 			npbds = get_forward_bounds(ka)
+			
+			ksb = treestr.find('(SBAR ',npbds[0],npbds[1])  # reduce (SBARs inside phrase
+			while ksb >= 0:
+				reduce_SBAR(ksb)
+				npbds = get_forward_bounds(ka)  # recompute the bounds because treestr has been modified
+				ksb = treestr.find('(SBAR ',npbds[0],npbds[1])
 			nephrase = ''
 			if ShowNEParsing: print 'BBD: ',treestr[npbds[0]:npbds[1]]
 			if '(POS'  in treestr[ka+3:npbds[1]]: # get the (NP possessive
@@ -911,9 +999,11 @@ def read_TreeBank():
 				if ShowNEParsing: print 'RTPOS: NE:',nephrase
 				
 			elif '(PP'  in treestr[ka+3:npbds[1]] :  #  prepositional phrase	
-#				print 'PPP-1: ',treestr[ka:npbds[1]]
-#				print 'PPP-1a: ',treestr.find('(PP',ka+3,npbds[1]),ka,npbds[1]
-#				print 'PPP-1a: ',get_enclosing_bounds(treestr.find('(PP',ka+3,npbds[1]))
+				if False:
+#				if True:
+					print 'PPP-1: ',treestr[ka:npbds[1]]
+					print 'PPP-1a: ',treestr.find('(PP',ka+3,npbds[1]),ka,npbds[1]
+					print 'PPP-1b: ',get_enclosing_bounds(treestr.find('(PP',ka+3,npbds[1]))
 				nephrase = process_preposition(treestr.find('(PP',ka+3,npbds[1]))  
 				if ShowNEParsing: print 'RTPREP: NE:',nephrase
 				
@@ -987,10 +1077,20 @@ def read_TreeBank():
 		else: 
 			fullline += treestr[ka]	
 			ka += 1	
+			
+		if ShowRTTrees: 
+			print 'Balance check:',ka,fullline.count('('), fullline.count(')')   # check for balance at intermediate points
+			print '                  ',treestr[ka:].count('('), treestr[ka:].count(')'),' :: ',fullline.count('(')+treestr[ka:].count('('), fullline.count(')')+treestr[ka:].count(')')
 
 	# convert the text to ParseList format; convert ')' to ~XX tags
 	ParseList = fullline.split() 
 #	print '<<',ParseList
+	kopen = 0; kclose = 0
+	for item in ParseList:
+		if item.startswith('('): kopen += 1
+		elif item == ')': kclose += 1
+#		else: print item
+	if ShowRTTrees: print 'RT2 count:',kopen, kclose
 	ka = 0
 	opstack = []
 	while ka < len(ParseList):
@@ -1003,7 +1103,9 @@ def read_TreeBank():
 			ParseList[ka] = '~'+op
 		ka += 1
 				
-#	print 'RT2:',ParseList
+	if ShowRTTrees: 
+		print 'RT2:',ParseList
+		show_tree_string(' '.join(ParseList))
 	ParseStart = 2
 	ParseEnd = len(ParseList) - 5  # should skip final punctuation, -S, -ROOT
 
@@ -1141,6 +1243,9 @@ def make_check_sequences(verbloc, endtag):
 	"""
 	global ParseList, ParseStart, ParseEnd
 	global UpperSeq, LowerSeq
+	
+#	print "MCS-0",verbloc, ParseList[verbloc], endtag
+#	print "MCS-0.5",len(ParseList), ParseEnd
 
 	# generate the upper sequence: note that this is in reverse word order
 	UpperSeq = []
@@ -1166,6 +1271,7 @@ def make_check_sequences(verbloc, endtag):
 	LowerSeq = []
 	kword = verbloc + 1
 	while (endtag not in ParseList[kword]):  # limit this to the verb phrase itself
+#		print "MCS-2",kword, ParseList[kword]
 		if ('(NE' == ParseList[kword]):
 			LowerSeq.append(ParseList[kword]+'<'+str(kword)+'>'+ParseList[kword+1])  # <pas 13.07.26> See Note-1 
 			kword += 1  # skip code
@@ -1176,7 +1282,8 @@ def make_check_sequences(verbloc, endtag):
 		elif (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
 			LowerSeq.append(ParseList[kword])
 		kword += 1
-		if kword >= ParseEnd: 
+		if kword > len(ParseList): 
+#		if kword > ParseEnd:  # <14.04.23>: need to just set this to len(ParseList)?
 			raise_parsing_error('make_check_sequences()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 			return   
 
@@ -1506,19 +1613,20 @@ def assign_NEcodes():
 	kitem = ParseStart
 	while kitem < ParseEnd:
 		if '(NE' == ParseList[kitem]:
+			if ShowNEParsing: print "NE-0:",kitem, ParseList[kitem-1:]
 			nephrase = []
 			kstart = kitem
 			kcode = kitem + 1
 			kitem += 2 # skip NP, code,
 			if kitem >= len(ParseList): 
-				raise_parsing_error('assign_NEcodes()-0') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+				raise_parsing_error('assign_NEcodes()-1') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 				return   
 			while  '~NE' != ParseList[kitem]:
 				if ParseList[kitem][1:3] != 'NN':   # <14.01.15> At present, read_TreeBank can leave (NNx in place in situations involving (PP and (NEC: so COMPOUND-07. This is a mildly kludgy workaround that insures a check_NEphrase gets clean input
 					nephrase.append(ParseList[kitem])
 				kitem += 1
 				if kitem >= len(ParseList): 
-					raise_parsing_error('assign_NEcodes()-1') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+					raise_parsing_error('assign_NEcodes()-2') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 					return   
 			if ShowNEParsing: print "aNEc",kcode,":", nephrase   # debug
 			if '(NEC' in nephrase:
@@ -1531,7 +1639,7 @@ def assign_NEcodes():
 					if ShowNEParsing: print "Assigned",result[1]   # debug
 		kitem += 1
 		if kitem >= len(ParseList): 
-			raise_parsing_error('assign_NEcodes()-2') # <14.02.27> so for this to be hit, somehow ParseEnd isn't correct: why?
+			raise_parsing_error('assign_NEcodes()-3') # <14.02.27> so for this to be hit, somehow ParseEnd isn't correct: why?
 
 def make_event_strings():
 # creates the set of event strings, handing compound actors and symmetric events

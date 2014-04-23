@@ -912,7 +912,7 @@ def read_agent_dictionary():
 	[With some additional coding, this can be relaxed, but anything following these
 	rules should read correctly]
 	Basic structure is a series of records of the form
-		phrase_string {plural}  [agent_code]
+		phrase_string {optional plural}  [agent_code]
 	
 	Material that is ignored
 	1. Anything following '#' 
@@ -928,8 +928,8 @@ def read_agent_dictionary():
 	for organizations, e.g. NGO~)
 	
 	Plurals:
-		Regular plurals -- those formed by adding 'S' to the root or adding 'IES' if the
-		root ends in 'Y'-- are generated automatically
+		Regular plurals -- those formed by adding 'S' to the root, adding 'IES' if the
+		root ends in 'Y', and added 'ES' if the root ends in 'SS' -- are generated automatically
 		
 		If the plural has some other form, it follows the root inside {...}
 		
@@ -942,6 +942,29 @@ def read_agent_dictionary():
 		nulled (though in this instance -- ain't living English wonderful? -- you could null
 		the singular and use an automatic plural on the plural form) Though in a couple 
 		test sentences, this phrase confused SCNLP.
+		
+	Substitution Markers:
+		These are used to handle complex equivalents, notably
+		
+			!PERSON! = MAN, MEN, WOMAN, WOMEN, PERSON
+			!MINST! = MINISTER, MINISTERS, MINISTRY, MINISTRIES
+			
+		and used in the form
+		
+			CONGRESS!PERSON! [~LEG}
+			!MINIST!_OF_INTERNAL_AFFAIRS
+		
+		The marker for the substitution set is of the form !...! and is followed by an =
+		and a comma-delimited list; spaces are stripped from the elements of the list so
+		these can be added for clarity. Every time in the list is substituted for the marker,  
+		with no additional plural formation, so the first construction would generate
+		
+			CONGRESSMAN [~LEG}
+			CONGRESSMEN [~LEG}
+			CONGRESSWOMAN [~LEG}
+			CONGRESSWOMEN [~LEG}
+			CONGRESSPERSON [~LEG}
+		
 		
 	Agent code combination rules
 		By default, agent codes are assigned in the order they are found, and all phrases
@@ -1002,6 +1025,8 @@ def read_agent_dictionary():
 	TROOP {} [~MIL] # ab 22 Aug 2005
 
 	"""
+	global subdict
+	
 	def store_agent(nounst, code):
 	# parses nounstring and stores the result with code
 		nounlist = make_noun_list(nounst)
@@ -1013,33 +1038,75 @@ def read_agent_dictionary():
 			PETRglobals.AgentDict[keyword] = [phlist]
 		if isinstance(phlist[0], str):   # <13.12.16> : this isn't needed for agents, correct?
 			curlist = PETRglobals.AgentDict[keyword]  # save location of the list if this is a primary phrase
+			
+	def define_marker(line):
+		global subdict
+		if line[line.find('!')+1:].find('!') < 0 or line[line.find('!'):].find('=') < 0: 
+			PETRwriter.write_FIN_error(markdeferrorstr+enderrorstr)
+			return
+		ka = line.find('!')+1
+		marker = line[ka:line.find('!',ka)]
+#		print marker
+		loclist = line[line.find('=',ka)+1:].strip()
+		subdict[marker]  = []
+		for item in loclist.split(','):
+			subdict[marker].append(item.strip())
+#		print subdict[marker] 
+
+	def store_marker(agent, code):
+		global subdict
+		if agent[agent.find('!')+1:].find('!') < 0 : 
+			ka = agent.find('!')
+			PETRwriter.write_FIN_error("Substitution marker \""+agent[ka:agent.find(' ',ka)+1]+"\" syntax incorrect"+enderrorstr)
+			return
+	 	part = agent.partition('!')
+	 	part2 = part[2].partition('!')
+	 	if part2[0] not in subdict:    
+			PETRwriter.write_FIN_error("Substitution marker !" + part2[0] + "! missing in .agents file; line skipped")
+			return
+		for subst in subdict[part2[0]]:
+#			print part[0]+subst+part2[2]
+			store_agent(part[0]+subst+part2[2], code)
+
+	# this is just called when the program is loading, so keep them local. 
+	# <14.04.22> Or just put these as constants in the function calls: does it make a difference?
+	enderrorstr = " in .agents file ; line skipped"
+	codeerrorstr = "Codes are required for agents"
+	brackerrorstr = "Missing '}'"
+	markdeferrorstr = "Substitution marker incorrectly defined"
 	
-	codeerrorstr = "Codes are required for agents; line skipped"
-	brackerrorstr = "Missing '}' in agent; line skipped"
+	subdict = {}  # substitution set dictionary
 
 	PETRwriter.write_ErrorFile("Reading "+ PETRglobals.AgentFileName+"\n")  # note that this will be ignored if there are no errors
 	open_FIN(PETRglobals.AgentFileName,"agent")
 
 	line = read_FIN_line() 
 	while len(line) > 0:  # loop through the file
-		if '[' not in line: # code specified?
-			PETRwriter.write_input_error(codeerrorstr,line, nline) 	
+
+		if '!' in line and '=' in line: # synonym set
+			define_marker(line)
 			line = read_FIN_line() 
-			nline += 1
 			continue
+
+		if '[' not in line: # code specified?
+			PETRwriter.write_FIN_error(codeerrorstr+enderrorstr) 	
+			line = read_FIN_line() 
+			continue
+
 		part = line.partition('[')    
 		code = part[2].partition(']')[0].strip()
 		agent = part[0].strip() + ' '
-		if '{' in part[0]:
+		if '!' in part[0]: store_marker(agent, code) # handle a substitution marker
+		elif '{' in part[0]:
 			if '}' not in part[0]:
-				PETRwriter.write_input_error(brackerrorstr,line, nline) 	
+				PETRwriter.write_FIN_error(brackerrorstr+enderrorstr) 	
 				line = read_FIN_line() 
-				nline += 1
 				continue
 			agent = part[0][:part[0].find('{')].strip() + ' '			
 			plural = part[0][part[0].find('{')+1:part[0].find('}')].strip() # this will automatically set the null case
 		else:
 			if 'Y' == agent[-2]: plural = agent[:-2]+'IES'  # space is added below
+			elif 'S' == agent[-2]: plural = agent[:-1] +'ES'
 			else:  plural = agent[:-1] +'S'
 		
 #			print agent,plural

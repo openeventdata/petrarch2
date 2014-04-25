@@ -17,11 +17,11 @@ ACKNOWLEDGE  [023]
 - IN_*  [074] ;pas 17 Feb 2002;  pattern CONNECT-6  7/14/03
 - *_OUT [074]
 - SO IN_AND_*_OUT_AGAIN NOW [074]
-ACT_ [100]
-{ ACTING_ ACTXD_ ACTUALITY  }
-- SAID WOULD * NOW  [101]
+ACT [100]
+- INDICATED WOULD * NOW  [1010]
+- INDICATED SHOULD *   [1011]
 - * RESOLUTION  [102] ;tony  4/22/91
-- * PROGRAM  [103] ;tony  3/9/91
+- * PROGRAMS  [103] ;tony  3/9/91
 ADD  [---]
 - * WANTED  [102] ;tony  4/19/91
 - * VOICE  [023]
@@ -100,8 +100,8 @@ BOYCOTT  [191]
 - SAID *  [172]
 - * WORK  [181]
 BRAND  [122]
-BREAK_ [1717]
-{ BROKE_ BROKEN_ BROKEN_DOWN_ }
+BREAK [1717]
+{ BROKE BROKEN BROKEN_DOWN }
 - + KNOWN_ * IN_ $  [076] ; pattern CONNECT-15D to 15H  7/14/03
 - * DEADLOCK  [102]
 - * TREATY  [161]
@@ -182,7 +182,6 @@ DAMAGE  [224]
 - * RELATIONS  [192]
 DANGLE DIPLOMATIC CARROT  [101] ;tony  4/19/91
 DAVIS_CUP  [###] ;JW   10/17/91
-DEATH TOLL RISEN  [223] ;JW   10/17/91
 DECIDE  [---]
 - * NOT COOPERATE  [112] ;tony  4/22/91
 - * ESTABLISH  [082]
@@ -204,9 +203,9 @@ DEMONSTRATE  [181]
 DENIED  [140]
 DENOUNCE  [122]
 DENY  [140]
-DEPART_ [032] ;JW   10/15/91
-DEPLORE_ [122]
-- SAID *  [123]
+DEPART [032] ;JW   10/15/91
+DEPLORE [122]
+- INDICATED *  [123]
 DEPLOY  [182]
 DEPORT  [201] ;jw 9/30/91
 - FACE *  [201] ;jw 9/30/91
@@ -279,6 +278,7 @@ HAIL  [041] ;tony  4/28/91
 HALT  [191]
 - * TRANSPORT  [211] ;PAS  4/14/91
 - * CARGO  [211] ;tony  4/28/91
+- * MARCH  [192] ;tony  4/28/91
 HAS_NO_WISH  [025] ;jw   9/23/91
 HASHISH  [003] ; PAS 9/23/91
 HAVE NOTHING TO DO WITH  [022] ;jw 9/24/91
@@ -404,14 +404,14 @@ RAID  [220] ;tony  3/12/91
 RAISE  [---]
 - *_HOPE  [024] ;jw 9/29/91
 RAKE GUNFIRE  [223] ;tony  3/12/91
-RATIF  [042]
+RATIFY  [042]
 REACH AGREEMENT  [081]
 REASSERT  [---]
 - * FRIENDSHIP  [042] ;jw 10/1/91
 REASSURE  [054]
 REBUFF  [111]
 - SAID *  [111]
-REBUIL  [065] ;jw 9/17/91
+REBUILD  [065] ;jw 9/17/91
 REBUKE  [121] ;tony  4/22/91
 RECALL AMBASSADOR  [195] ;tony  4/23/91
 RECEIVE  [033] ;tony  4/28/91
@@ -422,7 +422,7 @@ RECOGNISE  [064] ;jw   9/23/91
 - SAID NOT *  [142]
 - HAS * PLAN  [082] ;tony  3/13/91
 RECOMMEND  [102]
-REDUC  [---]
+REDUCE  [---]
 - * NUMBER  [193]
 - * TERM  [012]
 REESTABLISH DIPLOMATIC  [064]
@@ -430,6 +430,7 @@ REFUS  [112]
 - * ASSURENCES  [142]
 REFUTE  [140]
 REGRET  [111]
+{REGRETTED}
 - EXPRESS *  [112] ;tony  4/22/91
 - NOTED + *  [115] ; test pattern DEMO-10a  26 Apr 03
 - SAID $ *  [113] ; test pattern DEMO-10
@@ -445,7 +446,8 @@ REJECT  [111]
 - * ACCUSATIONS  [141] ;tony  4/28/91
 RENEW  [---]
 - * POLICY DEPORTING  [201] ;tony  4/19/91
-- % * DIPLOMATIC  [064:064] ;pas 95.10.19
+- * DIPLOMATIC  [064:064] ;pas 14.04.25
+- % * DIPLOMATIC  [064:064] ;pas 95.10.19 # 14.04.25 deactivated
 - * CRITICISM  [121] ;tony  3/9/91
 - * RELATIONS  [064]
 - * LICENSE  [031]  # pas 12-Dec-2013
@@ -477,12 +479,15 @@ RESUME  [065]
 REVERSE BAN  [065] ;tony  4/26/91
 RIOT  [181] ;tony  3/13/91
 - *_POLICE  [---]
+RISEN  [---] 
+- DEATH_TOTAL * [224] ; pas 24-Apr-14
+- DEATH TOLL * [223] ;JW   10/17/91
 ROCKETED  [223] ;jw   10/8/91
 ROUNDED_UP  [202]
 - SAID *  [202]
 RULE OUT  [111]
 SAFEGUARD  [054] ;jw 9/16/91
-SAID  [023?] ;PAS   9/25/91
+SAID  [023] ;PAS   9/25/91
 - * WAS UNSATISFACTORY  [131] ;tony  4/19/91
 - * WERE_INNOCENT  [141] ;tony  4/29/91
 - * LAY DOWN ARMS  [094] ;tony  4/22/91
@@ -518,7 +523,7 @@ SET_UP  [---]
 - % * MET  [031]
 SHOT_AND_WOUND  [223] ;pas   9/26/91
 SHOT  [223]
-- + WAS * DEAD  [224]
+- + WAS * DEAD IN $ [224]
 - + WAS * BY $  [223]
 SHOULD  [101] ;JW   11/21/91
 - SUGGESTED + * REQUIRE_{ GENEVA | INTERNATIONAL } CONVENTIONS  [151] ; patterns 12a-14a
@@ -637,10 +642,6 @@ WARN  [160]
 - * AT ^ +  [162]
 - $ IN ^ *  [163]
 WELCOME  [041]
-WELCXME  [---]
-- % *  [044:045] ;-PAS 95.12.18
-WELCYME  [---]
-- % *  [046] ;-PAS 95.12.18
 WILLING_TO_PROVIDE  [082]
 WIPE_OUT  [---]
 - SAID WOULD *  [173]
@@ -683,14 +684,12 @@ WITHDRAW  [192]
 - *_TALKS  [---]
 - $ * BACK  [193] ;JON 5/15/95
 - * NOW  [012]
-WITHH  [---]
+WITHHOLD  [---]
 - IS * BACKING  [112] ;tony  4/23/91
 - * SUPPORT  [193] ;jw 9/30/91
 WON  [---]
 - + * PLEDGE FROM $  [054] ;tony  3/9/91
 - * MORE GROUND  [211]
-WORLD_CUP  [###] ;-PAS 95.12.15
 WOUND  [223]
 - + * BY $  [223] ;tony  4/22/91
-XYZ1  [000] ;pas 25 Jan 2002
 

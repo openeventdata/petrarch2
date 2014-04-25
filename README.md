@@ -15,10 +15,6 @@ scattered in """...""" blocks throughout the program.
 Due to constraints on time, this has not been retrofitted into the structure found in 
 the "PETRARCH" repo: we will eventually do this.
 
-The PETR_config.ini file is configured to code the file GigaWord.sample.PETR.txt, which is 
-an exceedingly tiny sample of the LDC Gigaword corpus file afp_eng_200808.xml formatted  
-into PETR format using the program LDCGW.PETR.format.py, which is also included in the repo.
-
 
 	============= Unit tests ============
 

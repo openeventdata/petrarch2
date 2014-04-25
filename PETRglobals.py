@@ -49,6 +49,11 @@ TextFileList = []  # current text or validation file
 EventFileName = "" # event output file
 IssueFileName = "" # issues list
 
+AttributeList = []    # element followed by attribute and content pairs for XML line
+
+NewActorLength = 0  # Maximum length for new actors extracted from noun phrases
+RequireDyad = True  # Events require a non-null source and target
+
 RunTimeString = '' # used in error and debugging files -- just set it once
 CodeBySentence = False
 PauseBySentence = False

@@ -30,6 +30,46 @@ the rest of that work done in April-2014. Though I would welcome additional work
 extensions, cleaning up my lousy Python, etc in the meantime. 
 
 [What the heck is TABARI??: http://eventdata.parusanalytics.com/software.dir/tabari.html]
+
+
+STATUS OF THE PROGRAM 25-APRIL-2014
+
+Progress since the note above:
+
+1. Eliminated the tree balance bug and a couple more bugs that were causing index
+   errors. I have not re-run this on the GigaWord corpus but I'm guessing those were the 
+   bugs that required trapping earlier
+
+2. Implemented date restrictions
+
+3. Implemented a new agents dictionary format: this is the first of the format changes
+    that will modify these to the point where they are not compatible for TABARI 
+	dictionaries
+	
+4. Program can pull out noun phrases which correspond to actors not in the dictionary: 
+	this is controlled by the parameter new_actor_length in config.ini (see that file 
+	for description of this feature)
+
+The unit tests now have 128 records, so this is successfully passing most of the TABARI 
+unit tests after these are modified so that they will actually parse (TABARI was working 
+with simple pattern recognition a lot of the time, and many of the unit tests have 
+required revision)
+
+Major features in TABARI that still need to be implemented
+
+1. Substitution sets, though this already has been done in agents and is very straightforward 
+	in Python (it was anything but in C++...)
+	
+2. % and ^ tokens in patterns: any patterns using these are currently skipped
+
+3. Passive voice detection
+
+4. Common-delimited clause elimination
+
+5. There are a couple bugs involving compound noun phrases
+
+At the point of completing those, I'll probably shift to getting the WordNet-based
+verb dictionaries into the system.
    
 ------------------------------------------------------------------------------------- 
 
@@ -46,8 +86,8 @@ TO RUN PROGRAM:
 
 REQUIRED MODULES
    PETRglobals.py: global declarations
-   PETRreader.pyc: dictionary input routines
-   PETRwriter.pyc: output routines
+   PETRreader.py : dictionary and other input routines
+   PETRwriter.py : output routines
 
 INPUT FILES
 	PETR_config.ini specifies the various files in a coding run 
@@ -61,13 +101,15 @@ OUTPUT FILES
 PROGRAMMING NOTES
 
 1. There is a fair amount of internal documentation in both multi-line comment blocks
-   and individual comments, though as always this could be a little more systematic.
+   and individual comments, though as always this could be a little more systematic
+   and not all of it corresponds to Python docstring conventions: things are gradually
+   getting converted to this.
 
 2. There are an assortment of general diagnostic print statements controlled by the
    Boolean switches in the DEBUGGING GLOBALS. In addition, a wide variety of function-
    specific print statements have been left in the code but commented out.    
 
-CODE REPOSITORY: https://github.com/openeventdata/PETRARCH
+CODE REPOSITORY: https://github.com/openeventdata/PETRARCH-Development
 
 SYSTEM REQUIREMENTS
 This program has been successfully run under Mac OS 10.6.8, Ubuntu 12.2 and whatever  
@@ -100,6 +142,7 @@ July-13: Revised to handle Stanford NLP tree format
 Nov-13:  Validation, PETRreader module
 Dec-13:  Compound actors and agents
 Feb-14:  do_coding, PETR_config.ini, discards, issues, runtime error trapping
+Apr-14:  new agents format, (NE--- phrases, 
          
 ----------------------------------------------------------------------------------
 
@@ -148,7 +191,10 @@ dictionary and some of this might be relevant.]
 4. Matching following the verb is restricted to the actual verb phrase(!!). Matching
    prior to the verb is probably more or less equivalent to what TABARI did
    
-5. Input format is considerably more complex and contains embedded XML
+5. The text input format is considerably more complex and contains embedded XML. 
+
+6. The dictionary format has changed substantially and is not compatible with TABARI in
+   either direction.
 
 -------------------------------------------------------------------------------------
 
@@ -173,7 +219,6 @@ import PETRwriter # output routines
 
 ParseList = []   # linearized version of parse tree
 ParseStart = 0   # first element to check (skips (ROOT, initial (S
-ParseEnd = 0     # last element to check: skips final punctuation
 
 UpperSeq = []  # text that can be matched prior to the verb; this is stored in reverse order
 LowerSeq = []  # text that can be matched following the verb
@@ -200,7 +245,7 @@ ValidPause = 0  # validation mode :pause conditions: 1: always; -1 never; 0 only
 	
 # ================================  UTILITY GLOBALS  ================================ #	
 
-AttributeList = []  # element followed by attribute and content pairs for XML line
+
 
 # ================================  DEBUGGING GLOBALS  ================================ #	
 
@@ -242,7 +287,6 @@ class UnbalancedTree(Exception):  # unbalanced () in the parse tree
 # ================== ERROR MESSAGE STRINGS ================== #	
 
 ErrMsgExitValidation = "\nExiting: This information is required for running a validation file"
-ErrMsgMissingDate = "<Sentence> missing required date; record was skipped"
 ErrMsgUnbalancedTree = "Unbalanced <Parse> tree; record was skipped"				
 	
 def raise_parsing_error(call_location_string):
@@ -255,107 +299,91 @@ def raise_parsing_error(call_location_string):
 	if not DoValidation: NParseErrors += 1
 	raise UnbalancedTree(errorstring)
 
-	
-# ========================== TAG EVAULATION FUNCTIONS ========================== #	
-# <13.11.23> These can get moved to PETRreader once they stabilize
-	
-def find_tag(tagstr):
-# reads fin until tagstr is found
-# can inherit EOFError raised in PETRreader.read_FIN_line() 
-	line = PETRreader.read_FIN_line() 
-	while (tagstr not in line): 
-		line = PETRreader.read_FIN_line() 
+# ========================== DEBUGGING FUNCTIONS ========================== #	
 
-				
-def extract_attributes(theline):
-# puts list of attribute and content pairs in the global AttributeList. First item is
-# the tag itself
-# still to do: need error checking here
-	""" Structure of attributes 
-	At present, these always require a quoted field which follows an '=', though it 
-	probably makes sense to make that optional and allow attributes without content 
-	"""
-	global AttributeList
-#	print "PTR-1:", theline,		
-	theline = theline.strip()
-	if ' ' not in theline: # theline only contains a keyword
-		AttributeList = theline[1:-2]
-#		print "PTR-1.1:", AttributeList		
-		return
-	pline = theline[1:].partition(' ') # skip '<'
-	AttributeList = [pline[0]]
-	theline = pline[2]
-	while ('=' in theline): # get the field and content pairs
-		pline = theline.partition('=')
-		AttributeList.append(pline[0].strip())
-		theline = pline[2]
-		pline = theline.partition('"')
-		pline = pline[2].partition('"')
-		AttributeList.append(pline[0].strip())
-		theline = pline[2]
-#	print "PTR-2:", AttributeList		
-
-def check_attribute(targattr):
-# Looks for targetattr in AttributeList; returns value if found, null string otherwise
-# This is used if the attribute is optional (or if error checking is handled
-# by the calling routine); if an error needs to be raised, use get_attribute() 
-	global AttributeList
-	if (targattr in AttributeList): return AttributeList[AttributeList.index(targattr)+1]
-	else: return ""
-
-def get_attribute(targattr):
-# Similar to check_attribute except it raises a MissingAttr error when the attribute
-# is missing.
-	global AttributeList
-	if (targattr in AttributeList): return AttributeList[AttributeList.index(targattr)+1]
-	else:
-		raise MissingAttr
-		return ""
-		 
-def extract_Sentence_info(line):
-# extracts fields for <Sentence record
-# can raise SkipRecord if date is missing
-	global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid
-	extract_attributes(line)
-	SentenceID = check_attribute('id')
-	SentenceCat = check_attribute('category')
-	SentenceLoc = check_attribute('place')
-	if check_attribute('valid') == 'true': SentenceValid = True
-	else: SentenceValid = False
-	try: 
-		SentenceDate = get_attribute('date')
-	except MissingAttr:
-		PETRwriter.write_FIN_error(ErrMsgMissingDate)
-		raise SkipRecord
-
-
-def extract_EventCoding_info(theline):
-# extracts fields from <EventCoding record and appends to ValidEvents
-# currently does not raise errors if the information is missing but instead sets the
-# fields to null strings
-	""" Structure of ValidEvents
-	noevents: empty list
-	otherwise list of triples of [sourcecode, targetcode, eventcode]
-	"""
-	global ValidEvents, AttributeList
-	extract_attributes(theline)
-	if ('noevents' in AttributeList[1]): 
-		ValidEvents = []
-		return
-	else: 
-#		print "EEC-1:",AttributeList
-		ValidEvents.append([check_attribute('sourcecode'),check_attribute('targetcode'),check_attribute('eventcode')])
-
+def show_tree_string(sent):
+# indexes the () or (~in a string tree and prints as an indented list. Also prints the
+# totals
+# call with ' '.join(list) to handle the list versions of the string
+	newlev = False
+	level = -1
+	prevlevel = -1
+	ka = 0
+	nopen = 0
+	nclose = 0
+	sout = ''
+	while ka < len(sent):
+		if sent[ka] == '(':
+			level += 1
+			nopen += 1
+			newlev = True
+			if level != prevlevel: sout += '\n' + level*'  '  # new line only with change in level
+#			sout += '\n' + level*'  '                         # new line for every (
+			sout += '(-'+str(level)+' '
+		elif sent[ka] == ')' or sent[ka] == '~' :
+			nclose += 1
+			prevlevel = level
+			if not newlev: sout += '\n' + level*'  '
+			if sent[ka] == ')': sout += str(level) + '-)'
+			else: sout += str(level) +'~'
+			level -= 1
+			newlev = False
+		else: sout += sent[ka]
+		ka += 1
+	print sout
+	if nopen == nclose: print "Balanced:",
+	else: print "Unbalanced:", 
+	print "Open",nopen,"Close",nclose,'\n'	
 	
 # ========================== VALIDATION FUNCTIONS ========================== #	
 	
+def change_Config_Options(line):
+	"""Changes selected configuration options."""
+	# need more robust error checking
+	PETRreader.extract_attributes(line)
+	theoption = PETRreader.check_attribute('option')
+	value = PETRreader.check_attribute('value')
+	print "<Config>: changing",theoption,"to",value
+	if theoption == 'new_actor_length': 
+		try:
+			PETRglobals.NewActorLength = int(value)
+		except ValueError:
+			PETRwriter.write_FIN_error("<Config>: new_actor_length value must be an integer")
+	elif theoption == 'require_dyad': 
+			PETRglobals.RequireDyad = not 'false' in value.lower()
+	# insert further options here in elif clauses as this develops; also update the docs in open_validation_file():
+	else: 	PETRwriter.write_FIN_error("<Config>: unrecognized option")
+
+def extract_EventCoding_info(theline):
+	"""Extracts fields from <EventCoding record and appends to ValidEvents."""
+# currently does not raise errors if the information is missing but instead sets the
+# fields to null strings
+	""" 
+	Structure of ValidEvents
+	noevents: empty list
+	otherwise list of triples of [sourcecode, targetcode, eventcode]
+	"""
+	global ValidEvents
+	
+	PETRreader.extract_attributes(theline)
+	if ('noevents' in PETRglobals.AttributeList[1]): 
+		ValidEvents = []
+		return
+	else: 
+#		print "EEC-1:",PETRglobals.AttributeList
+		ValidEvents.append([PETRreader.check_attribute('sourcecode'),PETRreader.check_attribute('targetcode'),PETRreader.check_attribute('eventcode')])
+
 def evaluate_validation_record():
-# read validation record, setting EventID and a list of correct coded events, code 
-# using read_TreeBank, then check the results. Returns True if the lists of coded and
-# expected events match or the event is skipped; false otherwise; also prints the mismatches
-# raises EOFError exception if EOF hit.
-# raises StopCoding if <Stop> found
-# raises SkipRecord if <Skip> found or record is skipped due to In/Exclude category lists
+	"""
+	def evaluate_validation_record():
+	Read validation record, setting EventID and a list of correct coded events, code 
+	using read_TreeBank(), then check the results. Returns True if the lists of coded and
+	expected events match or the event is skipped; false otherwise; also prints the 
+	mismatches
+	Raises EOFError exception if EOF hit.
+	Raises StopCoding if <Stop> found or 
+	Raises SkipRecord if <Skip> found or record is skipped due to In/Exclude category lists
+	"""
 	global SentenceDate, SentenceID, SentenceCat, SentenceText, SentenceValid
 	global CodedEvents,ValidEvents
 	global ValidInclude, ValidExclude, ValidPause, ValidOnly
@@ -380,13 +408,14 @@ def evaluate_validation_record():
 			if len(ValidInclude) > 0 and SentenceCat not in ValidInclude: 
 				raise SkipRecord
 				return True
+				
 			if len(ValidExclude) > 0 and SentenceCat in ValidExclude: 
 				raise SkipRecord
 				return True				
 			
 		if ('<EventCoding ' in line): 
 			extract_EventCoding_info(line)
-			print "EVR-2:",ValidEvents
+#			print "EVR-2:",ValidEvents
 			
 		if ('<Text>' in line): 
 			SentenceText = ''
@@ -397,9 +426,12 @@ def evaluate_validation_record():
 				line = PETRreader.read_FIN_line()
 				
 		if ('<Skip ' in line):  # handle skipping -- leave fin at end of tree
-			print "EVR-1: <Skip"
+#			print "EVR-1: <Skip"
 			raise SkipRecord
 			return True
+			
+		if '<Config' in line:
+			change_Config_Options(line)
 			
 		if ('<Stop>' in line): 
 			raise StopCoding
@@ -414,11 +446,16 @@ def evaluate_validation_record():
 			
 		line = PETRreader.read_FIN_line()
 
+	if not line: raise EOFError
+	
 	print '\nSentence:',SentenceID,'[',SentenceCat,']'
 	print SentenceText
 #	print '**',ParseList
 	assign_NEcodes()
 #	print '**+',ParseList
+	if False: 
+		print 'EV-1:'
+		show_tree_string(' '.join(ParseList))
 	if ShowParseList: print 'EVR-Parselist::',ParseList
 
 	check_verbs()
@@ -468,14 +505,16 @@ def evaluate_validation_record():
 def check_envirattr(line, stag, sattr):
 # checks whether line contains sattr and exits with error if not found.
 # this doesn't do anything with the attribute, just extracts the list and checks for it
-	extract_attributes(line)
-	try:  get_attribute(sattr)
+	PETRreader.extract_attributes(line)
+	try:  PETRreader.get_attribute(sattr)
 	except MissingAttr:
 		print "Missing '"+ sattr +"' field in "+ stag + " line",ErrMsgExitValidation
 		sys.exit()
 
 def open_validation_file():
 	"""
+def open_validation_file():
+
 1. Opens validation file TextFilename as FIN 
 2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various validation 
    options, then reads the dictionaries (exits if these are not set)
@@ -505,8 +544,9 @@ def open_validation_file():
 		[if a category is in both lists, the case is excluded. But please don't do this]
 		<Pause value="<always, never>">
 			Pause conditions: 
-				always -- pause after every record
-				never -- never pause (errors are still recorded in file)
+				always  -- pause after every record
+				never   -- never pause (errors are still recorded in file)
+				stop    -- exit program on the default condition [below]
 				default -- pause only when EventCodes record doesn't correspond to the
 						   generated events or if there is no EventCodes record 
 
@@ -529,13 +569,17 @@ def open_validation_file():
 	Required elements in each record: for validation, one or more of these should  
 	occur prior to the TreeBank. If none are present, the record is coded and the
 	program pauses unless <Pause value = "never'> has been used.
-		<EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">
-		<EventCodes noevents = "True"> : indicates the record generates no events
+	
+	<EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">
+	<EventCodes noevents = "True"> : indicates the record generates no events
 		  (presently, system just looks for the presence of a 'noevents' attribute)
 		  
 	Optional elements in record
 		<Skip>: skip this record without coding
 		<Stop>: stop coding and exit program
+		<Config option ="<config.ini option from list below>" value ="<value>">: 
+			Change values of PETR_config.ini globals. 
+			Currently works for: new_actor_length. require_dyad
 		
 	Additional notes:
 	1. The validation file currently does not use a discard file.
@@ -581,11 +625,10 @@ def open_validation_file():
 
 	"""
 	global ValidInclude, ValidExclude, ValidPause, ValidOnly
-	global AttributeList
 
 	PETRreader.open_FIN(PETRglobals.TextFileList[0],"validation")
 
-	try: find_tag('<Environment')
+	try: PETRreader.find_tag('<Environment')
 	except EOFError:
 		print "Missing <Environment> block in validation file\nExiting program"
 		sys.exit()	
@@ -600,24 +643,24 @@ def open_validation_file():
 		
 		if ("<Verbfile " in line):	
 			check_envirattr(line, '<Verbfile>','name')	
-			PETRglobals.VerbFileName = get_attribute('name')
+			PETRglobals.VerbFileName = PETRreader.get_attribute('name')
 				
 		if ("<Actorfile " in line):
 			check_envirattr(line, '<Actorfile>','name')	
-			PETRglobals.ActorFileList[0] = get_attribute('name')
+			PETRglobals.ActorFileList[0] = PETRreader.get_attribute('name')
 			
 		if ("<Agentfile " in line):
 			check_envirattr(line, '<Agentfile>','name')	
-			PETRglobals.AgentFileName = get_attribute('name')
+			PETRglobals.AgentFileName = PETRreader.get_attribute('name')
 			
 		if ("<Errorfile " in line): 
 			check_envirattr(line, '<Errorfile>','name')	
-			PETRwriter.open_ErrorFile(check_attribute('name'),check_attribute('unique'))
+			PETRwriter.open_ErrorFile(PETRreader.check_attribute('name'),PETRreader.check_attribute('unique'))
 			gotErrorfile = True
 
 		if ("<Include " in line):
 			check_envirattr(line, '<Include>','categories')	
-			loclist = get_attribute('categories')
+			loclist = PETRreader.get_attribute('categories')
 			ValidInclude = loclist.split()
 			print '<Include> categories',ValidInclude
 			if 'valid' in ValidInclude: 
@@ -626,15 +669,16 @@ def open_validation_file():
 				
 		if ("<Exclude " in line):
 			check_envirattr(line, '<Exclude>','categories')	
-			loclist = get_attribute('categories')
+			loclist = PETRreader.get_attribute('categories')
 			ValidExclude = loclist.split()
 			print '<Exclude> categories',ValidExclude
 				
 		if ("<Pause " in line):
 			check_envirattr(line, '<Pause>','value')	
-			theval = get_attribute('value')
-			if 'lways' in theval: ValidPause = 1
-			elif 'ever' in theval: ValidPause = -1
+			theval = PETRreader.get_attribute('value')
+			if 'lways' in theval: ValidPause = 1   # skip first char to allow upper/lower case
+			elif 'ever' in theval: ValidPause = 2
+			elif 'top' in theval: ValidPause = 3
 			else: ValidPause = 0
 			
 	PETRreader.close_FIN()
@@ -660,17 +704,24 @@ def open_validation_file():
 	PETRreader.read_actor_dictionary(PETRglobals.ActorFileList[0])
 	print 'Agent dictionary:',PETRglobals.AgentFileName
 	PETRreader.read_agent_dictionary()
+#	sys.exit()
 	
 
 # ================== TEXTFILE INPUT ================== #	
 
-
 def get_NE(NPphrase):
-# convert (NP...) ) to NE
-# can raise UnbalancedTree, though that should have been hit before this
+	"""
+	def get_NE(NPphrase):
+	Convert (NP...) ) to NE: copies any (NEC phrases with markup, remainder of the phrase
+	without any markup
+	Can raise UnbalancedTree, though that should have been trapped before this
+	"""
 	nplist = ['(NE --- ']
 	seg = NPphrase.split()
-	if ShowNEParsing: print 'gNE',seg
+	if ShowNEParsing: 
+		print "gNE input tree",
+		show_tree_string(NPphrase)
+		print 'List:',seg
 	ka = 1
 	while ka < len(seg):
 		if seg[ka] == '(NEC':  # copy the phrase 
@@ -684,28 +735,32 @@ def get_NE(NPphrase):
 				nplist.append(seg[ka])
 #				print 'gNE1',nplist
 				ka += 1
-		elif seg[ka][0] == '(':
-			if ka + 1 >= len(seg): raise_parsing_error('get_NE()-2')
-			nplist.append(seg[ka+1])
-			ka += 3
-		else:
-			nplist.append(')')
+		elif seg[ka][0] != '(' and seg[ka] != ')':  # copy the phrase without the markup
+			nplist.append(seg[ka])
+#			print 'gNE2',nplist
 			ka += 1
-			while ka < len(seg):
-				nplist.append(seg[ka])
-				ka += 1
-			return nplist
+		else: ka += 1
+			
+	nplist.append(')')
+#	print 'gNE3',nplist
+	return nplist
+			
 			
 
 def read_TreeBank():
-# reads parsed sentence in the Penn TreeBank II format and puts the linearized version in  
-# the list ParseList. Sets ParseStart, ParseEnd. Leaves global input file fin at line  
-# following </parse>. Probably should do something with an EOF error
-#
-# This routine is supposed to be agnostic towards the line-feed and tab formatting of the 
-# parse tree
-# 
-# can raise UnbalancedTree error
+	"""
+	def read_TreeBank():
+	Reads parsed sentence in the Penn TreeBank II format and puts the linearized version in  
+	the list ParseList. Sets ParseStart. Leaves global input file fin at line following 
+	</parse>. Probably should do something with an EOF error.
+
+	This routine is supposed to be agnostic towards the line-feed and tab formatting of the 
+	parse tree
+
+	Can raise UnbalancedTree error, and this is supposed to be the first line of defense
+	against that: ParseList should come out of this balanced. There is extensive commented-out 
+	debugging code to check for this
+	"""
 
 	""" ParseList coding
 	Because they are still based in a shallow parsing approach, the KEDS/TABARI/PETR 
@@ -750,7 +805,9 @@ def read_TreeBank():
 	3. The prepositional phrase structure (NP (NP ... )) (PP ) NP( ... )) is converted 
 			to an NE; the preposition (IN ...) is retained 
 			
-	4. (VP and complex (NP are indexed so that the end of the phrase can be identified
+	4. The text of an (SBAR inside an (NP is retained
+	
+	5. (VP and complex (NP are indexed so that the end of the phrase can be identified
 			so these have the form (XXn and ~XXn
 			
 	Errors:
@@ -763,7 +820,8 @@ def read_TreeBank():
 		
 	""" 
 	
-	""" <13.11.27> Reflections of PETR vs TABARI parsing
+	""" 
+	<13.11.27> Reflections of PETR vs TABARI parsing
 	As is well known, the shallow parsing of TABARI, while getting things wrong for the
 	wrong reasons, also frequently got things right for the wrong reasons, which is to 
 	say it was rather robust on variations, grammatical or otherwise, in the sentences.
@@ -780,12 +838,12 @@ def read_TreeBank():
 	
 	""" 
 
-	global ParseList, ParseStart, ParseEnd
+	global ParseList, ParseStart
 	global treestr
 	global ncindex   
 	
 	def get_forward_bounds(ka):
-	# returns the bounds of a phrase in treestr that begins at ka, including  final space
+	# returns the bounds of a phrase in treestr that begins at ka, including final space
 	# can raise UnbalancedTree error
 		global treestr #  <13.12.07> see note above
 		kb = ka+1
@@ -833,6 +891,30 @@ def read_TreeBank():
 				treestr = treestr[:ka+3] + 'P' + treestr[ka+3:]   # convert CC to CCP
 				if ShowMarkCompd: print '\nMC3:',treestr[kb:]
 				
+	def reduce_SBAR(kstart):
+	# collapse SBAR beginning at kstart to a string without any markup;
+	# change clause marker to SBR, which is subsequently eliminated
+
+		global treestr
+		
+		bds = get_enclosing_bounds(kstart+5)
+#		print 'RS1:',treestr[bds[0]:bds[1]]
+		frag = ''
+		segm = treestr[bds[0]:bds[1]]
+		kc = 0
+		while kc < len(segm):
+			kc = segm.find(' ',kc)
+			if kc < 0: break
+			if segm[kc+1] != '(':  # skip markup, just get words
+				kd = segm.find(' )',kc)
+				frag += segm[kc:kd]
+				kc = kd + 3
+			else: kc += 2
+#		print 'RS2:',frag
+		treestr = treestr[:bds[0]] + '(SBR ' + frag + treestr[bds[1]-2:] # bound with '(SBR ' and ' )'
+#		print 'RS3:',treestr
+		
+				
 	def process_preposition(ka):
 	# process (NP containing a (PP and return an nephrase: 
 	# if this doesn't have a simple structure of  (NP (NP ...) (PP...) (NP/NEC ...)) 
@@ -860,6 +942,7 @@ def read_TreeBank():
 #		print 'PPP2: ',nepph, '\n     ',ka,bds[1],treestr[ka+4:bds[1]]
 		kp = treestr.find('(NP ',ka+4,bds[1]) # find first (NP or (NEC after prep
 		kec = treestr.find('(NEC ',ka+4,bds[1])
+#		print 'PPP1.5', kp, kec
 		if kp <  0 and kec < 0: 
 #			print 'PPP2a: No NP or NEC'
 			return '' # not what we are expecting, so bail
@@ -867,21 +950,28 @@ def read_TreeBank():
 		if kec <  0: kec = len(treestr)
 		if kp < kec:  
 			kb = kp
-#			print 'PPP2a: got NEC', treestr[kb:]
+#			print 'PPP2a: got NP', treestr[kb:bds[1]]
 		else:
 			kb = kec
-#		 	print 'PPP2a: got NP', treestr[kb:]
+#		 	print 'PPP2a: got NEC', treestr[kb:bds[1]]
 		npbds = get_forward_bounds(kb)  # 
 		if '(PP' in treestr[npbds[0]:npbds[1]]: 
 #			print 'PPP2b: Embedded (PP'			 
-			return '' # there's another level of (PP here
+			return '' # there's another level of (PP here  <14.04.21: can't we just reduce this per (SBR?
 		if treestr[kb+2] == 'E': # leave the (NEC in place. <14.01.15> It should be possible to add an index here, right?			
-			nepph += treestr[kb :npbds[1] + 3 ] # pick up two ') '
-		else: nepph += treestr[npbds[0]+4 :npbds[1] + 1 ] # skip the (NP and pick up the final ' ' (we're using this to close the original (NP
-		exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
+			nepph += treestr[kb :npbds[1] + 1 ] # pick up a ') '
+		else: nepph += treestr[npbds[0]+4 :npbds[1] - 1 ] # skip the (NP and pick up the final ' ' (we're using this to close the original (NP
+		if '(SBR' in treestr[npbds[1]:]:  # transfer the phrase
+#			print 'PPP2c: Embedded (SBR'
+			kc = treestr.find('(SBR',npbds[1])	
+		 	nepph += treestr[kc:treestr.find(') ',kc)+2]
+		nepph += ')'  # close the phrase		
+#		exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
 #		print 'PPP3: ',exst
 		return nepph
 
+	ShowRTTrees = True  # displays parse trees
+	ShowRTTrees = False 
 				
 	fullline = '' 
 	vpindex = 1
@@ -894,14 +984,29 @@ def read_TreeBank():
 		line = line.replace(')',' ) ')
 		treestr += line.upper()
 		line = PETRreader.read_FIN_line() 
-#	print 'RT1:', treestr # debug
+	if ShowRTTrees: 
+		print 'RT1:', treestr # debug
+		show_tree_string(treestr)
+	kopen = 0; kclose = 0
+	for item in ParseList:
+		if item.startswith('('): kopen += 1
+		if item == ')': kclose += 1
+	if ShowRTTrees: print 'RT1 count:',treestr.count('('), treestr.count(')')
 
 	mark_compounds()
 	
+	if ShowRTTrees: print 'RT1.5 count:',treestr.count('('), treestr.count(')')
+
 	ka = 0
 	while ka < len(treestr):
 		if treestr.startswith('(NP ',ka):
 			npbds = get_forward_bounds(ka)
+			
+			ksb = treestr.find('(SBAR ',npbds[0],npbds[1])  # reduce (SBARs inside phrase
+			while ksb >= 0:
+				reduce_SBAR(ksb)
+				npbds = get_forward_bounds(ka)  # recompute the bounds because treestr has been modified
+				ksb = treestr.find('(SBAR ',npbds[0],npbds[1])
 			nephrase = ''
 			if ShowNEParsing: print 'BBD: ',treestr[npbds[0]:npbds[1]]
 			if '(POS'  in treestr[ka+3:npbds[1]]: # get the (NP possessive
@@ -911,9 +1016,11 @@ def read_TreeBank():
 				if ShowNEParsing: print 'RTPOS: NE:',nephrase
 				
 			elif '(PP'  in treestr[ka+3:npbds[1]] :  #  prepositional phrase	
-#				print 'PPP-1: ',treestr[ka:npbds[1]]
-#				print 'PPP-1a: ',treestr.find('(PP',ka+3,npbds[1]),ka,npbds[1]
-#				print 'PPP-1a: ',get_enclosing_bounds(treestr.find('(PP',ka+3,npbds[1]))
+				if False:
+#				if True:
+					print 'PPP-1: ',treestr[ka:npbds[1]]
+					print 'PPP-1a: ',treestr.find('(PP',ka+3,npbds[1]),ka,npbds[1]
+					print 'PPP-1b: ',get_enclosing_bounds(treestr.find('(PP',ka+3,npbds[1]))
 				nephrase = process_preposition(treestr.find('(PP',ka+3,npbds[1]))  
 				if ShowNEParsing: print 'RTPREP: NE:',nephrase
 				
@@ -987,10 +1094,20 @@ def read_TreeBank():
 		else: 
 			fullline += treestr[ka]	
 			ka += 1	
+			
+		if ShowRTTrees: 
+			print 'Balance check:',ka,fullline.count('('), fullline.count(')')   # check for balance at intermediate points
+			print '                  ',treestr[ka:].count('('), treestr[ka:].count(')'),' :: ',fullline.count('(')+treestr[ka:].count('('), fullline.count(')')+treestr[ka:].count(')')
 
 	# convert the text to ParseList format; convert ')' to ~XX tags
 	ParseList = fullline.split() 
 #	print '<<',ParseList
+	kopen = 0; kclose = 0
+	for item in ParseList:
+		if item.startswith('('): kopen += 1
+		elif item == ')': kclose += 1
+#		else: print item
+	if ShowRTTrees: print 'RT2 count:',kopen, kclose
 	ka = 0
 	opstack = []
 	while ka < len(ParseList):
@@ -1003,19 +1120,63 @@ def read_TreeBank():
 			ParseList[ka] = '~'+op
 		ka += 1
 				
-#	print 'RT2:',ParseList
-	ParseStart = 2
-	ParseEnd = len(ParseList) - 5  # should skip final punctuation, -S, -ROOT
+	if ShowRTTrees: 
+		print 'RT2:',ParseList
+		show_tree_string(' '.join(ParseList))
 
+	ParseStart = 2 # skip (ROOT (S
 				
 				
 # ================== CODING ROUTINES  ================== #	
 
 def get_loccodes(thisloc):
 # returns the list of codes from a compound, or just a single code if not compound
-	global UpperSeq, LowerSeq
+	"""
+	Extracting noun phrases which are not in the dictionary:
+	If no actor or agent generating a non-null code can be found using the source/target 
+	 rules, PETRARCH can output the noun phrase in double-quotes. This is control by the 
+	configuration file option new_actor_length, which is set to an integer which gives the 
+	maximum length for new actor phrases extracted. If this is set to zero [default], no  
+	extraction is done andthe behavior is the same as TABARI. Setting this to a large 
+	number will extract anything found in a (NP noun phrase, though usually true actors 
+	contain a small number of words. These phrases can then be processed with named-entity-
+	resolution software to extend the dictionaries. 
+	"""
+	global UpperSeq, LowerSeq, codelist
+	
+	def add_code(neloc, isupperseq):
+	# appends the code or phrase from UpperSeq/LowerSeq starting at neloc
+	# isupperseq determines the choice of sequence 
+
+		global UpperSeq, LowerSeq, codelist
+			
+		if isupperseq: acneitem = UpperSeq[neloc]  # "add_code neitem"; nothing to do with acne...
+		else: acneitem = LowerSeq[neloc]
+		accode = acneitem[acneitem.find('>')+1:]
+#		print 'AC-1:',acneitem, accode
+		if accode != '---' or PETRglobals.NewActorLength == 0: 
+			codelist.append(accode)
+		else: # get the phrase 
+			if isupperseq: 
+				acphr = "\"" + UpperSeq[neloc - 1]
+				ka = neloc - 2  # UpperSeq is stored in reverse order
+				while UpperSeq[ka][0] != '~':  # no bounds check here; hoping these are okay by now. Yeah, right
+					acphr += ' ' + UpperSeq[ka]
+					ka -= 1
+			else: 
+				acphr = "\"" + LowerSeq[neloc + 1]
+				ka = neloc + 2
+				while LowerSeq[ka][0] != '~':  
+					acphr += ' ' + LowerSeq[ka]
+					ka += 1
+			acphr += "\""
+			if acphr.count(' ') < PETRglobals.NewActorLength: codelist.append(acphr)
+			else: codelist.append(accode)
+	
 	codelist = []
 #	print 'GLC0',thisloc
+#	print '   USeq:',UpperSeq
+#	print '   LSeq:',LowerSeq
 	if thisloc[1]: 
 		try: neitem = UpperSeq[thisloc[0]]
 		except IndexError: raise_parsing_error('get_loccodes()-1') # at this point some sort of markup we can't handle, not necessarily unbalanced 
@@ -1024,13 +1185,14 @@ def get_loccodes(thisloc):
 		if '(NEC' in neitem: # extract the compound codes from the (NEC ... ~NEC sequence 
 			ka = thisloc[0]-1  # UpperSeq is stored in reverse order
 			while '~NEC' not in UpperSeq[ka]:
-#				print 'GLC2',ka, UpperSeq[ka]
-				if '(NE' in UpperSeq[ka]: 
-					codelist.append(UpperSeq[ka][UpperSeq[ka].find('>')+1:])
+				print 'GLC2',ka, UpperSeq[ka]
+				if '(NE' in UpperSeq[ka]: add_code(ka, True)
+#					codelist.append(UpperSeq[ka][UpperSeq[ka].find('>')+1:])
 				ka -= 1
 				if ka < 0: raise_parsing_error('get_loccodes()-2') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 
-		else: codelist.append(neitem[neitem.find('>')+1:]) # simple code
+#		else: codelist.append(neitem[neitem.find('>')+1:]) # simple code
+		else: add_code(thisloc[0], True) # simple code
 	else:
 		try: neitem = LowerSeq[thisloc[0]]
 		except IndexError: raise_parsing_error('get_loccodes()-3') # at this point some sort of markup we can't handle, not necessarily unbalanced 
@@ -1039,22 +1201,27 @@ def get_loccodes(thisloc):
 			ka = thisloc[0]+1
 			while '~NEC' not in LowerSeq[ka]:
 #				print 'GLC4',ka, LowerSeq[ka]
-				if '(NE' in LowerSeq[ka]: 
-					codelist.append(LowerSeq[ka][LowerSeq[ka].find('>')+1:])
+				if '(NE' in LowerSeq[ka]: add_code(ka, False)
+#					codelist.append(LowerSeq[ka][LowerSeq[ka].find('>')+1:])
 				ka += 1
 				if ka >= len(LowerSeq): raise_parsing_error('get_loccodes()-4') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 
-		else: codelist.append(neitem[neitem.find('>')+1:])
+#		else: codelist.append(neitem[neitem.find('>')+1:])
+		else: add_code(thisloc[0], False) # simple code
 #	print 'GLC5',codelist
 	return codelist
 
 def find_source():
-# assign SourceLoc to the first coded or compound (NE in the UpperSeq; if neither found
-# then first (NE with --- code 
-# <13.12.07>: this is going to change, right: we just get the correct (NE 
-# note that we are going through the sentence in normal order, so we go through UpperSeq
-# in reverse order. 
-# Also note that this matches either (NE and (NEC: this is resolved in make_event_string
+	"""
+	def find_source():
+	Assign SourceLoc to the first coded or compound (NE in the UpperSeq; if neither found
+	then first (NE with --- code 
+	<13.12.07>: this is going to change, right: we just get the correct (NE 
+	note that we are going through the sentence in normal order, so we go through UpperSeq
+	in reverse order. 
+	Also note that this matches either (NE and (NEC: these are processed differently in 
+	make_event_string()
+	"""
 	global 	UpperSeq, SourceLoc
 #	print "FS-1"
 	kseq = len(UpperSeq) - 1
@@ -1092,6 +1259,7 @@ def find_target():
 		srccode = '>' + srccodelist[0]
 	else: srccode = '>>>>' # placeholder for a compound; this will not occur
 #	print 'FT-1: srccode',srccode
+#	print UpperSeq, LowerSeq
 	kseq = 0
 	while kseq < len(LowerSeq) :
 		if ('(NE' in LowerSeq[kseq]) and ('>---' not in LowerSeq[kseq]):
@@ -1139,8 +1307,11 @@ def make_check_sequences(verbloc, endtag):
 	matched, but that could be wrong.
 	Hmmm, do we really need the location, or just the code? Getting the code is cheap  
 	"""
-	global ParseList, ParseStart, ParseEnd
+	global ParseList, ParseStart
 	global UpperSeq, LowerSeq
+	
+#	print "MCS-0",verbloc, ParseList[verbloc], endtag
+#	print "MCS-0.5",len(ParseList)
 
 	# generate the upper sequence: note that this is in reverse word order
 	UpperSeq = []
@@ -1166,6 +1337,7 @@ def make_check_sequences(verbloc, endtag):
 	LowerSeq = []
 	kword = verbloc + 1
 	while (endtag not in ParseList[kword]):  # limit this to the verb phrase itself
+#		print "MCS-2",kword, ParseList[kword]
 		if ('(NE' == ParseList[kword]):
 			LowerSeq.append(ParseList[kword]+'<'+str(kword)+'>'+ParseList[kword+1])  # <pas 13.07.26> See Note-1 
 			kword += 1  # skip code
@@ -1176,7 +1348,7 @@ def make_check_sequences(verbloc, endtag):
 		elif (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
 			LowerSeq.append(ParseList[kword])
 		kword += 1
-		if kword >= ParseEnd: 
+		if kword >= len(ParseList):  # <14.04.23>: need to just set this to len(ParseList)?
 			raise_parsing_error('make_check_sequences()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 			return   
 
@@ -1199,10 +1371,14 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 			if ka < 0 or ka >= len(aseq):
 				raise_parsing_error('find_ne(kseq) in verb_pattern_match()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 
+#		print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
 		return ka
 	
 	global SourceLoc, TargetLoc
-#	print "VPM-1" , patlist, aseq   # debug
+	
+	ShowVPM = False
+	
+	if ShowVPM: print "VPM-1" , patlist, aseq   # debug
 	if len(patlist) == 0 : return True  # nothing to evaluate, so okay
 	if len(aseq) == 0 : return False    # nothing to match, so fails
 	insideNE = False
@@ -1218,7 +1394,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 				if patlist[kpatword] == '$': SourceLoc = [find_ne(kseq),isupperseq]
 				if patlist[kpatword] == '+': TargetLoc = [find_ne(kseq),isupperseq]
 				elif patlist[kpatword] == '%': pass # deal with compound
-#				print "VPM-4: Token assignment " , patlist[kpatword], aseq[find_ne(kseq)]   # debug
+				if ShowVPM: print "VPM-4: Token assignment " , patlist[kpatword], aseq[find_ne(kseq)]   # debug
 				kpatword += 2  # skip connector
 				if kpatword >= len(patlist): return True
 				kseq += 1
@@ -1228,13 +1404,13 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 				if kseq >= len(aseq): return False  	
 			else: return False
 		elif patlist[kpatword] != aseq[kseq]:
-#			print "VPM-2: Fail " , patlist[kpatword], aseq[kseq]   # debug
+			if ShowVPM: print "VPM-2: Fail " , patlist[kpatword], aseq[kseq]   # debug
 			if patlist[kpatword-1] == ' ': 
 				kseq += 1
 				if kseq >= len(aseq): return False  
 			else: return False
 		else:  # match successful to this point
-#			print "VPM-3: Match " , patlist[kpatword], aseq[kseq]   # debug
+			if ShowVPM: print "VPM-3: Match " , patlist[kpatword], aseq[kseq]   # debug
 			kpatword += 2  # skip connector
 			if kpatword >= len(patlist): return True
 			kseq += 1
@@ -1254,12 +1430,12 @@ def check_verbs():
 	global EventCode, SourceLoc, TargetLoc
 	global EventList
 	EventList = []
-	SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
 	kitem = ParseStart
-	while kitem < ParseEnd:
+	while kitem < len(ParseList):
 		if ('(VP' in ParseList[kitem]) and ('(VB' in ParseList[kitem+1]):
 			targ = ParseList[kitem+2] + ' '
 			if targ in PETRglobals.VerbDict:
+					SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
 					if ShowPattMatch: print "CV-1 Found", targ
 					endtag = '~VP' +  ParseList[kitem][3:]
 					hasmatch = False
@@ -1299,19 +1475,24 @@ def check_verbs():
 
 
 def get_actor_code(index):
-# date restrictions need to be added here
-	for item in PETRglobals.ActorCodes[index]:
-		if len(item) == 1: 
-#			print "GAC-1",index, item[0]  # debug
-			return item[0]
-	# no unrestricted code, so just use the first one;
-	# replace this with date restriction resolution
-#	print "GAC-2",index, PETRglobals.ActorCodes[index][0][-1]  # debug
-	return PETRglobals.ActorCodes[index][0][-1]
+	""" Get the actor code, resolving date restrictions. """
+	global SentenceOrdDate 
+	
+	codelist = PETRglobals.ActorCodes[index]	
+	if len(codelist) == 1 and len(codelist[0]) == 1: return codelist[0][0] # no restrictions: the most common case
+	for item in codelist:
+#		print "GAC-1",index, item  # debug
+		if len(item) > 1:  # interval date restriction
+			if item[0] == 0 and SentenceOrdDate <= item[1]: return item[2]
+			if item[0] == 1 and SentenceOrdDate >= item[1]: return item[2]
+			if item[0] == 2 and SentenceOrdDate >= item[1] and SentenceOrdDate <= item[2]: return item[3]
+	for item in codelist: # interval search failed, so look for an unrestricted code
+		if len(item) == 1: return item[0]
+	return '---' 	# if no condition is satisfied, return a null code;
 
 
 def actor_phrase_match(patphrase, phrasefrag):
-# determines whether the actor pattern occurs in phrasefrag
+	"""Determines whether the actor pattern patphrase occurs in phrasefrag."""
 # returns True if match is successful. Insha'Allah...
 #	APMprint = True   # yes, kept having to come back to debug this...
 	APMprint = False
@@ -1368,11 +1549,11 @@ def check_NEphrase(nephrase):
 		if phrasefrag[0] in PETRglobals.ActorDict:  # check whether patterns starting with this word exist in the dictionary
 			if ShowNEParsing: print "                Found",phrasefrag[0]  # debug
 			patlist = PETRglobals.ActorDict[nephrase[kword]]
-#			print "CNEPh Mk1:",patlist
+			if ShowNEParsing: print "CNEPh Mk1:",patlist
 			for index in range(len(patlist)): # iterate over the patterns beginning with this word
 				if actor_phrase_match(patlist[index], phrasefrag): 
 					actorcode = get_actor_code(patlist[index][0])   # found a coded actor
-#					print "CNEPh Mk2:",actorcode
+					if ShowNEParsing: print "CNEPh Mk2:",actorcode
 					break
 		if len(actorcode) > 0: break   # stop after finding first actor
 		else: kword += 1
@@ -1500,25 +1681,26 @@ def assign_NEcodes():
 
 		ParseList.remove('~TLTL')  # tell-tale is no longer needed
 
-	global ParseStart, ParseEnd, ParseList
+	global ParseStart, ParseList
 	global nephrase
 
 	kitem = ParseStart
-	while kitem < ParseEnd:
+	while kitem < len(ParseList):
 		if '(NE' == ParseList[kitem]:
+			if ShowNEParsing: print "NE-0:",kitem, ParseList[kitem-1:]
 			nephrase = []
 			kstart = kitem
 			kcode = kitem + 1
 			kitem += 2 # skip NP, code,
 			if kitem >= len(ParseList): 
-				raise_parsing_error('assign_NEcodes()-0') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+				raise_parsing_error('assign_NEcodes()-1') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 				return   
 			while  '~NE' != ParseList[kitem]:
 				if ParseList[kitem][1:3] != 'NN':   # <14.01.15> At present, read_TreeBank can leave (NNx in place in situations involving (PP and (NEC: so COMPOUND-07. This is a mildly kludgy workaround that insures a check_NEphrase gets clean input
 					nephrase.append(ParseList[kitem])
 				kitem += 1
 				if kitem >= len(ParseList): 
-					raise_parsing_error('assign_NEcodes()-1') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+					raise_parsing_error('assign_NEcodes()-2') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 					return   
 			if ShowNEParsing: print "aNEc",kcode,":", nephrase   # debug
 			if '(NEC' in nephrase:
@@ -1530,8 +1712,8 @@ def assign_NEcodes():
 					ParseList[kcode] = result[1]
 					if ShowNEParsing: print "Assigned",result[1]   # debug
 		kitem += 1
-		if kitem >= len(ParseList): 
-			raise_parsing_error('assign_NEcodes()-2') # <14.02.27> so for this to be hit, somehow ParseEnd isn't correct: why?
+		
+#	raise_parsing_error('assign_NEcodes()-3') # this will be hit only if missing a closing tag
 
 def make_event_strings():
 # creates the set of event strings, handing compound actors and symmetric events
@@ -1585,6 +1767,14 @@ def make_event_strings():
 		make_events(tarcodes, srccodes, ecodes[2])
 	else: make_events(srccodes, tarcodes, EventCode)
 	
+	# remove null coded cases
+	if PETRglobals.RequireDyad:
+		ka = 0
+		while ka < len(CodedEvents):  # need to evaluate the bound every time through the loop
+			if CodedEvents[ka][0] == '---' or CodedEvents[ka][1] == '---': del CodedEvents[ka]
+			ka += 1
+	if len(CodedEvents) == 0: return
+
 	# remove duplicates
 	ka = 0
 	while ka < len(CodedEvents)-1:  # need to evaluate the bound every time through the loop
@@ -1620,6 +1810,23 @@ def reset_event_list(firstentry = False):
 		NStory += 1
 #	print 'CurStoryID',CurStoryID
 	
+def extract_Sentence_info(line):
+# extracts fields for <Sentence record
+# can raise SkipRecord if date is missing
+	global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid, SentenceOrdDate
+	PETRreader.extract_attributes(line)
+	SentenceID = PETRreader.check_attribute('id')
+	SentenceCat = PETRreader.check_attribute('category')
+	SentenceLoc = PETRreader.check_attribute('place')
+	if PETRreader.check_attribute('valid') == 'true': SentenceValid = True
+	else: SentenceValid = False
+	try: 
+		SentenceDate = PETRreader.get_attribute('date')
+		SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
+	except MissingAttr:
+		PETRwriter.write_FIN_error(ErrMsgMissingDate)
+		raise SkipRecord
+
 def read_record():
 	"""
 	Reads an input record, and directly sets SentenceText and SentenceSource; various 
@@ -1909,8 +2116,6 @@ def do_coding():
 	print "Stories read:",NStory,"   Sentences coded:", NSent, "  Events generated:", NEvents
 	print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
 	print "Parsing errors:", NParseErrors
-			
-# ================== MAIN PROGRAM ================== #		
 
 def process_command_line():
 # processes the command line arguments
@@ -1940,6 +2145,8 @@ def process_command_line():
 			print "-to: Writing event to ",PETRglobals.EventFileName
 			
 	PETRglobals.RunTimeString = time.asctime()
+			
+# ================== MAIN PROGRAM ================== #		
 
 """
 PETRreader.read_issue_list()
@@ -1953,6 +2160,13 @@ PETRreader.show_verb_dictionary()
 sys.exit()
 """
 
+"""
+PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')  # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
+PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
+sys.exit()
+"""
+
+
 process_command_line()
 PETRreader.parse_Config() # debug
 #sys.exit()
@@ -1960,7 +2174,8 @@ PETRreader.parse_Config() # debug
 if DoValidation:
 	open_validation_file()	
 	start_time = time.time()
-#	PETRreader.show_ActorDict('ActorDict.content.txt') # debug
+	nvalid = 0
+#	PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
 #	sys.exit()
 	PETRreader.open_FIN(PETRglobals.TextFileList[0],"validation")
 	line = PETRreader.read_FIN_line() 
@@ -1972,11 +2187,12 @@ if DoValidation:
 			vresult = evaluate_validation_record()	
 			if vresult:
 				print "Events correctly coded in",SentenceID
+				nvalid += 1
 			else:
 				print "Error: Mismatched events in",SentenceID
-				sys.exit()  # debug
+				if ValidPause == 3: sys.exit()  # debug
 
-			if ValidPause == -1: continue  # evaluate pause conditions
+			if ValidPause == 2: continue  # evaluate pause conditions
 			elif ValidPause == 1 or not vresult:
 				inkey = raw_input("Press <Return> to continue; 'q' to quit-->")
 				if 'q' in inkey or 'Q' in inkey: break
@@ -1984,10 +2200,12 @@ if DoValidation:
 		except EOFError:
 			print "Exiting: end of file"
 			PETRreader.close_FIN()
+			print "Records coded correctly:", nvalid
 			sys.exit()
 		except StopCoding:
 			print "Exiting: <Stop> record "
 			PETRreader.close_FIN()
+			print "Records coded correctly:", nvalid
 			sys.exit()
 		except SkipRecord:
 			line = PETRreader.FINline

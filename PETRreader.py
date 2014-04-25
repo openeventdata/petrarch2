@@ -53,13 +53,15 @@ CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
 	
 # ================== STRINGS ================== #	
 
+ErrMsgMissingDate = "<Sentence> missing required date; record was skipped"
+
 
 # ================== EXCEPTIONS ================== #	
 
 class DateError(Exception):  # invalid date
 	pass
 
-# ================== INPUT UTILITIES ================== #	
+# ================== CONFIG FILE INPUT ================== #	
 
 def parse_Config():
 	"""
@@ -128,6 +130,20 @@ def parse_Config():
 		if parser.has_option('Dictionaries', 'issuefile_name'):
 			PETRglobals.IssueFileName = parser.get('Dictionaries', 'issuefile_name')		
 
+		if parser.has_option('Options', 'new_actor_length'):
+			try: PETRglobals.NewActorLength = parser.getint('Options', 'new_actor_length')		
+			except ValueError:
+				print "Error in config.ini Option: new_actor_length value must be an integer"
+				raise
+		print "new_actor_length =",PETRglobals.NewActorLength
+
+		if parser.has_option('Options', 'require_dyad'):
+			try: PETRglobals.RequireDyad = parser.getboolean('Options', 'require_dyad')		
+			except ValueError:
+				print "Error in config.ini: require_dyad value must be `true' or `false'"
+				raise
+		print "require_dyad =",PETRglobals.RequireDyad
+
 		if len(PETRglobals.EventFileName) == 0: # otherwise this was set in command line
 			PETRglobals.EventFileName = parser.get('Options', 'eventfile_name')
 			
@@ -143,6 +159,9 @@ def parse_Config():
 		print "Terminating program"
 		sys.exit()
 #		logger.warning('Problem parsing config file. {}'.format(e))
+
+
+# ================== PRIMARY INPUT USING FIN ================== #	
 
 
 def open_FIN(filename,descrstr):
@@ -172,10 +191,13 @@ def close_FIN():
 		sys.exit()
 
 def read_FIN_line():
-# reads a line from the input stream fin, deleting xml comments and lines beginning with #
-# returns next non-empty line or EOF
-# tracks the current line number (FINnline) and content (FINline)
-# calling function needs to handle EOF (len(line) == 0)
+	"""
+	def read_FIN_line():
+	Reads a line from the input stream fin, deleting xml comments and lines beginning with #
+	returns next non-empty line or EOF
+	tracks the current line number (FINnline) and content (FINline)
+	calling function needs to handle EOF (len(line) == 0)
+	"""
 	"""
 	Comments in input files:
 	Comments should be delineated in the XML style (which is inherited from HTML which 
@@ -202,8 +224,13 @@ def read_FIN_line():
 	perfectly capable of writing code that could handle these contingencies, but it 
 	is not a priority at the moment. We trust you can cope within these limits.
 	
-	For legacy purposes, the perl/Python one-line comment delimiter # is also recognized.
-	
+	For legacy purposes, the perl/Python one-line comment delimiter # the beginning of a 
+	line is also recognized.
+		
+	To accommodate my habits, the perl/Python one-line comment delimiter ' #' is also 
+	recognized at the end of a line and material following it is eliminated. Note that the 
+	initial space is required.
+
 	Blank lines and lines with only whitespace are also skipped.
 	"""
 	global FIN
@@ -223,6 +250,8 @@ def read_FIN_line():
 			print "EOF hit in read_FIN_line()"
 			raise EOFError
 			return line  
+		if (' #' in line): line = line[:line.rfind(' #')]
+
 		if ('<!--' in line):
 			if ('-->' in line): # just remove the substring
 				pline = line.partition('<!--')
@@ -239,6 +268,67 @@ def read_FIN_line():
 #	print "++",line
 	FINline = line
 	return line	
+
+
+# ========================== TAG EVALUATION FUNCTIONS ========================== #	
+	
+def find_tag(tagstr):
+# reads fin until tagstr is found
+# can inherit EOFError raised in PETRreader.read_FIN_line() 
+	line = read_FIN_line() 
+	while (tagstr not in line): 
+		line = read_FIN_line() 
+
+				
+def extract_attributes(theline):
+# puts list of attribute and content pairs in the global AttributeList. First item is
+# the tag itself
+# If a twice-double-quote occurs -- "" -- this treated as "\" 
+# still to do: need error checking here
+	""" 
+	Structure of attributes extracted to AttributeList
+	At present, these always require a quoted field which follows an '=', though it 
+	probably makes sense to make that optional and allow attributes without content
+	"""
+#	print "PTR-1:", theline,		
+	theline = theline.strip()
+	if ' ' not in theline: # theline only contains a keyword
+		PETRglobals.AttributeList = theline[1:-2]
+#		print "PTR-1.1:", PETRglobals.AttributeList		
+		return
+	pline = theline[1:].partition(' ') # skip '<'
+	PETRglobals.AttributeList = [pline[0]]
+	theline = pline[2]
+	while ('=' in theline): # get the field and content pairs
+		pline = theline.partition('=')
+		PETRglobals.AttributeList.append(pline[0].strip())
+		theline = pline[2]
+		pline = theline.partition('"')
+		if pline[2][0] == '"':   # twice-double-quote
+			pline = pline[2][1:].partition('"')
+			PETRglobals.AttributeList.append('"'+pline[0]+'"')
+			theline = pline[2][1:]
+		else:
+			pline = pline[2].partition('"')
+			PETRglobals.AttributeList.append(pline[0].strip())
+			theline = pline[2]
+#	print "PTR-2:", PETRglobals.AttributeList		
+
+def check_attribute(targattr):
+# Looks for targetattr in AttributeList; returns value if found, null string otherwise
+# This is used if the attribute is optional (or if error checking is handled
+# by the calling routine); if an error needs to be raised, use get_attribute() 
+	if (targattr in PETRglobals.AttributeList): return PETRglobals.AttributeList[PETRglobals.AttributeList.index(targattr)+1]
+	else: return ""
+
+def get_attribute(targattr):
+# Similar to check_attribute except it raises a MissingAttr error when the attribute
+# is missing.
+	if (targattr in PETRglobals.AttributeList): return PETRglobals.AttributeList[PETRglobals.AttributeList.index(targattr)+1]
+	else:
+		raise MissingAttr
+		return ""
+		 
 
 # ================== ANCILLARY DICTIONARY INPUT ================== #	
 
@@ -492,6 +582,8 @@ def read_verb_dictionary():
 # <13.07.27> Still need to do
 # 1. New WordNet dictionary format
 # 2. Phrase synsets
+# 3. % compound actor token: patterns with this are skipped
+# 4. ^ skip actor token: patterns with this are skipped
 	""" Verb dictionary list elements:
 	[0] True: primary form
 		[1] Code
@@ -516,7 +608,10 @@ def read_verb_dictionary():
 		scr = part[2].partition(']')
 		code = scr[0]
 	#	print verb, code
-		if verb[0] == '-': 
+		if verb[0] == '-':
+			if '%' in verb or '^' in verb:  # currently aren't processing these
+				line = read_FIN_line() 
+ 				continue
 #			print 'RVD-1',verb
 			if not hasforms: 
 				make_verb_forms()
@@ -597,7 +692,8 @@ def make_noun_list(nounst):
 	return nounlist
 
 def dstr_to_ordate(datestring):
-	""" Computes an ordinal date from a Gregorian calendar date string YYYYMMDD or YYMMDD.
+	""" Computes an ordinal date from a Gregorian calendar date string YYYYMMDD or YYMMDD."""
+	"""
 	This uses the 'ANSI date' with the base -- ordate == 1 -- of 1 Jan 1601.  This derives 
 	from [OMG!] COBOL (see http://en.wikipedia.org/wiki/Julian_day) but in fact should 
 	work fairly well for our applications.
@@ -672,7 +768,8 @@ def dstr_to_ordate(datestring):
 	return int(ordate)
 	
 def read_actor_dictionary(actorfile):
-	""" Reads a TABARI-style actor dictionary
+	""" Reads a TABARI-style actor dictionary. """
+	"""
 	Actor dictionary list elements:
 	Actors are stored in a dictionary of a list of pattern lists keyed on the first word 
 	of the phrase. The pattern lists are sorted by length.
@@ -785,7 +882,7 @@ def read_actor_dictionary(actorfile):
 	curlist = []   # list of codes -- default and date restricted -- for current actor
 
 	line = read_FIN_line() 
-	while len(line) > 0:  # loop through the file	
+	while len(line) > 0:  # loop through the file
 		if '---STOP---' in line: break
 		if line[0] == '\t': # deal with date restriction
 #			print "DR:",line,   # debug
@@ -835,7 +932,7 @@ def read_actor_dictionary(actorfile):
 				curlist.append([code[:code.find(']')]])  # list containing a single code
 			
 		else: 			
-			if line[0:1] == '+': # deal with synonym
+			if line[0] == '+': # deal with synonym
 #				print "Syn:",line,
 				part = line.partition(';')  # split on comment, if any
 				actor = part[0][1:].strip() + ' '
@@ -868,7 +965,7 @@ def read_actor_dictionary(actorfile):
 	for lockey in PETRglobals.ActorDict.keys():
 		PETRglobals.ActorDict[lockey].sort(key=len, reverse=True)
 
-def show_ActorDict(filename = ''):
+def show_actor_dictionary(filename = ''):
 # debugging function: displays ActorDict to screen or writes to filename
 	if len(filename)>0:
 		fout = open(filename,'w')
@@ -912,7 +1009,7 @@ def read_agent_dictionary():
 	[With some additional coding, this can be relaxed, but anything following these
 	rules should read correctly]
 	Basic structure is a series of records of the form
-		phrase_string {plural}  [agent_code]
+		phrase_string {optional plural}  [agent_code]
 	
 	Material that is ignored
 	1. Anything following '#' 
@@ -928,8 +1025,8 @@ def read_agent_dictionary():
 	for organizations, e.g. NGO~)
 	
 	Plurals:
-		Regular plurals -- those formed by adding 'S' to the root or adding 'IES' if the
-		root ends in 'Y'-- are generated automatically
+		Regular plurals -- those formed by adding 'S' to the root, adding 'IES' if the
+		root ends in 'Y', and added 'ES' if the root ends in 'SS' -- are generated automatically
 		
 		If the plural has some other form, it follows the root inside {...}
 		
@@ -942,6 +1039,29 @@ def read_agent_dictionary():
 		nulled (though in this instance -- ain't living English wonderful? -- you could null
 		the singular and use an automatic plural on the plural form) Though in a couple 
 		test sentences, this phrase confused SCNLP.
+		
+	Substitution Markers:
+		These are used to handle complex equivalents, notably
+		
+			!PERSON! = MAN, MEN, WOMAN, WOMEN, PERSON
+			!MINST! = MINISTER, MINISTERS, MINISTRY, MINISTRIES
+			
+		and used in the form
+		
+			CONGRESS!PERSON! [~LEG}
+			!MINIST!_OF_INTERNAL_AFFAIRS
+		
+		The marker for the substitution set is of the form !...! and is followed by an =
+		and a comma-delimited list; spaces are stripped from the elements of the list so
+		these can be added for clarity. Every time in the list is substituted for the marker,  
+		with no additional plural formation, so the first construction would generate
+		
+			CONGRESSMAN [~LEG}
+			CONGRESSMEN [~LEG}
+			CONGRESSWOMAN [~LEG}
+			CONGRESSWOMEN [~LEG}
+			CONGRESSPERSON [~LEG}
+		
 		
 	Agent code combination rules
 		By default, agent codes are assigned in the order they are found, and all phrases
@@ -1002,6 +1122,8 @@ def read_agent_dictionary():
 	TROOP {} [~MIL] # ab 22 Aug 2005
 
 	"""
+	global subdict
+	
 	def store_agent(nounst, code):
 	# parses nounstring and stores the result with code
 		nounlist = make_noun_list(nounst)
@@ -1013,33 +1135,75 @@ def read_agent_dictionary():
 			PETRglobals.AgentDict[keyword] = [phlist]
 		if isinstance(phlist[0], str):   # <13.12.16> : this isn't needed for agents, correct?
 			curlist = PETRglobals.AgentDict[keyword]  # save location of the list if this is a primary phrase
+			
+	def define_marker(line):
+		global subdict
+		if line[line.find('!')+1:].find('!') < 0 or line[line.find('!'):].find('=') < 0: 
+			PETRwriter.write_FIN_error(markdeferrorstr+enderrorstr)
+			return
+		ka = line.find('!')+1
+		marker = line[ka:line.find('!',ka)]
+#		print marker
+		loclist = line[line.find('=',ka)+1:].strip()
+		subdict[marker]  = []
+		for item in loclist.split(','):
+			subdict[marker].append(item.strip())
+#		print subdict[marker] 
+
+	def store_marker(agent, code):
+		global subdict
+		if agent[agent.find('!')+1:].find('!') < 0 : 
+			ka = agent.find('!')
+			PETRwriter.write_FIN_error("Substitution marker \""+agent[ka:agent.find(' ',ka)+1]+"\" syntax incorrect"+enderrorstr)
+			return
+	 	part = agent.partition('!')
+	 	part2 = part[2].partition('!')
+	 	if part2[0] not in subdict:    
+			PETRwriter.write_FIN_error("Substitution marker !" + part2[0] + "! missing in .agents file; line skipped")
+			return
+		for subst in subdict[part2[0]]:
+#			print part[0]+subst+part2[2]
+			store_agent(part[0]+subst+part2[2], code)
+
+	# this is just called when the program is loading, so keep them local. 
+	# <14.04.22> Or just put these as constants in the function calls: does it make a difference?
+	enderrorstr = " in .agents file ; line skipped"
+	codeerrorstr = "Codes are required for agents"
+	brackerrorstr = "Missing '}'"
+	markdeferrorstr = "Substitution marker incorrectly defined"
 	
-	codeerrorstr = "Codes are required for agents; line skipped"
-	brackerrorstr = "Missing '}' in agent; line skipped"
+	subdict = {}  # substitution set dictionary
 
 	PETRwriter.write_ErrorFile("Reading "+ PETRglobals.AgentFileName+"\n")  # note that this will be ignored if there are no errors
 	open_FIN(PETRglobals.AgentFileName,"agent")
 
 	line = read_FIN_line() 
 	while len(line) > 0:  # loop through the file
-		if '[' not in line: # code specified?
-			PETRwriter.write_input_error(codeerrorstr,line, nline) 	
+
+		if '!' in line and '=' in line: # synonym set
+			define_marker(line)
 			line = read_FIN_line() 
-			nline += 1
 			continue
+
+		if '[' not in line: # code specified?
+			PETRwriter.write_FIN_error(codeerrorstr+enderrorstr) 	
+			line = read_FIN_line() 
+			continue
+
 		part = line.partition('[')    
 		code = part[2].partition(']')[0].strip()
 		agent = part[0].strip() + ' '
-		if '{' in part[0]:
+		if '!' in part[0]: store_marker(agent, code) # handle a substitution marker
+		elif '{' in part[0]:
 			if '}' not in part[0]:
-				PETRwriter.write_input_error(brackerrorstr,line, nline) 	
+				PETRwriter.write_FIN_error(brackerrorstr+enderrorstr) 	
 				line = read_FIN_line() 
-				nline += 1
 				continue
 			agent = part[0][:part[0].find('{')].strip() + ' '			
 			plural = part[0][part[0].find('{')+1:part[0].find('}')].strip() # this will automatically set the null case
 		else:
 			if 'Y' == agent[-2]: plural = agent[:-2]+'IES'  # space is added below
+			elif 'S' == agent[-2]: plural = agent[:-1] +'ES'
 			else:  plural = agent[:-1] +'S'
 		
 #			print agent,plural

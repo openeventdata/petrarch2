@@ -274,7 +274,10 @@ class DupError(Exception):  # template
 class MissingAttr(Exception):  # could not find expected attribute field
 	pass
 
-class StopCoding(Exception):  # exit the coding
+class StopCoding(Exception):  # exit the coding due to <Stop>
+	pass
+
+class HasParseError(Exception):  # exit the coding due to parsing error
 	pass
 
 class SkipRecord(Exception):  # skip a validation record
@@ -297,7 +300,8 @@ def raise_parsing_error(call_location_string):
 	PETRwriter.write_record_error(errorstring, SentenceID)
 #	print errorstring
 	if not DoValidation: NParseErrors += 1
-	raise UnbalancedTree(errorstring)
+	if PETRglobals.StoponError: raise HasParseError
+	else: raise UnbalancedTree(errorstring)
 
 # ========================== DEBUGGING FUNCTIONS ========================== #	
 
@@ -317,7 +321,7 @@ def show_tree_string(sent):
 			level += 1
 			nopen += 1
 			newlev = True
-			if level != prevlevel: sout += '\n' + level*'  '  # new line only with change in level
+			if level != prevlevel or 'VP' == sent[ka+1:ka+3] or 'SB' == sent[ka+1:ka+3] : sout += '\n' + level*'  '  # new line only with change in level, also with (VP, (SB
 #			sout += '\n' + level*'  '                         # new line for every (
 			sout += '(-'+str(level)+' '
 		elif sent[ka] == ')' or sent[ka] == '~' :
@@ -351,6 +355,8 @@ def change_Config_Options(line):
 			PETRwriter.write_FIN_error("<Config>: new_actor_length value must be an integer")
 	elif theoption == 'require_dyad': 
 			PETRglobals.RequireDyad = not 'false' in value.lower()
+	elif theoption == 'stop_on_error': 
+			PETRglobals.StoponError = not 'false' in value.lower()
 	# insert further options here in elif clauses as this develops; also update the docs in open_validation_file():
 	else: 	PETRwriter.write_FIN_error("<Config>: unrecognized option")
 
@@ -440,9 +446,9 @@ def evaluate_validation_record():
 		if '<Parse>' in line:
 			try: 
 				read_TreeBank()
-				break
-			except UnbalancedTree: # without the 'break', this will just skip processing the record and go to the next one
-				PETRwriter.write_record_error(ErrMsgUnbalancedTree, SentenceID,SentenceCat) 
+			except UnbalancedTree: 
+				PETRwriter.write_record_error(ErrMsgUnbalancedTree, SentenceID,SentenceCat)
+			break 
 			
 		line = PETRreader.read_FIN_line()
 
@@ -579,7 +585,7 @@ def open_validation_file():
 		<Stop>: stop coding and exit program
 		<Config option ="<config.ini option from list below>" value ="<value>">: 
 			Change values of PETR_config.ini globals. 
-			Currently works for: new_actor_length. require_dyad
+			Currently works for: new_actor_length, require_dyad, stop_on_error
 		
 	Additional notes:
 	1. The validation file currently does not use a discard file.
@@ -985,6 +991,7 @@ def read_TreeBank():
 		treestr += line.upper()
 		line = PETRreader.read_FIN_line() 
 	if ShowRTTrees: 
+#	if False: 
 		print 'RT1:', treestr # debug
 		show_tree_string(treestr)
 	kopen = 0; kclose = 0
@@ -1185,7 +1192,7 @@ def get_loccodes(thisloc):
 		if '(NEC' in neitem: # extract the compound codes from the (NEC ... ~NEC sequence 
 			ka = thisloc[0]-1  # UpperSeq is stored in reverse order
 			while '~NEC' not in UpperSeq[ka]:
-				print 'GLC2',ka, UpperSeq[ka]
+#				print 'GLC2',ka, UpperSeq[ka]
 				if '(NE' in UpperSeq[ka]: add_code(ka, True)
 #					codelist.append(UpperSeq[ka][UpperSeq[ka].find('>')+1:])
 				ka -= 1
@@ -1376,6 +1383,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 	
 	global SourceLoc, TargetLoc
 	
+	ShowVPM = True
 	ShowVPM = False
 	
 	if ShowVPM: print "VPM-1" , patlist, aseq   # debug
@@ -1449,8 +1457,9 @@ def check_verbs():
 					while kpat < len(patternlist):
 						SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
 						if verb_pattern_match(patternlist[kpat][0], UpperSeq, True):
+							if ShowPattMatch: print "Found upper pattern match"   # debug
 							if verb_pattern_match(patternlist[kpat][1], LowerSeq, False):
-								if ShowPattMatch: print "Found a pattern match"   # debug
+								if ShowPattMatch: print "Found lower pattern match"   # debug
 								EventCode = patternlist[kpat][2]
 								hasmatch = True
 								break
@@ -1811,8 +1820,9 @@ def reset_event_list(firstentry = False):
 #	print 'CurStoryID',CurStoryID
 	
 def extract_Sentence_info(line):
-# extracts fields for <Sentence record
+	""" Extracts  various global fields from the <Sentence record """
 # can raise SkipRecord if date is missing
+
 	global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid, SentenceOrdDate
 	PETRreader.extract_attributes(line)
 	SentenceID = PETRreader.check_attribute('id')
@@ -1828,10 +1838,10 @@ def extract_Sentence_info(line):
 		raise SkipRecord
 
 def read_record():
-	"""
-	Reads an input record, and directly sets SentenceText and SentenceSource; various 
-	other sentence globals (e.g. SentenceDate, SentenceID, ParseList ) are set by routines
-	called from here.
+	""" Primary input routine: reads an input record, and directly sets SentenceText and SentenceSource. """
+	""" 
+	read_record() also sets various other sentence globals (e.g. SentenceDate, SentenceID, 
+	ParseList ) via routines called from here.
 	
 	Raises StopCoding if <Stop> found
 	PETRreader.read_FIN_line() can raise EOFError; this is passed through
@@ -2210,7 +2220,10 @@ if DoValidation:
 		except SkipRecord:
 			line = PETRreader.FINline
 			while '</Sentence>' not in line: line = PETRreader.read_FIN_line() 
-		
+		except HasParseError:
+			print "Exiting: parsing error "
+			PETRreader.close_FIN()
+			sys.exit()
 
 else: # standard coding from the config file
 	start_time = time.time()

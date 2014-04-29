@@ -27,10 +27,12 @@
 ##
 ##	REVISION HISTORY:
 ##	22-Nov-13:	Initial version -- ptab.verbsonly.py
+##	28-Apr-14:	Latest version
 ##	----------------------------------------------------------------------------------
 
 # Global variables are listed below: additional details on their structure can be
-# found in various function definitions
+# found in various function definitions. The various options are described in more detail
+# in the config.ini file.
 
 VerbDict = {}  # verb dictionary
 ActorDict = {}  # actor dictionary
@@ -51,10 +53,16 @@ IssueFileName = "" # issues list
 
 AttributeList = []    # element followed by attribute and content pairs for XML line
 
+# CODING OPTIONS 
+# Defaults are more or less equivalent to TABARI
 NewActorLength = 0  # Maximum length for new actors extracted from noun phrases
 RequireDyad = True  # Events require a non-null source and target
+StoponError = False  # Raise stop exception on errors rather than recovering
 
 RunTimeString = '' # used in error and debugging files -- just set it once
+
+# INTERFACE OPTIONS: these can be changed in config.ini
+# The default -- all false -- is equivalent to an A)utocode in TABARI
 CodeBySentence = False
 PauseBySentence = False
 PauseByStory = False

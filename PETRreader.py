@@ -85,6 +85,7 @@ def parse_Config():
 	   follow the examples.
 	"""
 
+	print '\n',
 	parser = ConfigParser()
 #		logger.info('Found a config file in working directory')
 #	print "pc",PETRglobals.ConfigFileName
@@ -143,6 +144,13 @@ def parse_Config():
 				print "Error in config.ini: require_dyad value must be `true' or `false'"
 				raise
 		print "require_dyad =",PETRglobals.RequireDyad
+
+		if parser.has_option('Options', 'stop_on_error'):
+			try: PETRglobals.StoponError = parser.getboolean('Options', 'stop_on_error')		
+			except ValueError:
+				print "Error in config.ini: stop_on_error value must be `true' or `false'"
+				raise
+		print "stop_on_error =",PETRglobals.StoponError
 
 		if len(PETRglobals.EventFileName) == 0: # otherwise this was set in command line
 			PETRglobals.EventFileName = parser.get('Options', 'eventfile_name')

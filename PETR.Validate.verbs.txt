@@ -1,9 +1,18 @@
 <!-- PETRARCH VALIDATION SUITE VERBS DICTIONARY -->
 <!-- VERSION: 0.1 -->
-<!-- Last Update: 27 November 2013 -->
+<!-- Last Update: 28 April 2014 -->
+
+<!-- Note: This dictionary started out as part of a KEDS dictionary -- hence most of   -->
+<!-- the codes are WEIS, not CAMEO -- and then small parts of it were tweaked quite    -->
+<!-- unsystematically to accommodate various unit tests over the years. Most of the    -->
+<!-- patterns here are not, in fact, actually used in the PETRARCH unit tests, and at  -->
+<!-- some point the whole thing should be edited and substantially reduced in size, as -->
+<!-- at which point we should also add unique identifiers to the patterns so one can   -->
+<!-- associate specific tests with specific patterns. But at the moment it is mostly   -->
+<--  just that ad hoc KEDS-based dictionary.  Sorry.                                   -->
 
 ABANDON  [345] ;pas 15 Jul 2003
-- * EFFORT  [987] ;pas 15 Jul 2003
+- * EFFORTS  [987] ;pas 15 Jul 2003
 ACCORD  [---]
 - SUGGESTED_+ * DEMAND_{ GENEVA_ | INTERNATIONAL }_CONVENTIONS  [111] ; used to test blank padding of {|}
 - SUGGESTED_+ * DEMAND_{ GENEVA_ | INTERNATIONAL }_CONVENTIONS  [222]
@@ -37,10 +46,11 @@ AGREE  [081]
 - FAILED_TO_*  [111] ;jw 9/17/91
 ALLEGE  [022]
 ALLOW  [060]
-- * THE_NEAT~_PLACE  [027] ;CONNECT-26, 27; pas 8-May-05
-- * REAL~_PLEASANT  [024] ;CONNECT-08 to 10; pas 8-May-05
+- * THE_NEATEST_PLACE  [027] ;CONNECT-26, 27; pas 8-May-05
+- * REALLY_PLEASANT  [024] ;CONNECT-08 to 10; pas 8-May-05
+- * REAL_PLEASANT  [024] ;CONNECT-08 to 10; pas 8-May-05
 - INDICATED MAY *  [024] ;tony  3/9/91
-- RECENT~_*  [025] ;CONNECT-23 to 25; pas 8-May-05
+- RECENTLY_*  [025] ;CONNECT-23 to 25; pas 8-May-05
 - POLICY *  [060]
 - * LEAVE  [066]
 - NOT *  [112] ;tony  3/9/91
@@ -106,7 +116,7 @@ BREAK [1717]
 - * DEADLOCK  [102]
 - * TREATY  [161]
 - * BONE  [182]
-- + * IN_ $  [075] ; pattern CONNECT-6  7/14/03
+- + * IN $  [075] ; pattern CONNECT-6  7/14/03
 - * OFF_  [195] ;tony  3/13/91
 BRIEF  [025]
 BROADCAST  [034] ;jw 9/29/91
@@ -117,10 +127,9 @@ CALLED  [010]
 - * FOR_CEASEFIRE  [014] ;jw 9/29/91
 - * FOR { SANCTIONS | BOYCOTT | EMBARGO }  [172] ;pas 25 Jan 2002
 - * IN { GHI | JKLG }  [001] ;pas 25 Jan 2002
-- * FOR  [095]
-CALLED_ON  [094] ;jw   10/8/91
-- $ *  [095] ; MARK-00 to 05; PAS 9-May-05
-CALLED_UPON  [097] ; BUG-02; PAS 9-May-05
+- * FOR  [096]
+- *_ON [095] ; MARK-00 to 05; PAS 9-May-05
+#CALLED_UPON  [097] ; BUG-02; PAS 9-May-05
 CANCEL  [191]
 - * DEBT  [073] ;tony  4/19/91
 CAPTURE  [210]

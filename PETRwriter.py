@@ -14,14 +14,11 @@
 ##				State College, PA, 16801 U.S.A.
 ##				http://eventdata.parusanalytics.com
 ##
-##	Copyright (c) 2013	Philip A. Schrodt.	All rights reserved.
+##	Copyright (c) 2013	Philip A. Schrodt.
 ##
-## This project was funded in part by National Science Foundation grant 
-## SES-1259190
+##  This project was funded in part by National Science Foundation grant SES-1259190
 ##
-##	Redistribution and use in source and binary forms, with or without modification,
-##	are permitted under the terms of the GNU General Public License:
-##	http://www.opensource.org/licenses/gpl-license.html
+##  This code is covered under the MIT license as asserted in the file PETR.coder.py
 ##
 ##	Report bugs to: schrodt735@gmail.com
 ##

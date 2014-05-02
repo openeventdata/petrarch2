@@ -14,19 +14,17 @@
 ##				State College, PA, 16801 U.S.A.
 ##				http://eventdata.parusanalytics.com
 ##
-##	Copyright (c) 2013	Philip A. Schrodt.	All rights reserved.
+##	Copyright (c) 2014	Philip A. Schrodt.
 ##
-## This project was funded in part by National Science Foundation grant 
-## SES-1259190
+##  This project was funded in part by National Science Foundation grant SES-1259190
 ##
-##	Redistribution and use in source and binary forms, with or without modification,
-##	are permitted under the terms of the GNU General Public License:
-##	http://www.opensource.org/licenses/gpl-license.html
+##  This code is covered under the MIT license as asserted in the file PETR.coder.py
 ##
 ##	Report bugs to: schrodt735@gmail.com
 ##
 ##	REVISION HISTORY:
 ##	22-Nov-113:	Initial version 
+##	28-Apr-14:	Latest version
 ##	----------------------------------------------------------------------------------
 
 import sys
@@ -161,6 +159,33 @@ def parse_Config():
 		print "pause_by_sentence",PETRglobals.PauseBySentence
 		PETRglobals.PauseByStory    = parser.has_option('Options', 'pause_by_story')
 		print "pause_by_story",PETRglobals.PauseByStory
+
+		try:
+			if parser.has_option('Options', 'comma_min'):
+				PETRglobals.CommaMin = parser.getint('Options', 'comma_min')
+			elif parser.has_option('Options', 'comma_max'):
+				PETRglobals.CommaMax = parser.getint('Options', 'comma_max')
+			elif parser.has_option('Options', 'comma_bmin'):
+				PETRglobals.CommaBMin = parser.getint('Options', 'comma_bmin')
+			elif parser.has_option('Options', 'comma_bmax'):
+				PETRglobals.CommaBMax = parser.getint('Options', 'comma_bmax')		
+			elif parser.has_option('Options', 'comma_emin'):
+				PETRglobals.CommaEMin = parser.getint('Options', 'comma_emin')
+			elif parser.has_option('Options', 'comma_emax'):
+				PETRglobals.CommaEMax = parser.getint('Options', 'comma_emax')		
+		except ValueError:
+			print "Error in config.ini Option: comma_*  value must be an integer"
+			raise
+		print "Comma-delimited clause elimination:"
+		print "Initial :",
+		if PETRglobals.CommaBMax == 0: print "deactivated"
+		else: print "min =",PETRglobals.CommaBMin, "   max =",PETRglobals.CommaBMax
+		print "Internal:",
+		if PETRglobals.CommaMax == 0: print "deactivated"
+		else: print "min =",PETRglobals.CommaMin, "   max =",PETRglobals.CommaMax
+		print "Terminal:",
+		if PETRglobals.CommaEMax == 0: print "deactivated"
+		else: print "min =",PETRglobals.CommaEMin, "   max =",PETRglobals.CommaEMax
 		
 	except Exception, e:
 		print 'parse_config() encountered an error: check the options in',PETRglobals.ConfigFileName
@@ -323,15 +348,15 @@ def extract_attributes(theline):
 #	print "PTR-2:", PETRglobals.AttributeList		
 
 def check_attribute(targattr):
-# Looks for targetattr in AttributeList; returns value if found, null string otherwise
-# This is used if the attribute is optional (or if error checking is handled
-# by the calling routine); if an error needs to be raised, use get_attribute() 
+	""" Looks for targetattr in AttributeList; returns value if found, null string otherwise."""
+# This is used if the attribute is optional (or if error checking is handled by the calling 
+# routine); if an error needs to be raised, use get_attribute() 
 	if (targattr in PETRglobals.AttributeList): return PETRglobals.AttributeList[PETRglobals.AttributeList.index(targattr)+1]
 	else: return ""
 
+
 def get_attribute(targattr):
-# Similar to check_attribute except it raises a MissingAttr error when the attribute
-# is missing.
+	""" Similar to check_attribute() except it raises a MissingAttr error when the attribute is missing."""
 	if (targattr in PETRglobals.AttributeList): return PETRglobals.AttributeList[PETRglobals.AttributeList.index(targattr)+1]
 	else:
 		raise MissingAttr

@@ -96,6 +96,7 @@ BEGIN  [---] ;PAS   9/25/91
 - * TALKS  [031]
 BELIEVE  [023]
 - * KIDNAP  [212]
+- * LINKED  [111]
 BETRAY  [171] ;jw 9/29/91
 BLAME  [121]
 BLAST  [+++] ;tony  3/12/91
@@ -258,6 +259,11 @@ EXPRESS  [020]
 - * ANGER  [121] ;tony  4/22/91
 - * FEARS  [022] ;tony  4/26/91
 - * WISH  [094]
+EXTRADITE  [174] ;JW   10/28/91
+- + WAS_ * TO_ ^ FROM $  [174] ;BK 02 Jul 2007
+- $ NOT * ^ TO_ +  [124] ;OY 27 Aug 2006
+- + WAS_ *  [174] ;ab 30 Nov 2005
+- NOT *  [050] ;ab 31 Dec 2005
 FEARS  [022] ;PAS   9/24/91
 FIGHT  [223]
 - SAID WOULD *  [173]

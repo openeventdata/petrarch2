@@ -14,14 +14,11 @@
 ##				State College, PA, 16801 U.S.A.
 ##				http://eventdata.parusanalytics.com
 ##
-##	Copyright (c) 2013	Philip A. Schrodt.	All rights reserved.
+##	Copyright (c) 2014	Philip A. Schrodt
 ##
-## This project was funded in part by National Science Foundation grant 
-## SES-1259190
+## This project was funded in part by National Science Foundation grant SES-1259190
 ##
-##	Redistribution and use in source and binary forms, with or without modification,
-##	are permitted under the terms of the GNU General Public License:
-##	http://www.opensource.org/licenses/gpl-license.html
+## This code is covered under the MIT license as asserted in the file PETR.coder.py
 ##
 ##	Report bugs to: schrodt735@gmail.com
 ##
@@ -66,6 +63,23 @@ RunTimeString = '' # used in error and debugging files -- just set it once
 CodeBySentence = False
 PauseBySentence = False
 PauseByStory = False
+
+# COMMA OPTION : These adjust the length (in words) of comma-delimited clauses that are eliminated 
+#         from the parse. To deactivate, set the max to zero. 
+#         Defaults, based on TABARI, are in ()
+#         comma_min :  internal clause minimum length [2]
+#         comma_max :  internal clause maximum length [8]
+#         comma_bmin : initial ("begin") clause minimum length [0]
+#         comma_bmax : initial clause maximum length [0 : deactivated by default]
+#         comma_emin : terminal ("end") clause minimum length [2]
+#         comma_emax : terminal clause maximum length [8]
+CommaMin = 2
+CommaMax = 8
+CommaBMin = 0
+CommaBMax = 0
+CommaEMin = 2
+CommaEMax = 8
+
 
 
 

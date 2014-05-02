@@ -31,7 +31,7 @@
 	<Actorfile name="PETR.Validate.actors.txt">
 	<Agentfile name="PETR.Validate.agents.txt">
 	<Errorfile name="Errors.unit-test.txt">
-	<Include categories="valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE"-->
+	<Include categories="valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY"-->
 	<Pause value="Stop"-->
 </Environment>		
 
@@ -231,7 +231,7 @@ the joint transport committee with Arnor.
 
 <Sentence date="19950101" id="DEMO-04" category="DEMO" valid="false">
 <!-- [Complex coding from a phrase; may require setting COMPLEX=1] -->
-<!-- -{ARN / GON / 064  } */ -->
+<!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
 <Text>
@@ -457,7 +457,6 @@ show of support to his government by their countries.
         (PRP$ their) (NNS countries)
     ) )
   )  (. .)
-)
 ) )
 </Parse>
 </Sentence>
@@ -1442,8 +1441,9 @@ five years after crowds trashed its embassy.
 <!--Stop-->
  
  
-<Sentence date="19950101" id="AGENT-08" category="AGENT" place="XYZ"  valid="true">
+<Sentence date="19950101" id="AGENT-08" category="AGENT" place="XYZ"  valid="false">
 <!-- Anonymous agent appended to place code -->
+<!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
 <EventCoding sourcecode="XYZGOV" targetcode="XYZ" eventcode="023">
@@ -2063,6 +2063,7 @@ ties with Gondor and Arnor.
 <Sentence date="19950101" id="AGENTS-18" category="AGENTS" valid="false">
 <!-- [FORMER conversion agent coding] -->
 <!-- This is a TABARI feature that may or may not get implemented in PETRARCH -->
+<!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARNELI" targetcode="GONELI" eventcode="064">
 <Text>
@@ -2096,6 +2097,7 @@ ties with former Gondor prosecutors.
 <Sentence date="19950101" id="AGENTS-19" category="AGENTS" valid="false">
 <!-- [FORMER prior to prefixed agent ] -->
 <!-- This is a TABARI feature that may or may not get implemented in PETRARCH -->
+<!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="USAGOVELI" targetcode="GONELI" eventcode="064">
 <Text>
@@ -2233,7 +2235,7 @@ diplomatic ties with Osgiliath after a 12-year rift.
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
 <Text>
 Fornost and Gondor welcome a resumption of formal diplomatic ties with  
-Osgiliath after a 12-year rift, the official news agency WFNA said 
+Osgiliath after a 12-year rift, the primary official news agency WFNA said 
 on Thursday. 
 </Text>
 <Parse> 
@@ -2254,7 +2256,7 @@ on Thursday.
       )  
       (PP (IN after)  (NP (DT a) (JJ 12-year) (NN rift)
     ) ) )
-  )  (, ,)  (NP (DT the) (JJ official) (NN news) (NN agency) (NNP WFNA)
+  )  (, ,)  (NP (DT the) (JJ primary) (JJ official) (NN news) (NN agency) (NNP WFNA)
   )  
   (VP 
     (VBD said)  
@@ -2275,7 +2277,7 @@ on Thursday.
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
 <Text>
 Fornost welcomed a resumption of formal diplomatic ties between Gondor 
-and Osgiliath after a 12-year rift, the official news agency WFNA said 
+and Osgiliath after a 12-year rift, the primary official news agency WFNA said 
 on Thursday. 
 </Text>
 <Parse> 
@@ -2299,7 +2301,7 @@ on Thursday.
       )  
       (PP (IN after)  (NP (DT a) (JJ 12-year) (NN rift)
     ) ) )
-  )  (, ,)  (NP (DT the) (JJ official) (NN news) (NN agency) (NNP WFNA)
+  )  (, ,)  (NP (DT the) (JJ primary) (JJ official) (NN news) (NN agency) (NNP WFNA)
   )  
   (VP 
     (VBD said)  
@@ -2799,7 +2801,7 @@ on Thursday.
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
 <Text>
 The lions and the evil awful Gondor welcomed a resumption of formal diplomatic  
-ties with Osgiliath after a 12-year rift, the official news agency WFNA said 
+ties with Osgiliath after a 12-year rift, the primary official news agency WFNA said 
 on Thursday. 
 </Text>
 <Parse> 
@@ -2823,7 +2825,7 @@ on Thursday.
       )  
       (PP (IN after)  (NP (DT a) (JJ 12-year) (NN rift)
     ) ) )
-  )  (, ,)  (NP (DT the) (JJ official) (NN news) (NN agency) (NNP WFNA)
+  )  (, ,)  (NP (DT the)  (JJ primary) (JJ official) (NN news) (NN agency) (NNP WFNA)
   )  
   (VP 
     (VBD said)  
@@ -2844,7 +2846,7 @@ on Thursday.
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
 <Text>
 Lions, tigers, and Gondor welcomed a resumption of formal diplomatic ties  
-with Osgiliath after a 12-year rift, the official news agency WFNA said 
+with Osgiliath after a 12-year rift, the primary official news agency WFNA said 
 on Thursday. 
 </Text>
 <Parse> 
@@ -2869,7 +2871,7 @@ on Thursday.
       )  
       (PP (IN after)  (NP (DT a) (JJ 12-year) (NN rift)
     ) ) )
-  )  (, ,)  (NP (DT the) (JJ official) (NN news) (NN agency) (NNP WFNA)
+  )  (, ,)  (NP (DT the)  (JJ primary) (JJ official) (NN news) (NN agency) (NNP WFNA)
   )  
   (VP 
     (VBD said)  
@@ -3315,8 +3317,7 @@ Morgul Orcs.
 Sam Gamgee halted his march towards further adventures in the vicinity of Cirith Ungol.
 </Text>
 <Parse> 
-(ROOT 
-(S  
+(ROOT (S  
   (NP (NNP Sam) (NNP Gamgee)
   )  
   (VP 
@@ -3335,7 +3336,6 @@ Sam Gamgee halted his march towards further adventures in the vicinity of Cirith
       )  
     )
   ) (. .)
-)
 ) )
 </Parse>
 </Sentence>
@@ -3483,10 +3483,11 @@ said on Saturday.
 
 
 <Config option="require_dyad" value="False">
+<Config option="comma_emax" value="0">
 
 <Sentence date="19950101" id="DATE-16" category="DATE" valid="true">
 <!-- Test of actor synonyms, and flip "require_dyad" for this case just  -->
-<!-- for the heck of it...  -->
+<!-- for the heck of it...also turn off end comma clause deletion  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="GON" eventcode="064">
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
@@ -3538,6 +3539,7 @@ said on Saturday.
 </Sentence>
 
 <Config option="require_dyad" value="True">
+<Config option="comma_emax" value="8">
 
 <Sentence date="19980101" id="DATE-17" category="DATE" valid="true">
 <!-- [Test of date restrictions in actor synonyms] -->
@@ -3894,6 +3896,168 @@ valve was less than half a microcurie, or less than what one would find in a
 ) )
 </Parse>
 </Sentence>
+
+<Sentence date = "20080804" id ="AFP0808-02-0593-1a"category="PARSING" valid="true">
+<!-- This is the original version with the parse provided by GigaWord. See next record: -->
+<!-- this is a different version than the output one gets from the web site, and gives -->
+<!-- better results -->
+<!-- Last update: 30 April 2014 -->
+<EventCoding sourcecode="PAK" targetcode="IMGMOSALQ" eventcode="111">
+<EventCoding sourcecode="PAK" targetcode="USA" eventcode="174">
+<Text>
+A Pakistani woman believed linked to Al-Qaeda who shot at US military officers 
+while in detention in Afghanistan was extradited Monday to the United States 
+where she faces trial for her actions, a US attorney said. 
+</Text>
+<Parse>
+(ROOT (S 
+  (S 
+    (NP 
+      (NP (DT A) (JJ Pakistani) (NN woman)
+      ) 
+      (VP 
+        (VBN believed) (S 
+          (ADJP 
+            (VBN linked) 
+            (PP 
+              (TO to) (NP 
+                (NP (NN Al-Qaeda)
+                ) 
+                (SBAR 
+                  (WHNP 
+                    (WP who)
+                  ) (S 
+                    (VP 
+                      (VBD shot) 
+                      (PP (IN at) (NP (NNP US) (JJ military) (NNS officers)
+                        )
+                      ) 
+                      (PP (IN while) 
+                        (PP (IN in) (NP (NN detention)
+                      ) ) )
+                  ) )
+                  ) ) )
+          )
+        ) 
+        (PP (IN in) (NP (NNP Afghanistan)
+      ) ) )
+    ) 
+    (VP 
+      (AUXD was) 
+      (VP 
+        (VBN extradited) (NP (NNP Monday)
+        ) 
+        (PP 
+          (TO to) (NP (DT the) (NNP United) (NNPS States)
+          )
+        ) 
+        (SBAR 
+          (WHADVP 
+            (WRB where)
+          ) (S 
+            (NP 
+              (PRP she)
+            ) 
+            (VP 
+              (VBZ faces) (NP 
+                (NP (NN trial)
+                ) 
+                (PP (IN for) (NP 
+                    (PRP$ her) (NNS actions)
+              ) ) )
+          ) )
+          ) ) )
+  ) (, ,) (NP (DT a) (NNP US) (NN attorney)
+  ) 
+  (VP 
+    (VBD said)
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date = "20080804" id ="AFP0808-02-0593-1b"category="PARSING" valid="true">
+<!-- This is the same sentence but parsed on the web site, where the (SBARs are nested  -->
+<!-- more deeply and consequently the second event -- which happens to be a legitimate -->
+<!-- one -- is missed.  -->
+<!-- Last update: 30 April 2014 -->
+<EventCoding sourcecode="PAK" targetcode="IMGMOSALQ" eventcode="111">
+<Text>
+A Pakistani woman believed linked to Al-Qaeda who shot at US military officers 
+while in detention in Afghanistan was extradited Monday to the United States 
+where she faces trial for her actions, a US attorney said. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP (DT A) (JJ Pakistani) (NN woman)
+  ) 
+  (VP 
+    (VBD believed) 
+    (VP 
+      (VBN linked) 
+      (PP 
+        (TO to) (NP 
+          (NP (NNP Al-Qaeda)
+          ) 
+          (SBAR 
+            (WHNP 
+              (WP who)
+            ) (S 
+              (VP 
+                (VBD shot) 
+                (PP (IN at) (NP (NNP US) (JJ military) (NNS officers)
+                  )
+                ) 
+                (SBAR 
+                  (IN while) (S 
+                    (SBAR 
+                      (IN in) (S 
+                        (NP 
+                          (NP (NN detention)
+                          ) 
+                          (PP (IN in) (NP (NNP Afghanistan)
+                          ) )
+                        ) 
+                        (VP 
+                          (VBD was) 
+                          (VP 
+                            (VBN extradited) (NP-TMP 
+                              (NNP Monday)
+                            ) 
+                            (PP 
+                              (TO to) (NP (DT the) (NNP United) (NNPS States)
+                              )
+                            ) 
+                            (SBAR 
+                              (WHADVP 
+                                (WRB where)
+                              ) (S 
+                                (NP 
+                                  (PRP she)
+                                ) 
+                                (VP 
+                                  (VBZ faces) (NP 
+                                    (NP (NN trial)
+                                    ) 
+                                    (PP (IN for) (NP 
+                                        (PRP$ her) (NNS actions)
+                                  ) ) )
+                              ) )
+                              ) ) )
+                      )
+                    ) (, ,) (NP (DT a) (NNP US) (NN attorney)
+                    ) 
+                    (VP 
+                      (VBD said)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
 
 <!--
 ##########################################################################################
@@ -4420,8 +4584,7 @@ Ethiopia will break relations with Libya almost five years after crowds
 trashed its embassy.
 </Text>
 <Parse> 
-(ROOT 
-(S 
+(ROOT (S 
   (NP (NNP Ethiopia)
   ) 
   (VP 
@@ -4444,7 +4607,6 @@ trashed its embassy.
         ) ) )
     ) )
   ) (. .)
-)
 ) )
 </Parse>
 </Sentence>
@@ -5928,6 +6090,1108 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
             ) )
             ) ) )
     )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<!--
+##################################################################
+#
+#               MODIFICATIONS: PASSIVE VOICE AND
+#                    COMMA-DELIMITED CLAUSES
+#
+##################################################################
+-->
+
+<Sentence date="19950112" id="PASSIVE-01" category="MODIFY" valid="true">
+<!-- Automatic detection of passive voice in a simple verb -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112">
+<Text>
+Eriador was opposed by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (VP (VBN opposed)
+        (PP (IN by)
+          (NP
+            (NP (NNP Osgiliath))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))
+            (, ,)))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-02" category="MODIFY" valid="true">
+<!-- [Automatic detection of passive voice in a simple verb plus adverb] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112">
+<Text>
+Eriador was fiercely opposed by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (ADVP (RB fiercely))
+      (VP (VBN opposed)
+        (PP (IN by)
+          (NP
+            (NP (NNP Osgiliath))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))
+            (, ,)))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-03" category="MODIFY" valid="true">
+<!-- Not passive voice but has actor switching by +/$ pattern fitting; -->
+<!-- (order is still OSG-ERI, but it is set by the pattern generating 071 -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="071">
+<Text>
+Eriador has received by courier money from Osgiliath, the state's 
+fiercest foe, to be drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP (NNP Eriador)
+  ) 
+  (VP 
+    (VBZ has) 
+    (VP 
+      (VBN received) 
+      (PP (IN by) (NP (NN courier) (NN money)
+        )
+      ) 
+      (PP (IN from) (NP 
+          (NP (NNP Osgiliath)
+          ) (, ,) (NP 
+            (NP (DT the) (NN state) (POS 's)
+            ) (JJS fiercest) (NN foe)
+        ) )
+      ) (, ,) (S 
+        (VP 
+          (TO to) 
+          (VP 
+            (VB be) 
+            (VP 
+              (VBN drawn) 
+              (PP (IN into) (NP (DT the) (NN peace) (NN process)
+                )
+              ) 
+              (PP (IN by) (NP 
+                  (NP 
+                    (PRP$ its) (NN resumption)
+                  ) 
+                  (PP (IN of) (NP 
+                      (JJ diplomatic) (NNS ties)
+                ) ) )
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-04" category="MODIFY" valid="true">
+<!-- Automatic detection of passive voice in a verb followed by a  -->
+<!--  modifier, which failed in earlier versions -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112">
+<Text>
+Eriador was opposed earlier by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (VP (VBN opposed)
+        (ADVP (RB earlier)
+          (PP (IN by)
+            (NP
+              (NP (NNP Osgiliath))
+              (, ,)
+              (NP
+                (NP (DT the) (NN state) (POS 's))
+                (JJS fiercest) (NN foe))
+              (, ,))))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-05" category="MODIFY" valid="true">
+<!-- Generated an array bounds problem in earlier versions OF TAB; generates no events  -->
+<!-- since no actor before verb] -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True">
+<Text>
+Rebuked by Eriador, the state's fiercest foe, 
+Osgiliath is being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (S
+      (VP (VBN Rebuked)
+        (PP (IN by)
+          (NP
+            (NP (NNP Eriador))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))))))
+    (, ,)
+    (NP (NN Osgiliath))
+    (VP (VBZ is)
+      (VP (VBG being)
+        (VP (VBN drawn)
+          (PP (IN into)
+            (NP (DT the) (NN peace) (NN process)))
+          (PP (IN by)
+            (NP
+              (NP (PRP$ its) (NN resumption))
+              (PP (IN of)
+                (NP (JJ diplomatic) (NNS ties)))))
+          (PP (IN with)
+            (NP (NNP Gondor))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-01" category="MODIFY" valid="true">
+<!--  Standard elimination of internal comma-delimited clause only -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, 
+five years after crowds burned down its embassy,  a very senior 
+Bree official said on Saturday night. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  )  (, ,)  (S  
+    (NP  
+      (ADJP  
+        (NP 
+          (CD five) (NNS years)
+        )  (JJ after)
+      )  (NNS crowds)
+    )  
+    (VP 
+      (VBD burned)  (PRT 
+        (RP down)
+      )  (NP 
+        (PRP$ its) (NN embassy)
+    ) )
+  )  (, ,)  (S  
+    (NP (DT a) (JJ very) (JJ senior) (NNP Bree) (NN official)
+    )  
+    (VP 
+      (VBD said)  
+      (PP (IN on)  (NP (NNP Saturday) (NN night)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-02" category="MODIFY" valid="true">
+<!--  Standard elimination of comma-delimited terminal clause only -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NN Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Calenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-03" category="MODIFY" valid="true">
+<!--  Standard elimination of both an internal and terminal comma-delimited clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, 
+five years after crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  )  (, ,)  (S  
+    (NP  
+      (ADJP  
+        (NP 
+          (CD five) (NNS years)
+        )  (JJ after)
+      )  (NNS crowds)
+    )  
+    (VP 
+      (VBD burned)  (PRT 
+        (RP down)
+      )  (NP 
+        (PRP$ its) (NN embassy)
+    ) )
+  )  (, ,)  (S  
+    (NP (DT a) (JJ senior) (NN official)
+    )  
+    (VP 
+      (VBD said)  
+      (PP (IN on)  (NP (NNP Saturday)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-04" category="MODIFY" valid="true">
+<!-- Initial comma-delimited clause should not be eliminated -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<Text>
+Arnor is about to restore complete, full diplomatic ties with Gondor almost 
+five years after Cxlenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Cxlenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!-- OPTION: COMMA: MIN = 4 MAX = 6 EMIN = 3 EMAX = 6 BMIN = 3 BMAX = 6 -->
+<!-- Change length of comma-delimited initial, internal and terminal clauses -->
+
+<Config option="comma_min" value="4">
+<Config option="comma_max" value="6">
+<Config option="comma_emin" value="3">
+<Config option="comma_emax" value="6">
+<Config option="comma_bmin" value="3">
+<Config option="comma_bmax" value="6">
+
+<!-- Turn off require_dyad to pick up some terminal clauses -->
+<Config option="require_dyad" value="false">
+
+<Sentence date="19950101" id="COMMA-05" category="MODIFY" valid="true">
+<!--  Should match the internal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="CAL" eventcode="064">
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor, almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gxndor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-06" category="MODIFY" valid="true">
+<!--  Under TABARI, this would match the terminal clause. However, the (NP-TMP markup -->
+<!--  not converted to an (NE, so there is no object for SAID, and hence nothing is   -->
+<!--  coded there even though the check_comma() leaves the phrase intact (which is    -->
+<!--  probably the correct response). But see next record.  -->
+<!-- Last update: TABARI validation, with modifications 14.05.02 -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost five years after 
+Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official said today. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (ADJP 
+      (RB clearly) (JJ inebriated)
+    ) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) (NP-TMP 
+      (NN today)
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-07" category="MODIFY" valid="true">
+<!-- Initial comma-delimited clause should be eliminated since it is not part of a -->
+<!-- noun phrase. This removes the source actor from the primary phrase, but the   --> 
+<!-- phrase is coded because CoreNLP, for whatever reason, converts "on Saturday". -->
+<!-- to an (NP which is converted to (NE --- and thus provides a target. But just  -->
+<!-- 'Saturday' would go to (NP-TMP. CoreNLP is subtle, but probably not mean.     -->
+<!-- Last update: 14.05.02 -->
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023">
+<Text>
+Arnor is about to restore, it seems, complete, full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) (ADJP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (PRN 
+                (, ,) (S 
+                  (NP 
+                    (PRP it)
+                  ) 
+                  (VP 
+                    (VBZ seems)
+                  )
+                ) (, ,)
+              ) (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+            ) ) )
+        ) )
+      ) 
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after) (S 
+          (NP (NN Calenardhon) (NNS crowds)
+          ) 
+          (VP 
+            (VBD burned) (PRT 
+              (RP down)
+            ) (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-08" category="MODIFY" valid="true">
+<!-- Initial clause is not eliminated because the first comma is absorbed the  -->
+<!-- the noun phrase, which is a distinction TABARI would not have made
+<!-- Last update: TABARI validation with modification of outcome -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023">
+<Text>
+Arnor is about to restore complete, full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-09" category="MODIFY" valid="true">
+<!--  Initial comma-delimited clause should not be eliminated because of length -->
+<!--  This also shifts the code from RESTORE [064] to SAID [023] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="023">
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023">
+<Text>
+Arnor is said to be about to restore, it seems, complete, full diplomatic ties with
+Gondor almost five years after Calenardhon crowds burned down its embassy, a senior Bree 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (VBN said) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB be) (ADJP 
+                (RB about) (S 
+                  (VP 
+                    (TO to) 
+                    (VP 
+                      (VB restore) (PRN 
+                        (, ,) (S 
+                          (NP 
+                            (PRP it)
+                          ) 
+                          (VP 
+                            (VBZ seems)
+                          )
+                        ) (, ,)
+                      ) (NP 
+                        (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+                      ) 
+                      (PP (IN with) (NP (NNP Gondor)
+                    ) ) )
+                ) )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<!-- OPTION: COMMA: OFF -->
+<!-- Turn off all of the comma-delimited clauses checking at this point -->
+
+<Config option="comma_max" value="0">
+<Config option="comma_emax" value="0">
+<Config option="comma_bmax" value="0">
+
+<Sentence date="19950101" id="COMMA-10" category="MODIFY" valid="true">
+<!--  Should match the internal clause and terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
+<EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NN Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Calenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-11" category="MODIFY" valid="true">
+<!--  Should match only the terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
+<Text>
+Arnor is about to improve full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a 
+clearly inebriated Bree official said today.
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB improve) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-12" category="MODIFY" valid="true">
+<!-- TABARI would [incorrectly] match BREGOV the terminal clause after picking up GON -->
+<!-- as source.  PETR produces no events due to the absence of an (NE in the terminal -->
+<!-- clause -->
+<!-- Last update: TABARI validation with modification -->
+<EventCoding noevents = "True">
+<Text>
+Arnor is about to improve full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a 
+senior Bree official said today. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB improve) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) (NP-TMP 
+      (NN today)
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!-- OPTION: COMMA: MIN = 2 MAX = 8 EMIN = 2 EMAX = 8 BMIN = 0 BMAX = 0 -->
+<!-- Canceling COMMA changes in .options file and returning to the state prior to the  -->
+<!-- change. bmin/bmax remains deactivated.  -->
+
+<Config option="comma_min" value="2">
+<Config option="comma_max" value="8">
+<Config option="comma_emin" value="2">
+<Config option="comma_emax" value="8">
+<Config option="require_dyad" value="true">
+
+</Parse>
+</Sentence>
+
+<Sentence date="19950113" id="COMMA-13" category="MODIFY"  valid="true">
+<!-- Last update: TABARI validation: DEMO-13  -->
+<EventCoding sourcecode="ARN" targetcode="DAG" eventcode="085">
+<Text>
+Arnor on Thursday signed an 800 million ducat trade protocol
+for 1990 with Dagolath, its biggest trading partner, officials said. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP  
+      (NP (NNP Arnor)
+      )  
+      (PP (IN on)  (NP (NNP Thursday)
+      ) )
+    )  
+    (VP 
+      (VBD signed)  (NP (DT an)  (ADJP  
+          (QP 
+            (CD 800) (CD million)
+          )
+        )  (NN ducat) (NN trade) (NN protocol)
+      )  
+      (PP (IN for)  (NP 
+          (CD 1990)
+        )
+      )  
+      (PP (IN with)  (NP (NN Dagolath)
+        )
+      )  (, ,)  (S  
+        (NP 
+          (PRP$ its) (JJS biggest) (NN trading) (NN partner)
+    ) ) )
+  )  (, ,)  (NP (NNS officials)
+  )  
+  (VP 
+    (VBD said)
+  )  (. .)
+) )
+</Parse>
+<!-- 
+Coreference set:
+	(1,16,[16,17)) -> (1,1,[1,4)), that is: "its" -> "Arnor on Thursday"
+-->
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-15" category="MODIFY" valid="true">
+<!--  Standard elimination of internal comma-delimited clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True">
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor, several 
+years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NN AArnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP 
+                  (NP (NNP Gxndor)
+                  ) (, ,) (NP 
+                    (JJ several) (NNS years)
+                ) )
+              ) 
+              (SBAR 
+                (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-16" category="MODIFY" valid="true">
+<!--  Standard elimination of comma-delimited terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True">
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor almost 
+five years after Cxlenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NN Gxndor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NNP Cxlenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
   ) (. .)
 ) )
 </Parse>

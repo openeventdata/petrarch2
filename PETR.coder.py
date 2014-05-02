@@ -3,73 +3,43 @@ PETR.coder.py
 
 Development environment for the PETRARCH event coder. 
 
-STATUS OF THE PROGRAM 28-FEBRUARY-2014
+STATUS OF THE PROGRAM 02-MAY-2014
 
-I've decided to commit this to GitHub since it is basically functional and there were 
-concerns that the project had died. Actually, it's merely resting, pining for the fjords.
+This now has most of the functionality of TABARI except for the following:
 
-No, really, there are about 1700 lines of more or less debugged code here (64 functions,
-and about as many lines of comments and documentation)  and these are sufficient for a 
-very basic coder. My guess is that it needs another 5 to 8 days of work to get all of the 
-functionality of TABARI, and some of the basic structures may change -- in particular, 
-it currently does not accommodate synonym sets -- but for the most part it seems solid 
-(e.g. I was able to add the discard and issues facilities with a minimum of trouble). 
+-- Synsets in patterns
 
-But only "for the most part": there are still about a half dozen bugs in the main coding 
-routine. These are trapped with exceptions: the program coded 60,000 AFP stories from 
-the GigaWord corpus without crashing, so these seem to be the only lethal bugs. That 
-said, because the TABARI pattern matching is not fully implemented, it is not getting 
-nearly as many events as TABARI would on the same data: in the current state, you can think 
-of this as an extremely conservative coder. 
+-- % and ^ tokens in patterns
 
-Documentation is really thorough in some places, less so in others. This will all 
-eventually be incorporated into a manual similar to the TABARI manual.
+-- Coding of multiple clauses has not be checked
 
-I'm probably not going to be able to get back to this for about a month, but *hope* to get 
-the rest of that work done in April-2014. Though I would welcome additional work, 
-extensions, cleaning up my lousy Python, etc in the meantime. 
+In addition, there are one or more bugs that I'm pretty sure are in the handling of 
+compounds that are trapped with exceptions: I hit 29 of these in coding 60,000 AFP 
+stories from the GigaWord corpus, and with those traps, all of those coded without 
+the program crashing. The system now codes 161 of the TABARI unit-test records, which 
+is most of them except for the synsets.
 
-[What the heck is TABARI??: http://eventdata.parusanalytics.com/software.dir/tabari.html]
+So, those remaining functions, the debugging of the compounds and a few additional 
+unimplemented features scattered through the code are what is left, and I may be able 
+to get to those in the next couple of weeks, and certainly before the end of the month.
+At the point of completing those, I'll probably shift to getting the WordNet-based
+verb dictionaries into the system.
 
+Despite the nearly full implementation, this still seems to be getting a substantially 
+lower yield of event compared to TABARI: this needs further exploration, though may be 
+in part a feature of GigaWord.
 
-STATUS OF THE PROGRAM 25-APRIL-2014
+NEW FEATURES NOT IN TABARI WHICH HAVE BEEN IMPLEMENTED: 
 
-Progress since the note above:
-
-1. Eliminated the tree balance bug and a couple more bugs that were causing index
-   errors. I have not re-run this on the GigaWord corpus but I'm guessing those were the 
-   bugs that required trapping earlier
-
-2. Implemented date restrictions
-
-3. Implemented a new agents dictionary format: this is the first of the format changes
+1.  There is a new agents dictionary format: this is the first of the format changes
     that will modify these to the point where they are not compatible for TABARI 
 	dictionaries
 	
-4. Program can pull out noun phrases which correspond to actors not in the dictionary: 
+2.	Program can pull out noun phrases which correspond to actors not in the dictionary: 
 	this is controlled by the parameter new_actor_length in config.ini (see that file 
 	for description of this feature)
 
-The unit tests now have 128 records, so this is successfully passing most of the TABARI 
-unit tests after these are modified so that they will actually parse (TABARI was working 
-with simple pattern recognition a lot of the time, and many of the unit tests have 
-required revision)
-
-Major features in TABARI that still need to be implemented
-
-1. Substitution sets, though this already has been done in agents and is very straightforward 
-	in Python (it was anything but in C++...)
-	
-2. % and ^ tokens in patterns: any patterns using these are currently skipped
-
-3. Passive voice detection
-
-4. Common-delimited clause elimination
-
-5. There are a couple bugs involving compound noun phrases
-
-At the point of completing those, I'll probably shift to getting the WordNet-based
-verb dictionaries into the system.
+[What the heck is TABARI??: http://eventdata.parusanalytics.com/software.dir/tabari.html]
    
 ------------------------------------------------------------------------------------- 
 
@@ -80,9 +50,8 @@ TO RUN PROGRAM:
 	-e <filename>: <filename> is the event output file
 	-t <filename>: Code the single text file <filename> 
 	
-	Validation and unit-test files:
- 			python PETR.coder.py -v PETR.Validate.records.txt [development: not all work]
- 			python PETR.coder.py -v PETR.UnitTest.records.txt [all should code correctly]
+	Unit-test files:
+ 		python PETR.coder.py -v PETR.UnitTest.records.txt [all should code correctly]
 
 REQUIRED MODULES
    PETRglobals.py: global declarations
@@ -91,7 +60,7 @@ REQUIRED MODULES
 
 INPUT FILES
 	PETR_config.ini specifies the various files in a coding run 
-	Validation files are set in the <Environment> block
+	Unit-test files are set in the <Environment> block of PETR.UnitTest.records.txt
 
 OUTPUT FILES
 	Event output is set using eventfile_name 
@@ -122,16 +91,31 @@ Programmer: Philip A. Schrodt
 			State College, PA, 16801 U.S.A.
 			http://eventdata.parusanalytics.com
 
-Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
-
 This project was funded in part by National Science Foundation grant SES-1259190
 (Directorate for Social, Behavioral and Economic Sciences; joint funding from the
 Political Science and the Methods, Measurement and Statistics Programs.) Yes, *that* NSF
 Political Science program.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted under the terms of the GNU General Public License:
-http://www.opensource.org/licenses/gpl-license.html
+LICENSE: The MIT License (MIT)
+
+Copyright (c) 2014	Philip A. Schrodt.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Report bugs to: schrodt735@gmail.com
 
@@ -142,7 +126,7 @@ July-13: Revised to handle Stanford NLP tree format
 Nov-13:  Validation, PETRreader module
 Dec-13:  Compound actors and agents
 Feb-14:  do_coding, PETR_config.ini, discards, issues, runtime error trapping
-Apr-14:  new agents format, (NE--- phrases, 
+Apr-14:  new agents format, (NE--- phrases, passive voice, comma-delimited clauses
          
 ----------------------------------------------------------------------------------
 
@@ -251,8 +235,11 @@ ValidPause = 0  # validation mode :pause conditions: 1: always; -1 never; 0 only
 
 # (comment out the second line in the pair to activate. Like you couldn't figure that out.)
 
-ShowParseList = True  # prints ParseList in evaluate_validation_record()
+ShowParseList = True  # prints ParseList in evaluate_validation_record()/code_record() following NE assignment
 ShowParseList = False 
+
+ShowRTTrees = True  # displays parse trees in read_TreeBank
+ShowRTTrees = False 
 
 ShowCodingSeq = True  # prints upper and lower sequences ParseList in make_check_sequences()
 ShowCodingSeq = False 
@@ -265,6 +252,7 @@ ShowNEParsing = False
 
 ShowMarkCompd = True  # prints search and intermediate strings in the (NE conversion
 ShowMarkCompd = False 
+
 
 # ================== EXCEPTIONS ================== #	
 
@@ -303,11 +291,12 @@ def raise_parsing_error(call_location_string):
 	if PETRglobals.StoponError: raise HasParseError
 	else: raise UnbalancedTree(errorstring)
 
+
 # ========================== DEBUGGING FUNCTIONS ========================== #	
 
 def show_tree_string(sent):
-# indexes the () or (~in a string tree and prints as an indented list. Also prints the
-# totals
+	""" Indexes the () or (~in a string tree and prints as an indented list. """
+# show_tree_string() also prints the totals
 # call with ' '.join(list) to handle the list versions of the string
 	newlev = False
 	level = -1
@@ -338,6 +327,17 @@ def show_tree_string(sent):
 	if nopen == nclose: print "Balanced:",
 	else: print "Unbalanced:", 
 	print "Open",nopen,"Close",nclose,'\n'	
+	if nopen != nclose and PETRglobals.StoponError: raise HasParseError
+
+def check_balance():
+	""" Check the (/~ count in a ParseList and raises UnbalancedTree if it is not balanced. """
+	nopen = 0 ; nclose = 0
+	ka = 0
+	while ka < len(ParseList):
+		if ParseList[ka] == '(': nopen += 1
+		elif ParseList[ka] == '~' : nclose += 1
+		ka += 1
+	if nopen != nclose: raise UnbalancedTree
 	
 # ========================== VALIDATION FUNCTIONS ========================== #	
 	
@@ -352,11 +352,24 @@ def change_Config_Options(line):
 		try:
 			PETRglobals.NewActorLength = int(value)
 		except ValueError:
-			PETRwriter.write_FIN_error("<Config>: new_actor_length value must be an integer")
+			PETRwriter.write_FIN_error("<Config>: new_actor_length value must be an integer; command ignored")
 	elif theoption == 'require_dyad': 
 			PETRglobals.RequireDyad = not 'false' in value.lower()
 	elif theoption == 'stop_on_error': 
 			PETRglobals.StoponError = not 'false' in value.lower()
+	elif 'comma_' in theoption: 
+		try: cval = int(value)
+		except ValueError:
+			PETRwriter.write_FIN_error("<Config>: comma_* value must be an integer; command ignored")
+			return
+		if   '_min' in theoption: PETRglobals.CommaMin = cval
+		elif '_max' in theoption: PETRglobals.CommaMax = cval
+		elif '_bmin' in theoption: PETRglobals.CommaBMin = cval
+		elif '_bmax' in theoption: PETRglobals.CommaBMax = cval
+		elif '_emin' in theoption: PETRglobals.CommaEMin = cval
+		elif '_emax' in theoption: PETRglobals.CommaEMax = cval
+		else:
+			PETRwriter.write_FIN_error("<Config>: unrecognized option beginning with comma_; command ignored")		
 	# insert further options here in elif clauses as this develops; also update the docs in open_validation_file():
 	else: 	PETRwriter.write_FIN_error("<Config>: unrecognized option")
 
@@ -394,7 +407,6 @@ def evaluate_validation_record():
 	global CodedEvents,ValidEvents
 	global ValidInclude, ValidExclude, ValidPause, ValidOnly
 	global ParseList
-	global ShowParseList
 
 	ValidEvents = []  # code triples that should be produced
 	CodedEvents = []  # code triples that were produced; set in make_event_strings
@@ -457,6 +469,10 @@ def evaluate_validation_record():
 	print '\nSentence:',SentenceID,'[',SentenceCat,']'
 	print SentenceText
 #	print '**',ParseList
+
+	try: check_commas()
+	except SkipRecord: return
+	
 	assign_NEcodes()
 #	print '**+',ParseList
 	if False: 
@@ -585,7 +601,7 @@ def open_validation_file():
 		<Stop>: stop coding and exit program
 		<Config option ="<config.ini option from list below>" value ="<value>">: 
 			Change values of PETR_config.ini globals. 
-			Currently works for: new_actor_length, require_dyad, stop_on_error
+			Currently works for: new_actor_length, require_dyad, stop_on_error, comma_*
 		
 	Additional notes:
 	1. The validation file currently does not use a discard file.
@@ -846,7 +862,8 @@ def read_TreeBank():
 
 	global ParseList, ParseStart
 	global treestr
-	global ncindex   
+	global ncindex  
+ 
 	
 	def get_forward_bounds(ka):
 	# returns the bounds of a phrase in treestr that begins at ka, including final space
@@ -975,9 +992,6 @@ def read_TreeBank():
 #		exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
 #		print 'PPP3: ',exst
 		return nepph
-
-	ShowRTTrees = True  # displays parse trees
-	ShowRTTrees = False 
 				
 	fullline = '' 
 	vpindex = 1
@@ -1102,9 +1116,9 @@ def read_TreeBank():
 			fullline += treestr[ka]	
 			ka += 1	
 			
-		if ShowRTTrees: 
-			print 'Balance check:',ka,fullline.count('('), fullline.count(')')   # check for balance at intermediate points
-			print '                  ',treestr[ka:].count('('), treestr[ka:].count(')'),' :: ',fullline.count('(')+treestr[ka:].count('('), fullline.count(')')+treestr[ka:].count(')')
+#		if ShowRTTrees:   # <14.04.28> this is seems to have been solved...
+#			print 'Balance check:',ka,fullline.count('('), fullline.count(')')   # check for balance at intermediate points
+#			print '                  ',treestr[ka:].count('('), treestr[ka:].count(')'),' :: ',fullline.count('(')+treestr[ka:].count('('), fullline.count(')')+treestr[ka:].count(')')
 
 	# convert the text to ParseList format; convert ')' to ~XX tags
 	ParseList = fullline.split() 
@@ -1129,19 +1143,25 @@ def read_TreeBank():
 				
 	if ShowRTTrees: 
 		print 'RT2:',ParseList
-		show_tree_string(' '.join(ParseList))
+		show_tree_string(' '.join(ParseList))		
 
 	ParseStart = 2 # skip (ROOT (S
 				
+	try: check_balance()
+	except:
+		try: raise_parsing_error('end of read_TreeBank()')   # this can re-raise UnbalancedTree 
+		except UnbalancedTree:
+			raise SkipRecord		 	
 				
 # ================== CODING ROUTINES  ================== #	
 
 def get_loccodes(thisloc):
-# returns the list of codes from a compound, or just a single code if not compound
+	""" Returns the list of codes from a compound, or just a single code if not compound."""
 	"""
+	get_loccodes(thisloc):
 	Extracting noun phrases which are not in the dictionary:
 	If no actor or agent generating a non-null code can be found using the source/target 
-	 rules, PETRARCH can output the noun phrase in double-quotes. This is control by the 
+	 rules, PETRARCH can output the noun phrase in double-quotes. This is controled by the 
 	configuration file option new_actor_length, which is set to an integer which gives the 
 	maximum length for new actor phrases extracted. If this is set to zero [default], no  
 	extraction is done andthe behavior is the same as TABARI. Setting this to a large 
@@ -1223,8 +1243,7 @@ def find_source():
 	def find_source():
 	Assign SourceLoc to the first coded or compound (NE in the UpperSeq; if neither found
 	then first (NE with --- code 
-	<13.12.07>: this is going to change, right: we just get the correct (NE 
-	note that we are going through the sentence in normal order, so we go through UpperSeq
+	Note that we are going through the sentence in normal order, so we go through UpperSeq
 	in reverse order. 
 	Also note that this matches either (NE and (NEC: these are processed differently in 
 	make_event_string()
@@ -1359,7 +1378,6 @@ def make_check_sequences(verbloc, endtag):
 			raise_parsing_error('make_check_sequences()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 			return   
 
-
 	if ShowCodingSeq: print "Lower sequence:",LowerSeq
 #	for alist in LowerSeq: print alist  # debug
 				
@@ -1378,7 +1396,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 			if ka < 0 or ka >= len(aseq):
 				raise_parsing_error('find_ne(kseq) in verb_pattern_match()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 
-#		print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
+		if ShowVPM: print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
 		return ka
 	
 	global SourceLoc, TargetLoc
@@ -1437,10 +1455,35 @@ def check_verbs():
 	"""
 	global EventCode, SourceLoc, TargetLoc
 	global EventList
+	global IsPassive
+	
+	def check_passive(kitem):
+		""" Check whether the verb phrase beginning at kitem is passive; returns location of verb if true, zero otherwise. """
+		try: cpendtag = ParseList.index('~'+ParseList[kitem][1:])
+		except ValueError:
+			raise_parsing_error("check_passive()")  # <14.05.02>: Really shouldn't be hitting this...problems should have been caught earlier...
+#		print "CV/CP:",ParseList[kitem:cpendtag]
+		if '(VBN' in ParseList[kitem+3:cpendtag]:  # no point in looking before + 3 since we need an auxiliary verb
+			ppvloc = ParseList.index('~VBN',kitem+3)
+			if 'BY' not in ParseList[ppvloc+3:cpendtag]: return 0
+			else: # check for the auxiliary verb 
+				ka = ppvloc - 3
+				while ka > kitem:
+					if '~VB' in ParseList[ka]:
+						if ParseList[ka-1] in ['WAS','IS','BEEN','WAS']: return ppvloc-1  # <14.04.30> replace this with a synset? Or a tuple? Or has the compiler done that anyway?
+					ka -= 1 
+				return 0
+		else: return 0
+	
 	EventList = []
 	kitem = ParseStart
 	while kitem < len(ParseList):
 		if ('(VP' in ParseList[kitem]) and ('(VB' in ParseList[kitem+1]):
+			pv = check_passive(kitem)
+			IsPassive = (pv > 0)
+			if IsPassive: 
+#				print "Got passive"
+				kitem = pv - 2  # kitem + 2 is now at the passive verb
 			targ = ParseList[kitem+2] + ' '
 			if targ in PETRglobals.VerbDict:
 					SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
@@ -1475,7 +1518,7 @@ def check_verbs():
 						if SourceLoc[0] >= 0: 
 							if TargetLoc[0] < 0: find_target()
 							if TargetLoc[0] >= 0: 
-								if ShowPattMatch: print "CV-3 tar", TargetLoc						
+								if ShowPattMatch: print "CV-3 tar", TargetLoc	
 								make_event_strings()
 
 					if hasmatch: 
@@ -1503,6 +1546,7 @@ def get_actor_code(index):
 def actor_phrase_match(patphrase, phrasefrag):
 	"""Determines whether the actor pattern patphrase occurs in phrasefrag."""
 # returns True if match is successful. Insha'Allah...
+
 #	APMprint = True   # yes, kept having to come back to debug this...
 	APMprint = False
 	connector = patphrase[1]
@@ -1604,10 +1648,157 @@ def check_NEphrase(nephrase):
 	return [True,actorcode]
 
 
+def check_commas():
+	""" Removes comma-delimited clauses from ParseList. """
+	""" check_commas()
+		Note that the order here is to remove initial, remove terminal, then remove 
+		intermediate. Initial and terminal remove are done only once; the intermediate 
+		is iterated. In a sentence where the clauses can in fact be removed without
+		affecting the structure, the result will still be balanced. If this is not the 
+		case, the routine raises a Skip_Record rather than continuing with whatever mess 
+		is left.
+		
+		Because this is working with ParseList, any commas inside (NP should already have 
+		had their tags removed as they were converted to (NE
+		
+		This was a whole lot simpler in TABARI, but TABARI also made some really weird 
+		matches following comma-clause deletion.
+	"""
+
+	def count_word(loclow, lochigh):
+		""" Returns the number of words in ParseList between loclow and lochigh - 1  """
+		cwkt = 0
+		ka = loclow
+		while ka < lochigh:
+			if ParseList[ka] == '(NE': ka += 2 # skip over codes
+			else:
+				if ParseList[ka][0] != '(' and ParseList[ka][0] != '~' and ParseList[ka][0].isalpha() : cwkt += 1
+				ka += 1
+#		print "cw/cc-1:", loclow, lochigh, cwkt   # debug
+		return cwkt
+		
+	def find_end():
+		""" Returns location of tag on punctuation at end of phrase, defined as last element without ~  """
+		ka = len(ParseList) - 1  
+		while ka >= 2 and ParseList[ka][0] == '~' : 
+			ka -= 1
+#		print "cc/fe:",ParseList[ka-1:ka+2]   # debug
+		return ka - 1
+		
+	def delete_phrases(loclow, lochigh):
+		""" Deletes the complete phrases in ParseList between loclow and lochigh - 1, leaving other mark-up. """
+		"""
+		This is the workhorse for this function only removes (xx...~xx delimited phrases 
+		when these are completely within the clause being removed. This will potentially
+		leave the tree in something of a mess grammatically, but it will be balanced.
+		"""
+		# since you are wondering, we go through this in reverse in order to use index(), as there is 
+		# no rindex() for lists.
+		global ParseList  # 14.05.02: wtf is this needed??
+		stack = []  # of course we use a stack...this is a tree...
+		ka = lochigh - 1
+		while ka >= loclow:
+			if ParseList[ka][0] == '~': 
+				stack.append(ParseList[ka][1:])
+#				print 'push:',stack
+			elif len(stack) > 0 and ParseList[ka][1:] == stack[-1]:	 # remove this complete phrase
+				targ = '~' + ParseList[ka][1:] 
+				ParseList = ParseList[:ka] + ParseList[ParseList.index(targ,ka+1)+1:]
+				stack.pop()
+#				print 'pop:',stack,'\n',ParseList
+			ka -= 1
+
+	global ParseList
+	
+	ShowCCtrees = True   # displays trees at various points as ParseList is mangled
+	ShowCCtrees = False
+	
+	if '(,' not in ParseList: return
+	
+	if ShowCCtrees:
+		print 'chkcomma-1-Parselist::',ParseList
+		show_tree_string(' '.join(ParseList))
+			
+	if PETRglobals.CommaBMax != 0:  # check for initial phrase
+		"""
+		Initial phrase elimination in check_commas():
+		delete_phrases() will tend to leave a lot of (xx opening tags in place, making 
+		the tree a grammatical mess, which is why initial clause deletion is turned off 
+		by default. 
+		"""
+
+		kount = count_word(2,ParseList.index('(,'))
+#		print "cc-1:", kount
+		if kount >= PETRglobals.CommaBMin and kount <= PETRglobals.CommaBMax:
+			delete_phrases(2,ParseList.index('(,'))  # leave the comma in place so an internal can catch it
+	 
+		if ShowCCtrees:
+			print 'chkcomma-1a-Parselist::',ParseList
+			show_tree_string(' '.join(ParseList))
+		
+	if PETRglobals.CommaEMax != 0: # check for terminal phrase
+#		print "cc-2"
+		kend = find_end()
+		ka = kend - 1  # terminal: reverse search for '('
+		while ka >= 2 and ParseList[ka] != '(,' : ka -= 1
+		if ParseList[ka] == '(,': 
+			kount = count_word(ka,len(ParseList))
+#			print "cc-2:", kount
+			if kount >= PETRglobals.CommaEMin and kount <= PETRglobals.CommaEMax:
+				delete_phrases(ka+3,kend)  # leave the comma in place so an internal can catch it
+#				ParseList = ParseList[:ka + 3] + ParseList[kend:]  # leave the comma in place so an internal can catch it
+
+		if ShowCCtrees:
+			print 'chkcomma-2a-Parselist::'
+			show_tree_string(' '.join(ParseList))
+		
+	if PETRglobals.CommaMax != 0:
+#		print "cc-3"
+		ka = ParseList.index('(,')
+		while True:
+			try: kb = ParseList.index('(,',ka+1)
+			except ValueError: break
+			kount = count_word(ka+2,kb)  # ka+2 skips over , ~,
+#			print "cc-3:", ParseList[ka:ka+3], ParseList[kb:kb+3], kount  # debug
+			if kount >= PETRglobals.CommaMin and kount <= PETRglobals.CommaMax:
+				delete_phrases(ka,kb)  # leave the second comma in place
+			ka = kb
+
+		if ShowCCtrees:
+			print 'chkcomma-3a-Parselist::'
+			show_tree_string(' '.join(ParseList))
+		
+	# check for dangling initial or terminal (, , ~,
+
+	ka = ParseList.index('(,')   # initial 
+	if count_word(2,ka) == 0:
+#		print "%%--",ParseList[ka:ka+3]
+		ParseList = ParseList[:ka] + ParseList[ka+3:] 
+		
+	kend = find_end()
+	ka = kend - 1  # terminal: reverse search for '(,'
+	while ka >= 2 and ParseList[ka] != '(,' : ka -= 1
+	if ParseList[ka] == '(,' :
+		if count_word(ka+1,kend) == 0: 
+#			print "##--",ParseList[ka:ka+3]
+			ParseList = ParseList[:ka] + ParseList[ka+3:] 			
+	
+	if ShowCCtrees:
+		print 'chkcomma-end-Parselist::'
+		show_tree_string(' '.join(ParseList))
+		
+	try: check_balance()
+	except:
+		try: raise_parsing_error('end of check_comma()')   # this can re-raise UnbalancedTree 
+		except UnbalancedTree:
+			raise SkipRecord		 	
+
+
 def assign_NEcodes():
-# assigns non-null codes to NE phrases where appropriate
+	""" Assigns non-null codes to NE phrases where appropriate """
+
 	def expand_compound_element(kstart):  
-		# this is almost but not quite a recursive call on expand_compound_NEPhrase():
+		""" An almost but not quite a recursive call on expand_compound_NEPhrase()."""
 		# this difference is that the (NEC has already been established so we are just adding
 		# elements inside the list and there is no further check: we're not allowing any 
 		# further nesting of compounds. That could doubtlessly be done fairly easily with some 
@@ -1726,14 +1917,17 @@ def assign_NEcodes():
 
 def make_event_strings():
 # creates the set of event strings, handing compound actors and symmetric events
-	global SentenceLoc
+	global SentenceLoc, SentenceID
 	global EventCode, SourceLoc, TargetLoc
 	global CodedEvents
+	global IsPassive
 	
 	def make_events(codessrc, codestar, codeevt):
 	# create events from each combination in the actor lists except self-references
 		global CodedEvents
 		global SentenceLoc
+		global IsPassive
+		
 		for thissrc in codessrc:
 			cursrccode = thissrc
 			if thissrc[0:3] == '---' and len(SentenceLoc) > 0: cursrccode = SentenceLoc + thissrc[3:] # add location if known
@@ -1741,7 +1935,8 @@ def make_event_strings():
 				if thissrc != thistar:  # skip self-references
 					curtarcode = thistar
 					if thistar[0:3] == '---' and len(SentenceLoc) > 0: curtarcode = SentenceLoc + thistar[3:] # add location if known
-					CodedEvents.append([cursrccode,curtarcode,codeevt])		
+					if IsPassive: CodedEvents.append([curtarcode,cursrccode,codeevt])
+					else: CodedEvents.append([cursrccode,curtarcode,codeevt])		
 
 	def expand_compound_codes(codelist):
 	# expand coded compounds, that is, codes of the format XXX/YYY
@@ -1763,7 +1958,7 @@ def make_event_strings():
 			
 #	print 'MES2: ',srccodes, tarcodes, EventCode
 	if len(srccodes) == 0 or len(tarcodes) == 0:
-		PETRwriter.write_record_error('Empty codes in make_event_strings()')   # <14.02.27> This is here temporarily (ha!) to just get this thing to handle timing tests (and in the presence of some known bugs): this should not be a persistent issue. Really
+		PETRwriter.write_record_error('Empty codes in make_event_strings()',SentenceID)   # <14.02.27> This is here temporarily (ha!) to just get this thing to handle timing tests (and in the presence of some known bugs): this should not be a persistent issue. Really
 		return		 
 	
 	if ':' in EventCode:  # symmetric event
@@ -1828,7 +2023,7 @@ def extract_Sentence_info(line):
 	SentenceID = PETRreader.check_attribute('id')
 	SentenceCat = PETRreader.check_attribute('category')
 	SentenceLoc = PETRreader.check_attribute('place')
-	if PETRreader.check_attribute('valid') == 'true': SentenceValid = True
+	if PETRreader.check_attribute('valid').lower() == 'true': SentenceValid = True
 	else: SentenceValid = False
 	try: 
 		SentenceDate = PETRreader.get_attribute('date')
@@ -1976,11 +2171,15 @@ def code_record():
 # first element of StoryEventList for each sentence -- this signals the start of a list 
 # events for a sentence -- followed by  lists containing source/target/event triples  
 	global CodedEvents
-	global ParseList, ShowParseList  
+	global ParseList  
 	global SentenceID
 	global NEmpty
 
 	CodedEvents = []  # code triples that were produced; this is set in make_event_strings
+
+	try: check_commas()
+	except SkipRecord: return
+	
 	assign_NEcodes()
 	if ShowParseList: print 'code_rec-Parselist::',ParseList
 
@@ -2219,6 +2418,7 @@ if DoValidation:
 			sys.exit()
 		except SkipRecord:
 			line = PETRreader.FINline
+			print "Skipping this record."
 			while '</Sentence>' not in line: line = PETRreader.read_FIN_line() 
 		except HasParseError:
 			print "Exiting: parsing error "

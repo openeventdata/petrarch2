@@ -9,41 +9,6 @@
 # For further information on the GigaWord corpus:  http://catalog.ldc.upenn.edu/LDC2011T07
 # Last update: 28 Feb 2014
 
-<Sentence date = "20080804" id ="AFP0808-02-0593-1">
-<Text>
-A Pakistani woman believed linked to Al-Qaeda who shot at US military officers 
-while in detention in Afghanistan was extradited Monday to the United States 
-where she faces trial for her actions, a US attorney said. 
-</Text>
-<Parse>
-( (S (S 
-(NP (NP (DT A) (JJ Pakistani) (NN woman)) 
-(VP (VBN believed) (S (ADJP (VBN linked) 
-(PP (TO to) 
-(NP (NP (NN Al-Qaeda)) (SBAR (WHNP (WP who)) (S 
-(VP (VBD shot) 
-(PP (IN at) 
-(NP (NNP US) (JJ military) (NNS officers))) 
-(PP (IN while) 
-(PP (IN in) 
-(NP (NN detention))))))))))) 
-(PP (IN in) 
-(NP (NNP Afghanistan))))) 
-(VP (AUXD was) 
-(VP (VBN extradited) 
-(NP (NNP Monday)) 
-(PP (TO to) 
-(NP (DT the) (NNP United) (NNPS States))) (SBAR (WHADVP (WRB where)) (S 
-(NP (PRP she)) 
-(VP (VBZ faces) 
-(NP (NP (NN trial)) 
-(PP (IN for) 
-(NP (PRP$ her) (NNS actions)))))))))) (, ,) 
-(NP (DT a) (NNP US) (NN attorney)) 
-(VP (VBD said)) (. .)))
-</Parse>
-</Sentence>
-
 <Sentence date = "20080804" id ="AFP0808-02-0625-4">
 <Text>
 The stopover came as the US leader prepared to attend the Beijing Olympics, an 

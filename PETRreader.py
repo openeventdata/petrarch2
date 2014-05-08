@@ -562,62 +562,17 @@ def read_issue_list():
 
 # ================== VERB DICTIONARY INPUT ================== #	
 
-
-def make_phrase_list(thepat):
-# converts a pattern phrase into a list of alternating words and connectors
-	if len(thepat) == 0: return []
-	phlist = []
-	start = 0
-	maxlen = len(thepat) + 1  # this is just a telltail
-	while start < len(thepat): # break phrase on ' ' and '_'
-		spfind = thepat.find(' ',start)
-		if spfind == -1: spfind = maxlen
-		unfind = thepat.find('_',start)
-		if unfind == -1: unfind = maxlen
-		if unfind < spfind:   # somehow think I don't need this check...well, I just need the terminating point, still need to see which is lower
-			phlist.append(thepat[start:unfind])  
-			phlist.append('_')
-			start = unfind + 1
-		else:
-			phlist.append(thepat[start:spfind])
-			phlist.append(' ')
-			start = spfind + 1
-	return phlist
-
-def get_verb_forms():
-# get the irregular forms of a verb
-	global verb, theverb
-	scr = verb.partition('{')
-	sc1 = scr[2].partition('}')
-	forms = sc1[0].split()
-	for wrd in forms:
-		vscr = wrd + " "
-		PETRglobals.VerbDict[vscr] = [False, theverb]	
-	
-def make_verb_forms():
-# create the regular forms of a verb
-	global theverb
-	vroot = theverb[:-1]
-	vscr = vroot + "S "
-	PETRglobals.VerbDict[vscr] = [False, theverb]
-	if vroot[-1] == 'E' :  # root ends in 'E'
-		vscr = vroot + "D "
-		PETRglobals.VerbDict[vscr] = [False, theverb]
-		vscr = vroot[:-1] + "ING "
-	else: 
-		vscr = vroot + "ED "
-		PETRglobals.VerbDict[vscr] = [False, theverb]
-		vscr = vroot + "ING "
-	PETRglobals.VerbDict[vscr] = [False, theverb]	
-
 def read_verb_dictionary():
-# Reads the verb dictionary from VerbFileName; currently just reads a simple TABARI-style dictionary
+	""" Reads the verb dictionary from VerbFileName """
 # <13.07.27> Still need to do
 # 1. New WordNet dictionary format
-# 2. Phrase synsets
-# 3. % compound actor token: patterns with this are skipped
-# 4. ^ skip actor token: patterns with this are skipped
+# 2. % compound actor token: patterns with this are skipped
+# 43. ^ skip actor token: patterns with this are skipped
 	""" Verb dictionary list elements:
+	For basic verb/pattern combinations, the dictionary format is identical to TABARI; it 
+	differs on the specification and interpretation of synsets, and does not allow 
+	disconjunctive sets in patterns.
+	
 	[0] True: primary form
 		[1] Code
 		[2:] 3-tuples of lower pattern, upper pattern and code. Upper pattern is stored
@@ -625,10 +580,123 @@ def read_verb_dictionary():
 	[0] False
 		[1]: primary form (use as a pointer)
 		
-	Dictionary automatically generates the regular forms of the verb if it is regular
-	"""
-	global theverb, verb
+	Dictionary automatically generates the regular forms of the verb if it is regular; 
+	otherwise the irregular forms can be specified in {...} following the primary verb.
+	
+	SYNSETS
+	Synonym sets (synsets) are labelled with a string beginning with & and defined using
+	the label followed by a series of lines beginning with + containing words or phrases.
+	The phrases are interpreted as requiring consecutive words; the words can be separated 
+	with either spaces or underscores (they are converted to spaces). Synset phrases can 
+	only contain words, not $, +, % or ^ tokens or synsets. At present, a synsets cannot  
+	contain another synset as an element. [see note below] Synsets be used anywhere in a  
+	pattern that a word or phrase can be used. A synset must be defined before it is used:  
+	a pattern containing an undefined synset will be ignored -- but those definitions can 
+	occur anywhere in the file.
+	
+	====== EXAMPLE =====
+	
+	&CURRENCY 
+	+DOLLARS
+	+EUROS
+	+AUSTRIAN FLORIN
+	+GOLDEN_GOBLIN_GALLEONS
+	+PESO
+	+KRONER
+	+YUM YENNYEN 
+	+JAVANESE YEN
+	+SWISS FRANCS
+	+YEN
 
+	&ALTCURR
+	+BITCOIN
+	+PIRATE GOLD   
+	+LEPRECHAUN GOLD
+
+	 CONTRIBUTE [070] ;tony  3/12/91
+	- * &CURRENCY [903]; -PAS 12.01.12
+	- * &ALTCURR [904]; -PAS 14.05.08
+	- * RUPEES  [071]
+	
+	&TESTSYN3
+	+TO THE END
+	+TO THE DEATH
+	+UNTIL HELL FREEZES OVER
+
+	&TESTSYN4
+	+TO THE END OF THE EARTH
+	+TO THE DEATH
+
+	VOW  [170] ;tony  3/9/91
+	- * RESIST &TESTSYN3 [113] ; pas 4/20/03
+	- * RESIST &TESTSYN4  [115] ; pas 4/20/03
+	- * RESISTANCE TO THE INVADING  [114] ; pas 4/20/03
+	- * RESIST  [112] ;tony  4/29/91
+	- * WAR  [173] ;tony  4/22/91
+
+	Notes
+	1. 	TABARI allowed recursive synsets -- that is, synsetS embedded in patterns and other 
+	    synsets. It should be possible to do this fairly easily, at least with basic 
+	    synsets as elements (not as patterns) but a simple call in syn_match(isupperseq)
+	    was not sufficient, so this needs more work.
+	"""
+	global theverb, verb  # <14.05.07> : not needed, right?
+
+	def make_phrase_list(thepat):
+		""" Converts a pattern phrase into a list of alternating words and connectors """
+		if len(thepat) == 0: return []
+		phlist = []
+		start = 0
+		maxlen = len(thepat) + 1  # this is just a telltail
+		while start < len(thepat): # break phrase on ' ' and '_'
+			spfind = thepat.find(' ',start)
+			if spfind == -1: spfind = maxlen
+			unfind = thepat.find('_',start)
+			if unfind == -1: unfind = maxlen
+			if unfind < spfind:   # somehow think I don't need this check...well, I just need the terminating point, still need to see which is lower
+				phlist.append(thepat[start:unfind])  
+				phlist.append('_')
+				start = unfind + 1
+			else:
+				phlist.append(thepat[start:spfind])
+				phlist.append(' ')
+				start = spfind + 1
+									# check for missing synsets
+		ka = 0
+		while ka < len(phlist):
+			if len(phlist[ka]) > 0:
+				if (phlist[ka][0] == '&') and (phlist[ka] not in PETRglobals.VerbDict):
+					PETRwriter.write_FIN_error("Synset " + phlist[ka] + " has not been defined; pattern skipped")
+					raise ValueError  # this will do...
+			ka += 2
+		return phlist
+
+	def get_verb_forms():
+		"""  Read the irregular forms of a verb. """
+		global verb, theverb
+		scr = verb.partition('{')
+		sc1 = scr[2].partition('}')
+		forms = sc1[0].split()
+		for wrd in forms:
+			vscr = wrd + " "
+			PETRglobals.VerbDict[vscr] = [False, theverb]	
+	
+	def make_verb_forms():
+		""" Create the regular forms of a verb. """
+		global theverb
+		vroot = theverb[:-1]
+		vscr = vroot + "S "
+		PETRglobals.VerbDict[vscr] = [False, theverb]
+		if vroot[-1] == 'E' :  # root ends in 'E'
+			vscr = vroot + "D "
+			PETRglobals.VerbDict[vscr] = [False, theverb]
+			vscr = vroot[:-1] + "ING "
+		else: 
+			vscr = vroot + "ED "
+			PETRglobals.VerbDict[vscr] = [False, theverb]
+			vscr = vroot + "ING "
+		PETRglobals.VerbDict[vscr] = [False, theverb]	
+	
 	PETRwriter.write_ErrorFile("Reading " + PETRglobals.VerbFileName+"\n")  # note that this will be ignored if there are no errors
 	open_FIN(PETRglobals.VerbFileName,"verb")
 
@@ -640,7 +708,7 @@ def read_verb_dictionary():
 		verb = part[0].strip() + ' '
 		scr = part[2].partition(']')
 		code = scr[0]
-	#	print verb, code
+#		print verb, code
 		if verb[0] == '-':
 			if '%' in verb or '^' in verb:  # currently aren't processing these
 				line = read_FIN_line() 
@@ -650,20 +718,37 @@ def read_verb_dictionary():
 				make_verb_forms()
 				hasforms = True
 			targ = verb[1:].partition('*')
-			highpat = make_phrase_list(targ[0].lstrip())
-#			print 'RVD-2',highpat
-			highpat.reverse()
-			lowphrase = targ[2].rstrip()
-			if len(lowphrase) == 0: lowpat = []
-			else: 
-				lowpat = [targ[2][0]]   # start with connector
-				loclist = make_phrase_list(lowphrase[1:])
-				lowpat.extend(loclist[:-1])   # don't need the final blank
-#			print 'RVD-3',lowpat
-			PETRglobals.VerbDict[theverb].append([highpat, lowpat,code])
+			try:
+				highpat = make_phrase_list(targ[0].lstrip())
+	#			print 'RVD-2',highpat
+				highpat.reverse()
+				lowphrase = targ[2].rstrip()
+				if len(lowphrase) == 0: lowpat = []
+				else: 
+					lowpat = [targ[2][0]]   # start with connector
+					loclist = make_phrase_list(lowphrase[1:])
+					lowpat.extend(loclist[:-1])   # don't need the final blank
+	#			print 'RVD-3',lowpat
+				PETRglobals.VerbDict[theverb].append([highpat, lowpat,code])
+			except ValueError:
+				pass   # just trap the error, which will skip the line containing it
+			line = read_FIN_line() 
+
 		elif verb[0] == '{': 
 			get_verb_forms()
 			hasforms = True
+			line = read_FIN_line() 
+
+		elif verb[0] == '&': # Read and store a synset.
+			verb = verb[:-1]  # remove final blank
+			PETRglobals.VerbDict[verb] = []
+			line = read_FIN_line()
+			while line[0] == '+':
+				wordstr = line[1:].replace('_',' ').strip()				
+				PETRglobals.VerbDict[verb].append(wordstr)  # <14.05.08> Multi-word phrases are always converted to lists between checking, so probably it would be useful to store them as tuples once
+				line = read_FIN_line()
+#			print "rvd/gs:",verb, PETRglobals.VerbDict[verb]
+			
 		else:
 	#		if theverb != '': print '::', theverb, PETRglobals.VerbDict[theverb]
 			if len(theverb) > 0 and not hasforms:   # create forms for the previous verb
@@ -673,8 +758,10 @@ def read_verb_dictionary():
 			hasforms = False	
 			ka += 1   # counting primary verbs
 #			if ka > 10: break
+			line = read_FIN_line() 
+
 			
-		line = read_FIN_line() 
+#		print "--:",line, 
 		
 	close_FIN()
 	

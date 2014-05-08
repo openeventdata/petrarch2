@@ -3,21 +3,19 @@ PETR.coder.py
 
 Development environment for the PETRARCH event coder. 
 
-STATUS OF THE PROGRAM 02-MAY-2014
+STATUS OF THE PROGRAM 08-MAY-2014
 
 This now has most of the functionality of TABARI except for the following:
 
--- Synsets in patterns
-
 -- % and ^ tokens in patterns
 
--- Coding of multiple clauses has not be checked
+-- Coding of multiple clauses has not been checked
 
 In addition, there are one or more bugs that I'm pretty sure are in the handling of 
 compounds that are trapped with exceptions: I hit 29 of these in coding 60,000 AFP 
 stories from the GigaWord corpus, and with those traps, all of those coded without 
-the program crashing. The system now codes 161 of the TABARI unit-test records, which 
-is most of them except for the synsets.
+the program crashing. The system now codes 213 of the TABARI unit-test records, which 
+is most of them.
 
 So, those remaining functions, the debugging of the compounds and a few additional 
 unimplemented features scattered through the code are what is left, and I may be able 
@@ -876,6 +874,7 @@ def read_TreeBank():
 			if treestr[kb] == '(': nparen += 1
 			elif treestr[kb] == ')': nparen -= 1
 			kb += 1
+#		print "gfb:",ka,kb,treestr[ka:kb+1]
 		return [ka,kb] 
 
 	def get_enclosing_bounds(ka):
@@ -1383,9 +1382,9 @@ def make_check_sequences(verbloc, endtag):
 				
 
 def verb_pattern_match(patlist, aseq, isupperseq):
-# attempts to match patlist against UpperSeq or LowerSeq; returns True on success
+	""" Attempts to match patlist against UpperSeq or LowerSeq; returns True on success. """
 # Can set SourceLoc and TargetLoc for $, + and % tokens
-# Still need to handle %
+# Still need to handle %, ^
 
 	def find_ne(kseq):
 	# return the location of the (NE element in aseq starting from kseq, which is inside an NE 
@@ -1398,56 +1397,128 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 
 		if ShowVPM: print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
 		return ka
+		
+	def syn_match(isupperseq):
+		global kseq, kpatword
+#		print "&targ:",patlist[kpatword]
+		if patlist[kpatword] in PETRglobals.VerbDict:
+			if aseq[kseq] not in PETRglobals.VerbDict[patlist[kpatword]]: # first try the single word cases
+				for words in PETRglobals.VerbDict[patlist[kpatword]]:
+#					print '&&:',words
+					"""if words[0] == '&':  <14.05.08> Attempt to get this to work recursively, but not successful
+						if syn_match(isupperseq):
+							if last_patword(): return True
+							if last_seqword(): return False  
+						else: return False 
+					elif ' ' in words: # try to match a phrase """
+					if ' ' in words: # try to match a phrase 
+						wordlist = words.split()   # <14.05.08> may want to pre-split this and store as a list
+#						print '>>:',wordlist, aseq
+						if isupperseq: 	# need to go through phrase in reverse in upperseq					
+							ka = len(wordlist) - 1
+							offset = 0
+							while (ka >= 0) and ((kseq + offset) < len(aseq)) and (aseq[kseq + offset] == wordlist[ka]) : 
+								ka -= 1   # will this handle reverse matches?
+								offset += 1
+							if ka < 0: ka = len(wordlist)  # triggers match below
+						else: 
+							ka = 0
+							while (ka < len(wordlist)) and ((kseq + ka) < len(aseq)) and (aseq[kseq + ka] == wordlist[ka]) : 
+								ka += 1   
+						if ka == len(wordlist): 
+							kseq += len(wordlist) - 1  # last_seq() will also increment
+#							print words,"matches", kseq
+							return True
+				return False
+			else: 
+#				print "&Match:",aseq[kseq]
+				return True 
+		else: print "&Error:",patlist[kpatword],"not in dictionary"  # throw an error here, but actually should trap these in read_verb_dict so the check won't be needed				
+	
+	def last_seqword():
+		global kseq
+		kseq += 1
+		if kseq >= len(aseq): return True  # hit end of sequence before full pattern matched
+		else: return False
+
+	def last_patword():
+		global kpatword
+		kpatword += 2  # skip connector
+		if kpatword >= len(patlist): return True
+		else: return False
+		
+	def no_skip():
+		global kpatword
+		if patlist[kpatword-1] == ' ': 
+			if last_seqword(): return True
+			else: return False  
+		else: return True	
 	
 	global SourceLoc, TargetLoc
+	global kpatword, kseq
 	
 	ShowVPM = True
 	ShowVPM = False
 	
-	if ShowVPM: print "VPM-1" , patlist, aseq   # debug
+	if ShowVPM: print "VPM-0" , patlist, aseq, str(isupperseq)   # debug
 	if len(patlist) == 0 : return True  # nothing to evaluate, so okay
 	if len(aseq) == 0 : return False    # nothing to match, so fails
 	insideNE = False
 	kpatword = 1  # first word, skipping connector
 	kseq = 0	
 	while kpatword < len(patlist):  # iterate over the words in the pattern
+		if ShowVPM: print "VPM-1: pattern" , patlist[kpatword]  # debug
+
+		if len(patlist[kpatword]) == 0: # nothing to see here, move along, move along. Though in fact this should not occur
+			if last_patword(): return False
+			continue
+		
 		if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]): 
-			kseq += 1
-			if kseq >= len(aseq): return False  # hit end of sequence before full pattern matched
+			if last_seqword(): return False  # hit end of sequence before full pattern matched
 			insideNE = not insideNE
+
 		if len(patlist[kpatword]) == 1:  # deal with token assignments here
 			if insideNE: 
 				if patlist[kpatword] == '$': SourceLoc = [find_ne(kseq),isupperseq]
 				if patlist[kpatword] == '+': TargetLoc = [find_ne(kseq),isupperseq]
 				elif patlist[kpatword] == '%': pass # deal with compound
 				if ShowVPM: print "VPM-4: Token assignment " , patlist[kpatword], aseq[find_ne(kseq)]   # debug
-				kpatword += 2  # skip connector
-				if kpatword >= len(patlist): return True
-				kseq += 1
-				if kseq >= len(aseq): return False  
+				if last_patword(): return True
+				if last_seqword(): return False  
 			elif patlist[kpatword-1] == ' ': 
-				kseq += 1
-				if kseq >= len(aseq): return False  	
+				if last_seqword(): return False  	
 			else: return False
+
+		elif patlist[kpatword][0] == '&':  # match a synset
+			if syn_match(isupperseq): 
+				if ShowVPM: print "VPM-3: synMatch " , kseq, patlist[kpatword], aseq[kseq]   # debug
+#				sys.exit()
+				if last_patword(): return True
+				if last_seqword(): return False  
+			else:
+				if ShowVPM: print "VPM-2: Synset Fail " , patlist[kpatword], aseq[kseq]   # debug
+				if no_skip(): return False  
+
 		elif patlist[kpatword] != aseq[kseq]:
 			if ShowVPM: print "VPM-2: Fail " , patlist[kpatword], aseq[kseq]   # debug
-			if patlist[kpatword-1] == ' ': 
-				kseq += 1
-				if kseq >= len(aseq): return False  
-			else: return False
+			if no_skip(): return False  
+
 		else:  # match successful to this point
 			if ShowVPM: print "VPM-3: Match " , patlist[kpatword], aseq[kseq]   # debug
-			kpatword += 2  # skip connector
-			if kpatword >= len(patlist): return True
-			kseq += 1
-			if kseq >= len(aseq): return False  
+			if last_patword(): return True
+			if last_seqword(): return False  
 	return True  # complete pattern matched (I don't think we can ever hit this)
 
   
 def check_verbs():
-# primary coding loop which looks for verbs, checks whether any of their patterns match,
+# Primary coding loop which looks for verbs, checks whether any of their patterns match,
 # then fills in the source and target if there has been a match. Stores events in
 # EventList.
+	"""
+	Note: the "upper" sequence is the part before the verb -- that is, higher on the 
+	screen -- and the "lower" sequence is the part after the verb. Assuming, of course,
+	that I've used these consistently. """ 
+
 	""" SourceLoc, TargetLoc structure
 	
 	[0]: the location in *Seq where the NE begins
@@ -1485,6 +1556,7 @@ def check_verbs():
 #				print "Got passive"
 				kitem = pv - 2  # kitem + 2 is now at the passive verb
 			targ = ParseList[kitem+2] + ' '
+			if ShowPattMatch: print "CV-0",targ
 			if targ in PETRglobals.VerbDict:
 					SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
 					if ShowPattMatch: print "CV-1 Found", targ
@@ -2239,7 +2311,55 @@ def make_fake_events():
 	while ka < 5:
 		StoryEventList.append(['ABC','EDF',str(ka).zfill(4)])
 		ka += 1
-		
+
+def do_validation():
+	""" Coding using a validation file. """		
+	open_validation_file()	
+#	PETRreader.show_verb_dictionary("VerbDict.content.txt")
+
+	start_time = time.time()
+	nvalid = 0
+#	PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
+#	sys.exit()
+	PETRreader.open_FIN(PETRglobals.TextFileList[0],"validation")
+	line = PETRreader.read_FIN_line() 
+	while "</Environment>" not in line:  # no need to error check since open_validation_file already found this
+		line = PETRreader.read_FIN_line() 
+	
+	while True:
+		try: 
+			vresult = evaluate_validation_record()	
+			if vresult:
+				print "Events correctly coded in",SentenceID
+				nvalid += 1
+			else:
+				print "Error: Mismatched events in",SentenceID
+				if ValidPause == 3: sys.exit()  # debug
+
+			if ValidPause == 2: continue  # evaluate pause conditions
+			elif ValidPause == 1 or not vresult:
+				inkey = raw_input("Press <Return> to continue; 'q' to quit-->")
+				if 'q' in inkey or 'Q' in inkey: break
+
+		except EOFError:
+			print "Exiting: end of file"
+			PETRreader.close_FIN()
+			print "Records coded correctly:", nvalid
+			sys.exit()
+		except StopCoding:
+			print "Exiting: <Stop> record "
+			PETRreader.close_FIN()
+			print "Records coded correctly:", nvalid
+			sys.exit()
+		except SkipRecord:
+			line = PETRreader.FINline
+			print "Skipping this record."
+			while '</Sentence>' not in line: line = PETRreader.read_FIN_line() 
+		except HasParseError:
+			print "Exiting: parsing error "
+			PETRreader.close_FIN()
+			sys.exit()
+
 def do_coding():
 	"""
 	Main coding loop
@@ -2380,50 +2500,7 @@ process_command_line()
 PETRreader.parse_Config() # debug
 #sys.exit()
 
-if DoValidation:
-	open_validation_file()	
-	start_time = time.time()
-	nvalid = 0
-#	PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
-#	sys.exit()
-	PETRreader.open_FIN(PETRglobals.TextFileList[0],"validation")
-	line = PETRreader.read_FIN_line() 
-	while "</Environment>" not in line:  # no need to error check since open_validation_file already found this
-		line = PETRreader.read_FIN_line() 
-	
-	while True:
-		try: 
-			vresult = evaluate_validation_record()	
-			if vresult:
-				print "Events correctly coded in",SentenceID
-				nvalid += 1
-			else:
-				print "Error: Mismatched events in",SentenceID
-				if ValidPause == 3: sys.exit()  # debug
-
-			if ValidPause == 2: continue  # evaluate pause conditions
-			elif ValidPause == 1 or not vresult:
-				inkey = raw_input("Press <Return> to continue; 'q' to quit-->")
-				if 'q' in inkey or 'Q' in inkey: break
-
-		except EOFError:
-			print "Exiting: end of file"
-			PETRreader.close_FIN()
-			print "Records coded correctly:", nvalid
-			sys.exit()
-		except StopCoding:
-			print "Exiting: <Stop> record "
-			PETRreader.close_FIN()
-			print "Records coded correctly:", nvalid
-			sys.exit()
-		except SkipRecord:
-			line = PETRreader.FINline
-			print "Skipping this record."
-			while '</Sentence>' not in line: line = PETRreader.read_FIN_line() 
-		except HasParseError:
-			print "Exiting: parsing error "
-			PETRreader.close_FIN()
-			sys.exit()
+if DoValidation: do_validation()
 
 else: # standard coding from the config file
 	start_time = time.time()

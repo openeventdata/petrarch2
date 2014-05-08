@@ -9,14 +9,59 @@
 <!-- some point the whole thing should be edited and substantially reduced in size, as -->
 <!-- at which point we should also add unique identifiers to the patterns so one can   -->
 <!-- associate specific tests with specific patterns. But at the moment it is mostly   -->
-<--  just that ad hoc KEDS-based dictionary.  Sorry.                                   -->
+<!-- just that ad hoc KEDS-based dictionary.  Sorry.                                   -->
+
+<!-- SYNSETS -->
+
+&CURRENCY 
++DOLLARS
++EUROS
++AUSTRIAN FLORIN
++GOLDEN_GOBLIN_GALLEONS
++PESO
++KRONER
++YUM YENNYEN 
++JAVANESE YEN
++SWISS FRANCS
++YEN
+
+&HYPERCURR
++BITCOIN
++AUSTRIAN GOLD FLORIN  
++LEPRECHAUN GOLD
+
+&TIETYPES
++MILITARY
++ECONOMIC
++CULTURAL
+
+&NEGATVAUXVRB  # "negative auxiliary verb" since you are wondering... 
++DID N'T   # this is what a contraction looks like in TreeBank
++WO N'T
++REALLY DID NOT
++CA N'T
++WILL NOT
+
+&GENINT
++GENEVA
++INTERNATIONAL
 
 ABANDON  [345] ;pas 15 Jul 2003
-- * EFFORTS  [987] ;pas 15 Jul 2003
+- * NEW_&TIETYPES_RELATIONS [903]; -PAS 12.01.12
+- * IMPROVED &TIETYPES RELATIONS [904]; -PAS 12.01.12
+- * EFFORT  [987] ;pas 15 Jul 2003
+- * DIPLOMATIC TIES [901]
+- * &TIETYPES TIES [902]; -PAS 12.01.12
+
+&ACCORDSYN  # this is a whacky one which tests embedded synsets....
++&TIETYPES
++CLOSER
++NEARER
++&CURRENCY
+
 ACCORD  [---]
-- SUGGESTED_+ * DEMAND_{ GENEVA_ | INTERNATIONAL }_CONVENTIONS  [111] ; used to test blank padding of {|}
-- SUGGESTED_+ * DEMAND_{ GENEVA_ | INTERNATIONAL }_CONVENTIONS  [222]
-- INCHING { CLOSER | NEARER } *  [083] ;tony  4/29/91
+- SUGGESTED_+ * DEMAND_&GENINT_CONVENTIONS  [111] ; 
+- INCHING &ACCORDSYN *  [083] ;tony  4/29/91
 - IN_*  [075] ;pas 2 May 2005;  pattern CONNECT-3  7/14/03
 - IN_ *  [075A] ;pas 2 May 2005;  pattern CONNECT-3  7/14/03
 - IN *  [072] ;pas 2 May 2005;  pattern CONNECT-2  7/14/03
@@ -36,8 +81,14 @@ ADD  [---]
 - * VOICE  [023]
 ADMIT  [013:012]
 - WERE * TO  [064] ;tony  3/9/91
+
+&REVOLT
++REVOLUTION
++REVOLUTIONARY
+
 ADOPT  [081] ;PAS   9/24/91
 - * RESOLUTION  [102] ;tony  4/22/91
+- * &REVOLT  [802] ;PAS  5/08/14
 - * PROGRAM  [073] ;tony  3/9/91
 AFFIRM  [042]
 AGREE  [081]
@@ -56,32 +107,37 @@ ALLOW  [060]
 - NOT *  [112] ;tony  3/9/91
 AMBUSH  [223]
 APPEAL  [095]
-APPRECIATE POSITION  [042]
-- * FHFHF  [123] ;-PAS 96.1.3
+APPRECIATE [---]
+- * POSITION  [042]
 ARM_ [182] ;jw   9/23/91
 - * OUR FRIENDS  [def] ;pas 07 Apr 2000
 - * THE WOGS  [abc] ;pas 07 Apr 2000
 ARRANGE  [031]
-- XYZ * ABC  [000] ;pas 26 Feb 2002
 ARREST  [212]
 ARRIVE  [032:033] ;-PAS 95.12.18
+
+&ECONSANCT
++ECONOMIC SANCTIONS
++TOTAL BOYCOTT
++EMBARGO
+
 ASK  [090]
-- * FOR { ECONOMIC_SANCTIONS | TOTAL_BOYCOTT | EMBARGO }  [172] ;pas 2 Mar 2002
+- * FOR &ECONSANCT [172] ;pas 2 Mar 2002
 - * TO RECONSIDER  [102] ;tony  3/9/91
 ASSAIL  [122]
 ASSIST  [092]
 ATTACK  [223] ;jw   10/11/91
 ATTACKED  [223] ;jw   10/11/91
 - PLANES_*  [223]
-ATTEND  [031!] ;-PAS 95.12.13
+ATTEND  [031] ;-PAS 95.12.13
 - SAID * SUMMIT  [082]
 - % HAVE *  [032]
 BACK  [042]
 - * DOWN FROM  [013]
-BAN= [191] ;tony  4/23/91
+BAN [191] ;tony  4/23/91
+{BANS BANNED}
 - SAID *  [191]
 BANISH  [201] ;jw 9/30/91
-BANNED  [191] ;jw 9/24/91
 BARGAIN  [031] ;tony  3/9/91
 - * FOR_ASYLUM  [174K] ; pattern CONNECT-15,16
 - REFUSAL TO *  [112] ;jw 9/24/91
@@ -122,22 +178,29 @@ BREAK [1717]
 BRIEF  [025]
 BROADCAST  [034] ;jw 9/29/91
 BRUSH ASIDE REPORTS  [142] ;tony  4/28/91; also MARK-06 to 12
-BURN DOWN  [222]
-BURN FLAGS  [181] ;tony  4/28/91
+BURN [---]
+- * DOWN  [222]
+- * FLAGS  [181] ;tony  4/28/91
 CALLED  [010]
 - * FOR_CEASEFIRE  [014] ;jw 9/29/91
-- * FOR { SANCTIONS | BOYCOTT | EMBARGO }  [172] ;pas 25 Jan 2002
-- * IN { GHI | JKLG }  [001] ;pas 25 Jan 2002
+- * FOR &ECONSANCT  [172] ;pas 25 Jan 2002
+- *_UPON  [097] ; BUG-02; PAS 9-May-05
 - * FOR  [096]
 - *_ON [095] ; MARK-00 to 05; PAS 9-May-05
-#CALLED_UPON  [097] ; BUG-02; PAS 9-May-05
+
 CANCEL  [191]
 - * DEBT  [073] ;tony  4/19/91
 CAPTURE  [210]
+
+&EXERSYN
++EXERCISES
++MANUVERS
+
 CARRIED_OUT  [181]
-- * { EXERCISES | MANUVERS }  [182]
+- * &EXERSYN  [182]
 - * RAID  [211]
-CAST_DOUBT  [141]
+CAST [---]
+- *_DOUBT  [141]
 CELEBRATE  [181]
 - $ HOSTING ^ * TABASKI  [042] ;pas  3/2/02
 - * EID AT ^ WITH +  [043] ;pas  3/2/02
@@ -153,10 +216,18 @@ CHARGE  [121] ;tony  3/9/91
 - SAID * WAS LIE  [141]
 - * WITH ENDING  [101] ;jw 9/25/91
 CHIDE  [131]
-CLAMP CURFEW  [212]
+CLAMP [---]
+- * CURFEW  [212]
+
 CLASH  [223]
+- UNEXPECTEDLY &NEGATVAUXVRB * OVER EFFORTS  [906] ; PAS 12.01.14
+- MOST_CERTAINLY_&NEGATVAUXVRB_EVER * OVER EFFORTS  [907] ; PAS 12.01.14
+- &NEGATVAUXVRB EVER * OVER EFFORTS  [905] ; PAS 12.01.14
+- &NEGATVAUXVRB * OVER EFFORTS  [904] ; PAS 12.01.14
+- &NEGATVAUXVRB_WANT * OVER EFFORTS  [908] ; PAS 12.01.14
 - * OVER EFFORTS  [121] ;jw 9/25/91
 - * DEBATE  [121] ;tony  4/22/91
+
 CLOSE  [---]
 - * DOWN NEWS  [203]
 - * EMBASSY  [195] ;tony  4/26/91
@@ -173,12 +244,16 @@ CONFISCATE  [211]
 CONGRATULATE  [041] ;tony  4/28/91
 CONSULT  [031]
 CONTACT  [031]
-CONTRIBUT  [070] ;tony  3/12/91
-- * DOLLAR  [071]
+
+CONTRIBUTE [070] ;tony  3/12/91
+- * &CURRENCY [903]; -PAS 12.01.12
+- * &HYPERCURR [904]; -PAS 14.05.08
+- * RUPEES  [071]
+
 CONVERGE  [181] ;jw 9/24/91
 CONVEY  [---]
 - * CONCERN  [022] ;jw 9/29/91
-COOPERAT  [073]
+COOPERATE  [073]
 COURT  [---]
 - TO *  [095] ;tony  3/14/91
 CRITICIZE  [121] ;pas  3/1/91
@@ -190,8 +265,6 @@ CUT  [190]
 DAMAGE  [224]
 - SAID * RELATIONS  [122]
 - * RELATIONS  [192]
-DANGLE DIPLOMATIC CARROT  [101] ;tony  4/19/91
-DAVIS_CUP  [###] ;JW   10/17/91
 DECIDE  [---]
 - * NOT COOPERATE  [112] ;tony  4/22/91
 - * ESTABLISH  [082]
@@ -227,15 +300,15 @@ DISAGREE  [111] ;tony  3/9/91
 DISAPPOINT  [142]
 - SAID *  [121]
 DISAPPROVE  [121]
-DONATE_ [073] ;jw   10/18/91
-DRAFT STANCE  [102] ;tony  3/9/91
+DONATE [073] ;jw   10/18/91
+DRAFT [---]
+- *_STANCE  [102] ;tony  3/9/91
 DRAWN  [---]
 - % ARE AT DAGGERS *  [122] ;tony  4/29/91
 DROP  [---]
 - * ARREST WARRANT  [066] ;jw 9/30/91
 - * INVESTIGATION  [012]
 - * SUPPORT  [111]
-EARMARK EMERGENCY AID  [071] ;tony  4/26/91
 EASED  [012] ;PAS   9/27/91
 EMBARK  [032]
 EXCHANG  [---]
@@ -244,12 +317,14 @@ EXCHANG  [---]
 - * FEELERS  [031:032]
 - * FIRE  [223]
 EXCLUDE  [112]
-EXPAND CONTROL  [211] ;jw 9/18/91
+EXPAND [---]
+- *_CONTROL  [211] ;jw 9/18/91
 EXPECT  [050] ;tony  4/26/91
 - * AGREEMENT  [024] ;tony  3/11/91
 EXPEL  [200]
 - PLAN_TO_*  [201] ;tony  4/22/91
-EXPLAIN DIFFERENCES  [025] ;tony  3/12/91
+EXPLAIN [---]
+- * DIFFERENCES  [025] ;tony  3/12/91
 EXPRESS  [020]
 - * SUPPORT  [042]
 - * CONCERN  [131]
@@ -268,35 +343,41 @@ FEARS  [022] ;PAS   9/24/91
 FIGHT  [223]
 - SAID WOULD *  [173]
 - * BETWEEN %  [223] ;JW 5/15/95
-FINALIZE REPORT  [025]
+FINALIZE  [---]
+- * REPORT  [025]
 FINANC  [071] ;jw 9/17/91
 - HELP *  [071] ;jw 9/24/91
-FOOTBALL  [###] ;jw   10/18/91
 FORCE  [220]
 - PEACE-KEEPING *  [---]
-FORCIBLY_DISPERSED  [212] ;PAS   9/24/91
+DISPERSED   [---]
+- FORCIBLY_* [212] ;PAS   9/24/91
 FORECAST  [025]
 FORGIVE  [012]
 - * DEBT  [071] ;tony  4/26/91
 FOUGHT  [223]
-FOUND DEAD  [223]
+FOUND [---]
+- * DEAD  [223]
 FREE  [066]
 - SAID * HOSTAGES  [053]
 - + * FROM $  [066]
 - SAID *  [053]
-FUEL TERROR  [160] ;jw 9/17/91
+FUEL  [---]
+- * TERROR  [160] ;jw 9/17/91
 GATHER  [031]
 GRANT  [060]
 - * LOAN  [071]
-HACKED DEATH  [223]
+HACKED  [---]
+- * DEATH  [223]
 HAIL  [041] ;tony  4/28/91
 HALT  [191]
 - * TRANSPORT  [211] ;PAS  4/14/91
 - * CARGO  [211] ;tony  4/28/91
 - * MARCH  [192] ;tony  4/28/91
-HAS_NO_WISH  [025] ;jw   9/23/91
+HAS [---]
+- *_NO_WISH  [025] ;jw   9/23/91
 HASHISH  [003] ; PAS 9/23/91
-HAVE NOTHING TO DO WITH  [022] ;jw 9/24/91
+HAVE [---]
+- *_NOTHING TO DO WITH  [022] ;jw 9/24/91
 HELD  [210]
 - * DEMONSTRATION  [181]
 - * UP LICENSING  [112]
@@ -342,7 +423,8 @@ LIFT  [065]
 - * CURFEW  [012]
 - CURFEW *  [012] ;tony  3/11/91
 LOAN  [071] ;tony  4/19/91
-LODGING PROTEST  [132] ;jw   9/26/91
+LODGING  [---]
+- * PROTEST  [132] ;jw   9/26/91
 LOOSEN  [---]
 - * RESTRICTIONS  [012] ;tony  4/22/91
 MADE  [---]
@@ -353,7 +435,6 @@ MAKING  [---]
 - * EFFORT  [073] ;pas   9/27/91
 MARCH  [181]
 - MAY BE *  [172]
-MARIJUANA  [003]
 MEET  [031:031] ;-PAS 2/9/96
 - % HAVE POSTPONED *  [191]
 - SAID WOULD NOT *  [112] ;tony  4/19/91
@@ -365,9 +446,8 @@ MEET  [031:031] ;-PAS 2/9/96
 MEND RELATIONS  [065] ;tony  3/11/91
 MET  [031:032] ;pas   9/24/91
 - % *  [031] ;tony  4/22/91
-OPPOS  [112]
+OPPOSE  [112]
 - $ BACK + IN *  [042] ;jw 9/16/91
-OPPOSITION  [---] ;jw   10/8/91
 ORDER  [---]
 - * PERSONNEL_TO_LEAVE  [201] ;tony  4/19/91
 - * RELEASE HOSTAGES  [066] ;tony  4/21/91
@@ -389,19 +469,20 @@ PAY  [---]
 - * COMPENSATION  [073] ;tony  4/22/91
 - MAKING * DUES  [102] ;jw 9/18/91
 - * THE UPKEEP  [071]
-PELT STONES  [222] ;tony  3/9/91
+PELT  [---]
+- * STONES  [222] ;tony  3/9/91
 PERMIT  [060]
 PERSUADE  [031]
 PLACE  [---] ;PAS   9/27/91
 - * + IN DETENTION  [212] ;tony  4/22/91
 PLANE  [---] ;pas   9/26/91
-PLANETARY CUP  [+++] ;pas   9/26/91 -- this will now convert to a noun
 PRESENT  [---]
 - * CREDENTIALS  [032]
 - * PROPOSAL  [101]
 - SAID *  [032]
 - * GIFT  [073]
-PREVENT PROTESTS  [212] ;tony  4/22/91
+PREVENT  [---]
+- * PROTESTS  [212] ;tony  4/22/91
 PROHIBIT  [---]
 - * TRAVEL  [212] ;pas  4/14/91
 - HAS *  [112] ;tony  4/19/91
@@ -410,17 +491,19 @@ PROMISE  [050]
 PROPOSE  [100]
 PROTECT  [073]
 - SAID NOT SEND *  [112]
-QUESTION  [---]
+QUESTION  [---]  
 - BEGUN *  [212] ;tony  4/26/91
-- PUT *  [031] ;tony  4/22/91
+- PUT *  [031] ;tony  4/22/91  # NOUN
 QUOTE  [023]
 RAGE  [122] ;jw   9/23/91
 RAID  [220] ;tony  3/12/91
 RAISE  [---]
 - *_HOPE  [024] ;jw 9/29/91
-RAKE GUNFIRE  [223] ;tony  3/12/91
+RAKE  [---]
+- * GUNFIRE  [223] ;tony  3/12/91
 RATIFY  [042]
-REACH AGREEMENT  [081]
+REACH  [---]
+- * AGREEMENT  [081]
 REASSERT  [---]
 - * FRIENDSHIP  [042] ;jw 10/1/91
 REASSURE  [054]
@@ -428,7 +511,8 @@ REBUFF  [111]
 - SAID *  [111]
 REBUILD  [065] ;jw 9/17/91
 REBUKE  [121] ;tony  4/22/91
-RECALL AMBASSADOR  [195] ;tony  4/23/91
+RECALL  [---]
+- * AMBASSADOR  [195] ;tony  4/23/91
 RECEIVE  [033] ;tony  4/28/91
 - + HAS * A MESSAGE $  [031] ;tony  4/26/91
 - + * MONEY $  [071]
@@ -440,12 +524,13 @@ RECOMMEND  [102]
 REDUCE  [---]
 - * NUMBER  [193]
 - * TERM  [012]
-REESTABLISH DIPLOMATIC  [064]
+REESTABLISH  [---]
+- * DIPLOMATIC  [064]
 REFUS  [112]
 - * ASSURENCES  [142]
 REFUTE  [140]
 REGRET  [111]
-{REGRETTED}
+{REGRETTED REGRETS}
 - EXPRESS *  [112] ;tony  4/22/91
 - NOTED + *  [115] ; test pattern DEMO-10a  26 Apr 03
 - SAID $ *  [113] ; test pattern DEMO-10
@@ -491,15 +576,17 @@ RESUME  [065]
 - * DEPORTATION  [201] ;tony  4/19/91
 - * PROTESTS  [181] ;tony  3/9/91
 - * TIES  [064] ;jw 9/30/91
-REVERSE BAN  [065] ;tony  4/26/91
+REVERSE  [---]
+- * BAN  [065] ;tony  4/26/91
 RIOT  [181] ;tony  3/13/91
 - *_POLICE  [---]
 RISEN  [---] 
 - DEATH_TOTAL * [224] ; pas 24-Apr-14
 - DEATH TOLL * [223] ;JW   10/17/91
 ROCKETED  [223] ;jw   10/8/91
-ROUNDED_UP  [202]
-- SAID *  [202]
+ROUNDED [---]
+- *_UP  [202]
+- SAID *_UP [202]
 RULE OUT  [111]
 SAFEGUARD  [054] ;jw 9/16/91
 SAID  [023] ;PAS   9/25/91
@@ -529,22 +616,27 @@ SEEK  [094]
 SEIZE  [210]
 SELL  [073]
 - SAID *  [101]
-SET_UP  [---]
-- * COMMITTEE  [082:082]
-- * MILITARY  [182]
-- * TIES  [064]
-- * FUND  [071]
-- * BASE  [182]
+SET  [---]
+- *_UP COMMITTEE  [082:082]
+- *_UP MILITARY  [182]
+- *_UP TIES  [064]
+- *_UP FUND  [071]
+- *_UP BASE  [182]
 - % * MET  [031]
-SHOT_AND_WOUND  [223] ;pas   9/26/91
+SHOT [---]
+- *_AND_WOUND  [223] ;pas   9/26/91
 SHOT  [223]
 - + WAS * DEAD IN $ [224]
-- + WAS * BY $  [223]
+
+&NEGSYN1
++NEVER
++DON'T
+
 SHOULD  [101] ;JW   11/21/91
-- SUGGESTED + * REQUIRE_{ GENEVA | INTERNATIONAL } CONVENTIONS  [151] ; patterns 12a-14a
-- SUGGESTED + * DEMAND_{ GENEVA_ | INTERNATIONAL_ }_CONVENTIONS  [161] ; patterns 12b-14b
-- SUGGESTED_{ NEVER | DON'T } * DEMAND CONVENTIONS  [171] ; patterns 12c-14c
-- SUGGESTED * APPLY_{ GENEVA | INTERNATIONAL } CONVENTIONS  [151]
+- SUGGESTED + * REQUIRE_&GENINT CONVENTIONS  [151] ; patterns 12a-14a
+- SUGGESTED + * DEMAND_&GENINT_CONVENTIONS  [161] ; patterns 12b-14b
+- SUGGESTED_&NEGSYN1 * DEMAND CONVENTIONS  [171] ; patterns 12c-14c
+- SUGGESTED * APPLY_&GENINT CONVENTIONS  [151]
 - SUGGESTED * DEMAND CONVENTIONS  [162]
 - SUGGESTED * APPLY CONVENTIONS  [152]
 - SAID * SUSPEND CONTRIBUT  [102] ;JON 5/24/95
@@ -563,7 +655,8 @@ SHOULD  [101] ;JW   11/21/91
 - * AGREE  [102]
 - SAID *  [102]
 - * SHUT  [102]
-SHUT BORDER  [192] ;tony  4/28/91
+SHUT  [---]
+- * BORDER  [192] ;tony  4/28/91
 SIGN  [081]
 - * NEW_PROTOCOL  [084]
 - * AGREEMENT  [081]
@@ -572,24 +665,23 @@ SIGN  [081]
 - CLOSE TO *  [031] ;tony  4/19/91
 - SHOW NO *  [083] ;tony  4/22/91
 - * PACT  [053]
-SIGNAL DESIRE TO SETTLE  [024] ;tony  4/29/91
-SOCCER  [###] ;-PAS 95.12.15
+SIGNAL  [---]
+- * DESIRE TO SETTLE  [024] ;tony  4/29/91
 SOLD_ [081] ;PAS   9/27/91
 SOUGHT  [102]
 - * FOR QUESTIONING  [121] ;tony  3/12/91
 - * ALLAY  [054]
 - * HELP  [095]
 SPURN  [111]
-SQUASH_CHAMPIONSHIP  [###] ;JW   10/16/91
-STAB_ [222] ;pas   9/26/91
-STABBED  [222] ;pas   9/26/91
-- + HAS_BEEN_* BY $
+STAB [222] ;pas   9/26/91
+{ STABS STABBED} 
 STAGE  [180] ;tony  4/29/91
 START  [---]
 - * ARTILLERY DUEL  [223] ;tony  4/21/91
 - * REOPENING  [065] ;tony  3/9/91
 - * TOUR  [032] ;tony  3/9/91
 STOP  [190]
+{STOPS STEOPPED}
 - SAID MUST BE *  [122]
 - * FOR TALKS  [031] ;jw 9/25/91
 - IS TRYING *  [131]
@@ -613,7 +705,7 @@ TRADE  [---]
 TRAVEL  [032:032] ;PAS   9/24/91
 TRIAL  [---]
 - WENT ON *  [212]
-TROUBLED  [---]
+TROUBLED  [---] # NOUN
 - SAID *  [131]
 TRY  [---]
 - * END CONFLICT  [094] ;tony  3/9/91
@@ -624,26 +716,50 @@ TURN  [---]
 - * BLIND EYE  [142] ;tony  4/29/91
 - * DOWN  [111]
 - HAS *  [111] ;tony  4/23/91
-UNDER CURFEW  [212]
-UPGRADE REPRESENTATION  [064]
+UPGRADE [---]
+- * REPRESENTATION  [064]
+
+&NEGSYN2
++NOT
++DECLINED
++REFXSED_TO
+
 URGE  [102]
 - * TO_FREEZE SETTLEMENT_ACTIVITY [102b]
-- HAS { NOT | REFXSED_TO | DECLINED } *  [121] ; pattern 08
+- HAS &NEGSYN2 *  [121] ; pattern 08
 - HAS *  [122]
 URGING  [102] ;jw 9/18/91
-VISIT_ [032:032] ;pas   9/22/91
-VISITED  [032:032]
+VISIT [032:032] ;pas   9/22/91
+
+&TESTSYN1
++LOUDLY INCLUDED
++STRONGLY ASSXRTED
+
+&TESTSYN2
++RAISED
++OTTERED
+
 VOICE  [020] ;tony  4/28/91
-- RECENTLY { LOUDLY INCLUDED | STRONGLY ASSXRTED } ITS *  [043] ; pattern 29*
-- RECENTLY { RAISED | OTTERED } ITS *  [042] ; pattern 08a, 29c
+- RECENTLY &TESTSYN1 ITS *  [043] ; pattern 29* #NOUN
+- RECENTLY &TESTSYN2 ITS *  [042] ; pattern 08a, 29c
 - * CONCERN  [022]
 - * OUTRAGE  [122] ;tony  4/22/91
 - * DISMAY  [121] ;tony  3/9/91
 - * HORROR  [121]
 VOTE  [102] ;tony  4/21/91
+
+&TESTSYN3
++TO THE END
++TO THE DEATH
++UNTIL HELL FREEZES OVER
+
+&TESTSYN4
++TO THE END OF THE EARTH
++TO THE DEATH
+
 VOW  [170] ;tony  3/9/91
-- * RESIST { TO THE END | TO THE DEATH | UNTIL HELL FREEZES OVER }  [113] ; pas 4/20/03
-- * RESIST { TO THE END OF THE EARTH | TO THE DEATH }  [115] ; pas 4/20/03
+- * RESIST &TESTSYN3 [113] ; pas 4/20/03
+- * RESIST &TESTSYN4  [115] ; pas 4/20/03
 - * RESISTANCE TO THE INVADING  [114] ; pas 4/20/03
 - * RESIST  [112] ;tony  4/29/91
 - * WAR  [173] ;tony  4/22/91
@@ -651,26 +767,50 @@ WANT  [090] ;pas   9/26/91
 - * HIGH PRICE  [093] ;tony  3/9/91
 WARN  [160]
 - NOW + HAVE BEEN * $ RECENT  [165] ; PAS 6/2/08
-- + HAVE BEEN * $  [161]
-- + HAS BEEN * $  [160]
 - $ ^ FOR *  [164] ; pattern 31b
 - * AT ^ +  [162]
 - $ IN ^ *  [163]
+
+<!-- TABARI allowed synsets inside multi-word patterns in synsets; this has not been -->
+<!-- implement in PETRARCH; the patterns below are a replacement that matches a number -->
+<!-- of cases.  pas 14.05.09 -->
+
 WELCOME  [041]
-WILLING_TO_PROVIDE  [082]
-WIPE_OUT  [---]
-- SAID WOULD *  [173]
+- * &TIETYPES_MEMOS FROM [911]
+- * &TIETYPES_RUMORS FROM [911]
+- * MEMOS_ON_&TIETYPES FROM [911]
+- * &TIETYPES_MEMOS ABOUT [915]
+- * &TIETYPES_RUMORS ABOUT [915]
+- * MEMOS_ON_&TIETYPES ABOUT [915]
+- * &TIETYPES ASSURANCES FROM [913]
+- * ASSURANCES_ON &TIETYPES FROM [913]
+- * &TIETYPES_MEMOS  [912]
+- * &TIETYPES_RUMORS  [912]
+- * MEMOS_ON_&TIETYPES  [912]
+- * &TIETYPES ASSURANCES [914]
+- * ASSURANCES_ON &TIETYPES [914]
+
+
+WILLING [---]
+- *_TO_PROVIDE  [082]
+WIPE  [---]
+- SAID WOULD *_OUT  [173]
 WISH  [---]
 - HAS NO *  [025] ;jw 9/23/91
+
+&TESTSYN5
++MISSILES
++ROCKETS
+
 WITHDRAW  [192]
 - * FROM DIPLOMATIC EFFORTS  [194]
 - REPORT * TROOPS CENSORED  [197]
 - SAID WOULD NOT * TROOPS  [182]
 - EXPRESSED PESSIMISM *  [022]
-- IF DOES NOT * { MISSILES | ROCKETS }  [173]
+- IF DOES NOT * &TESTSYN5  [173]
 - IF DOES NOT * MISSILES  [173]
 - SAID * UNCONDITIONAL  [171]
-- { MISSILES | ROCKETS } HAVE BEEN *  [174]
+- &TESTSYN5 HAVE BEEN *  [174]
 - SAID HAD NOT * THREAT  [171]
 - ATTITUDE DEPEND ON *  [025] ;shan 1/7/94
 - SAID * OF INSPECTORS  [012]
@@ -706,5 +846,4 @@ WON  [---]
 - + * PLEDGE FROM $  [054] ;tony  3/9/91
 - * MORE GROUND  [211]
 WOUND  [223]
-- + * BY $  [223] ;tony  4/22/91
 

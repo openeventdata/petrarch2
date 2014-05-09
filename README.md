@@ -39,4 +39,5 @@ of redundancy in the existing dictionaries. While the initial version of the pro
 could use existing TABARI dictionaries, this compatibility will decline with further 
 developments and only the PETRARCH-specific dictionaries can be used
 
-23-April-2014: PETRARCH-formatted agents dictionary required
+15-Nov-2013: Requires TABARI 0.8 indented date restrictions, not older in-line format
+23-Apr-2014: PETRARCH-formatted agents dictionary required

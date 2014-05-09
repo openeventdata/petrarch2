@@ -13,7 +13,7 @@ PRESIDENT [~GOVPRS] # ns 6/26/01
 OFFICIAL_MEDIA {} [~GOVMED] # ab 16 Aug 2005
 ATTORNEY_GENERAL {ATTORNEYS_GENERAL} [~GOV] # mj 05 Jan 2006
 FOREIGN_MINISTRY [~GOV] # mj 17 Apr 2006
-SECURITY_SERVICE [~GOV] # tb 22 Apr 2006
+SECURITY SERVICE [~GOV] # tb 22 Apr 2006
 OPPOSITION_GROUP [~OPP] # lrp 28 Apr 2006
 CONGRESS [~LEG] # pas 14.04.22: check for correct plural formation
 CONGRESS!PERSON! [~LEG] # pas 14.04.22: check for substitution marker

@@ -5,7 +5,7 @@
 #                               PETRARCH UNIT TEST RECORDS
 #                 To run: python PETR.coder.py -v PETR.UnitTest.records.txt
 #                            Version compatibility: 0.5.0b1
-#                            Last Update: 28 April 2014
+#                            Last Update: 9 May 2014
 #
 #   These are the unit test records which should all correctly following any changes
 #   in the program. Really. All of them. If the program is working correctly, the
@@ -16,6 +16,14 @@
 #   and assorted cases that broke earlier versions of the program for idiosyncratic reasons.  
 #   The sentence IDs in this file may or may not correspond to those in other validation
 #   files. Sorry.
+#
+#   This was originally based on the TABARI validation suite, and some of the records 
+#   probably don't provide much additional testing of PETRARCH. In addition, quite a   
+#   few of those TABARI cases did not transfer over because they relied on the simple 
+#   pattern matching of the TABARI shallow parse, sometimes with nonsense words that 
+#   did not parse plausibly. There is less syntactic variation in these cases than there 
+#   could be -- good unit tests are hard to do! -- and additional contributions would be
+#   helpful. 
 #
 #   Tree indentations were formatted using the program "unittest.my.pretty.py" (in the 
 #   "utilities" branch of https://github.com/openeventdata), which is used to reduce the
@@ -2136,7 +2144,7 @@ diplomatic ties with former Minas Tirith border police.
 <!--
 ##################################################################
 #
-#                      COMPOUND PHRASES
+#                      COMPOUND ACTORS AND PHRASES
 #
 ##################################################################
 -->
@@ -2948,6 +2956,716 @@ on Thursday.
     ) )
   )  (. .)
 ) )
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-19" category="COMPOUND" valid="true">
+<!-- Test <adjctv><conj><adjctv> construction; coded as CALGOV in TAB and as ITHGOV -->
+<!-- in PETR, which given the weirdness of the sentence will do. It remains here for  -->
+<!-- robustness checking -->
+<!-- Last update: TABARI validation with update -->
+<EventCoding sourcecode="ITHGOV" targetcode="DOL" eventcode="160">
+<Text>
+Ithilen's awful and cool minister Calimehtar warned of the Prince of 
+Dol Amroth. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP
+      (NP (NNP Ithilen) (POS 's))
+      (ADJP (JJ awful)
+        (CC and)
+        (JJ cool))
+      (NN minister) (NN Calimehtar))
+    (VP (VBD warned)
+      (PP (IN of)
+        (NP
+          (NP (DT the) (NNP Prince))
+          (PP (IN of)
+            (NP (NNP Dol) (NNP Amroth))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-20" category="COMPOUND" valid="true">
+<!-- Test of <actor><noun><conj><noun> construction; TAB would not generate a compound -->
+<!-- phrase but PETR does: again,given the weirdness of the sentence will do. It remains -->
+<!-- here for robustness checking -->
+<!-- Last update: TABARI validation with update -->
+<EventCoding sourcecode="ITH" targetcode="DOL" eventcode="160">
+<EventCoding sourcecode="GON" targetcode="DOL" eventcode="160">
+<Text>
+Ithilen's sheep and goats of Gondor warned of the Prince of Dol_Amroth. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP
+      (NP
+        (NP (NNP Ithilen) (POS 's))
+        (NN sheep))
+      (CC and)
+      (NP
+        (NP (NNS goats))
+        (PP (IN of)
+          (NP (NNP Gondor)))))
+    (VP (VBD warned)
+      (PP (IN of)
+        (NP
+          (NP (DT the) (NNP Prince))
+          (PP (IN of)
+            (NP (NNP Dol) (NNP Amroth))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-21" category="COMPOUND" valid="true">
+<!-- Test <actor><conj><detr><actor> construction. This also checks a skip on a  -->
+<!-- null-coded (NE  -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ITH" targetcode="DOL" eventcode="162">
+<EventCoding sourcecode="GONGOV" targetcode="DOL" eventcode="162">
+<Text>
+Ithilen and the government of Gondor warned their populations about the Prince of Dol_Amroth. 
+</Text>
+<Parse>
+(ROOT (S 
+	(NP (NP (NNP Ithilen)) 
+	(CC and) 
+	(NP (NP (DT the) (NN government)) (PP (IN of) (NP (NNP Gondor))))) 
+	(VP (VBD warned) 
+	(NP (PRP$ their) (NNS populations)) 
+	(PP (IN about) 
+	(NP (NP (DT the) (NNP Prince)) (PP (IN of) (NP (NNP Dol) (NNP Amroth))
+	)))) 
+(. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-22" category="COMPOUND" valid="true">
+<!-- Test <actor><conj><detr><actor> construction with a check on a skip of a coded (NE-->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ITH" targetcode="DOL" eventcode="162">
+<EventCoding sourcecode="GONGOV" targetcode="DOL" eventcode="162">
+<Text>
+Ithilen and the government of Gondor warned their Ent populations about the Prince of Dol_Amroth. 
+</Text>
+<Parse>
+(ROOT (S 
+	(NP (NP (NNP Ithilen)) 
+	(CC and) 
+	(NP (NP (DT the) (NN government)) 
+	(PP (IN of) 
+	(NP (NNP Gondor))))) 
+	(VP (VBD warned) 
+	(NP (PRP$ their) (NN Ent) (NNS populations)) 
+	(PP (IN about) 
+	(NP (NP (DT the) (NNP Prince)) (PP (IN of) (NP (NNP Dol) (NNP Amroth)))
+	))) 
+(. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="COMPOUND-23" category="COMPOUND" valid="true">
+<!-- Test of NOR conjunction and the NEITHER pattern match-->
+<!-- Last update: TABARI validation with modifications-->
+<EventCoding sourcecode="ELF" targetcode="GON" eventcode="081">
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="081">
+<Text>
+Neither Galadriel nor Gollum boycotted the parade supporting Gondor 
+on Saturday. 
+</Text>
+<Parse>
+(ROOT (S 
+	(NP (NP (DT Neither)) 
+	(NP (NNP Galadriel) 
+	(CC nor) 
+	(NNP Gollum))) 
+	(VP (VBD boycotted) 
+	(NP (NP (DT the) (NN parade)) 
+	(VP (VBG supporting) 
+	(NP (NP (NNP Gondor)) 
+	(PP (IN on) 
+	(NP (NNP Saturday)))
+)))) (. .)))
+</Parse>
+</Sentence>
+<Sentence date="19950106" id="COMPOUND-24" category="COMPOUND"  valid="true">
+<!-- [Coding two events from a compound sentence] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122">
+<EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="050">
+<Text>
+The Calenardhon government condemned an attack by Osgiliath soldiers 
+in south Ithilen on Thursday and promised aid to the affected Ithilen villages. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (DT The) (JJ Calenardhon) (NN government))
+    (VP
+      (VP (VBD condemned)
+        (NP (DT an) (NN attack))
+        (PP (IN by)
+          (NP
+            (NP (NNP Osgiliath) (NNS soldiers))
+            (PP (IN in)
+              (NP (JJ south) (NNP Ithilen)))))
+        (PP (IN on)
+          (NP (NNP Thursday))))
+      (CC and)
+      (VP (VBD promised)
+        (NP (NN aid))
+        (PP (TO to)
+          (NP (DT the) (VBN affected) (NN Ithilen) (NNS villages)))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-25" category="COMPOUND" valid="true">
+<!-- Test <noun><conj><noun> construction when first noun is part of an -->
+<!-- actor phrase. Also tests the forwarding of an adjective  -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="DNKMED" targetcode="DOL" eventcode="162">
+<EventCoding sourcecode="DNKGOV" targetcode="DOL" eventcode="162">
+<Text>
+Danish media and government warned at the Gondor of the Prince of Dol Amroth. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (JJ Danish) (NNS media)
+      (CC and)
+      (NNS government))
+    (VP (VBD warned)
+      (PP (IN at)
+        (NP
+          (NP (DT the) (NNP Gondor))
+          (PP (IN of)
+            (NP
+              (NP (DT the) (NNP Prince))
+              (PP (IN of)
+                (NP (NNP Dol) (NNP Amroth))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-26" category="COMPOUND" valid="true">
+<!-- Test <noun><conj><noun> construction when first noun is part of an -->
+<!-- actor phrase. This is more plausibly grammatical, which shifts the target. -->
+<!-- Last update: 14.05.09 -->
+<EventCoding sourcecode="DNKMED" targetcode="GON" eventcode="160">
+<EventCoding sourcecode="---GOV" targetcode="GON" eventcode="160">
+<Text>
+The Danish media and government warned the population of Gondor of the Prince of Dol Amroth. </Text>
+<Parse>
+(ROOT (S 
+  (NP 
+    (NP 
+      (DT The) (JJ Danish) (NNS media)
+    ) (CC and) (NP (NN government)
+    )
+  ) 
+  (VP 
+    (VBD warned) (NP 
+      (NP (DT the) (NN population)
+      ) 
+      (PP (IN of) (NP 
+          (NP (NNP Gondor)
+          ) 
+          (PP (IN of) (NP 
+              (NP (DT the) (NNP Prince)
+              ) 
+              (PP (IN of) (NP (NNP Dol) (NNP Amroth)
+            ) ) )
+        ) )
+      )
+    )
+  ) (. .)
+) )
+
+</Parse>
+</Sentence>
+
+<Sentence date="19990809" id="COMPOUND-27" category="COMPOUND" valid="true">
+<!-- Check the duplication of multiple adjectives in a compound phrase -->
+<!-- Markup of the (CC phrase was manipulated to produce a tree that would code this way -->
+<!-- Last update: 14.05.09 -->
+<EventCoding sourcecode="DNKMOSMED" targetcode="GON" eventcode="160">
+<EventCoding sourcecode="DNKMOSGOV" targetcode="GON" eventcode="160">
+<Text>
+The Danish Islamist media and government warned at the Gondor of the Prince of Dol Amroth. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP 
+     (DT The) (JJ Danish) (JJ Islamist) (NNS media)
+    (CC and) (NN government)
+    
+  ) 
+  (VP 
+    (VBD warned) (NP 
+      (NP (DT the) (NN population)
+      ) 
+      (PP (IN of) (NP 
+          (NP (NNP Gondor)
+          ) 
+          (PP (IN of) (NP 
+              (NP (DT the) (NNP Prince)
+              ) 
+              (PP (IN of) (NP (NNP Dol) (NNP Amroth)
+            ) ) )
+        ) )
+      )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="20000423" id="COMPOUND-28" category="COMPOUND" valid="true">
+<!--  Involves an overlap of compound and subordinate phrases that caused  -->
+<!-- an infinite loop in earlier versions -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="023">
+<EventCoding sourcecode="HOB" targetcode="ARN" eventcode="023">
+<Text>
+Frodo said he has deep satisfaction toward Gondor and Arnor's Elrond, 
+and Gondor's dramatic cooperation and its eye-catching development are of 
+great significance to the region and even the entire world, he noted. 
+</Text>
+<Parse> 
+(ROOT  (S    (S  
+    (NP (NNP Frodo)
+    )  
+    (VP 
+      (VBD said)  
+      (SBAR  
+        (S  
+          (S  
+            (NP 
+              (PRP he)
+            )  
+            (VP 
+              (VBZ has)  (NP  
+                (NP  
+                  (NP 
+                    (JJ deep) (NN satisfaction)
+                  )  
+                  (PP (IN toward)  (NP (NNP Gondor)
+                  ) )
+                )  (CC and)  (NP  
+                  (NP  
+                    (NP (NNP Arnor) (POS 's)
+                    )  (NNP Elrond)
+                  )  (, ,)  (CC and)  (NP  
+                    (NP (NNP Gondor) (POS 's)
+                    )  (JJ dramatic) (NN cooperation)
+              ) ) )
+            )
+          )  (CC and)  (S  
+            (NP 
+              (PRP$ its) (JJ eye-catching) (NN development)
+            )  
+            (VP 
+              (VBP are)  
+              (PP (IN of)  (NP 
+                  (JJ great) (NN significance)
+                )
+              )  
+              (PP 
+                (TO to)  (NP  
+                  (NP (DT the) (NN region)
+                  )  (CC and)  (NP 
+                    (RB even) (DT the) (JJ entire) (NN world)
+              ) ) )
+          ) )
+          ) ) )
+  )  (, ,)  (NP 
+    (PRP he)
+  )  
+  (VP 
+    (VBD noted)
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950106" id="COMPOUND-29" category="COMPOUND" valid="true">
+<!-- [Minor variants on DEMO-06 used to test pattern reporting] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="132">
+<EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="173">
+<Text>
+The Calenardhon government issue condemned an attack by Osgiliath soldiers 
+in south Ithilen on Thursday and promised raids to the affected Ithilen villages. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (NP (DT The) (JJ Calenardhon) (NN government) (NN issue)
+  )  
+  (VP  
+    (VP 
+      (VBD condemned)  (NP (DT an) (NN attack)
+      )  
+      (PP (IN by)  (NP  
+          (NP (NNP Osgiliath) (NNS soldiers)
+          )  
+          (PP (IN in)  (NP 
+              (JJ south) (NNP Ithilen)
+        ) ) )
+      )  
+      (PP (IN on)  (NP (NNP Thursday)
+      ) )
+    )  (CC and)  
+    (VP 
+      (VBD promised)  (NP (NNS raids)
+      )  
+      (PP 
+        (TO to)  (NP (DT the) (VBN affected) (NN Ithilen) (NNS villages)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950106" id="COMPOUND-30" category="COMPOUND" valid="true">
+<!-- [Coding two events from a compound sentence] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="131">
+<EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="201">
+<Text>
+The Calenardhon government chided an attack by Osgiliath soldiers 
+in south Ithilen on Thursday and ousted the affected Ithilen villages. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (NP (DT The) (JJ Calenardhon) (NN government)
+  )  
+  (VP  
+    (VP 
+      (VBD chided)  (NP (DT an) (NN attack)
+      )  
+      (PP (IN by)  (NP  
+          (NP (NNP Osgiliath) (NNS soldiers)
+          )  
+          (PP (IN in)  (NP 
+              (JJ south) (NNP Ithilen)
+        ) ) )
+      )  
+      (PP (IN on)  (NP (NNP Thursday)
+      ) )
+    )  (CC and)  
+    (VP 
+      (VBN ousted)  (NP (DT the) (VBN affected) (NN Ithilen) (NNS villages)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="COMPOUND-31" category="COMPOUND" valid="true">
+<!-- Conjunction at beginning of sentence -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ERI" targetcode="OSG" eventcode="096">
+<Text>
+And Eriador has called for a boycott against Osgiliath, the state's fiercest foe. 
+</Text>
+<Parse>
+(ROOT
+  (S (CC And)
+    (NP (NNP Eriador))
+    (VP (VBZ has)
+      (VP (VBN called)
+        (PP (IN for)
+          (NP
+            (NP (DT a) (NN boycott))
+            (PP (IN against)
+              (NP
+                (NP (NNP Osgiliath))
+                (, ,)
+                (NP
+                  (NP (DT the) (NN state) (POS 's))
+                  (JJS fiercest) (NN foe))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="20000423" id="COMPOUND-32" category="COMPOUND" valid="true">
+<!-- Involves an overlap of multiple compound phrases that caused   a crash/infinite -->
+<!-- loop in earlier versions of TAB. The complexity of the phrase is way beyond -->
+<!-- anything automated coding can handle, but leaving this here to check on the  -->
+<!-- robustness of the system against crashes. -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="CAL" eventcode="081">
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="081">
+<EventCoding sourcecode="GON" targetcode="CAL" eventcode="081">
+<Text>
+Resumption of ties between Arnor and Gondor may spur reconciliation 
+between Calenardhon and Gondor, and Gondor and Dagolath, the Osgiliath
+newspaper al-Raya said on Friday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP  
+      (NP (NN Resumption)
+      )  
+      (PP (IN of)  (NP  
+          (NP (NNS ties)
+          )  
+          (PP (IN between)  (NP (NNP Arnor)  (CC and)  (NNP Gondor)
+        ) ) )
+      )
+    )  
+    (VP 
+      (MD may)  
+      (VP 
+        (VB spur)  (NP  
+          (NP (NN reconciliation)
+          )  
+          (PP (IN between)  (NP (NNP Calenardhon)  (CC and)  (NNP Gondor)
+        ) ) )
+    ) )
+  )  (, ,)  (CC and)  (S  
+    (NP  
+      (NP (NNP Gondor)  (CC and)  (NNP Dagolath)
+      )  (, ,)  (NP  
+        (NP (DT the) (NNP Osgiliath) (NN newspaper)
+        )  (NP (NNP al-Raya)
+      ) )
+    )  
+    (VP 
+      (VBD said)  
+      (PP (IN on)  (NP (NNP Friday)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950107" id="COMPOUND-33" category="COMPOUND" valid="true">
+<!-- Compound source and target with unattached agents -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="---MOS" targetcode="DAG" eventcode="023">
+<EventCoding sourcecode="---MOS" targetcode="OSG" eventcode="023">
+<EventCoding sourcecode="---LEG" targetcode="DAG" eventcode="023">
+<EventCoding sourcecode="---LEG" targetcode="OSG" eventcode="023">
+<Text>
+Clerics and lawmakers believe Dagolath and Osgiliath can cope with a decrease in vital 
+water from the mighty Entwash river when a major dam is filled next 
+month. 
+</Text>
+<Parse>
+(ROOT  (S
+    (NP (NNS Clerics)
+      (CC and)
+      (NNS lawmakers))
+    (VP (VBP believe)
+      (SBAR
+        (S
+          (NP (NN Dagolath)
+            (CC and)
+            (NN Osgiliath))
+          (VP (MD can)
+            (VP (VB cope)
+              (PP (IN with)
+                (NP
+                  (NP (DT a) (NN decrease))
+                  (PP (IN in)
+                    (NP (JJ vital) (NN water)))))
+              (PP (IN from)
+                (NP
+                  (NP (DT the) (JJ mighty) (JJ Entwash) (NN river))
+                  (SBAR
+                    (WHADVP (WRB when))
+                    (S
+                      (NP (DT a) (JJ major) (NN dam))
+                      (VP (VBZ is)
+                        (VP (VBN filled)
+                          (NP-TMP (JJ next) (NN month)))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950105" id="COMPOUND-34" category="COMPOUND" valid="true">
+<!-- NASGUL has the TAB discard code ###, and PETR handles discards through a separate -->
+<!-- list, though this is useful to insure that ### isn't being confused with a comment -->
+<!-- delimiter -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="###" targetcode="MOR" eventcode="023">
+<Text>
+The Nasgul said on Friday that an arms embargo against Mordor would not 
+work and warned that a blockade of the Bay of Belfalas would harm all  
+countries of the region. 
+</Text>
+<Parse>
+(ROOT  (S
+    (NP (DT The) (NNP Nasgul))
+    (VP (VBD said)
+      (PP (IN on)
+        (NP (NNP Friday)))
+      (SBAR (IN that)
+        (S
+          (NP
+            (NP (DT an) (NNS arms) (NN embargo))
+            (PP (IN against)
+              (NP (NNP Mordor))))
+          (VP
+            (VP (MD would) (RB not)
+              (VP (VB work)))
+            (CC and)
+            (VP (VBD warned)
+              (SBAR (IN that)
+                (S
+                  (NP
+                    (NP (DT a) (NN blockade))
+                    (PP (IN of)
+                      (NP
+                        (NP (DT the) (NNP Bay))
+                        (PP (IN of)
+                          (NP (NNP Belfalas))))))
+                  (VP (MD would)
+                    (VP (VB harm)
+                      (NP
+                        (NP (DT all) (NNS countries))
+                        (PP (IN of)
+                          (NP (DT the) (NN region)))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950105" id="COMPOUND-35" category="COMPOUND" valid="true">
+<!-- Discard code in compound source: similar to the above -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="GON" targetcode="MORCOP" eventcode="023">
+<EventCoding sourcecode="###" targetcode="MORCOP" eventcode="023">
+<Text>
+The information ministry of Gondor and the Nasgul said on Friday that an arms 
+embargo against the Mordor police would not work and warned that a blockade of 
+the Bay of Belfalas would harm all countries of the region. 
+</Text>
+<Parse>
+(ROOT  (S
+    (NP
+      (NP (DT The) (NN information) (NN ministry))
+      (PP (IN of)
+        (NP (NNP Gondor)
+          (CC and)
+          (NP (DT the)(NNP Nasgul)))))
+    (VP (VBD said)
+      (PP (IN on)
+        (NP (NNP Friday)))
+      (SBAR (IN that)
+        (S
+          (NP
+            (NP (DT an) (NNS arms) (NN embargo))
+            (PP (IN against)
+              (NP (DT the)  (NNP Mordor)  (NN police))))
+          (VP
+            (VP (MD would) (RB not)
+              (VP (VB work)))
+            (CC and)
+            (VP (VBD warned)
+              (SBAR (IN that)
+                (S
+                  (NP
+                    (NP (DT a) (NN blockade))
+                    (PP (IN of)
+                      (NP
+                        (NP (DT the) (NNP Bay))
+                        (PP (IN of)
+                          (NP (NNP Belfalas))))))
+                  (VP (MD would)
+                    (VP (VB harm)
+                      (NP
+                        (NP (DT all) (NNS countries))
+                        (PP (IN of)
+                          (NP (DT the) (NN region)))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMPOUND-36" category="COMPOUNDx" valid="true">
+<!-- [checks for a bug discovered by VanB when an actor-agent is followed -->
+<!--  by a compound] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="USAGOV" targetcode="GON" eventcode="064">
+<EventCoding sourcecode="USAGOV" targetcode="ARN" eventcode="064">
+<Text>
+White House security officials are about to restore full diplomatic 
+ties with Gondor and Arnor. 
+</Text>
+<Parse>
+(ROOT  (S
+    (NP (NNP White) (NNP House) (NN security) (NNS officials))
+    (VP (VBP are)
+      (VP (IN about)
+        (S
+          (VP (TO to)
+            (VP (VB restore)
+              (NP (JJ full) (JJ diplomatic) (NNS ties))
+              (PP (IN with)
+                (NP (NNP Gondor)
+                  (CC and)
+                  (NNP Arnor))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950108" id="COMPOUND-37" category="COMPOUND" valid="true">
+<!-- From TAB:[10.01.08: This is more of a bug than a feature: what is happening here is -->
+<!-- that THEIR is dereferenced and creates a <cmp> <verb> <cmp> structure rather than -->
+<!-- getting ITHILEN as the target: the effect is as though we had a reflexive -->
+<!-- code. Incorrect use of the pronoun, but a strong test of dereferencing a -->
+<!-- compound so I'm leaving it here. Also we've got a problem of not passing the -->
+<!-- agent into the compound -- see DEMO-08. -->
+<!-- PETR, on the other hand, codes this just the way we'd like! -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARNGOV" targetcode="ITHGOVPRS" eventcode="032">
+<EventCoding sourcecode="OSGGOV" targetcode="ITHGOVPRS" eventcode="032">
+<EventCoding sourcecode="GONGOV" targetcode="ITHGOVPRS" eventcode="032">
+<Text>
+The ambassadors of Arnor, Osgiliath and Gondor presented their 
+credentials to Ithilen's president on Wednesday in a further 
+show of support to his government by their countries. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP
+      (NP (DT The) (NNS ambassadors))
+      (PP (IN of)
+        (NP (NNP Arnor) (, ,) (NNP Osgiliath)
+          (CC and)
+          (NNP Gondor))))
+    (VP (VBD presented)
+      (NP (PRP$ their) (NNS credentials))
+      (PP (TO to)
+        (NP
+          (NP
+            (NP (NNP Ithilen) (POS 's))
+            (NN president))
+          (PP (IN on)
+            (NP
+              (NP (NNP Wednesday))
+              (PP (IN in)
+                (NP
+                  (NP (DT a) (JJ further) (NN show))
+                  (PP (IN of)
+                    (NP (NN support)))))))))
+      (PP (TO to)
+        (NP (PRP$ his) (NN government)))
+      (PP (IN by)
+        (NP (PRP$ their) (NNS countries))))
+    (. .)))
 </Parse>
 </Sentence>
 
@@ -5889,6 +6607,9 @@ Gollum allowed that Mordor isn't a real easy or pleasant place to visit.
 
 <Sentence date="19920102" id="PATTERN-15" category="PATTERN" valid="true">
 <!-- Test of ~_ connector in lower phrase -->
+<!-- The ~_ connector was a TABARI feature related to stemming, which PETARCH doesn't -->
+<!-- use, so these next few cases are just generic pattern matching. Leave them in here -->
+<!-- in case they can break something. -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="MOR" eventcode="025">
 <Text>
@@ -6094,6 +6815,256 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
 ) )
 </Parse>
 </Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-21" category="PATTERN" valid="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor after verb CELEBRATE.   -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="MORMIL" targetcode="MOR" eventcode="042">
+<Text>
+Mordor will be hosting Osgiliath to celebrate Tabaski with Eriador
+next week at Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Mordor))
+    (VP (MD will)
+      (VP (VB be)
+        (VP (VBG hosting)
+          (S
+            (NP (NNP Osgiliath))
+            (VP (TO to)
+              (VP (VB celebrate)
+                (NP
+                  (NP (NN Tabaski))
+                  (PP (IN with)
+                    (NP (NNP Eriador))))
+                (NP-TMP (JJ next) (NN week))
+                (PP (IN at)
+                  (NP (NNP Cirith) (NNP Ungol)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-22" category="PATTERN" valid="true">
+<!-- Same structure as above but without the skip   -->
+<!-- Last update: 8 May 2014 -->
+<EventCoding sourcecode="ERI" targetcode="MOR" eventcode="046">
+<Text>
+Mordor will be hosting Osgiliath to celebrate May Day with Eriador
+next week at Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Mordor))
+    (VP (MD will)
+      (VP (VB be)
+        (VP (VBG hosting)
+          (S
+            (NP (NNP Osgiliath))
+            (VP (TO to)
+              (VP (VB celebrate)
+                (NP
+                  (NP (NNP May) (NNP Day))
+                  (PP (IN with)
+                    (NP (NNP Eriador))))
+                (NP-TMP (JJ next) (NN week))
+                (PP (IN at)
+                  (NP (NNP Cirith) (NNP Ungol)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-23" category="PATTERN" valid="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="043">
+<Text>
+Arnor has celebrated Eid at Osgiliath with Gondor after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NN Eid))
+          (PP (IN at)
+            (NP (NN Osgiliath))))
+        (PP (IN with)
+          (NP (NNP Gondor)))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-24" category="PATTERN" valid="true">
+<!--  Just another of  ^ (actor skipping) in a pattern -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="045">
+<Text>
+Arnor has celebrated Iftar in Osgiliath with the leaders of Gondor after leaving Eriador 
+when a hafling was reported on the pass of Cirith Ungol. </Text>
+<Parse>
+(ROOT (S 
+	(NP (NNP Arnor)) 
+	(VP (VBZ has) (VP (VBN celebrated) 
+	(NP (NP (NNP Iftar)) 
+	(PP (IN in) (NP (NNP Osgiliath)))) 
+	(PP (IN with) 
+	(NP (NP (DT the) (NNS leaders)) 
+	(PP (IN of) (NP (NNP Gondor))))) 
+	(PP (IN after) 
+	(S (VP (VBG leaving) (NP (NP (NNP Eriador)) 
+	(SBAR (WHADVP (WRB when)) 
+	(S (NP (DT a) (NN hafling)) 
+	(VP (VBD was) (VP (VBN reported) 
+	(PP (IN on) 
+	(NP (NP (DT the) (NN pass)) 
+	(PP (IN of) (NP (NNP Cirith) (NNP Ungol)))))))))))))
+)) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-25" category="PATTERN" valid="true">
+<!-- Test of multiple ^ (actor skipping) in a pattern: second skip is ---LEG (parliament) -->
+<!-- That "(NE GONDOR IN ERIDOR" isn't ideal but things seem to be working -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="044">
+<Text>
+Arnor has celebrated Iftar at Osgiliath with the parliament of Gondor in Eriador 
+after a hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NNP Iftar))
+          (PP (IN at)
+            (NP (NNP Osgiliath))))
+        (PP (IN with)
+          (NP
+            (NP (DT the) (NNS parliament))
+            (PP (IN of)
+              (NP
+                (NP (NNP Gondor))
+                (PP (IN in)
+                  (NP (NNP Eriador)))))))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-27" category="PATTERN" valid="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="043">
+<Text>
+Arnor has celebrated Eid at United Arab Emirates with Gondor after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NN Eid))
+          (PP (IN at)
+            (NP (NNP United) (NNP Arab) (NNPS Emirates))))
+        (PP (IN with)
+          (NP (NNP Gondor)))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19820727" id="PATTERN-28" category="PATTERN" valid="true">
+<!-- Conjunction at next to last position in sentence; could cause clause marking issues  -->
+<!-- in TABARI, but just gets absorbed into a very long (NE here -->
+<!-- Last update: TABARI validation with dictionary modifications -->
+<EventCoding sourcecode="GON" targetcode="OSG" eventcode="223">
+<Text>
+Gondor launched a new bombing and shelling offensive against besieged 
+Osgiliath during the night following daylight raids in which 
+Arnor spokesmen said 54 civilians were killed or injured. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (S
+      (NP (NNP Gondor))
+      (VP (VBD launched)
+        (NP (DT a) (JJ new) (NN bombing))))
+    (CC and)
+    (S
+      (VP (VBG shelling)
+        (NP (NN offensive))
+        (PP (IN against)
+          (S
+            (VP (VBN besieged)
+              (NP (NN Osgiliath))
+              (PP (IN during)
+                (NP
+                  (NP (DT the) (NN night))
+                  (PP (VBG following)
+                    (NP
+                      (NP (NN daylight) (NNS raids))
+                      (SBAR
+                        (WHPP (IN in)
+                          (WHNP (WDT which)))
+                        (S
+                          (NP (NNP Arnor) (NNS spokesmen))
+                          (VP (VBD said)
+                            (SBAR
+                              (S
+                                (NP (CD 54) (NNS civilians))
+                                (VP (VBD were)
+                                  (VP (VBN killed)
+                                    (CC or)
+                                    (VBN injured)))))))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
 
 <!--
 ##################################################################
@@ -6924,7 +7895,7 @@ official said on Saturday.
 </Sentence>
 
 <Sentence date="19950101" id="COMMA-11" category="MODIFY" valid="true">
-<!--  Should match only the terminal clause -->
+<!--  Should match BURNED DOWN (NE EMBASSY and the terminal clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="---" eventcode="222">
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023">
@@ -6979,7 +7950,8 @@ clearly inebriated Bree official said today.
 
 <Sentence date="19950101" id="COMMA-12" category="MODIFY" valid="true">
 <!-- TABARI would [incorrectly] match BREGOV the terminal clause after picking up GON -->
-<!-- as source.  PETR produces no events due to the absence of an (NE in the terminal -->
+<!-- as source.  PETR picks up only BURNED DOWN (NE EMBASSY due to the absence of an  -->
+<!-- (NE in the terminal clause -->
 <!-- clause -->
 <!-- Last update: TABARI validation with modification -->
 <EventCoding sourcecode="CAL" targetcode="---" eventcode="222">

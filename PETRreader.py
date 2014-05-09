@@ -710,7 +710,7 @@ def read_verb_dictionary():
 		code = scr[0]
 #		print verb, code
 		if verb[0] == '-':
-			if '%' in verb or '^' in verb:  # currently aren't processing these
+			if '%' in verb:  # currently aren't processing these
 				line = read_FIN_line() 
  				continue
 #			print 'RVD-1',verb

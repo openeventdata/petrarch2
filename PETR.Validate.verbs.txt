@@ -127,7 +127,6 @@ ASK  [090]
 ASSAIL  [122]
 ASSIST  [092]
 ATTACK  [223] ;jw   10/11/91
-ATTACKED  [223] ;jw   10/11/91
 - PLANES_*  [223]
 ATTEND  [031] ;-PAS 95.12.13
 - SAID * SUMMIT  [082]
@@ -166,6 +165,7 @@ BOYCOTT  [191]
 - NOTED WOULD *  [174] ; pattern CONNECT-12 7/15/03
 - SAID *  [172]
 - * WORK  [181]
+- NEITHER * [081]
 BRAND  [122]
 BREAK [1717]
 { BROKE BROKEN BROKEN_DOWN }
@@ -202,10 +202,12 @@ CARRIED_OUT  [181]
 CAST [---]
 - *_DOUBT  [141]
 CELEBRATE  [181]
-- $ HOSTING ^ * TABASKI  [042] ;pas  3/2/02
+- + HOSTING * TABASKI ^ $ [042] ;pas  3/2/02
+- + HOSTING * MAY_DAY  $ [046] ;pas  3/2/02
 - * EID AT ^ WITH +  [043] ;pas  3/2/02
 - * DECISION  [042] ;tony  3/9/91
 - * IFTAR AT ^ ^ +  [044] ;pas  4/20/03
+- * IFTAR IN ^ +  [045] ;pas  4/20/03
 CENSOR  [203] ;jw 9/29/91
 CHALLENGE  [094]
 - * CREDENTIALS  [142]
@@ -345,7 +347,7 @@ FIGHT  [223]
 - * BETWEEN %  [223] ;JW 5/15/95
 FINALIZE  [---]
 - * REPORT  [025]
-FINANC  [071] ;jw 9/17/91
+FINANCE  [071] ;jw 9/17/91
 - HELP *  [071] ;jw 9/24/91
 FORCE  [220]
 - PEACE-KEEPING *  [---]
@@ -375,7 +377,6 @@ HALT  [191]
 - * MARCH  [192] ;tony  4/28/91
 HAS [---]
 - *_NO_WISH  [025] ;jw   9/23/91
-HASHISH  [003] ; PAS 9/23/91
 HAVE [---]
 - *_NOTHING TO DO WITH  [022] ;jw 9/24/91
 HELD  [210]
@@ -402,6 +403,7 @@ LAUNCH  [---]
 - SAID WOULD * ATTACK  [173]
 - HAVE * OFFENSIVE  [223] ;tony  4/29/91
 - * NEW BROADSIDE  [122] ;tony  3/11/91
+- * OFFENSIVE  [223]
 - * DIPLOMATIC  [064]
 - * ATTACK  [223]
 - TANKS *  [224]
@@ -475,7 +477,6 @@ PERMIT  [060]
 PERSUADE  [031]
 PLACE  [---] ;PAS   9/27/91
 - * + IN DETENTION  [212] ;tony  4/22/91
-PLANE  [---] ;pas   9/26/91
 PRESENT  [---]
 - * CREDENTIALS  [032]
 - * PROPOSAL  [101]
@@ -602,12 +603,13 @@ SAID  [023] ;PAS   9/25/91
 - * UNABLE  [111] ;tony  3/12/91
 - * HAPPY  [041] ;tony  3/9/91
 SANK  [223] ;pas  3/1/91
-SATISF  [073]
+SATISFY  [073]
 - SAID *  [041]
 SAYS  [023?] ;pas   9/22/91
 - * WANTED STRONGER TIES  [094] ;tony  3/12/91
 - * NOT SWAP PRISONERS  [112] ;tony  3/11/91
-SCORN PROPOSAL  [111] ;tony  4/28/91
+SCORN [---]
+- * PROPOSAL  [111] ;tony  4/28/91
 SEAL  [---]
 - * BORDERS  [192] ;tony  4/28/91
 SEEK  [094]
@@ -623,6 +625,8 @@ SET  [---]
 - *_UP FUND  [071]
 - *_UP BASE  [182]
 - % * MET  [031]
+SHELL [---]
+- * OFFENSIVE [223]
 SHOT [---]
 - *_AND_WOUND  [223] ;pas   9/26/91
 SHOT  [223]
@@ -673,6 +677,8 @@ SOUGHT  [102]
 - * ALLAY  [054]
 - * HELP  [095]
 SPURN  [111]
+SPUR [111]
+- * RECONCILIATION [081] ; p.a.s 5/9/14
 STAB [222] ;pas   9/26/91
 { STABS STABBED} 
 STAGE  [180] ;tony  4/29/91
@@ -768,6 +774,7 @@ WANT  [090] ;pas   9/26/91
 WARN  [160]
 - NOW + HAVE BEEN * $ RECENT  [165] ; PAS 6/2/08
 - $ ^ FOR *  [164] ; pattern 31b
+- * THEIR ^ +  [162]
 - * AT ^ +  [162]
 - $ IN ^ *  [163]
 

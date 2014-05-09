@@ -3,18 +3,21 @@ PETR.coder.py
 
 Development environment for the PETRARCH event coder. 
 
-STATUS OF THE PROGRAM 08-MAY-2014
+STATUS OF THE PROGRAM 09-MAY-2014
 
 This now has most of the functionality of TABARI except for the following:
 
--- % and ^ tokens in patterns
+-- % tokens in patterns
 
--- Coding of multiple clauses has not been checked
+-- Coding of multiple clauses is not quite implemented at the TABARI level: the 
+   source in the first phrase is not forwarded
+   
+-- The simple pronoun resolution rules of TABARI have not been implemented
 
 In addition, there are one or more bugs that I'm pretty sure are in the handling of 
 compounds that are trapped with exceptions: I hit 29 of these in coding 60,000 AFP 
 stories from the GigaWord corpus, and with those traps, all of those coded without 
-the program crashing. The system now codes 213 of the TABARI unit-test records, which 
+the program crashing. The system now codes 238 of the TABARI unit-test records, which 
 is most of them.
 
 So, those remaining functions, the debugging of the compounds and a few additional 
@@ -593,6 +596,8 @@ def open_validation_file():
 	<EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">
 	<EventCodes noevents = "True"> : indicates the record generates no events
 		  (presently, system just looks for the presence of a 'noevents' attribute)
+		  (This is also equivalent to no <EventCodes record, but better to state this 
+		   explicitly.)
 		  
 	Optional elements in record
 		<Skip>: skip this record without coding
@@ -739,6 +744,7 @@ def get_NE(NPphrase):
 	nplist = ['(NE --- ']
 	seg = NPphrase.split()
 	if ShowNEParsing: 
+		print 'List:',seg
 		print "gNE input tree",
 		show_tree_string(NPphrase)
 		print 'List:',seg
@@ -860,6 +866,7 @@ def read_TreeBank():
 
 	global ParseList, ParseStart
 	global treestr
+	global fullline
 	global ncindex  
  
 	
@@ -913,6 +920,68 @@ def read_TreeBank():
 				treestr = treestr[:ka+3] + 'P' + treestr[ka+3:]   # convert CC to CCP
 				if ShowMarkCompd: print '\nMC3:',treestr[kb:]
 				
+	def resolve_compounds(ka):
+		""" Assign indices, eliminates the internal commas and (CC, and duplicate any initial adjectives inside a compound. """
+		"""
+		This leaves the (NEC with leaving just the (NE.
+		Returns treestr loc (ka) past the end of the phrase. 
+		Index assignment may involve just a simple (NNP or (NNS. 
+					
+			Parsing bug note: <14.01.13>
+			In what appear to be rare circumstances, CoreNLP does not correctly delimit two
+			consecutive nouns in a compound as (NP. Specifically, in the test sentence 
+		
+					Mordor and the Shire welcomed a resumption of formal diplomatic ties 
+					between Minas Tirith and Osgiliath. 
+				
+			the second compound phrase is marked as 
+		
+				 (NP (NNP Minas) (NNP Tirith) (CC and) (NNP Osgiliath))
+		
+			but if "Osgiliath" is changed to "Hong Kong" it gives the correct
+		
+				 (NP (NP (NNP Minas) (NNP Tirith)) (CC and) (NP (NNP Hong) (NNP Kong))
+			 
+			A systematic check of one of the GigaWord files shows that this appears to occur 
+			only very rarely -- and in any case is a parsing error -- so this routine 
+			does not check for it.  
+		"""
+		global treestr, fullline
+
+		necbds = get_forward_bounds(ka)  # get the bounds of the NEC phrase
+		if ShowMarkCompd: print 'rc/RTB: NEC:',necbds,  treestr[necbds[0]:necbds[1]]
+		ka += 4
+
+		adjlist = []  # get any adjectives prior to first noun
+		while not treestr.startswith('(NP',ka) and not treestr.startswith('(NN',ka):
+			if treestr.startswith('(JJ',ka):
+				npbds = get_forward_bounds(ka)
+				if ShowMarkCompd: print 'rc/RTB-1: JJ:',npbds, treestr[npbds[0]:npbds[1]]
+				adjlist.extend(treestr[npbds[0]:npbds[1]].split())
+				print '++:',adjlist
+			ka += 1
+		
+		while ka < necbds[1]:  # convert all of the NP, NNS and NNP to NE
+#				print treestr[ka:necbds[1]]
+			if treestr.startswith('(NP',ka) or treestr.startswith('(NN',ka):
+				npbds = get_forward_bounds(ka)
+				if ShowMarkCompd: print 'rc/RTB-1: NE:',npbds, treestr[npbds[0]:npbds[1]]
+				if treestr.startswith('(NN',ka): # just a single element, so get it 
+					seg = treestr[npbds[0]:npbds[1]].split()
+					nplist = ['(NE --- ']
+					if len(adjlist) > 0: nplist.extend(adjlist)
+					print '++1:',nplist
+					nplist.extend([seg[1],' ) '])
+					print '++2:',nplist
+				else: nplist = get_NE(treestr[npbds[0]:npbds[1]])
+				if ShowMarkCompd: print 'rc/RTB-2: NE:',nplist
+				for kb in range(len(nplist)): fullline += nplist[kb] + ' '
+				ka = npbds[1]
+			ka += 1
+		fullline += ' ) '  # closes the nec
+		if ShowMarkCompd: print 'rc/RTB3: NE:',fullline
+		return necbds[1] + 1
+
 	def reduce_SBAR(kstart):
 	# collapse SBAR beginning at kstart to a string without any markup;
 	# change clause marker to SBR, which is subsequently eliminated
@@ -1032,7 +1101,7 @@ def read_TreeBank():
 			if '(POS'  in treestr[ka+3:npbds[1]]: # get the (NP possessive
 				kb = treestr.find('(POS',ka+4)
 				nephrase = treestr[ka+4:kb-1]  # get string prior to (POS
-				nephrase += ' ' + treestr[kb+12:npbds[1]] # skip over (POS 's) and get the remainder of the NP
+				nephrase += ' ' + treestr[kb+14:npbds[1]] # skip over (POS 's) and get the remainder of the NP
 				if ShowNEParsing: print 'RTPOS: NE:',nephrase
 				
 			elif '(PP'  in treestr[ka+3:npbds[1]] :  #  prepositional phrase	
@@ -1058,56 +1127,12 @@ def read_TreeBank():
 				npindex += 1
 				ka += 4
 				
-		elif treestr.startswith('(NEC ',ka) : 
-			"""
-			assign indices inside a compound, which may involve just a simple (NNP or (NNS
-			also eliminates the internal commas and compound, leaving just the NE.
-					
-			Parsing bug note: <14.01.13>
-			In what appear to be rare circumstances, CoreNLP does not correctly delimit two
-			consecutive nouns in a compound as (NP. Specifically, in the test sentence 
-		
-					Mordor and the Shire welcomed a resumption of formal diplomatic ties 
-					between Minas Tirith and Osgiliath. 
-				
-			the second compound phrase is marked as 
-		
-				 (NP (NNP Minas) (NNP Tirith) (CC and) (NNP Osgiliath))
-		
-			but if "Osgiliath" is changed to "Hong Kong" it gives the correct
-		
-				 (NP (NP (NNP Minas) (NNP Tirith)) (CC and) (NP (NNP Hong) (NNP Kong))
-			 
-			A systematic check of one of the GigaWord files shows that this appears to occur 
-			only very rarely -- and in any case is a parsing error -- so this routine 
-			does not check for it.  
-			"""
-
-			parts = line.partition('(NEC')
+		elif treestr.startswith('(NEC ',ka) :
 			fullline += '(NEC' + str(ncindex) +  ' '
-			ncindex += 1
-			necbds = get_forward_bounds(ka)  # get the bounds of the NEC phrase
-			if ShowMarkCompd: print 'RTBD: NE:',necbds
-			ka += 4
-			while ka < necbds[1]:  # convert all of the NP, NNS and NNP to NE
-#				print treestr[ka:necbds[1]]
-				if treestr.startswith('(NP',ka) or treestr.startswith('(NN',ka):
-					npbds = get_forward_bounds(ka)
-					if ShowMarkCompd: print 'RTBD1: NE:',npbds, treestr[npbds[0]:npbds[1]]
-					if treestr.startswith('(NN',ka): # just a single element, so get it 
-						seg = treestr[npbds[0]:npbds[1]].split()
-						nplist = ['(NE --- ', seg[1],' ) ']
-					else: nplist = get_NE(treestr[npbds[0]:npbds[1]])
-					if ShowMarkCompd: print 'RTBD2: NE:',nplist
-					for kb in range(len(nplist)): fullline += nplist[kb] + ' '
-					ka = npbds[1]
-				ka += 1
-			fullline += ' ) '  # closes the nec
-			if ShowMarkCompd: print 'RTBD3: NE:',fullline
-			ka = necbds[1] + 1
+			ncindex += 1 
+			ka = resolve_compounds(ka)
 			
 		elif treestr.startswith('(VP ',ka) : # assign index to VP
-			parts = line.partition('(VP')
 			fullline += '(VP' + str(vpindex) +  ' '
 			vpindex += 1
 			ka += 4
@@ -1384,7 +1409,7 @@ def make_check_sequences(verbloc, endtag):
 def verb_pattern_match(patlist, aseq, isupperseq):
 	""" Attempts to match patlist against UpperSeq or LowerSeq; returns True on success. """
 # Can set SourceLoc and TargetLoc for $, + and % tokens
-# Still need to handle %, ^
+# Still need to handle %
 
 	def find_ne(kseq):
 	# return the location of the (NE element in aseq starting from kseq, which is inside an NE 
@@ -1480,11 +1505,24 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 		if len(patlist[kpatword]) == 1:  # deal with token assignments here
 			if insideNE: 
 				if patlist[kpatword] == '$': SourceLoc = [find_ne(kseq),isupperseq]
-				if patlist[kpatword] == '+': TargetLoc = [find_ne(kseq),isupperseq]
+				elif patlist[kpatword] == '+': TargetLoc = [find_ne(kseq),isupperseq]
+
+				elif patlist[kpatword] == '^': 	# skip to the end of the (NE
+#					print "Skipping"
+					while '~NE' not in aseq[kseq]: 
+						if isupperseq: kseq -= 1
+						else: kseq += 1
+						if kseq < 0 or kseq >= len(aseq):
+							raise_parsing_error('find_ne(kseq) in skip assessment, verb_pattern_match()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+					if ShowVPM: print "VPM/FN-1: Found NE:" , kseq, aseq[kseq]   # debug
+					insideNE = False	
+			
 				elif patlist[kpatword] == '%': pass # deal with compound
+
 				if ShowVPM: print "VPM-4: Token assignment " , patlist[kpatword], aseq[find_ne(kseq)]   # debug
 				if last_patword(): return True
-				if last_seqword(): return False  
+				if last_seqword(): return False
+#				print "&&:", aseq[kseq]  
 			elif patlist[kpatword-1] == ' ': 
 				if last_seqword(): return False  	
 			else: return False
@@ -2330,10 +2368,10 @@ def do_validation():
 		try: 
 			vresult = evaluate_validation_record()	
 			if vresult:
-				print "Events correctly coded in",SentenceID
+				print "Events correctly coded in",SentenceID,'\n'
 				nvalid += 1
 			else:
-				print "Error: Mismatched events in",SentenceID
+				print "Error: Mismatched events in",SentenceID,'\n'
 				if ValidPause == 3: sys.exit()  # debug
 
 			if ValidPause == 2: continue  # evaluate pause conditions

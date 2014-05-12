@@ -3,7 +3,7 @@ PETR.coder.py
 
 Development environment for the PETRARCH event coder. 
 
-STATUS OF THE PROGRAM 09-MAY-2014
+STATUS OF THE PROGRAM 12-MAY-2014
 
 This now has most of the functionality of TABARI except for the following:
 
@@ -14,13 +14,12 @@ This now has most of the functionality of TABARI except for the following:
    
 -- The simple pronoun resolution rules of TABARI have not been implemented
 
-In addition, there are one or more bugs that I'm pretty sure are in the handling of 
-compounds that are trapped with exceptions: I hit 29 of these in coding 60,000 AFP 
-stories from the GigaWord corpus, and with those traps, all of those coded without 
-the program crashing. The system now codes 238 of the TABARI unit-test records, which 
-is most of them.
+I'm now down to only 3 [trapped] bugs in coding 60,000 AFP stories from the GigaWord,
+and these are fairly esoteric constructions.  The system now codes 243 of the TABARI 
+unit-test records, which is most of them, plus some new records specific to PETR.
 
-So, those remaining functions, the debugging of the compounds and a few additional 
+So, those remaining functions, the debugging of the compounds, handling a few more 
+noun-related tags (specifically (NML and (NP-TMP)  and a few additional 
 unimplemented features scattered through the code are what is left, and I may be able 
 to get to those in the next couple of weeks, and certainly before the end of the month.
 At the point of completing those, I'll probably shift to getting the WordNet-based
@@ -28,7 +27,8 @@ verb dictionaries into the system.
 
 Despite the nearly full implementation, this still seems to be getting a substantially 
 lower yield of event compared to TABARI: this needs further exploration, though may be 
-in part a feature of GigaWord.
+in part a feature of GigaWord, but it is probably also very strongly affected by the 
+stemming in the existing CAMEO dictionary.
 
 NEW FEATURES NOT IN TABARI WHICH HAVE BEEN IMPLEMENTED: 
 
@@ -166,20 +166,58 @@ world who actually worked with TABARI, but it is possible that you've got an old
 dictionary and some of this might be relevant.]
 
 1. Requires a Penn TreeBank parsed version of the sentence as input and Stanford NLP
-   coreferences
+   coreferences -- see further discussion below
 
-2. There is no stemming: if you need a stem, use a synset
+2. There is no stemming: if you need a stem, use a synset, but meanwhile noun and verb 
+   forms are more extensively incorporated into the system than they were in the 
+   earlier version of TABARI (which are the versions where most of the dictionary 
+   development had been done)
 
-3. Only named entities (NE) can match actors (though transformations of more complex
-   phrases into are allowed)
+3. Only named entities (NE) can match actors
    
 4. Matching following the verb is restricted to the actual verb phrase(!!). Matching
    prior to the verb is probably more or less equivalent to what TABARI did
    
 5. The text input format is considerably more complex and contains embedded XML. 
 
-6. The dictionary format has changed substantially and is not compatible with TABARI in
-   either direction.
+6. The dictionary format has changed substantially and will not be compatible with TABARI 
+   in either direction.
+   
+TreeBank parsing is clearly the core difference, and it is substantial in at least three 
+ways. First, because TABARI was a pattern-based shallow parser, it could get the right 
+answer for the wrong reason, and at least some of the dictionary entries -- in 
+particular those treating nouns as if they were verbs, depend on this \fn{This became 
+very apparent as I was going through the unit tests, many of which had to be discarded 
+because they used only patterns, not grammatically-correct constructions. Which are also 
+a lot harder to construct.}. PETR does not allow this: for starters, it only matches 
+true verbs --- (VP (VB in the parse tree --- and if a parser is given a ungrammatical 
+sentence, results can be unpredictable.
+
+Which leads to the second issue: parsed input is typically less robust than pattern-
+based input, since the addition or deletion of words that seem trivial to a native 
+speaker (or at least this native speaker) will sometimes change the parse (which is,
+of course, itself a very complex program). This probably has two implications. First, it 
+means that PETR will be more conservative than TAB, which again seems to be what people 
+want. Second, probably a lot of work is going to need to be done getting the dictionaries 
+adapted to this. That said, there have also been some pleasant surprises where features 
+that had to be dealt with as special cases in TAB are taken care of automatically in 
+PETR, and the full parts-of-speech markup should simplify the dictionaries.
+
+Third, switching to an open-source parser means that we are relegating the parsing to the 
+linguists, and more generally to the very large community that develops parser that can 
+produce TreeBank output. \fn{I had originally expected that this would simplify the code 
+but it does not really seem to have done so, since the quirks of a full parse are, if 
+anything, more complex than those of a pattern-based shallow parse. And the parse doesn't 
+take care of everything: for example comma-delimited clause deletion and passive voice 
+detection are essentially done the same way as in TAB, but now with the added complexity 
+of requiring the tags in the tree to remain balanced. This is also essentially just an
+extension of TAB, which already tagged a number of phrases and clauses: the difference is 
+that TreeBank tags all of them.}  One thing that may result from this will be the 
+ability to easily adapt PETR to other languages \fn{TAB had been adapted to Spanish a 
+couple of times, and KEDS to German and Spanish.} since the TreeBank format is standard 
+across many languages. It will still be necessary to adjust for some of the phrase and 
+word-ordering rules, but because of the complete markup, and the fact that the system 
+works *only* with this markup, modification for other languages should be easier. 
 
 -------------------------------------------------------------------------------------
 
@@ -251,7 +289,7 @@ ShowPattMatch = False
 ShowNEParsing = True  # prints search and intermediate strings in the (NE conversion
 ShowNEParsing = False 
 
-ShowMarkCompd = True  # prints search and intermediate strings in the (NE conversion
+ShowMarkCompd = True  # prints intermediate strings in the compound markup
 ShowMarkCompd = False 
 
 
@@ -913,12 +951,16 @@ def read_TreeBank():
 			bds = get_enclosing_bounds(ka)
 			kb = bds[0]
 			if ShowMarkCompd: print '\nMC1:',treestr[kb:]
-			if treestr[kb+1:kb+3] == 'NP':
-				treestr = treestr[:kb+2] + 'EC' + treestr[kb+3:]  # convert NP to NEC
+			if '(VP' in treestr[bds[0]:bds[1]] or '(S' in treestr[bds[0]:bds[1]]: # these aren't straightforward compound noun phrases we are looking for
+				treestr = treestr[:ka+4] + 'P' + treestr[ka+4:]   # convert CC to CCP, though <14.05.12> we don't actually do anything with this yet: (NEC is the trigger for additional processing of compounds
 				if ShowMarkCompd: print '\nMC2:',treestr[kb:]
-			if treestr[kb+2:kb+4] == 'VP' or treestr[kb+2:kb+4] == 'S ':
-				treestr = treestr[:ka+3] + 'P' + treestr[ka+3:]   # convert CC to CCP
+			elif treestr[bds[0]:bds[1]].count('(CC') > 1 : # nested compounds: don't go there...
+				treestr = treestr[:ka+4] + 'P' + treestr[ka+4:]   # convert CC to CCP, though <14.05.12> we don't actually do anything with this yet: (NEC is the trigger for additional processing of compounds
 				if ShowMarkCompd: print '\nMC3:',treestr[kb:]
+			elif treestr[kb+1:kb+3] == 'NP':
+				if treestr.count('(N',bds[0],bds[1]) >= 3:  # make sure we actually have multiple nouns in the phrase
+					treestr = treestr[:kb+2] + 'EC' + treestr[kb+3:]  # convert NP to NEC
+					if ShowMarkCompd: print '\nMC4:',treestr[kb:]
 				
 	def resolve_compounds(ka):
 		""" Assign indices, eliminates the internal commas and (CC, and duplicate any initial adjectives inside a compound. """
@@ -958,7 +1000,7 @@ def read_TreeBank():
 				npbds = get_forward_bounds(ka)
 				if ShowMarkCompd: print 'rc/RTB-1: JJ:',npbds, treestr[npbds[0]:npbds[1]]
 				adjlist.extend(treestr[npbds[0]:npbds[1]].split())
-				print '++:',adjlist
+#				print '++:',adjlist
 			ka += 1
 		
 		while ka < necbds[1]:  # convert all of the NP, NNS and NNP to NE
@@ -1101,8 +1143,18 @@ def read_TreeBank():
 			if '(POS'  in treestr[ka+3:npbds[1]]: # get the (NP possessive
 				kb = treestr.find('(POS',ka+4)
 				nephrase = treestr[ka+4:kb-1]  # get string prior to (POS
-				nephrase += ' ' + treestr[kb+14:npbds[1]] # skip over (POS 's) and get the remainder of the NP
+#				print '++:',treestr[kb:]
+				if treestr[kb+12] == 's': incr = 14
+				else: 
+					incr = 13   # allow for (POS ')
+#					print '**:',treestr[kb+13:]
+				nephrase += ' ' + treestr[kb+incr:npbds[1]] # skip over (POS 's) and get the remainder of the NP
 				if ShowNEParsing: print 'RTPOS: NE:',nephrase
+
+				try: check_balance()   # this gets too complicated to handle in some very rare cases of a possessive on a compound, so skip it for now
+				except:
+					raise SkipRecord		 	
+
 				
 			elif '(PP'  in treestr[ka+3:npbds[1]] :  #  prepositional phrase	
 				if False:
@@ -1411,16 +1463,25 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 # Can set SourceLoc and TargetLoc for $, + and % tokens
 # Still need to handle %
 
+	global SourceLoc, TargetLoc
+	global kpatword, kseq
+	
+	ShowVPM = True
+	ShowVPM = False
+	
 	def find_ne(kseq):
 	# return the location of the (NE element in aseq starting from kseq, which is inside an NE 
 		ka = kseq
+#		print "fn-1/VPM:" , ka, aseq[ka]   # debug
+#		print "fn-2/VPM:" , aseq, isupperseq   # debug
 		while '(NE' not in aseq[ka]: 
 			if isupperseq: ka += 1
 			else: ka -= 1
 			if ka < 0 or ka >= len(aseq):
+				print "++:",ka
 				raise_parsing_error('find_ne(kseq) in verb_pattern_match()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 
-		if ShowVPM: print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
+#		print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
 		return ka
 		
 	def syn_match(isupperseq):
@@ -1479,12 +1540,6 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 			else: return False  
 		else: return True	
 	
-	global SourceLoc, TargetLoc
-	global kpatword, kseq
-	
-	ShowVPM = True
-	ShowVPM = False
-	
 	if ShowVPM: print "VPM-0" , patlist, aseq, str(isupperseq)   # debug
 	if len(patlist) == 0 : return True  # nothing to evaluate, so okay
 	if len(aseq) == 0 : return False    # nothing to match, so fails
@@ -1498,31 +1553,37 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 			if last_patword(): return False
 			continue
 		
-		if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]): 
+		if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]):
+#			print "NE flip", kseq, aseq[kseq], insideNE, 
 			if last_seqword(): return False  # hit end of sequence before full pattern matched
 			insideNE = not insideNE
+#			print "NE result", insideNE
 
-		if len(patlist[kpatword]) == 1:  # deal with token assignments here
+		elif len(patlist[kpatword]) == 1:  # deal with token assignments here
 			if insideNE: 
 				if patlist[kpatword] == '$': SourceLoc = [find_ne(kseq),isupperseq]
 				elif patlist[kpatword] == '+': TargetLoc = [find_ne(kseq),isupperseq]
 
 				elif patlist[kpatword] == '^': 	# skip to the end of the (NE
-#					print "Skipping"
+#					print "Skipping",kseq, aseq[kseq:kseq+8], insideNE 
 					while '~NE' not in aseq[kseq]: 
 						if isupperseq: kseq -= 1
 						else: kseq += 1
 						if kseq < 0 or kseq >= len(aseq):
+#							print "skip/VPM:", kseq, aseq,'\n', aseq[kseq-8:kseq-1]   # debug
 							raise_parsing_error('find_ne(kseq) in skip assessment, verb_pattern_match()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
 					if ShowVPM: print "VPM/FN-1: Found NE:" , kseq, aseq[kseq]   # debug
-					insideNE = False	
+					insideNE = False
+#					print "VPM-2:" , kseq, aseq[kseq]   # debug
+#					print "VPM-3:" , aseq, isupperseq   # debug	
 			
 				elif patlist[kpatword] == '%': pass # deal with compound
 
 				if ShowVPM: print "VPM-4: Token assignment " , patlist[kpatword], aseq[find_ne(kseq)]   # debug
 				if last_patword(): return True
 				if last_seqword(): return False
-#				print "&&:", aseq[kseq]  
+#				print "VPM-4:" , kseq, aseq[kseq], insideNE   # debug
+#				print "VPM-5:" , aseq, isupperseq   # debug	
 			elif patlist[kpatword-1] == ' ': 
 				if last_seqword(): return False  	
 			else: return False
@@ -1545,6 +1606,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 			if ShowVPM: print "VPM-3: Match " , patlist[kpatword], aseq[kseq]   # debug
 			if last_patword(): return True
 			if last_seqword(): return False  
+			
 	return True  # complete pattern matched (I don't think we can ever hit this)
 
   
@@ -1565,6 +1627,7 @@ def check_verbs():
 	global EventCode, SourceLoc, TargetLoc
 	global EventList
 	global IsPassive
+	global ParseStart, ParseList
 	
 	def check_passive(kitem):
 		""" Check whether the verb phrase beginning at kitem is passive; returns location of verb if true, zero otherwise. """
@@ -1588,6 +1651,7 @@ def check_verbs():
 	kitem = ParseStart
 	while kitem < len(ParseList):
 		if ('(VP' in ParseList[kitem]) and ('(VB' in ParseList[kitem+1]):
+			vpstart = kitem   # check_passive could change this
 			pv = check_passive(kitem)
 			IsPassive = (pv > 0)
 			if IsPassive: 
@@ -1598,7 +1662,7 @@ def check_verbs():
 			if targ in PETRglobals.VerbDict:
 					SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
 					if ShowPattMatch: print "CV-1 Found", targ
-					endtag = '~VP' +  ParseList[kitem][3:]
+					endtag = '~' +  ParseList[vpstart][1:]
 					hasmatch = False
 					make_check_sequences(kitem+2, endtag)
 					if PETRglobals.VerbDict[targ][0]:
@@ -1805,17 +1869,18 @@ def check_commas():
 		# since you are wondering, we go through this in reverse in order to use index(), as there is 
 		# no rindex() for lists.
 		global ParseList  # 14.05.02: wtf is this needed??
+#		print 'dph/CC:',ParseList[loclow:lochigh]
 		stack = []  # of course we use a stack...this is a tree...
 		ka = lochigh - 1
 		while ka >= loclow:
 			if ParseList[ka][0] == '~': 
 				stack.append(ParseList[ka][1:])
 #				print 'push:',stack
-			elif len(stack) > 0 and ParseList[ka][1:] == stack[-1]:	 # remove this complete phrase
+			elif len(stack) > 0 and ParseList[ka][0] == '(' and ParseList[ka][1:] == stack[-1]:	 # remove this complete phrase
 				targ = '~' + ParseList[ka][1:] 
 				ParseList = ParseList[:ka] + ParseList[ParseList.index(targ,ka+1)+1:]
+#				print 'pop:',stack,'\n',ParseList[loclow]
 				stack.pop()
-#				print 'pop:',stack,'\n',ParseList
 			ka -= 1
 
 	global ParseList
@@ -1847,20 +1912,23 @@ def check_commas():
 			show_tree_string(' '.join(ParseList))
 		
 	if PETRglobals.CommaEMax != 0: # check for terminal phrase
-#		print "cc-2"
 		kend = find_end()
+#		print "cc-2", ParseList[kend - 1:]
 		ka = kend - 1  # terminal: reverse search for '('
 		while ka >= 2 and ParseList[ka] != '(,' : ka -= 1
 		if ParseList[ka] == '(,': 
 			kount = count_word(ka,len(ParseList))
-#			print "cc-2:", kount
+#			print "cc-2a:", kount, ParseList[ka:]
 			if kount >= PETRglobals.CommaEMin and kount <= PETRglobals.CommaEMax:
 				delete_phrases(ka+3,kend)  # leave the comma in place so an internal can catch it
+#				print "cc-2b", ParseList[ka+3:kend]
 #				ParseList = ParseList[:ka + 3] + ParseList[kend:]  # leave the comma in place so an internal can catch it
 
 		if ShowCCtrees:
 			print 'chkcomma-2a-Parselist::'
 			show_tree_string(' '.join(ParseList))
+			print "cc-2t:", kount
+
 		
 	if PETRglobals.CommaMax != 0:
 #		print "cc-3"
@@ -1918,7 +1986,7 @@ def assign_NEcodes():
 
 		try:
 			kend = ParseList.index('~NE',kstart)
-		#	print 'exCel1:', ParseList[kstart:kend]
+			print 'exCel1:', ParseList[kstart:kend]
 			ncstart = ParseList.index('(NEC',kstart,kend)
 			ncend = ParseList.index('~NEC',ncstart,kend)
 		except ValueError:
@@ -2537,10 +2605,11 @@ sys.exit()
 process_command_line()
 PETRreader.parse_Config() # debug
 #sys.exit()
+#PETRglobals.StoponError = True
 
 if DoValidation: do_validation()
 
-else: # standard coding from the config file
+else: # standard coding from the config file	
 	start_time = time.time()
 	PETRwriter.open_ErrorFile()  # need to allow this to be set in the config file or command line
 	print 'Verb dictionary:',PETRglobals.VerbFileName

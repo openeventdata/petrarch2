@@ -3224,12 +3224,13 @@ The Danish Islamist media and government warned at the Gondor of the Prince of D
 </Parse>
 </Sentence>
 
-<Sentence date="20000423" id="COMPOUND-28" category="COMPOUND" valid="true">
+<Sentence date="20000423" id="COMPOUND-28" category="COMPOUND" valid="false">
 <!--  Involves an overlap of compound and subordinate phrases that caused  -->
 <!-- an infinite loop in earlier versions -->
+<!-- <14.05.12: Elimination of coding of embedded compounds now causes issues here -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="GON" eventcode="023">
-<EventCoding sourcecode="HOB" targetcode="ARN" eventcode="023">
+#<EventCoding sourcecode="HOB" targetcode="ARN" eventcode="023">
 <Text>
 Frodo said he has deep satisfaction toward Gondor and Arnor's Elrond, 
 and Gondor's dramatic cooperation and its eye-catching development are of 
@@ -4775,6 +4776,287 @@ where she faces trial for her actions, a US attorney said.
 ) )
 </Parse>
 </Sentence>
+
+<Sentence date="19990101" id="TAB-DEBUG-19" category="PARSING" valid="true">
+<!--  Caused the writeParse routines to crash in earlier versions -->
+<!-- Last update: TABARI validation -->
+<EventCodes noevents = "True">
+<Text>
+On improvement of primary health and Gondor's health centres, he said
+government proposed to take up the issue with the World Bank in a phased manner
+with priority being assigned to states with low health indices. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (PP (IN On)  (NP  
+      (NP  
+        (NP (NN improvement)
+        )  
+        (PP (IN of)  (NP 
+            (JJ primary) (NN health)
+        ) )
+      )  (CC and)  (NP  
+        (NP (NNP Gondor) (POS 's)
+        )  (NN health) (NNS centres)
+    ) )
+  )  (, ,)  (NP 
+    (PRP he)
+  )  
+  (VP 
+    (VBD said)  
+    (SBAR  
+      (S  
+        (NP (NN government)
+        )  
+        (VP 
+          (VBD proposed)  (S  
+            (VP 
+              (TO to)  
+              (VP 
+                (VB take)  (PRT 
+                  (RP up)
+                )  (NP (DT the) (NN issue)
+                )  
+                (PP (IN with)  (NP  
+                    (NP (DT the) (NNP World) (NNP Bank)
+                    )  
+                    (PP (IN in)  (NP  
+                        (NP (DT a) (JJ phased) (NN manner)
+                        )  
+                        (PP (IN with)  (NP  
+                            (NP (NN priority)
+                            )  
+                            (VP 
+                              (VBG being)  
+                              (VP 
+                                (VBN assigned)  
+                                (PP 
+                                  (TO to)  (NP  
+                                    (NP (NNS states)
+                                    )  
+                                    (PP (IN with)  (NP 
+                                        (JJ low) (NN health) (NNS indices)
+                                  ) ) )
+                              ) )
+                              ) ) )
+                    ) )
+              ) ) )
+          ) )
+          ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080804" id ="AFP0808-01-1903-3" category="PARSING" valid="true">
+<!--  "2000 and 2004" should not be marked as a compound -->
+<!-- Last update: 14.05.10 -->
+<EventCodes noevents = "True">
+<Text>
+South Korea's women have grabbed gold in the team's section since then, while 
+their male counterparts are on the verge of completing a hat-trick, having 
+triumphed in 2000 and 2004. 
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (NNP South) (NNP Korea) (POS 's)) (NNS women)) 
+(VP (AUXP have) 
+(VP (VBN grabbed) 
+(NP (NN gold)) 
+(PP (IN in) 
+(NP (NP (DT the) (NN team) (POS 's)) (NN section))) 
+(PP (IN since) 
+(NP (RB then))) (, ,) (SBAR (IN while) (S 
+(NP (PRP$ their) (NN male) (NNS counterparts)) 
+(VP (VBP are) 
+(PP (IN on) 
+(NP (NP (DT the) (NN verge)) 
+(PP (IN of) (S 
+(VP (VBG completing) 
+(NP (DT a) (NN hat-trick))))))) (, ,) (S 
+(VP (AUXG having) 
+(VP (VBD triumphed) 
+(PP (IN in) 
+(NP (CD 2000) (CC and) (CD 2004))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080801" id ="AFP0808-01-0343-2" category="PARSING" valid="true">
+<!--  Make sure ", one" is not mistaken for a (NE marker -->
+<!-- Last update: 14.05.10 -->
+<EventCodes noevents = "True">
+<Text>
+An explosion sent a wall of flame through the school dormitory just as the 
+girls, aged from eight to 16, were getting up for morning prayers, one of the 
+girls said. 
+</Text>
+<Parse>
+(ROOT (S (S 
+(NP (DT An) (NN explosion)) 
+(VP (VBD sent) 
+(NP (NP (DT a) (NN wall)) 
+(PP (IN of) 
+(NP (NN flame)))) 
+(PP (IN through) 
+(NP (DT the) (NN school) (NN dormitory))) (SBAR (RB just) (IN as) (S 
+(NP (NP (DT the) (NNS girls)) (, ,) 
+(VP (VBN aged) 
+(PP (IN from) 
+(NP (QP (CD eight) (TO to) (CD 16))))) (, ,)) 
+(VP (AUXD were) 
+(VP (VBG getting) (PRT (RP up)) 
+(PP (IN for) 
+(NP (NN morning) (NNS prayers))))))))) (, ,) 
+(NP (NP (CD one)) 
+(PP (IN of) 
+(NP (DT the) (NNS girls)))) 
+(VP (VBD said)) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808-01-0092-5" category="PARSING" valid="true">
+<!--  (POS ') construction (vs the usual (POS 's)) -->
+<!-- Last update: 14.05.10 -->
+<EventCodes noevents = "True">
+<Text>
+Grahame Russell, who lost his son Philip when one of the four suicide bombers 
+detonated a device on a bus in central London, said:`` A lot of families' 
+ideas were included in the design; it's very different. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (NNP Grahame) (NNP Russell)) (, ,) (SBAR (WHNP (WP who)) (S 
+(VP (VBD lost) 
+(NP (PRP$ his) (NN son)) 
+(NP (NNP Philip)) (SBAR (WHADVP (WRB when)) (S 
+(NP (NP (CD one)) 
+(PP (IN of) 
+(NP (DT the) (CD four) (NN suicide) (NNS bombers)))) 
+(VP (VBD detonated) 
+(NP (DT a) (NN device)) 
+(PP (IN on) 
+(NP (DT a) (NN bus))) 
+(PP (IN in) 
+(NP (JJ central) (NNP London))))))))) (, ,)) 
+(VP (VBD said) (: :) (`` ``) (S (S 
+(NP (NP (DT A) (NN lot)) 
+(PP (IN of) 
+(NP (NP (NNS families) (POS ')) (NNS ideas)))) 
+(VP (AUXD were) 
+(VP (VBN included) 
+(PP (IN in) 
+(NP (DT the) (NN design)))))) (: ;) (S 
+(NP (PRP it)) 
+(VP (VBZ 's) (ADJP (RB very) (JJ different)))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808-01-0569-6" category="PARSING" valid="true">
+<!-- verb MANAGED is in an odd place; caused an earlier bounds error -->
+<!-- Last update: 14.05.12 -->
+<EventCodes noevents = "True">
+<Text>
+The park is to be jointly managed by the government and local communities, with 
+assistance from Birdlife International and the Australian state of New South 
+Wales. 
+</Text>
+<Parse>
+( (S 
+(NP (DT The) (NN park)) 
+(VP (VBZ is) (S 
+(VP (TO to) 
+(VP (AUXB be) 
+(VP (ADVP (RB jointly)) (VBN managed) 
+(PP (IN by) 
+(NP (NP (DT the) (NN government)) (CC and) 
+(NP (JJ local) (NNS communities)))) (, ,) 
+(PP (IN with) 
+(NP (NP (NN assistance)) 
+(PP (IN from) 
+(NP (NP (NNP Birdlife) (NNP International)) (CC and) 
+(NP (NP (DT the) (JJ Australian) (NN state)) 
+(PP (IN of) 
+(NP (NNP New) (NNP South) (NNP Wales))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808-01-0625-6" category="PARSING" valid="true">
+<!-- Just another quirky crash-causer: odd structure and punctuation -->
+<!-- Last update: 14.05.12 -->
+<EventCodes noevents = "True">
+<Text>
+China's coal mines are among the most dangerous in the world, with safety 
+standards often ignored in the quest for profits and the drive to meet demand 
+for coal-- the source of about 70 percent of China's energy. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (NNP China) (POS 's)) (NN coal) (NNS mines)) 
+(VP (VBP are) 
+(PP (IN among) 
+(NP (NP (DT the) (ADJP (RBS most) (JJ dangerous))) 
+(PP (IN in) 
+(NP (DT the) (NN world))))) (, ,) 
+(PP (IN with) 
+(NP (NP (NN safety) (NNS standards)) 
+(VP (ADVP (RB often)) (VBN ignored) 
+(PP (IN in) 
+(NP (NP 
+(NP (DT the) (NN quest)) 
+(PP (IN for) 
+(NP (NNS profits)))) (CC and) 
+(NP (NP (DT the) (NN drive) (S 
+(VP (TO to) 
+(VP (VB meet) 
+(NP (NP (NN demand)) 
+(PP (IN for) 
+(NP (NN coal)))))))) (: --) 
+(NP (NP (DT the) (NN source)) 
+(PP (IN of) 
+(NP (NP (QP (IN about) (CD 70)) (NN percent)) 
+(PP (IN of) 
+(NP (NP (NNP China) (POS 's)) (NN energy))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20090101" id ="AFP0909-01-0096-4">
+<!-- Sentence from hell in terms of nesting compounds -->
+<!-- Last update: 14.05.12 -->
+<EventCodes noevents = "True">
+<Text>
+They issued a joint statement calling for a continued expansion of the 
+International Monetary Fund's reserves and a shake-up of countries' 
+representation and voting rights on that and other Bretton Woods institutions. 
+</Text>
+<Parse>
+( (S 
+(NP (PRP They)) 
+(VP (VBD issued) 
+(NP (NP (DT a) (JJ joint) (NN statement)) 
+(VP (VBG calling) 
+(PP (IN for) 
+(NP (NP 
+(NP (DT a) (VBN continued) (NN expansion)) 
+(PP (IN of) 
+(NP (NP (DT the) (NNP International) (NNP Monetary) (NNP Fund) (POS 's)) (NNS reserves)))) (CC and) 
+(NP (NP 
+(NP (DT a) (NN shake-up)) 
+(PP (IN of) 
+(NP (NP (NNS countries) (POS ')) (NN representation)))) (CC and) 
+(NP (NP (VBG voting) (NNS rights)) 
+(PP (IN on) 
+(NP (NP (DT that)) (CC and) 
+(NP (JJ other) (NNP Bretton) (NNP Woods) (NNS institutions))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
 
 
 <!--

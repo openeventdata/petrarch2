@@ -567,11 +567,10 @@ def read_verb_dictionary():
 # <13.07.27> Still need to do
 # 1. New WordNet dictionary format
 # 2. % compound actor token: patterns with this are skipped
-# 43. ^ skip actor token: patterns with this are skipped
 	""" Verb dictionary list elements:
 	For basic verb/pattern combinations, the dictionary format is identical to TABARI; it 
 	differs on the specification and interpretation of synsets, and does not allow 
-	disconjunctive sets in patterns.
+	disconjunctive sets in patterns (these are skipped, and should be replaced with synsets).
 	
 	[0] True: primary form
 		[1] Code
@@ -639,6 +638,13 @@ def read_verb_dictionary():
 	    synsets. It should be possible to do this fairly easily, at least with basic 
 	    synsets as elements (not as patterns) but a simple call in syn_match(isupperseq)
 	    was not sufficient, so this needs more work.
+	    
+	ADDITIONAL PROGRAMMING NOTES
+	
+	1.	The construction "XXXX_ " is ambiguous in PETR, but in almost all cases in a TAB 
+		dictionary means an unstemmed word (which is all PETR allows anyway) followed by 
+		an open match, and is automatically converted to this. 
+		
 	"""
 	global theverb, verb  # <14.05.07> : not needed, right?
 
@@ -710,13 +716,14 @@ def read_verb_dictionary():
 		code = scr[0]
 #		print verb, code
 		if verb[0] == '-':
-			if '%' in verb:  # currently aren't processing these
+			if '%' in verb or '{' in verb :  # currently aren't processing these
 				line = read_FIN_line() 
  				continue
 #			print 'RVD-1',verb
 			if not hasforms: 
 				make_verb_forms()
 				hasforms = True
+			verb = verb.replace('_ ',' ')  # resolve the ambiguous '_ ' construction to ' '
 			targ = verb[1:].partition('*')
 			try:
 				highpat = make_phrase_list(targ[0].lstrip())

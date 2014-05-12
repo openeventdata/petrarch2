@@ -6,9 +6,9 @@ Code for the stand-alone development version of PETARCH (PETR.coder.py and assoc
 See the header of PETR_coder.py for details on the current state of the program. In a 
 nutshell, this works -- it coded 60,000 AFP sentences from the GigaWord corpus without 
 crashing, using the included dictionaries -- but the pattern matching is only partially 
-implemented (and there are about six known potentially lethal errors that are currently 
-trapped in order to avoid crashes). However, it now has almost all of the features of
-the TABARI coder
+implemented and the CAMEO dictionary still uses the old TABARI-style stemming which does 
+not work in PATRARCH, which is to say there are a *lot* of patterns that no longer work. 
+However, it now has almost all of the features of the TABARI coder.
 
 Documentation could also use a little work (really??) but is fairly complete, though 
 scattered in """...""" blocks throughout the program.
@@ -41,3 +41,4 @@ developments and only the PETRARCH-specific dictionaries can be used
 
 15-Nov-2013: Requires TABARI 0.8 indented date restrictions, not older in-line format
 23-Apr-2014: PETRARCH-formatted agents dictionary required
+12-May-2014: Disjunctive phrases no longer recognized in the .verbs dictionary

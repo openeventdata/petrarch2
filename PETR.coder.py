@@ -3001,35 +3001,6 @@ def do_coding():
     print "Parsing errors:", NParseErrors
 
 
-def process_command_line():
-# processes the command line arguments
-# also sets a couple of run globals
-    """ Command Line Options
-    -v <filename>: Use the validation file <filename>
-    -c <filename>: Use the configuration file <filename>
-    -e <filename>: <filename> is the event output file
-    -t <filename>: Code the single text file <filename>
-    """
-    global DoValidation
-    if len(sys.argv) > 1:   # process command line options
-        print "Command line options:"
-
-        if ("-v" in sys.argv):
-            PETRglobals.TextFileList = [sys.argv[sys.argv.index("-v") + 1]]
-            DoValidation = True
-            print "-v: Reading validation file from", PETRglobals.TextFileList[0]
-        if ("-c" in sys.argv):
-            PETRglobals.ConfigFileName = sys.argv[sys.argv.index("-c") + 1]
-            print "-c: Reading configuration file from", PETRglobals.ProjectFilename
-        if ("-t" in sys.argv):
-            PETRglobals.TextFileList = [sys.argv[sys.argv.index("-t") + 1]]
-            print "-t: Reading texts from", PETRglobals.TextFileList[0]
-        if ("-e" in sys.argv):
-            PETRglobals.EventFileName = sys.argv[sys.argv.index("-e") + 1]
-            print "-to: Writing event to ", PETRglobals.EventFileName
-
-    PETRglobals.RunTimeString = time.asctime()
-
 def parse_cli_args():
     """Function to parse the command-line arguments for PETRARCH."""
     __description__ = """

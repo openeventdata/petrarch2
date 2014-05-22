@@ -230,7 +230,9 @@ NOTES FOR THE MANUAL
 
 """
 
+import os
 import sys
+import glob
 import time
 import argparse
 
@@ -2901,7 +2903,7 @@ def do_validation(filepath):
             sys.exit()
 
 
-def do_coding():
+def do_coding(filepaths):
     """
     Main coding loop
     Note that entering any character other than 'Enter' at the prompt will stop the
@@ -2927,9 +2929,8 @@ def do_coding():
     NDiscardStory = 0
     NParseErrors = 0
 
-    kfile = 0
-    while kfile < len(PETRglobals.TextFileList):
-        PETRreader.open_FIN(PETRglobals.TextFileList[kfile], "text")
+    for path in filepaths:
+        PETRreader.open_FIN(path, "text")
         reset_event_list(True)
         ka = 0
         while True:
@@ -2991,7 +2992,6 @@ def do_coding():
 
             ka += 1  # debug
 # if ka > 32: break  # debug
-        kfile += 1
         write_events()
 
     fevt.close()  # need to handle this somewhere
@@ -3033,10 +3033,8 @@ PETRARCH
                                help="""File that contains the validation
                                records.""", required=True)
 
-
     args = aparse.parse_args()
     return args
-
 
 
 if __name__ == '__main__':
@@ -3071,7 +3069,8 @@ if __name__ == '__main__':
         print 'Actor dictionaries:', PETRglobals.ActorFileList
         for actdict in PETRglobals.ActorFileList:
             PETRreader.read_actor_dictionary(actdict)
-    # PETRreader.show_ActorDict('ActorDict.content.txt') # debug
+        # debug
+        # PETRreader.show_ActorDict('ActorDict.content.txt')
         print 'Agent dictionary:', PETRglobals.AgentFileName
         PETRreader.read_agent_dictionary()
         print 'Discard dictionary:', PETRglobals.DiscardFileName
@@ -3080,7 +3079,17 @@ if __name__ == '__main__':
             print 'Issues dictionary:', PETRglobals.IssueFileName
             PETRreader.read_issue_list()
 
-        do_coding()
+        if os.path.isdir(cli_args.inputs):
+            if cli_args.inputs[-1] != '/':
+                paths = glob.glob(cli_args.inputs + '/*')
+            else:
+                paths = glob.glob(cli_args.inputs + '*')
+        elif os.path.isfile(cli_args.inputs):
+            paths = [cli_args.inputs]
+        else:
+            print 'Please enter a valid directory or file of source texts.'
+
+        do_coding(paths)
 
         print "Coding time:", time.time() - start_time
         # note that this will be removed if there are no errors

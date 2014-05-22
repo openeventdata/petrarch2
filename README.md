@@ -14,6 +14,19 @@ However, it now has almost all of the features of the TABARI coder.
 Documentation could also use a little work (really??) but is fairly complete, though 
 scattered in """...""" blocks throughout the program.
 
+##Running
+
+Currently, you can run PETRARCH using the following command:
+
+    python PETR.coder.py parse -i GigaWord.sample.PETR.txt -o test_output.txt
+
+There's also the option to specify a configuration file using the `-c <CONFIG
+FILE>` flag, but the program will default to using `PETR_config.ini`.
+
+You can get help with the program by running
+
+    python PETR.coder.py -h
+
 ##Unit tests
 
 Commits should always successfully complete 

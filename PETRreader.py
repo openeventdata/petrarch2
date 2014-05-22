@@ -62,7 +62,7 @@ class DateError(Exception):  # invalid date
 # ================== CONFIG FILE INPUT ================== #
 
 
-def parse_Config():
+def parse_Config(config_path):
     """
     Parse PETRglobals.ConfigFileName. The file should be ; the default is PETR_config.ini
     in the working directory but this can be changed using the -c option in the command
@@ -88,7 +88,7 @@ def parse_Config():
     parser = ConfigParser()
 #		logger.info('Found a config file in working directory')
 #	print "pc",PETRglobals.ConfigFileName
-    confdat = parser.read(PETRglobals.ConfigFileName)
+    confdat = parser.read(config_path)
     if len(confdat) == 0:
         print "\aError: Could not find the config file:", PETRglobals.ConfigFileName
         print "Terminating program"

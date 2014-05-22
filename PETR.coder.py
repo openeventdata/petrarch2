@@ -2903,7 +2903,7 @@ def do_validation(filepath):
             sys.exit()
 
 
-def do_coding(filepaths):
+def do_coding(filepaths, out_file):
     """
     Main coding loop
     Note that entering any character other than 'Enter' at the prompt will stop the
@@ -2918,8 +2918,8 @@ def do_coding(filepaths):
     global StoryIssues
     global CodedEvents
 
-    fevt = open(PETRglobals.EventFileName, 'w')
-    print "Writing events to:", PETRglobals.EventFileName
+    fevt = open(out_file, 'w')
+    print "Writing events to:", out_file
 
     NStory = 0
     NSent = 0
@@ -2937,7 +2937,7 @@ def do_coding(filepaths):
             try:
                 read_record()
             except EOFError:
-                print "Closing:", PETRglobals.TextFileList[kfile]
+                print "Closing:", path
                 PETRreader.close_FIN()
                 write_events()
                 break
@@ -3023,7 +3023,8 @@ PETRARCH
                                required=True)
     parse_command.add_argument('-c', '--config',
                                help="""Filepath for the PETRARCH configuration
-                               file.""", required=True)
+                               file. Defaults to PETR_config.ini""",
+                               required=False)
 
     batch_command = sub_parse.add_parser('validate', help="""Command to run
                                          the PETRARCH validation suite.""",
@@ -3055,13 +3056,18 @@ if __name__ == '__main__':
 
     PETRglobals.RunTimeString = time.asctime()
 
-    PETRreader.parse_Config()
-
     if cli_args.command_name == 'validate':
+        PETRreader.parse_Config('PETR_config.ini')
         do_validation(cli_args.inputs)
 
     if cli_args.command_name == 'parse':
         start_time = time.time()
+
+        if cli_args.config:
+            PETRreader.parse_Config(cli_args.config)
+        else:
+            PETRreader.parse_Config('PETR_config.ini')
+
         # need to allow this to be set in the config file or command line
         PETRwriter.open_ErrorFile()
         print 'Verb dictionary:', PETRglobals.VerbFileName
@@ -3079,6 +3085,7 @@ if __name__ == '__main__':
             print 'Issues dictionary:', PETRglobals.IssueFileName
             PETRreader.read_issue_list()
 
+
         if os.path.isdir(cli_args.inputs):
             if cli_args.inputs[-1] != '/':
                 paths = glob.glob(cli_args.inputs + '/*')
@@ -3088,8 +3095,9 @@ if __name__ == '__main__':
             paths = [cli_args.inputs]
         else:
             print 'Please enter a valid directory or file of source texts.'
+            sys.exit()
 
-        do_coding(paths)
+        do_coding(paths, cli_args.output)
 
         print "Coding time:", time.time() - start_time
         # note that this will be removed if there are no errors

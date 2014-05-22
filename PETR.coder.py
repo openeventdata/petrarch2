@@ -232,6 +232,7 @@ NOTES FOR THE MANUAL
 
 import sys
 import time
+import argparse
 
 import PETRglobals  # global variables
 import PETRreader  # input routines
@@ -637,7 +638,7 @@ def check_envirattr(line, stag, sattr):
         sys.exit()
 
 
-def open_validation_file():
+def open_validation_file(filepath):
     """
 def open_validation_file():
 
@@ -754,7 +755,7 @@ Validation File Format
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
 
-    PETRreader.open_FIN(PETRglobals.TextFileList[0], "validation")
+    PETRreader.open_FIN(filepath, "validation")
 
     try:
         PETRreader.find_tag('<Environment')
@@ -2846,16 +2847,16 @@ def make_fake_events():
         ka += 1
 
 
-def do_validation():
+def do_validation(filepath):
     """ Coding using a validation file. """
-    open_validation_file()
+    open_validation_file(filepath)
 #	PETRreader.show_verb_dictionary("VerbDict.content.txt")
 
     start_time = time.time()
     nvalid = 0
 # PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
 #	sys.exit()
-    PETRreader.open_FIN(PETRglobals.TextFileList[0], "validation")
+    PETRreader.open_FIN(filepath, "validation")
     line = PETRreader.read_FIN_line()
     # no need to error check since open_validation_file already found this
     while "</Environment>" not in line:
@@ -3029,57 +3030,89 @@ def process_command_line():
 
     PETRglobals.RunTimeString = time.asctime()
 
-# ================== MAIN PROGRAM ================== #
+def parse_cli_args():
+    """Function to parse the command-line arguments for PETRARCH."""
+    __description__ = """
+PETRARCH
+(https://openeventdata.github.io/) (v. 0.01)
+    """
+    aparse = argparse.ArgumentParser(prog='PETRARCH',
+                                     description=__description__)
 
-"""
-PETRreader.read_issue_list()
-#PETRreader.show_AgentDict()
-sys.exit()
-"""
+    sub_parse = aparse.add_subparsers(dest='command_name')
+    parse_command = sub_parse.add_parser('parse', help="""Command to run the
+                                         PETRARCH parser.""",
+                                         description="""Command to run the
+                                         PETRARCH parser.""")
+    parse_command.add_argument('-i', '--inputs',
+                               help='File, or directory of files, to parse.',
+                               required=True)
+    parse_command.add_argument('-o', '--output',
+                               help='File to write parsed events.',
+                               required=True)
+    parse_command.add_argument('-c', '--config',
+                               help="""Filepath for the PETRARCH configuration
+                               file.""", required=True)
 
-"""
-PETRreader.read_verb_dictionary('PETR.Validate.verbs.txt')
-PETRreader.show_verb_dictionary()
-sys.exit()
-"""
-
-"""
-PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')  # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
-PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
-sys.exit()
-"""
+    batch_command = sub_parse.add_parser('validate', help="""Command to run
+                                         the PETRARCH validation suite.""",
+                                         description="""Command to run the
+                                         PETRARCH validation suite.""")
+    batch_command.add_argument('-i', '--inputs',
+                               help="""File that contains the validation
+                               records.""", required=True)
 
 
-process_command_line()
-PETRreader.parse_Config()  # debug
-# sys.exit()
-#PETRglobals.StoponError = True
+    args = aparse.parse_args()
+    return args
 
-if DoValidation:
-    do_validation()
 
-else:  # standard coding from the config file
-    start_time = time.time()
-    # need to allow this to be set in the config file or command line
-    PETRwriter.open_ErrorFile()
-    print 'Verb dictionary:', PETRglobals.VerbFileName
-    PETRreader.read_verb_dictionary()
-    print 'Actor dictionaries:', PETRglobals.ActorFileList
-    for actdict in PETRglobals.ActorFileList:
-        PETRreader.read_actor_dictionary(actdict)
-# PETRreader.show_ActorDict('ActorDict.content.txt') # debug
-    print 'Agent dictionary:', PETRglobals.AgentFileName
-    PETRreader.read_agent_dictionary()
-    print 'Discard dictionary:', PETRglobals.DiscardFileName
-    PETRreader.read_discard_list()
-    if PETRglobals.IssueFileName != "":
-        print 'Issues dictionary:', PETRglobals.IssueFileName
-        PETRreader.read_issue_list()
 
-    do_coding()
+if __name__ == '__main__':
+    #PETRreader.read_issue_list()
+    ##PETRreader.show_AgentDict()
+    #sys.exit()
+    #
+    #PETRreader.read_verb_dictionary('PETR.Validate.verbs.txt')
+    #PETRreader.show_verb_dictionary()
+    #sys.exit()
 
-    print "Coding time:", time.time() - start_time
-    # note that this will be removed if there are no errors
-    PETRwriter.close_ErrorFile()
+    # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
+    #PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')
+    #PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
+    #sys.exit()
 
-print "Finished"
+    cli_args = parse_cli_args()
+
+    PETRglobals.RunTimeString = time.asctime()
+
+    PETRreader.parse_Config()
+
+    if cli_args.command_name == 'validate':
+        do_validation(cli_args.inputs)
+
+    if cli_args.command_name == 'parse':
+        start_time = time.time()
+        # need to allow this to be set in the config file or command line
+        PETRwriter.open_ErrorFile()
+        print 'Verb dictionary:', PETRglobals.VerbFileName
+        PETRreader.read_verb_dictionary()
+        print 'Actor dictionaries:', PETRglobals.ActorFileList
+        for actdict in PETRglobals.ActorFileList:
+            PETRreader.read_actor_dictionary(actdict)
+    # PETRreader.show_ActorDict('ActorDict.content.txt') # debug
+        print 'Agent dictionary:', PETRglobals.AgentFileName
+        PETRreader.read_agent_dictionary()
+        print 'Discard dictionary:', PETRglobals.DiscardFileName
+        PETRreader.read_discard_list()
+        if PETRglobals.IssueFileName != "":
+            print 'Issues dictionary:', PETRglobals.IssueFileName
+            PETRreader.read_issue_list()
+
+        do_coding()
+
+        print "Coding time:", time.time() - start_time
+        # note that this will be removed if there are no errors
+        PETRwriter.close_ErrorFile()
+
+    print "Finished"

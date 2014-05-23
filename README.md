@@ -14,24 +14,55 @@ However, it now has almost all of the features of the TABARI coder.
 Documentation could also use a little work (really??) but is fairly complete, though 
 scattered in """...""" blocks throughout the program.
 
+##Installing
+
+It is possible to install the program. **It is highly recommended that you install within
+a virtual environment.** This is alpha software, so things will change
+moving forward. Seriously, install in a virtual environment.
+
+To install (you're in a virtual environment, right?):
+
+1) Clone the repo
+2) cd into the cloned repository
+3) Run `pip install -e .`
+
+This will install the program with a command-line hook. You can now run the
+program using:
+
+    petrarch <COMMAND NAME> [OPTIONS]
+
+You can get more information using:
+
+    petrarch -h
+
+It's not really adviseable to install the program at the current moment,
+though.
+
 ##Running
 
 Currently, you can run PETRARCH using the following command:
 
-    python PETR.coder.py parse -i GigaWord.sample.PETR.txt -o test_output.txt
+    python petrarch.py parse -i data/text/GigaWord.sample.PETR.txt -o test_output.txt
 
 There's also the option to specify a configuration file using the `-c <CONFIG
 FILE>` flag, but the program will default to using `PETR_config.ini`.
 
 You can get help with the program by running
 
-    python PETR.coder.py -h
+    python petrarch.py -h
 
 ##Unit tests
 
 Commits should always successfully complete 
 
-	python PETR.coder.py validate -i PETR.UnitTest.records.txt
+	python petrarch.py validate
+
+This command defaults to the `PETR.UnitTest.records.txt` file included with the
+program. Alternative files can be indicated using the `-i` option. For example
+(this is equivalent to the default command):
+
+
+	python PETR.coder.py validate -i data/text/PETR.UnitTest.records.txt
 
 The final record should read
 
@@ -41,6 +72,7 @@ The final record should read
 	No events were coded
 	Events correctly coded in FINAL-RECORD
 	Exiting: <Stop> record 
+
 
 ##Compatibilities with TABARI dictionaries
 

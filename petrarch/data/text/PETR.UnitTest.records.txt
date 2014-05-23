@@ -38,7 +38,7 @@
 	<Verbfile name="PETR.Validate.verbs.txt">
 	<Actorfile name="PETR.Validate.actors.txt">
 	<Agentfile name="PETR.Validate.agents.txt">
-	<Errorfile name="Errors.unit-test.txt">
+	<Errorfile name=“Errors.unit-test.txt">
 	<Include categories="valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET"-->
 	<Pause value="Stop"-->
 </Environment>		

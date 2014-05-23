@@ -411,7 +411,7 @@ def get_attribute(targattr):
 
 # ================== ANCILLARY DICTIONARY INPUT ================== #
 
-def read_discard_list():
+def read_discard_list(discard_path):
     """
     Reads file containing the discard list: these are simply lines containing strings.
     If the string, prefixed with ' ', is found in the <Text>...</Text> sentence, the
@@ -455,7 +455,7 @@ def read_discard_list():
         "Reading " +
         PETRglobals.DiscardFileName +
         "\n")  # assumes this is already open
-    open_FIN(PETRglobals.DiscardFileName, "discard")
+    open_FIN(discard_path, "discard")
 
     line = read_FIN_line()
     while len(line) > 0:  # loop through the file
@@ -472,7 +472,7 @@ def read_discard_list():
 # 	print PETRglobals.DiscardList[:8]
 
 
-def read_issue_list():
+def read_issue_list(issue_path):
     """
     "Issues" do simple string matching and return a comma-delimited list of codes.
     The standard format is simply
@@ -540,7 +540,7 @@ def read_issue_list():
         "Reading " +
         PETRglobals.IssueFileName +
         "\n")  # assumes this is already open
-    open_FIN(PETRglobals.IssueFileName, "issues")
+    open_FIN(issue_path, "issues")
 
     PETRglobals.IssueCodes.append('~')  # initialize the ignore codes
     PETRglobals.IssueCodes.append('~~')
@@ -623,7 +623,7 @@ def read_issue_list():
 # ================== VERB DICTIONARY INPUT ================== #
 
 
-def read_verb_dictionary():
+def read_verb_dictionary(verb_path):
     """ Reads the verb dictionary from VerbFileName """
 # <13.07.27> Still need to do
 # 1. New WordNet dictionary format
@@ -773,7 +773,7 @@ def read_verb_dictionary():
 
     # note that this will be ignored if there are no errors
     PETRwriter.write_ErrorFile("Reading " + PETRglobals.VerbFileName + "\n")
-    open_FIN(PETRglobals.VerbFileName, "verb")
+    open_FIN(verb_path, "verb")
 
     theverb = ''
     ka = 0   # primary verb count ( debug )
@@ -1238,7 +1238,7 @@ def show_actor_dictionary(filename=''):
 
 
 # ================== AGENT DICTIONARY INPUT ================== #
-def read_agent_dictionary():
+def read_agent_dictionary(agent_path):
     """ Reads an agent dictionary
     Agents are stored in a simpler version of the Actors dictionary: a list of phrases
     keyed on the first word of the phrase.
@@ -1436,7 +1436,7 @@ def read_agent_dictionary():
 
     # note that this will be ignored if there are no errors
     PETRwriter.write_ErrorFile("Reading " + PETRglobals.AgentFileName + "\n")
-    open_FIN(PETRglobals.AgentFileName, "agent")
+    open_FIN(agent_path, "agent")
 
     line = read_FIN_line()
     while len(line) > 0:  # loop through the file

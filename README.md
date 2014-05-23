@@ -1,7 +1,8 @@
-PETRARCH-Development
-====================
+PETRARCH
+========
 
-Code for the stand-alone development version of PETARCH (PETR.coder.py and associated modules)
+Current development for the new Python Engine for Text Resolution And Related
+Coding Hierarchy (PETRARCH) coder.
 
 See the header of PETR_coder.py for details on the current state of the program. In a 
 nutshell, this works -- it coded 60,000 AFP sentences from the GigaWord corpus without 
@@ -13,14 +14,24 @@ However, it now has almost all of the features of the TABARI coder.
 Documentation could also use a little work (really??) but is fairly complete, though 
 scattered in """...""" blocks throughout the program.
 
-Due to constraints on time, this has not been retrofitted into the structure found in 
-the "PETRARCH" repo: we will eventually do this.
+##Running
 
-	============= Unit tests ============
+Currently, you can run PETRARCH using the following command:
+
+    python PETR.coder.py parse -i GigaWord.sample.PETR.txt -o test_output.txt
+
+There's also the option to specify a configuration file using the `-c <CONFIG
+FILE>` flag, but the program will default to using `PETR_config.ini`.
+
+You can get help with the program by running
+
+    python PETR.coder.py -h
+
+##Unit tests
 
 Commits should always successfully complete 
 
-	python PETR.coder.py -v PETR.UnitTest.records.txt
+	python PETR.coder.py validate -i PETR.UnitTest.records.txt
 
 The final record should read
 
@@ -31,7 +42,7 @@ The final record should read
 	Events correctly coded in FINAL-RECORD
 	Exiting: <Stop> record 
 
-	====== Compatibilities with TABARI dictionaries =====
+##Compatibilities with TABARI dictionaries
 
 PETRARCH has a much richer dictionary syntax than TABARI, which will eventually accommodate 
 the WordNet-enhanced dictionaries developed at Penn State as well as reducing the level 
@@ -40,5 +51,7 @@ could use existing TABARI dictionaries, this compatibility will decline with fur
 developments and only the PETRARCH-specific dictionaries can be used
 
 15-Nov-2013: Requires TABARI 0.8 indented date restrictions, not older in-line format
+
 23-Apr-2014: PETRARCH-formatted agents dictionary required
+
 12-May-2014: Disjunctive phrases no longer recognized in the .verbs dictionary

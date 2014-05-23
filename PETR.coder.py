@@ -230,8 +230,11 @@ NOTES FOR THE MANUAL
 
 """
 
+import os
 import sys
+import glob
 import time
+import argparse
 
 import PETRglobals  # global variables
 import PETRreader  # input routines
@@ -637,7 +640,7 @@ def check_envirattr(line, stag, sattr):
         sys.exit()
 
 
-def open_validation_file():
+def open_validation_file(filepath):
     """
 def open_validation_file():
 
@@ -754,7 +757,7 @@ Validation File Format
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
 
-    PETRreader.open_FIN(PETRglobals.TextFileList[0], "validation")
+    PETRreader.open_FIN(filepath, "validation")
 
     try:
         PETRreader.find_tag('<Environment')
@@ -2846,16 +2849,16 @@ def make_fake_events():
         ka += 1
 
 
-def do_validation():
+def do_validation(filepath):
     """ Coding using a validation file. """
-    open_validation_file()
+    open_validation_file(filepath)
 #	PETRreader.show_verb_dictionary("VerbDict.content.txt")
 
     start_time = time.time()
     nvalid = 0
 # PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
 #	sys.exit()
-    PETRreader.open_FIN(PETRglobals.TextFileList[0], "validation")
+    PETRreader.open_FIN(filepath, "validation")
     line = PETRreader.read_FIN_line()
     # no need to error check since open_validation_file already found this
     while "</Environment>" not in line:
@@ -2900,7 +2903,7 @@ def do_validation():
             sys.exit()
 
 
-def do_coding():
+def do_coding(filepaths, out_file):
     """
     Main coding loop
     Note that entering any character other than 'Enter' at the prompt will stop the
@@ -2915,8 +2918,8 @@ def do_coding():
     global StoryIssues
     global CodedEvents
 
-    fevt = open(PETRglobals.EventFileName, 'w')
-    print "Writing events to:", PETRglobals.EventFileName
+    fevt = open(out_file, 'w')
+    print "Writing events to:", out_file
 
     NStory = 0
     NSent = 0
@@ -2926,16 +2929,15 @@ def do_coding():
     NDiscardStory = 0
     NParseErrors = 0
 
-    kfile = 0
-    while kfile < len(PETRglobals.TextFileList):
-        PETRreader.open_FIN(PETRglobals.TextFileList[kfile], "text")
+    for path in filepaths:
+        PETRreader.open_FIN(path, "text")
         reset_event_list(True)
         ka = 0
         while True:
             try:
                 read_record()
             except EOFError:
-                print "Closing:", PETRglobals.TextFileList[kfile]
+                print "Closing:", path
                 PETRreader.close_FIN()
                 write_events()
                 break
@@ -2990,7 +2992,6 @@ def do_coding():
 
             ka += 1  # debug
 # if ka > 32: break  # debug
-        kfile += 1
         write_events()
 
     fevt.close()  # need to handle this somewhere
@@ -3000,86 +3001,106 @@ def do_coding():
     print "Parsing errors:", NParseErrors
 
 
-def process_command_line():
-# processes the command line arguments
-# also sets a couple of run globals
-    """ Command Line Options
-    -v <filename>: Use the validation file <filename>
-    -c <filename>: Use the configuration file <filename>
-    -e <filename>: <filename> is the event output file
-    -t <filename>: Code the single text file <filename>
+def parse_cli_args():
+    """Function to parse the command-line arguments for PETRARCH."""
+    __description__ = """
+PETRARCH
+(https://openeventdata.github.io/) (v. 0.01)
     """
-    global DoValidation
-    if len(sys.argv) > 1:   # process command line options
-        print "Command line options:"
+    aparse = argparse.ArgumentParser(prog='PETRARCH',
+                                     description=__description__)
 
-        if ("-v" in sys.argv):
-            PETRglobals.TextFileList = [sys.argv[sys.argv.index("-v") + 1]]
-            DoValidation = True
-            print "-v: Reading validation file from", PETRglobals.TextFileList[0]
-        if ("-c" in sys.argv):
-            PETRglobals.ConfigFileName = sys.argv[sys.argv.index("-c") + 1]
-            print "-c: Reading configuration file from", PETRglobals.ProjectFilename
-        if ("-t" in sys.argv):
-            PETRglobals.TextFileList = [sys.argv[sys.argv.index("-t") + 1]]
-            print "-t: Reading texts from", PETRglobals.TextFileList[0]
-        if ("-e" in sys.argv):
-            PETRglobals.EventFileName = sys.argv[sys.argv.index("-e") + 1]
-            print "-to: Writing event to ", PETRglobals.EventFileName
+    sub_parse = aparse.add_subparsers(dest='command_name')
+    parse_command = sub_parse.add_parser('parse', help="""Command to run the
+                                         PETRARCH parser.""",
+                                         description="""Command to run the
+                                         PETRARCH parser.""")
+    parse_command.add_argument('-i', '--inputs',
+                               help='File, or directory of files, to parse.',
+                               required=True)
+    parse_command.add_argument('-o', '--output',
+                               help='File to write parsed events.',
+                               required=True)
+    parse_command.add_argument('-c', '--config',
+                               help="""Filepath for the PETRARCH configuration
+                               file. Defaults to PETR_config.ini""",
+                               required=False)
+
+    batch_command = sub_parse.add_parser('validate', help="""Command to run
+                                         the PETRARCH validation suite.""",
+                                         description="""Command to run the
+                                         PETRARCH validation suite.""")
+    batch_command.add_argument('-i', '--inputs',
+                               help="""File that contains the validation
+                               records.""", required=True)
+
+    args = aparse.parse_args()
+    return args
+
+
+if __name__ == '__main__':
+    #PETRreader.read_issue_list()
+    ##PETRreader.show_AgentDict()
+    #sys.exit()
+    #
+    #PETRreader.read_verb_dictionary('PETR.Validate.verbs.txt')
+    #PETRreader.show_verb_dictionary()
+    #sys.exit()
+
+    # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
+    #PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')
+    #PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
+    #sys.exit()
+
+    cli_args = parse_cli_args()
 
     PETRglobals.RunTimeString = time.asctime()
 
-# ================== MAIN PROGRAM ================== #
+    if cli_args.command_name == 'validate':
+        PETRreader.parse_Config('PETR_config.ini')
+        do_validation(cli_args.inputs)
 
-"""
-PETRreader.read_issue_list()
-#PETRreader.show_AgentDict()
-sys.exit()
-"""
+    if cli_args.command_name == 'parse':
+        start_time = time.time()
 
-"""
-PETRreader.read_verb_dictionary('PETR.Validate.verbs.txt')
-PETRreader.show_verb_dictionary()
-sys.exit()
-"""
+        if cli_args.config:
+            PETRreader.parse_Config(cli_args.config)
+        else:
+            PETRreader.parse_Config('PETR_config.ini')
 
-"""
-PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')  # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
-PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
-sys.exit()
-"""
+        # need to allow this to be set in the config file or command line
+        PETRwriter.open_ErrorFile()
+        print 'Verb dictionary:', PETRglobals.VerbFileName
+        PETRreader.read_verb_dictionary()
+        print 'Actor dictionaries:', PETRglobals.ActorFileList
+        for actdict in PETRglobals.ActorFileList:
+            PETRreader.read_actor_dictionary(actdict)
+        # debug
+        # PETRreader.show_ActorDict('ActorDict.content.txt')
+        print 'Agent dictionary:', PETRglobals.AgentFileName
+        PETRreader.read_agent_dictionary()
+        print 'Discard dictionary:', PETRglobals.DiscardFileName
+        PETRreader.read_discard_list()
+        if PETRglobals.IssueFileName != "":
+            print 'Issues dictionary:', PETRglobals.IssueFileName
+            PETRreader.read_issue_list()
 
 
-process_command_line()
-PETRreader.parse_Config()  # debug
-# sys.exit()
-#PETRglobals.StoponError = True
+        if os.path.isdir(cli_args.inputs):
+            if cli_args.inputs[-1] != '/':
+                paths = glob.glob(cli_args.inputs + '/*')
+            else:
+                paths = glob.glob(cli_args.inputs + '*')
+        elif os.path.isfile(cli_args.inputs):
+            paths = [cli_args.inputs]
+        else:
+            print 'Please enter a valid directory or file of source texts.'
+            sys.exit()
 
-if DoValidation:
-    do_validation()
+        do_coding(paths, cli_args.output)
 
-else:  # standard coding from the config file
-    start_time = time.time()
-    # need to allow this to be set in the config file or command line
-    PETRwriter.open_ErrorFile()
-    print 'Verb dictionary:', PETRglobals.VerbFileName
-    PETRreader.read_verb_dictionary()
-    print 'Actor dictionaries:', PETRglobals.ActorFileList
-    for actdict in PETRglobals.ActorFileList:
-        PETRreader.read_actor_dictionary(actdict)
-# PETRreader.show_ActorDict('ActorDict.content.txt') # debug
-    print 'Agent dictionary:', PETRglobals.AgentFileName
-    PETRreader.read_agent_dictionary()
-    print 'Discard dictionary:', PETRglobals.DiscardFileName
-    PETRreader.read_discard_list()
-    if PETRglobals.IssueFileName != "":
-        print 'Issues dictionary:', PETRglobals.IssueFileName
-        PETRreader.read_issue_list()
+        print "Coding time:", time.time() - start_time
+        # note that this will be removed if there are no errors
+        PETRwriter.close_ErrorFile()
 
-    do_coding()
-
-    print "Coding time:", time.time() - start_time
-    # note that this will be removed if there are no errors
-    PETRwriter.close_ErrorFile()
-
-print "Finished"
+    print "Finished"

@@ -842,11 +842,23 @@ Validation File Format
     PETRwriter.ErrorN += 0
 
     print 'Verb dictionary:', PETRglobals.VerbFileName
-    PETRreader.read_verb_dictionary()
-    print 'Actor dictionary:', PETRglobals.ActorFileList[0]
-    PETRreader.read_actor_dictionary(PETRglobals.ActorFileList[0])
+    verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
+    PETRreader.read_verb_dictionary(verb_path)
+
+    print 'Actor dictionaries:', PETRglobals.ActorFileList[0]
+    actor_path = _get_data('data/dictionaries', PETRglobals.ActorFileList[0])
+    PETRreader.read_actor_dictionary(actor_path)
+
     print 'Agent dictionary:', PETRglobals.AgentFileName
-    PETRreader.read_agent_dictionary()
+    agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
+    PETRreader.read_agent_dictionary(agent_path)
+
+#    print 'Verb dictionary:', PETRglobals.VerbFileName
+#    PETRreader.read_verb_dictionary()
+#    print 'Actor dictionary:', PETRglobals.ActorFileList[0]
+#    PETRreader.read_actor_dictionary(PETRglobals.ActorFileList[0])
+#    print 'Agent dictionary:', PETRglobals.AgentFileName
+#    PETRreader.read_agent_dictionary()
 #	sys.exit()
 
 
@@ -3031,14 +3043,16 @@ PETRARCH
                                          description="""Command to run the
                                          PETRARCH validation suite.""")
     batch_command.add_argument('-i', '--inputs',
-                               help="""File that contains the validation
-                               records.""", required=True)
+                               help="""Optional file that contains the
+                               validation records. If not specified, defaults
+                               to the built-in PETR.UnitTest.records.txt""",
+                               required=False)
 
     args = aparse.parse_args()
     return args
 
 
-if __name__ == '__main__':
+def main():
     #PETRreader.read_issue_list()
     ##PETRreader.show_AgentDict()
     #sys.exit()
@@ -3057,8 +3071,13 @@ if __name__ == '__main__':
     PETRglobals.RunTimeString = time.asctime()
 
     if cli_args.command_name == 'validate':
-        PETRreader.parse_Config('PETR_config.ini')
-        do_validation(cli_args.inputs)
+        PETRreader.parse_Config('../PETR_config.ini')
+        if not cli_args.inputs:
+            validation_file = _get_data('data/text',
+                                        'PETR.UnitTest.records.txt')
+            do_validation(validation_file)
+        else:
+            do_validation(cli_args.inputs)
 
     if cli_args.command_name == 'parse':
         start_time = time.time()
@@ -3066,25 +3085,35 @@ if __name__ == '__main__':
         if cli_args.config:
             PETRreader.parse_Config(cli_args.config)
         else:
-            PETRreader.parse_Config('PETR_config.ini')
+            PETRreader.parse_Config('../PETR_config.ini')
 
         # need to allow this to be set in the config file or command line
         PETRwriter.open_ErrorFile()
         print 'Verb dictionary:', PETRglobals.VerbFileName
-        PETRreader.read_verb_dictionary()
+        verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
+        PETRreader.read_verb_dictionary(verb_path)
+
         print 'Actor dictionaries:', PETRglobals.ActorFileList
         for actdict in PETRglobals.ActorFileList:
-            PETRreader.read_actor_dictionary(actdict)
+            actor_path = _get_data('data/dictionaries', actdict)
+            PETRreader.read_actor_dictionary(actor_path)
         # debug
         # PETRreader.show_ActorDict('ActorDict.content.txt')
+
         print 'Agent dictionary:', PETRglobals.AgentFileName
-        PETRreader.read_agent_dictionary()
+        agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
+        PETRreader.read_agent_dictionary(agent_path)
+
         print 'Discard dictionary:', PETRglobals.DiscardFileName
-        PETRreader.read_discard_list()
+        discard_path = _get_data('data/dictionaries',
+                                 PETRglobals.DiscardFileName)
+        PETRreader.read_discard_list(discard_path)
+
         if PETRglobals.IssueFileName != "":
             print 'Issues dictionary:', PETRglobals.IssueFileName
-            PETRreader.read_issue_list()
-
+            issue_path = _get_data('data/dictionaries',
+                                   PETRglobals.IssueFileName)
+            PETRreader.read_issue_list(issue_path)
 
         if os.path.isdir(cli_args.inputs):
             if cli_args.inputs[-1] != '/':
@@ -3104,3 +3133,16 @@ if __name__ == '__main__':
         PETRwriter.close_ErrorFile()
 
     print "Finished"
+
+
+def _get_data(dir_path, path):
+    """Private function to get the absolute path to the installed files."""
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    joined = os.path.join(dir_path, path)
+    out_dir = os.path.join(cwd, joined)
+    print out_dir
+    return out_dir
+
+
+if __name__ == '__main__':
+    main()

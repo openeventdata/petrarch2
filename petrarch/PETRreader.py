@@ -27,6 +27,7 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
+import os
 import sys
 import math  # required for ordinal date calculations
 import xml.etree.ElementTree as ET
@@ -105,6 +106,9 @@ def parse_Config(config_path):
         PETRglobals.DiscardFileName = parser.get(
             'Dictionaries',
             'discardfile_name')
+
+        direct = parser.get('StanfordNLP', 'stanford_dir')
+        PETRglobals.stanfordnlp = os.path.expanduser(direct)
 
         filestring = parser.get('Dictionaries', 'actorfile_list')
         PETRglobals.ActorFileList = filestring.split(', ')

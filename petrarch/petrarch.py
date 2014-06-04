@@ -2900,22 +2900,22 @@ def do_coding(event_dict, out_file):
             if coded_events:
                 event_dict[key]['sents'][sent]['events'] = coded_events
 
-    return event_dict
 
-#TODO
-#Pull this out for now since I'm not 100% sure on the SentenceID thing
-#                if coded_events and PETRglobals.IssueFileName != "":
-#                    StoryIssues[SentenceID[-2:]] = get_issues()
+            if coded_events and PETRglobals.IssueFileName != "":
+                event_issues = get_issues()
+                if event_issues:
+                    event_dict[key]['sents'][sent]['issues'] = event_issues
 
             if PETRglobals.PauseBySentence:
                 if len(raw_input("Press Enter to continue...")) > 0:
                     sys.exit()
 
+    return event_dict
 
-#    print "Summary:"
-#    print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
-#    print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
-#    print "Parsing errors:", NParseErrors
+    print "Summary:"
+    print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
+    print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
+    print "Parsing errors:", NParseErrors
 
 
 def parse_cli_args():

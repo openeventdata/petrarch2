@@ -14,109 +14,63 @@ This now has most of the functionality of TABARI except for the following:
 
 -- The simple pronoun resolution rules of TABARI have not been implemented
 
-I'm now down to only 3 [trapped] bugs in coding 60,000 AFP stories from the GigaWord,
-and these are fairly esoteric constructions.  The system now codes 243 of the TABARI
-unit-test records, which is most of them, plus some new records specific to PETR.
+I'm now down to only 3 [trapped] bugs in coding 60,000 AFP stories from the
+GigaWord, and these are fairly esoteric constructions.  The system now codes
+243 of the TABARI unit-test records, which is most of them, plus some new
+records specific to PETR.
 
-So, those remaining functions, the debugging of the compounds, handling a few more
-noun-related tags (specifically (NML and (NP-TMP)  and a few additional
-unimplemented features scattered through the code are what is left, and I may be able
-to get to those in the next couple of weeks, and certainly before the end of the month.
-At the point of completing those, I'll probably shift to getting the WordNet-based
-verb dictionaries into the system.
+So, those remaining functions, the debugging of the compounds, handling a few
+more noun-related tags (specifically (NML and (NP-TMP)  and a few additional
+unimplemented features scattered through the code are what is left, and I may
+be able to get to those in the next couple of weeks, and certainly before the
+end of the month.  At the point of completing those, I'll probably shift to
+getting the WordNet-based verb dictionaries into the system.
 
-Despite the nearly full implementation, this still seems to be getting a substantially
-lower yield of event compared to TABARI: this needs further exploration, though may be
-in part a feature of GigaWord, but it is probably also very strongly affected by the
-stemming in the existing CAMEO dictionary.
+Despite the nearly full implementation, this still seems to be getting a
+substantially lower yield of event compared to TABARI: this needs further
+exploration, though may be in part a feature of GigaWord, but it is probably
+also very strongly affected by the stemming in the existing CAMEO dictionary.
 
 NEW FEATURES NOT IN TABARI WHICH HAVE BEEN IMPLEMENTED:
 
-1.  There is a new agents dictionary format: this is the first of the format changes
-    that will modify these to the point where they are not compatible for TABARI
-	dictionaries
+1.  There is a new agents dictionary format: this is the first of the format
+changes that will modify these to the point where they are not compatible for
+TABARI dictionaries
 
-2.	Program can pull out noun phrases which correspond to actors not in the dictionary:
-	this is controlled by the parameter new_actor_length in config.ini (see that file
-	for description of this feature)
+2.	Program can pull out noun phrases which correspond to actors not in the
+dictionary: this is controlled by the parameter new_actor_length in config.ini
+(see that file for description of this feature)
 
-[What the heck is TABARI??: http://eventdata.parusanalytics.com/software.dir/tabari.html]
+[What the heck is TABARI??:
+    http://eventdata.parusanalytics.com/software.dir/tabari.html]
 
--------------------------------------------------------------------------------------
-
-TO RUN PROGRAM:
-   Coding run:
-     python PETR.coder.py <options>
-	-c <filename>: Use the configuration file <filename>
-	-e <filename>: <filename> is the event output file
-	-t <filename>: Code the single text file <filename>
-
-	Unit-test files:
- 		python PETR.coder.py -v PETR.UnitTest.records.txt [all should code correctly]
-
-REQUIRED MODULES
-   PETRglobals.py: global declarations
-   PETRreader.py : dictionary and other input routines
-   PETRwriter.py : output routines
-
-INPUT FILES
-	PETR_config.ini specifies the various files in a coding run
-	Unit-test files are set in the <Environment> block of PETR.UnitTest.records.txt
-
-OUTPUT FILES
-	Event output is set using eventfile_name
-	Error file: hard coded to ErrorLog.PETR.txt or set using <Errorfile> tag (validation)
-    Actor dictionary dump: ActorDict.content.txt [commented out]
+------------------------------------------------------------------------------
 
 PROGRAMMING NOTES
 
-1. There is a fair amount of internal documentation in both multi-line comment blocks
-   and individual comments, though as always this could be a little more systematic
-   and not all of it corresponds to Python docstring conventions: things are gradually
-   getting converted to this.
+1. There is a fair amount of internal documentation in both multi-line comment
+blocks and individual comments, though as always this could be a little more
+systematic and not all of it corresponds to Python docstring conventions:
+    things are gradually getting converted to this.
 
-2. There are an assortment of general diagnostic print statements controlled by the
-   Boolean switches in the DEBUGGING GLOBALS. In addition, a wide variety of function-
-   specific print statements have been left in the code but commented out.
+2. There are an assortment of general diagnostic print statements controlled by
+the Boolean switches in the DEBUGGING GLOBALS. In addition, a wide variety of
+function- specific print statements have been left in the code but commented
+out.
 
 CODE REPOSITORY: https://github.com/openeventdata/PETRARCH-Development
 
-SYSTEM REQUIREMENTS
-This program has been successfully run under Mac OS 10.6.8, Ubuntu 12.2 and whatever
-version of Unix running on the Penn State HPC systems; it is standard Python 2.6.1 so it
-should conceivably also run in Windows.
-
 PROVENANCE:
 Programmer: Philip A. Schrodt
-			Parus Analytical Systems
-			State College, PA, 16801 U.S.A.
-			http://eventdata.parusanalytics.com
+            Parus Analytical Systems
+            State College, PA, 16801 U.S.A.
+            http://eventdata.parusanalytics.com
 
-This project was funded in part by National Science Foundation grant SES-1259190
-(Directorate for Social, Behavioral and Economic Sciences; joint funding from the
-Political Science and the Methods, Measurement and Statistics Programs.) Yes, *that* NSF
+This project was funded in part by National Science Foundation grant
+SES-1259190 (Directorate for Social, Behavioral and Economic Sciences; joint
+funding from the Political Science and the Methods, Measurement and Statistics
+Programs.) Yes, *that* NSF
 Political Science program.
-
-LICENSE: The MIT License (MIT)
-
-Copyright (c) 2014	Philip A. Schrodt.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Report bugs to: schrodt735@gmail.com
 
@@ -127,106 +81,8 @@ July-13: Revised to handle Stanford NLP tree format
 Nov-13:  Validation, PETRreader module
 Dec-13:  Compound actors and agents
 Feb-14:  do_coding, PETR_config.ini, discards, issues, runtime error trapping
-Apr-14:  new agents format, (NE--- phrases, passive voice, comma-delimited clauses
-
-----------------------------------------------------------------------------------
-
-IMPLEMENTATION NOTES:
-
-NAMING CONVENTIONS
-
-GlobalVariables (those which may appear in 'global' statements) are named with the
-CapitalizedWords style
-
-localvariables are lowercase
-
-functions are lower_case_with_underscores
-
--------------------------------------------------------------------------------------
-
-VOCABULARY [mostly inherited from TABARI]
-
-"upper" and "lower" matches
-
-These refer to the part of the pattern before (upper) and
-after ("lower") the verb designator ('*'). This convention arises from how a sentence
-is usually printed, with the earlier words on the screen above the later words.
-
-"connector"
-
-This is the ' ' or '_' which follows a word: a '_' means that the next word must be
-consecutive; a ' ' means that intermediate words can occur.
-
--------------------------------------------------------------------------------------
-
-DIFFERENCES FROM TABARI
-
-[which will be of little interest unless you are one of the fifty or so people in the
-world who actually worked with TABARI, but it is possible that you've got an old TABARI
-dictionary and some of this might be relevant.]
-
-1. Requires a Penn TreeBank parsed version of the sentence as input and Stanford NLP
-   coreferences -- see further discussion below
-
-2. There is no stemming: if you need a stem, use a synset, but meanwhile noun and verb
-   forms are more extensively incorporated into the system than they were in the
-   earlier version of TABARI (which are the versions where most of the dictionary
-   development had been done)
-
-3. Only named entities (NE) can match actors
-
-4. Matching following the verb is restricted to the actual verb phrase(!!). Matching
-   prior to the verb is probably more or less equivalent to what TABARI did
-
-5. The text input format is considerably more complex and contains embedded XML.
-
-6. The dictionary format has changed substantially and will not be compatible with TABARI
-   in either direction.
-
-TreeBank parsing is clearly the core difference, and it is substantial in at least three
-ways. First, because TABARI was a pattern-based shallow parser, it could get the right
-answer for the wrong reason, and at least some of the dictionary entries -- in
-particular those treating nouns as if they were verbs, depend on this \fn{This became
-very apparent as I was going through the unit tests, many of which had to be discarded
-because they used only patterns, not grammatically-correct constructions. Which are also
-a lot harder to construct.}. PETR does not allow this: for starters, it only matches
-true verbs --- (VP (VB in the parse tree --- and if a parser is given a ungrammatical
-sentence, results can be unpredictable.
-
-Which leads to the second issue: parsed input is typically less robust than pattern-
-based input, since the addition or deletion of words that seem trivial to a native
-speaker (or at least this native speaker) will sometimes change the parse (which is,
-of course, itself a very complex program). This probably has two implications. First, it
-means that PETR will be more conservative than TAB, which again seems to be what people
-want. Second, probably a lot of work is going to need to be done getting the dictionaries
-adapted to this. That said, there have also been some pleasant surprises where features
-that had to be dealt with as special cases in TAB are taken care of automatically in
-PETR, and the full parts-of-speech markup should simplify the dictionaries.
-
-Third, switching to an open-source parser means that we are relegating the parsing to the
-linguists, and more generally to the very large community that develops parser that can
-produce TreeBank output. \fn{I had originally expected that this would simplify the code
-but it does not really seem to have done so, since the quirks of a full parse are, if
-anything, more complex than those of a pattern-based shallow parse. And the parse doesn't
-take care of everything: for example comma-delimited clause deletion and passive voice
-detection are essentially done the same way as in TAB, but now with the added complexity
-of requiring the tags in the tree to remain balanced. This is also essentially just an
-extension of TAB, which already tagged a number of phrases and clauses: the difference is
-that TreeBank tags all of them.}  One thing that may result from this will be the
-ability to easily adapt PETR to other languages \fn{TAB had been adapted to Spanish a
-couple of times, and KEDS to German and Spanish.} since the TreeBank format is standard
-across many languages. It will still be necessary to adjust for some of the phrase and
-word-ordering rules, but because of the complete markup, and the fact that the system
-works *only* with this markup, modification for other languages should be easier.
-
--------------------------------------------------------------------------------------
-
-NOTES FOR THE MANUAL
-
-1. There are an assortment of comments that contain the string '???' which indicate
-   points that need to be clarified when re-writing the TABARI manual.
-
--------------------------------------------------------------------------------------
+Apr-14:  new agents format, (NE--- phrases, passive voice, comma-delimited
+clauses
 
 """
 
@@ -241,7 +97,7 @@ import PETRreader  # input routines
 import PETRwriter  # output routines
 
 
-# ================================  PARSER/CODER GLOBALS  ================================ #
+# ================================  PARSER/CODER GLOBALS  ================== #
 
 ParseList = []   # linearized version of parse tree
 ParseStart = 0   # first element to check (skips (ROOT, initial (S
@@ -259,7 +115,7 @@ SourceCode = ''   # source code from the current verb
 TargetCode = ''   # target code from the current verb
 
 
-# ================================  VALIDATION GLOBALS  ================================ #
+# ================================  VALIDATION GLOBALS  ==================== #
 
 DoValidation = False   # using a validation file
 ValidOnly = False      # only evaluate cases where <Sentence valid="true">
@@ -273,12 +129,13 @@ ValidExclude = []  # validation mode : list of categories to exclude
 ValidPause = 0
 
 
-# ================================  UTILITY GLOBALS  ================================ #
+# ================================  UTILITY GLOBALS  ====================== #
 
 
-# ================================  DEBUGGING GLOBALS  ================================ #
-# (comment out the second line in the pair to activate. Like you couldn't figure that out.)
-# prints ParseList in evaluate_validation_record()/code_record() following
+# ================================  DEBUGGING GLOBALS  ==================== #
+# (comment out the second line in the pair to activate. Like you couldn't
+# figure that out.) prints ParseList in
+# evaluate_validation_record()/code_record() following
 # NE assignment
 ShowParseList = True
 ShowParseList = False
@@ -334,9 +191,9 @@ ErrMsgUnbalancedTree = "Unbalanced <Parse> tree; record was skipped"
 
 
 def raise_parsing_error(call_location_string):
-# <14.02.27: this is currently used as a generic escape from misbehaving functions, so it
-# is not necessarily an actual unbalanced tree, just that we've hit
-# something unexpected.
+# <14.02.27: this is currently used as a generic escape from misbehaving
+# functions, so it is not necessarily an actual unbalanced tree, just that
+# we've hit something unexpected.
     global SentenceID, NParseErrors, DoValidation
     errorstring = 'Parsing error in ' + call_location_string
     PETRwriter.write_record_error(errorstring, SentenceID)
@@ -460,13 +317,13 @@ def change_Config_Options(line):
 
 def extract_EventCoding_info(theline):
     """Extracts fields from <EventCoding record and appends to ValidEvents."""
-# currently does not raise errors if the information is missing but instead sets the
-# fields to null strings
+# currently does not raise errors if the information is missing but instead
+# sets the fields to null strings
     """
-	Structure of ValidEvents
-	noevents: empty list
-	otherwise list of triples of [sourcecode, targetcode, eventcode]
-	"""
+    Structure of ValidEvents
+    noevents: empty list
+    otherwise list of triples of [sourcecode, targetcode, eventcode]
+    """
     global ValidEvents
 
     PETRreader.extract_attributes(theline)
@@ -483,14 +340,15 @@ def extract_EventCoding_info(theline):
 
 def evaluate_validation_record():
     """
-    def evaluate_validation_record():
-    Read validation record, setting EventID and a list of correct coded events, code
-    using read_TreeBank(), then check the results. Returns True if the lists of coded and
-    expected events match or the event is skipped; false otherwise; also prints the
+    def evaluate_validation_record(): Read validation record, setting EventID
+    and a list of correct coded events, code using read_TreeBank(), then check
+    the results. Returns True if the lists of coded and expected events match
+    or the event is skipped; false otherwise; also prints the
     mismatches
     Raises EOFError exception if EOF hit.
     Raises StopCoding if <Stop> found or
-    Raises SkipRecord if <Skip> found or record is skipped due to In/Exclude category lists
+    Raises SkipRecord if <Skip> found or record is skipped due to In/Exclude
+    category lists
     """
     global SentenceDate, SentenceID, SentenceCat, SentenceText, SentenceValid
     global CodedEvents, ValidEvents
@@ -645,72 +503,83 @@ def open_validation_file(filepath):
 def open_validation_file():
 
 1. Opens validation file TextFilename as FIN
-2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various validation
-options, then reads the dictionaries (exits if these are not set)
+2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various
+validation options, then reads the dictionaries (exits if these are not set)
 3. Can raise MissingXML
 4. Can exit on EOFError, MissingAttr
 
 Validation File Format
-    Validation files are used for debugging and unit testing, combining the contents
-    of a project file and text file as well as providing information on the correct
-    coding for each record. \footnote{This approach is used based on some decidedly
-    aggravating experiences during the TABARI development where the validation records
-    and the required .verbs and .actors files were not properly synchronized.}
+    Validation files are used for debugging and unit testing, combining the
+    contents of a project file and text file as well as providing information
+    on the correct coding for each record. \footnote{This approach is used
+    based on some decidedly aggravating experiences during the TABARI
+    development where the validation records and the required .verbs and
+    .actors files were not properly synchronized.}
 
     Required elements in the <Environment> block
             <Environment>
                     <Verbfile name="<filename>">
-                    <Actorfile name="<filename>">  (there can only be one, unlike in the config
-                                                    file, which allows a list)
+                    <Actorfile name="<filename>">  (there can only be one,
+                                                    unlike in the config file,
+                                                    which allows a list)
                     <Agentfile name="<filename>">
             </Environment>
 
     Options elements in the <Environment> block
             <Include categories="<space-delimited list of categories to include in test>">
-                    if 'valid' is included as a category, only records containing valid="true"
-                    in <SENTENCE> will be evaluated.
+                    if 'valid' is included as a category, only records
+                    containing valid="true" in <SENTENCE> will be evaluated.
             <Exclude categories="<space-delimited list of categories to exclude in test>">
-            [if a category is in both lists, the case is excluded. But please don't do this]
+            [if a category is in both lists, the case is excluded. But please
+            don't do this]
             <Pause value="<always, never>">
                     Pause conditions:
                             always  -- pause after every record
-                            never   -- never pause (errors are still recorded in file)
-                            stop    -- exit program on the default condition [below]
-                            default -- pause only when EventCodes record doesn't correspond to the
-                                               generated events or if there is no EventCodes record
+                            never   -- never pause (errors are still recorded
+                                                    in file)
+                            stop    -- exit program on the default condition
+                                        [below]
+                            default -- pause only when EventCodes record
+                                        doesn't correspond to the generated
+                                        events or if there is no EventCodes
+                                        record
 
     General record fields : all of these tags should occur on their own lines
     <Sentence>...</Sentence>:
-            Delimits the record. The <Sentence...> tag can have the following fields:
-              date: date of the text in YYYYMMDD format. This is required; if it is not
-                            present the record will be skipped
-              id : identification string in any format [optional]
-              category: category in any format; this is used by the <Include> and <Exclude>
-                                    options [optional]
-              place: code to be used for anonymous actors [optional]
-    </Text>...</Text>:
-            delimits the source text. This is used only for the display. The tags should
-            occur on their own lines
-    <Parse>...</Parse>
-            Delimits the TreeBank parse tree text: this used only for the actual coding.
-            The
+            Delimits the record. The <Sentence...> tag can have the following
+            fields: date: date of the text in YYYYMMDD format. This is
+            required; if it is not present the record will be skipped
 
-    Required elements in each record: for validation, one or more of these should
-    occur prior to the TreeBank. If none are present, the record is coded and the
-    program pauses unless <Pause value = "never'> has been used.
+              id : identification string in any format [optional] category:
+                  category in any format; this is used by the <Include> and
+                  <Exclude> options [optional]
+
+              place: code to be used for anonymous actors [optional]
+
+    </Text>...</Text>:
+            delimits the source text. This is used only for the display. The
+            tags should occur on their own lines
+    <Parse>...</Parse>
+            Delimits the TreeBank parse tree text: this used only for the
+            actual coding.
+
+    Required elements in each record: for validation, one or more of these
+    should occur prior to the TreeBank. If none are present, the record is
+    coded and the program pauses unless <Pause value = "never'> has been used.
 
     <EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">
     <EventCodes noevents = "True"> : indicates the record generates no events
-              (presently, system just looks for the presence of a 'noevents' attribute)
-              (This is also equivalent to no <EventCodes record, but better to state this
-               explicitly.)
+              (presently, system just looks for the presence of a 'noevents'
+              attribute) (This is also equivalent to no <EventCodes record, but
+              better to state this explicitly.)
 
     Optional elements in record
             <Skip>: skip this record without coding
             <Stop>: stop coding and exit program
             <Config option ="<config.ini option from list below>" value ="<value>">:
                     Change values of PETR_config.ini globals.
-                    Currently works for: new_actor_length, require_dyad, stop_on_error, comma_*
+                    Currently works for: new_actor_length, require_dyad,
+                    stop_on_error, comma_*
 
     Additional notes:
     1. The validation file currently does not use a discard file.
@@ -867,8 +736,8 @@ Validation File Format
 def get_NE(NPphrase):
     """
     def get_NE(NPphrase):
-    Convert (NP...) ) to NE: copies any (NEC phrases with markup, remainder of the phrase
-    without any markup
+    Convert (NP...) ) to NE: copies any (NEC phrases with markup, remainder of
+    the phrase without any markup
     Can raise UnbalancedTree, though that should have been trapped before this
     """
     nplist = ['(NE --- ']
@@ -910,93 +779,94 @@ def get_NE(NPphrase):
 def read_TreeBank():
     """
     def read_TreeBank():
-    Reads parsed sentence in the Penn TreeBank II format and puts the linearized version in
-    the list ParseList. Sets ParseStart. Leaves global input file fin at line following
-    </parse>. Probably should do something with an EOF error.
+    Reads parsed sentence in the Penn TreeBank II format and puts the
+    linearized version in the list ParseList. Sets ParseStart. Leaves global
+    input file fin at line following </parse>. Probably should do something
+    with an EOF error.
 
-    This routine is supposed to be agnostic towards the line-feed and tab formatting of the
-    parse tree
+    This routine is supposed to be agnostic towards the line-feed and tab
+    formatting of the parse tree
 
-    Can raise UnbalancedTree error, and this is supposed to be the first line of defense
-    against that: ParseList should come out of this balanced. There is extensive commented-out
-    debugging code to check for this
+    Can raise UnbalancedTree error, and this is supposed to be the first line
+    of defense against that: ParseList should come out of this balanced. There
+    is extensive commented-out debugging code to check for this """
+
+    """ ParseList coding Because they are still based in a shallow parsing
+    approach, the KEDS/TABARI/PETR dictionaries are based on linear string
+    matching rather than a tree representation, which differs from the VRA and
+    BBN approach, but is much faster. The information in the tree is used
+    primarily for clause delineation and [via the Stanford system]
+    co-referencing.
+
+    The read_TreeBank() function is currently the "first line of defense" in
+    modifying the fully parsed input to a form that will work with the
+    dictionaries developed under the older shallow parser. As of <13.11.25>
+    this is focused on converting noun phrases ('(NP') to a shallower 'NE'
+    (named-entity) format. Additional modifications may follow.
+
+    Clauses are generally delineated using (XXX for the beginning and ~XXX for
+    the end, where XXX are the TreeBank tags. The current code will leave some
+    excess ')' at the end.
+
+    Additional markup:
+
+    1. Simple noun phrases -- those which are delineated by '(NP ... '))' --
+    have their tag converted to 'NE' and the intermediate POS TreeBank marking
+    removed. These are the only phrases that can match actors and agents. A
+    placeholder code '---' is added to this structure.
+
+        Note that because CoreNLP separates the two components of a possessive
+        marking (that is, noun + apostrophe-S), this cannot be used as part of
+        an actor string,
+        so for example
+                CHINA'S BLUEWATER NAVY
+        is going to look like
+                CHINA 'S BLUEWATER NAVY
+        In the rather unlikely case that the actor with and without the
+        possessive would map to different code, do a global substitution, for
+        example 'S -> QX and then match that, i.e.
+                CHINAQX BLUEWATER NAVY
+        Realistically, however, a noun and its possessive will be equivalent in
+        actor coding.
+
+    2. The possessive structure (NP (NP ... (POS )) ... ) is converted to an NE
+    with the (POS 'S) eliminated, so this also cannot be in a dictionary
+
+    3. The prepositional phrase structure (NP (NP ... )) (PP ) NP( ... )) is
+    converted to an NE; the preposition (IN ...) is retained
+
+    4. The text of an (SBAR inside an (NP is retained
+
+    5. (VP and complex (NP are indexed so that the end of the phrase can be
+    identified so these have the form (XXn and ~XXn
+
+    Errors:
+
+    ErrMsgUnbalancedTree: this is raised when the indices checking for clause
+    boundaries go out of the bounds [0,len(treestr)-1]. In fact, a tree
+    probably needs to be seriously off to get this far: it is much more likely
+    that an unbalanced tree will just generate a nonsensical parse and probably
+    just get skipped.  But the program will keep running.
+
+
+    <13.11.27> Reflections of PETR vs TABARI parsing
+    As is well known, the shallow parsing of TABARI, while getting things wrong
+    for the wrong reasons, also frequently got things right for the wrong
+    reasons, which is to say it was rather robust on variations, grammatical or
+    otherwise, in the sentences.  With the use of CoreNLP, we no longer have
+    this advantage, and it is likely to take some coder experimentation with an
+    extensive set of real texts to determine the various contingencies that
+    needs to be accommodated.
+
+    At present, the special cases are handled though very specific code blocks.
+    If enough of these accumulate, the code will be more maintainable if we can
+    develop a general language for specifying these rules -- which should not
+    be difficult given that the input from CoreNLP is well-structured -- but
+    for the time being, we don't have enough rules to see what, if anything is
+    needed. [Those rules might also leave the text with balanced parentheses,
+    as this is generally considered "a good thing"]
+
     """
-
-    """ ParseList coding
-	Because they are still based in a shallow parsing approach, the KEDS/TABARI/PETR
-	dictionaries are based on linear string matching rather than a tree representation,
-	which differs from the VRA and BBN approach, but is much faster. The information in
-	the tree is used primarily for clause delineation and [via the Stanford system]
-	co-referencing.
-
-	The read_TreeBank() function is currently the "first line of defense" in modifying the
-	fully parsed input to a form that will work with the dictionaries developed under
-	the older shallow parser. As of <13.11.25> this is focused on converting noun
-	phrases ('(NP') to a shallower 'NE' (named-entity) format. Additional modifications
-	may follow.
-
-	Clauses are generally delineated using (XXX for the beginning and ~XXX for the end,
-	where XXX are the TreeBank tags. The current code will leave some excess ')' at the
-	end.
-
-	Additional markup:
-
-	1. Simple noun phrases -- those which are delineated by '(NP ... '))' -- have their
-		tag converted to 'NE' and the intermediate POS TreeBank marking removed. These
-		are the only phrases that can match actors and agents. A placeholder code '---'
-		is added to this structure.
-
-		Note that because CoreNLP separates the two components of a possessive marking
-		(that is, noun + apostrophe-S), this cannot be used as part of an actor string,
-		so for example
-		       CHINA'S BLUEWATER NAVY
-		is going to look like
-		       CHINA 'S BLUEWATER NAVY
-		In the rather unlikely case that the actor with and without the possessive would
-		map to different code, do a global substitution, for example 'S -> QX and then
-		match that, i.e.
-		       CHINAQX BLUEWATER NAVY
-		Realistically, however, a noun and its possessive will be equivalent in actor
-		coding.
-
-	2. The possessive structure (NP (NP ... (POS )) ... ) is converted to an NE with the
-		(POS 'S) eliminated, so this also cannot be in a dictionary
-
-	3. The prepositional phrase structure (NP (NP ... )) (PP ) NP( ... )) is converted
-			to an NE; the preposition (IN ...) is retained
-
-	4. The text of an (SBAR inside an (NP is retained
-
-	5. (VP and complex (NP are indexed so that the end of the phrase can be identified
-			so these have the form (XXn and ~XXn
-
-	Errors:
-
-	ErrMsgUnbalancedTree: this is raised when the indices checking for clause boundaries
-			go out of the bounds [0,len(treestr)-1]. In fact, a tree probably needs to
-			be seriously off to get this far: it is much more likely that an unbalanced
-			tree will just generate a nonsensical parse and probably just get skipped.
-			But the program will keep running.
-
-	"""
-
-    """
-	<13.11.27> Reflections of PETR vs TABARI parsing
-	As is well known, the shallow parsing of TABARI, while getting things wrong for the
-	wrong reasons, also frequently got things right for the wrong reasons, which is to
-	say it was rather robust on variations, grammatical or otherwise, in the sentences.
-	With the use of CoreNLP, we no longer have this advantage, and it is likely to take
-	some coder experimentation with an extensive set of real texts to determine the
-	various contingencies that needs to be accommodated.
-
-	At present, the special cases are handled though very specific code blocks. If enough
-	of these accumulate, the code will be more maintainable if we can develop a general
-	language for specifying these rules -- which should not be difficult given that the
-	input from CoreNLP is well-structured -- but for the time being, we don't have enough
-	rules to see what, if anything is needed. [Those rules might also leave the text with
-	balanced parentheses, as this is generally considered "a good thing"]
-
-	"""
 
     global ParseList, ParseStart
     global treestr
@@ -1004,8 +874,8 @@ def read_TreeBank():
     global ncindex
 
     def get_forward_bounds(ka):
-    # returns the bounds of a phrase in treestr that begins at ka, including final space
-    # can raise UnbalancedTree error
+    # returns the bounds of a phrase in treestr that begins at ka, including
+    # final space can raise UnbalancedTree error
         global treestr  # <13.12.07> see note above
         kb = ka + 1
         nparen = 1  # paren count
@@ -1021,8 +891,8 @@ def read_TreeBank():
         return [ka, kb]
 
     def get_enclosing_bounds(ka):
-    # returns the bounds of a phrase in treestr that encloses the phrase beginning at ka
-    # can raise UnbalancedTree error
+    # returns the bounds of a phrase in treestr that encloses the phrase
+    # beginning at ka can raise UnbalancedTree error
         global treestr  # <13.12.07> see note above
         kstart = ka - 1
         nparen = 0  # paren count
@@ -1080,31 +950,34 @@ def read_TreeBank():
                         print '\nMC4:', treestr[kb:]
 
     def resolve_compounds(ka):
-        """ Assign indices, eliminates the internal commas and (CC, and duplicate any initial adjectives inside a compound. """
         """
-		This leaves the (NEC with leaving just the (NE.
-		Returns treestr loc (ka) past the end of the phrase.
-		Index assignment may involve just a simple (NNP or (NNS.
+        Assign indices, eliminates the internal commas and (CC, and duplicate
+        any initial adjectives inside a compound.
 
-			Parsing bug note: <14.01.13>
-			In what appear to be rare circumstances, CoreNLP does not correctly delimit two
-			consecutive nouns in a compound as (NP. Specifically, in the test sentence
+        This leaves the (NEC with leaving just the (NE.
+        Returns treestr loc (ka) past the end of the phrase.
+        Index assignment may involve just a simple (NNP or (NNS.
 
-					Mordor and the Shire welcomed a resumption of formal diplomatic ties
-					between Minas Tirith and Osgiliath.
+            Parsing bug note: <14.01.13>
+            In what appear to be rare circumstances, CoreNLP does not correctly
+            delimit two consecutive nouns in a compound as (NP. Specifically,
+            in the test sentence
 
-			the second compound phrase is marked as
+                    Mordor and the Shire welcomed a resumption of formal
+                    diplomatic ties between Minas Tirith and Osgiliath.
 
-				 (NP (NNP Minas) (NNP Tirith) (CC and) (NNP Osgiliath))
+            the second compound phrase is marked as
 
-			but if "Osgiliath" is changed to "Hong Kong" it gives the correct
+                (NP (NNP Minas) (NNP Tirith) (CC and) (NNP Osgiliath))
 
-				 (NP (NP (NNP Minas) (NNP Tirith)) (CC and) (NP (NNP Hong) (NNP Kong))
+            but if "Osgiliath" is changed to "Hong Kong" it gives the correct
 
-			A systematic check of one of the GigaWord files shows that this appears to occur
-			only very rarely -- and in any case is a parsing error -- so this routine
-			does not check for it.
-		"""
+                    (NP (NP (NNP Minas) (NNP Tirith)) (CC and) (NP (NNP Hong) (NNP Kong))
+
+            A systematic check of one of the GigaWord files shows that this
+            appears to occur only very rarely -- and in any case is a parsing
+            error -- so this routine does not check for it.
+        """
         global treestr, fullline
 
         necbds = get_forward_bounds(ka)  # get the bounds of the NEC phrase
@@ -1177,10 +1050,10 @@ def read_TreeBank():
 #		print 'RS3:',treestr
 
     def process_preposition(ka):
-    # process (NP containing a (PP and return an nephrase:
-    # if this doesn't have a simple structure of  (NP (NP ...) (PP...) (NP/NEC ...))
-    # without any further (PP -- i.e. multiple levels of prep phrases -- it returns a
-    # null string.
+    # process (NP containing a (PP and return an nephrase: if this doesn't have
+    # a simple structure of  (NP (NP ...) (PP...) (NP/NEC ...)) without any
+    # further (PP -- i.e. multiple levels of prep phrases -- it returns a null
+    # string.
 
         global treestr, ncindex
 
@@ -1357,7 +1230,8 @@ def read_TreeBank():
             ka += 1
 
 # if ShowRTTrees:   # <14.04.28> this is seems to have been solved...
-# print 'Balance check:',ka,fullline.count('('), fullline.count(')')   # check for balance at intermediate points
+# check for balance at intermediate points
+# print 'Balance check:',ka,fullline.count('('), fullline.count(')')
 # print '                  ',treestr[ka:].count('('),
 # treestr[ka:].count(')'),' ::
 # ',fullline.count('(')+treestr[ka:].count('('),
@@ -1408,19 +1282,22 @@ def read_TreeBank():
 
 
 def get_loccodes(thisloc):
-    """ Returns the list of codes from a compound, or just a single code if not compound."""
     """
-	get_loccodes(thisloc):
-	Extracting noun phrases which are not in the dictionary:
-	If no actor or agent generating a non-null code can be found using the source/target
-	 rules, PETRARCH can output the noun phrase in double-quotes. This is controled by the
-	configuration file option new_actor_length, which is set to an integer which gives the
-	maximum length for new actor phrases extracted. If this is set to zero [default], no
-	extraction is done andthe behavior is the same as TABARI. Setting this to a large
-	number will extract anything found in a (NP noun phrase, though usually true actors
-	contain a small number of words. These phrases can then be processed with named-entity-
-	resolution software to extend the dictionaries.
-	"""
+    Returns the list of codes from a compound, or just a single code if not
+    compound.
+
+    get_loccodes(thisloc): Extracting noun phrases which are not in the
+    dictionary: If no actor or agent generating a non-null code can be found
+    using the source/target rules, PETRARCH can output the noun phrase in
+    double-quotes. This is controled by the configuration file option
+    new_actor_length, which is set to an integer which gives the maximum length
+    for new actor phrases extracted. If this is set to zero [default], no
+    extraction is done andthe behavior is the same as TABARI. Setting this to a
+    large number will extract anything found in a (NP noun phrase, though
+    usually true actors contain a small number of words. These phrases can then
+    be processed with named-entity- resolution software to extend the
+    dictionaries.
+    """
     global UpperSeq, LowerSeq, codelist
 
     def add_code(neloc, isupperseq):
@@ -1520,12 +1397,11 @@ def get_loccodes(thisloc):
 def find_source():
     """
     def find_source():
-    Assign SourceLoc to the first coded or compound (NE in the UpperSeq; if neither found
-    then first (NE with --- code
-    Note that we are going through the sentence in normal order, so we go through UpperSeq
-    in reverse order.
-    Also note that this matches either (NE and (NEC: these are processed differently in
-    make_event_string()
+    Assign SourceLoc to the first coded or compound (NE in the UpperSeq; if
+    neither found then first (NE with --- code Note that we are going through
+    the sentence in normal order, so we go through UpperSeq in reverse order.
+    Also note that this matches either (NE and (NEC: these are processed
+    differently in make_event_string()
     """
     global UpperSeq, SourceLoc
 #	print "FS-1"
@@ -1551,12 +1427,12 @@ def find_source():
 def find_target():
 # Assign TargetLoc
     """ Priorities for assigning target:
-            1. first coded (NE in LowerSeq that does not have the same code as SourceLoc;
-                codes are not checked with either SourceLoc or the candidate target are
-                compounds (NEC
+            1. first coded (NE in LowerSeq that does not have the same code as
+            SourceLoc; codes are not checked with either SourceLoc or the
+            candidate target are compounds (NEC
             2. first null-coded (NE in LowerSeq ;
-            3. first coded (NE in UpperSeq -- that is, searching backwards from the verb --
-               that does not have the same code as SourceLoc;
+            3. first coded (NE in UpperSeq -- that is, searching backwards from
+            the verb -- that does not have the same code as SourceLoc;
             4. first null-coded (NE in UpperSeq
     """
 
@@ -1609,19 +1485,22 @@ def find_target():
 
 
 def make_check_sequences(verbloc, endtag):
-# create the upper and lower sequences to be checked by the verb patterns based on the
-# verb at ParseList[verbloc]. Lower sequence includes only words in the VP
-# Upper sequence currently terminated by ParseStart, ~S or ~,
-#
-    """ Note-1: Adding location and code information to (NE
+# create the upper and lower sequences to be checked by the verb patterns based
+# on the verb at ParseList[verbloc]. Lower sequence includes only words in the
+# VP Upper sequence currently terminated by ParseStart, ~S or ~,
+
+    """
+    Note-1: Adding location and code information to (NE
     <13.11.15>
-    The trade-off here is storing this as text, which involves the cost of str{kword)
-    vs storing the information in a list, which means we need something more complex
-    then "if ('(NE'..." to check for it...that is, *Seq now contains multiple data
-    types. My logic here is that the *Seq lists are potentially evaluated a large
-    number of times, whereas the text only needs to be decoded when a pattern in
-    matched, but that could be wrong.
-    Hmmm, do we really need the location, or just the code? Getting the code is cheap
+    The trade-off here is storing this as text, which involves the cost of
+    str{kword) vs storing the information in a list, which means we need
+    something more complex then "if ('(NE'..." to check for it...that is, *Seq
+    now contains multiple data types. My logic here is that the *Seq lists are
+    potentially evaluated a large number of times, whereas the text only needs
+    to be decoded when a pattern in matched, but that could be wrong.
+
+    Hmmm, do we really need the location, or just the code? Getting the code is
+    cheap
     """
     global ParseList, ParseStart
     global UpperSeq, LowerSeq
@@ -1683,7 +1562,10 @@ def make_check_sequences(verbloc, endtag):
 
 
 def verb_pattern_match(patlist, aseq, isupperseq):
-    """ Attempts to match patlist against UpperSeq or LowerSeq; returns True on success. """
+    """
+    Attempts to match patlist against UpperSeq or LowerSeq; returns True on
+    success.
+    """
 # Can set SourceLoc and TargetLoc for $, + and % tokens
 # Still need to handle %
 
@@ -1892,30 +1774,34 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 
 
 def check_verbs():
-# Primary coding loop which looks for verbs, checks whether any of their patterns match,
-# then fills in the source and target if there has been a match. Stores events in
-# EventList.
+# Primary coding loop which looks for verbs, checks whether any of their
+# patterns match, then fills in the source and target if there has been a
+# match. Stores events in EventList.
     """
-    Note: the "upper" sequence is the part before the verb -- that is, higher on the
-    screen -- and the "lower" sequence is the part after the verb. Assuming, of course,
-    that I've used these consistently. """
+    Note: the "upper" sequence is the part before the verb -- that is, higher
+    on the screen -- and the "lower" sequence is the part after the verb.
+    Assuming, of course, that I've used these consistently.
 
-    """ SourceLoc, TargetLoc structure
+    SourceLoc, TargetLoc structure
 
-	[0]: the location in *Seq where the NE begins
-	[1]: True - located in UpperSeq, otherwise in LowerSeq
-	"""
+    [0]: the location in *Seq where the NE begins
+    [1]: True - located in UpperSeq, otherwise in LowerSeq
+    """
     global EventCode, SourceLoc, TargetLoc
     global EventList
     global IsPassive
     global ParseStart, ParseList
 
     def check_passive(kitem):
-        """ Check whether the verb phrase beginning at kitem is passive; returns location of verb if true, zero otherwise. """
+        """
+        Check whether the verb phrase beginning at kitem is passive; returns
+        location of verb if true, zero otherwise.
+        """
         try:
             cpendtag = ParseList.index('~' + ParseList[kitem][1:])
         except ValueError:
-            # <14.05.02>: Really shouldn't be hitting this...problems should have been caught earlier...
+            # <14.05.02>: Really shouldn't be hitting this...problems should
+            # have been caught earlier...
             raise_parsing_error("check_passive()")
 #		print "CV/CP:",ParseList[kitem:cpendtag]
         # no point in looking before + 3 since we need an auxiliary verb
@@ -1929,7 +1815,8 @@ def check_verbs():
                     if '~VB' in ParseList[ka]:
                         if ParseList[ka - 1] in ['WAS', 'IS', 'BEEN', 'WAS']:
                             return (
-                                # <14.04.30> replace this with a synset? Or a tuple? Or has the compiler done that anyway?
+                                # <14.04.30> replace this with a synset? Or a
+                                # tuple? Or has the compiler done that anyway?
                                 ppvloc - 1
                             )
                     ka -= 1
@@ -2044,7 +1931,9 @@ def actor_phrase_match(patphrase, phrasefrag):
         if APMprint:
             print "APM-2.1: singleton match"   # debug
         return True  # root word is a sufficient match
-    # <14.02.28>: these both do the same thing, except one handles a string of the form XXX and the other XXX_. This is probably unnecessary. though it might be...I suppose those are two distinct cases.
+    # <14.02.28>: these both do the same thing, except one handles a string of
+    # the form XXX and the other XXX_. This is probably unnecessary. though it
+    # might be...I suppose those are two distinct cases.
     if len(patphrase) == 3 and patphrase[2][0] == "":
         if APMprint:
             print "APM-2.2: singleton match"   # debug
@@ -2079,19 +1968,21 @@ def actor_phrase_match(patphrase, phrasefrag):
 
 def check_NEphrase(nephrase):
     """
-    This function tries to find actor and agent patterns matching somewhere in the phrase.
-    The code for the first actor in the phrase is used as the base; there is no further
-    search for actors
+    This function tries to find actor and agent patterns matching somewhere in
+    the phrase.  The code for the first actor in the phrase is used as the
+    base; there is no further search for actors
 
-    All agents with distinct codes that are in the phrase are used -- including phrases
-    which are subsets of other phrases (e.g. 'REBEL OPPOSITION GROUP [ROP]' and
-    'OPPOSITION GROUP' [OPP]) and they are appended in the order they are found. If an
-    agent generates the same 3-character code (e.g. 'PARLIAMENTARY OPPOSITION GROUP [OOP]'
-    and 'OPPOSITION GROUP' [OPP]) the code is appended only the first time it is found.
+    All agents with distinct codes that are in the phrase are used -- including
+    phrases which are subsets of other phrases (e.g. 'REBEL OPPOSITION GROUP
+    [ROP]' and 'OPPOSITION GROUP' [OPP]) and they are appended in the order
+    they are found. If an agent generates the same 3-character code (e.g.
+    'PARLIAMENTARY OPPOSITION GROUP [OOP]' and 'OPPOSITION GROUP' [OPP]) the
+    code is appended only the first time it is found.
 
-    Note: In order to avoid accidental matches across codes, this checks in increments
-    of 3 character blocks. That is, it assumes the CAMEO convention where actor and agent
-    codes are usually 3 characters, occasionally 6 or 9, but always multiples of 3.
+    Note: In order to avoid accidental matches across codes, this checks in
+    increments of 3 character blocks. That is, it assumes the CAMEO convention
+    where actor and agent codes are usually 3 characters, occasionally 6 or 9,
+    but always multiples of 3.
     """
 
     kword = 0
@@ -2175,21 +2066,22 @@ def check_NEphrase(nephrase):
 
 
 def check_commas():
-    """ Removes comma-delimited clauses from ParseList. """
-    """ check_commas()
-		Note that the order here is to remove initial, remove terminal, then remove
-		intermediate. Initial and terminal remove are done only once; the intermediate
-		is iterated. In a sentence where the clauses can in fact be removed without
-		affecting the structure, the result will still be balanced. If this is not the
-		case, the routine raises a Skip_Record rather than continuing with whatever mess
-		is left.
+    """
+    Removes comma-delimited clauses from ParseList.
 
-		Because this is working with ParseList, any commas inside (NP should already have
-		had their tags removed as they were converted to (NE
+     check_commas() Note that the order here is to remove initial, remove
+     terminal, then remove intermediate. Initial and terminal remove are done
+     only once; the intermediate is iterated. In a sentence where the clauses
+     can in fact be removed without affecting the structure, the result will
+     still be balanced. If this is not the case, the routine raises a
+     Skip_Record rather than continuing with whatever mess is left.
 
-		This was a whole lot simpler in TABARI, but TABARI also made some really weird
-		matches following comma-clause deletion.
-	"""
+    Because this is working with ParseList, any commas inside (NP should
+    already have had their tags removed as they were converted to (NE
+
+    This was a whole lot simpler in TABARI, but TABARI also made some
+    really weird matches following comma-clause deletion.
+    """
 
     def count_word(loclow, lochigh):
         """ Returns the number of words in ParseList between loclow and lochigh - 1  """
@@ -2206,7 +2098,8 @@ def check_commas():
         return cwkt
 
     def find_end():
-        """ Returns location of tag on punctuation at end of phrase, defined as last element without ~  """
+        """ Returns location of tag on punctuation at end of phrase, defined as
+        last element without ~  """
         ka = len(ParseList) - 1
         while ka >= 2 and ParseList[ka][0] == '~':
             ka -= 1
@@ -2214,14 +2107,17 @@ def check_commas():
         return ka - 1
 
     def delete_phrases(loclow, lochigh):
-        """ Deletes the complete phrases in ParseList between loclow and lochigh - 1, leaving other mark-up. """
         """
-		This is the workhorse for this function only removes (xx...~xx delimited phrases
-		when these are completely within the clause being removed. This will potentially
-		leave the tree in something of a mess grammatically, but it will be balanced.
-		"""
-        # since you are wondering, we go through this in reverse in order to use index(), as there is
-        # no rindex() for lists.
+        Deletes the complete phrases in ParseList between loclow and lochigh -
+        1, leaving other mark-up.
+
+        This is the workhorse for this function only removes (xx...~xx
+        delimited phrases when these are completely within the clause being
+        removed. This will potentially leave the tree in something of a mess
+        grammatically, but it will be balanced.
+        """
+        # since you are wondering, we go through this in reverse in order to
+        # use index(), as there is no rindex() for lists.
         global ParseList  # 14.05.02: wtf is this needed??
 #		print 'dph/CC:',ParseList[loclow:lochigh]
         stack = []  # of course we use a stack...this is a tree...
@@ -2254,10 +2150,10 @@ def check_commas():
 
     if PETRglobals.CommaBMax != 0:  # check for initial phrase
         """
-        Initial phrase elimination in check_commas():
-        delete_phrases() will tend to leave a lot of (xx opening tags in place, making
-        the tree a grammatical mess, which is why initial clause deletion is turned off
-        by default.
+        Initial phrase elimination in check_commas(): delete_phrases() will
+        tend to leave a lot of (xx opening tags in place, making the tree a
+        grammatical mess, which is why initial clause deletion is turned off by
+        default.
         """
 
         kount = count_word(2, ParseList.index('(,'))
@@ -2343,11 +2239,13 @@ def assign_NEcodes():
     """ Assigns non-null codes to NE phrases where appropriate """
 
     def expand_compound_element(kstart):
-        """ An almost but not quite a recursive call on expand_compound_NEPhrase()."""
-        # this difference is that the (NEC has already been established so we are just adding
-        # elements inside the list and there is no further check: we're not allowing any
-        # further nesting of compounds. That could doubtlessly be done fairly easily with some
-        # possibly too-clever additional code but such constructions are virtually unknown in
+        """ An almost but not quite a recursive call on
+        expand_compound_NEPhrase()."""
+        # this difference is that the (NEC has already been established so we
+        # are just adding elements inside the list and there is no further
+        # check: we're not allowing any further nesting of compounds. That
+        # could doubtlessly be done fairly easily with some possibly too-clever
+        # additional code but such constructions are virtually unknown in
         # actual news stories.
         global ParseList
 
@@ -2390,10 +2288,11 @@ def assign_NEcodes():
         return kstart + len(newlist)
 
     def expand_compound_NEPhrase(kstart, kend):
-        # Expand the compound phrases inside an (NE: this replaces these with a list of NEs
-        # with the remaining text simply duplicated. Code and agent resolution will then
-        # be done on these phrases as usual. This will handle two separate (NECs, which is
-        # as deep as one generally encounters.
+        # Expand the compound phrases inside an (NE: this replaces these with a
+        # list of NEs with the remaining text simply duplicated. Code and agent
+        # resolution will then be done on these phrases as usual. This will
+        # handle two separate (NECs, which is as deep as one generally
+        # encounters.
         global ParseList
     #	print 'exNEp0:', ParseList[kstart:kend]
         ncstart = ParseList.index('(NEC', kstart, kend)
@@ -2452,7 +2351,10 @@ def assign_NEcodes():
                 raise_parsing_error('assign_NEcodes()-1')
                 return
             while '~NE' != ParseList[kitem]:
-                # <14.01.15> At present, read_TreeBank can leave (NNx in place in situations involving (PP and (NEC: so COMPOUND-07. This is a mildly kludgy workaround that insures a check_NEphrase gets clean input
+                # <14.01.15> At present, read_TreeBank can leave (NNx in place
+                # in situations involving (PP and (NEC: so COMPOUND-07. This is
+                # a mildly kludgy workaround that insures a check_NEphrase gets
+                # clean input
                 if ParseList[kitem][1:3] != 'NN':
                     nephrase.append(ParseList[kitem])
                 kitem += 1
@@ -2530,7 +2432,9 @@ def make_event_strings():
 
 #	print 'MES2: ',srccodes, tarcodes, EventCode
     if len(srccodes) == 0 or len(tarcodes) == 0:
-        # <14.02.27> This is here temporarily (ha!) to just get this thing to handle timing tests (and in the presence of some known bugs): this should not be a persistent issue. Really
+        # <14.02.27> This is here temporarily (ha!) to just get this thing to
+        # handle timing tests (and in the presence of some known bugs): this
+        # should not be a persistent issue. Really
         PETRwriter.write_record_error(
             'Empty codes in make_event_strings()',
             SentenceID)
@@ -2539,7 +2443,8 @@ def make_event_strings():
     if ':' in EventCode:  # symmetric event
         if srccodes[0] == '---' or tarcodes[0] == '---':
             if tarcodes[0] == '---':
-                # <13.12.08> Is this behavior defined explicitly in the manual???
+                # <13.12.08> Is this behavior defined explicitly in the
+                # manual???
                 tarcodes = srccodes
             else:
                 srccodes = tarcodes
@@ -2575,12 +2480,13 @@ def make_event_strings():
 #	print "MES exit:",CodedEvents
     return
 
-# ========================== PRIMARY CODING FUNCTIONS ========================== #
+# ========================== PRIMARY CODING FUNCTIONS ====================== #
 
 
 def reset_event_list(firstentry=False):
-# set the event list and story globals for the current story or just intialize if firstentry
-# probably should replace the magic numbers -6:-3 here and in do_coding
+# set the event list and story globals for the current story or just intialize
+# if firstentry probably should replace the magic numbers -6:-3 here and in
+# do_coding
     global SentenceDate, StoryDate, SentenceSource, StorySource
     global SentenceID, CurStoryID, SkipStory
     global StoryEventList, StoryIssues
@@ -2605,7 +2511,8 @@ def extract_Sentence_info(line):
     """ Extracts  various global fields from the <Sentence record """
 # can raise SkipRecord if date is missing
 
-    global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid, SentenceOrdDate
+    global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid
+    global SentenceOrdDate
     PETRreader.extract_attributes(line)
     SentenceID = PETRreader.check_attribute('id')
     SentenceCat = PETRreader.check_attribute('category')
@@ -2623,25 +2530,28 @@ def extract_Sentence_info(line):
 
 
 def read_record():
-    """ Primary input routine: reads an input record, and directly sets SentenceText and SentenceSource. """
     """
-	read_record() also sets various other sentence globals (e.g. SentenceDate, SentenceID,
-	ParseList ) via routines called from here.
+    Primary input routine: reads an input record, and directly sets
+    SentenceText and SentenceSource.
 
-	Raises StopCoding if <Stop> found
-	PETRreader.read_FIN_line() can raise EOFError; this is passed through
+    read_record() also sets various other sentence globals (e.g. SentenceDate,
+    SentenceID, ParseList ) via routines called from here.
 
-	PETR organizes records into 'stories' and 'sentences' using the final six characters
-	of the id field. These are assumed to be of the form NNN-SS where NNN are the final
-	three digits of the story ID and SS is the sentence order. At present, the system
-	just uses NNN -- that is, the ID[-6:-3] slice -- to determine when a new story has
-	been encountered, but the SS is useful for determining lede and HLEAD sentences.
+    Raises StopCoding if <Stop> found PETRreader.read_FIN_line() can raise
+    EOFError; this is passed through
 
-	At present, the 'story' identification is used in two features
-	 -- Tuple filtering is used within the story
-	 -- A +<string> in the Discards file skips the entire story when the string is
-	    found
-	"""
+    PETR organizes records into 'stories' and 'sentences' using the final six
+    characters of the id field. These are assumed to be of the form NNN-SS
+    where NNN are the final three digits of the story ID and SS is the sentence
+    order. At present, the system just uses NNN -- that is, the ID[-6:-3] slice
+    -- to determine when a new story has been encountered, but the SS is useful
+    for determining lede and HLEAD sentences.
+
+    At present, the 'story' identification is used in two features
+     -- Tuple filtering is used within the story
+     -- A +<string> in the Discards file skips the entire story when the string
+         is found
+    """
     global SentenceDate, SentenceText, SentenceID, SentenceSource
     global NSent
 
@@ -2705,8 +2615,8 @@ def read_record():
 
 def check_discards():
     """
-    Checks whether any of the discard phrases are in SentenceText, giving priority to the
-    + matches. Returns [indic, match] where indic
+    Checks whether any of the discard phrases are in SentenceText, giving
+    priority to the + matches. Returns [indic, match] where indic
        0 : no matches
        1 : simple match
        2 : story match [+ prefix]
@@ -2748,8 +2658,8 @@ def check_discards():
 def get_issues():
     """
     Finds the issues in SentenceText, returns as a list of [code,count]
-    Current version  <14.02.28> stops coding and sets the issues to zero if it finds
-    *any* ignore phrase
+    Current version  <14.02.28> stops coding and sets the issues to zero if it
+    finds *any* ignore phrase
     """
     global SentenceText
 
@@ -2776,8 +2686,8 @@ def get_issues():
 
 def code_record():
 # code using ParseList read_TreeBank, then return results in StoryEventList
-# first element of StoryEventList for each sentence -- this signals the start of a list
-# events for a sentence -- followed by  lists containing
+# first element of StoryEventList for each sentence -- this signals the start
+# of a list events for a sentence -- followed by  lists containing
 # source/target/event triples
     global CodedEvents
     global ParseList
@@ -2812,9 +2722,11 @@ def code_record():
 
 def write_events():
     """
-    Check for duplicates in the article_list, then write the records in PETR format
+    Check for duplicates in the article_list, then write the records in PETR
+    format
     <14.02.28>: Duplicate checking currently not implemented
-    <14.02.28>: Currently set to code only events with identified national actors
+    <14.02.28>: Currently set to code only events with identified national
+    actors
     """
     global StoryDate, StorySource, SentenceID, StoryEventList, fevt
     global NEvents
@@ -2918,14 +2830,15 @@ def do_validation(filepath):
 def do_coding(filepaths, out_file):
     """
     Main coding loop
-    Note that entering any character other than 'Enter' at the prompt will stop the
-    program: this is deliberate.
-    <14.02.28>: Bug: PETRglobals.PauseByStory actually pauses after the first sentence of
-                the *next* story
+    Note that entering any character other than 'Enter' at the prompt will stop
+    the program: this is deliberate.
+    <14.02.28>: Bug: PETRglobals.PauseByStory actually pauses after the first
+    sentence of the *next* story
     """
     global StoryDate, StorySource, SentenceID, SentenceCat, SentenceText
     global CurStoryID, SkipStory
-    global NStory, NSent, NEvents, NDiscardSent, NDiscardStory, NEmpty, NParseErrors
+    global NStory, NSent, NEvents, NDiscardSent, NDiscardStory, NEmpty
+    global NParseErrors
     global fevt
     global StoryIssues
     global CodedEvents
@@ -3053,19 +2966,6 @@ PETRARCH
 
 
 def main():
-    #PETRreader.read_issue_list()
-    ##PETRreader.show_AgentDict()
-    #sys.exit()
-    #
-    #PETRreader.read_verb_dictionary('PETR.Validate.verbs.txt')
-    #PETRreader.show_verb_dictionary()
-    #sys.exit()
-
-    # need to comment out PETRwriter.write_ErrorFile("Reading "+ actorfile+"\n")
-    #PETRreader.read_actor_dictionary('PETR.Validate.actors.txt')
-    #PETRreader.show_actor_dictionary("Debug.actor_dict.txt")
-    #sys.exit()
-
     cli_args = parse_cli_args()
 
     PETRglobals.RunTimeString = time.asctime()

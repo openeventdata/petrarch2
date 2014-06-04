@@ -211,7 +211,9 @@ def raise_parsing_error(call_location_string):
 # ========================== DEBUGGING FUNCTIONS ========================== #
 
 def show_tree_string(sent):
-    """ Indexes the () or (~in a string tree and prints as an indented list. """
+    """
+    Indexes the () or (~in a string tree and prints as an indented list.
+    """
 # show_tree_string() also prints the totals
 # call with ' '.join(list) to handle the list versions of the string
     newlev = False
@@ -256,7 +258,10 @@ def show_tree_string(sent):
 
 
 def check_balance():
-    """ Check the (/~ count in a ParseList and raises UnbalancedTree if it is not balanced. """
+    """
+    Check the (/~ count in a ParseList and raises UnbalancedTree if it is not
+    balanced.
+    """
     nopen = 0
     nclose = 0
     ka = 0
@@ -639,15 +644,18 @@ Validation File Format
     PETRwriter.ErrorN += 0
 
     print 'Verb dictionary:', PETRglobals.VerbFileName
-    verb_path = utilities._get_data('data/dictionaries', PETRglobals.VerbFileName)
+    verb_path = utilities._get_data('data/dictionaries',
+                                    PETRglobals.VerbFileName)
     PETRreader.read_verb_dictionary(verb_path)
 
     print 'Actor dictionaries:', PETRglobals.ActorFileList[0]
-    actor_path = utilities._get_data('data/dictionaries', PETRglobals.ActorFileList[0])
+    actor_path = utilities._get_data('data/dictionaries',
+                                     PETRglobals.ActorFileList[0])
     PETRreader.read_actor_dictionary(actor_path)
 
     print 'Agent dictionary:', PETRglobals.AgentFileName
-    agent_path = utilities._get_data('data/dictionaries', PETRglobals.AgentFileName)
+    agent_path = utilities._get_data('data/dictionaries',
+                                     PETRglobals.AgentFileName)
     PETRreader.read_agent_dictionary(agent_path)
 
 
@@ -697,6 +705,7 @@ def _check_envr(environ):
     return ValidInclude, ValidExclude, ValidPause, gotErrorfile, ValidOnly
 
 # ================== TEXTFILE INPUT ================== #
+
 
 def get_NE(NPphrase):
     """
@@ -1566,14 +1575,17 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             if aseq[kseq] not in PETRglobals.VerbDict[patlist[kpatword]]:
                 for words in PETRglobals.VerbDict[patlist[kpatword]]:
 #					print '&&:',words
-                    """if words[0] == '&':  <14.05.08> Attempt to get this to work recursively, but not successful
+                    """
+                    #11,914 additions and 298 deletions
+                        if words[0] == '&':
                             if syn_match(isupperseq):
                                     if last_patword(): return True
                                     if last_seqword(): return False
                             else: return False
                     elif ' ' in words: # try to match a phrase """
                     if ' ' in words:  # try to match a phrase
-                        # <14.05.08> may want to pre-split this and store as a list
+                        # <14.05.08> may want to pre-split this and store as a
+                        # list
                         wordlist = words.split()
 #						print '>>:',wordlist, aseq
                         # need to go through phrase in reverse in upperseq
@@ -1674,8 +1686,9 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 # print "skip/VPM:", kseq, aseq,'\n', aseq[kseq-8:kseq-1]   # debug
                             # at this point some sort of markup we can't
                             # handle, not necessarily unbalanced
-                            raise_parsing_error(
-                                'find_ne(kseq) in skip assessment, verb_pattern_match()')
+                            raise_parsing_error("""find_ne(kseq) in skip
+                                                assessment,
+                                                verb_pattern_match()""")
                     if ShowVPM:
                         print "VPM/FN-1: Found NE:", kseq, aseq[kseq]   # debug
                     insideNE = False
@@ -2047,7 +2060,9 @@ def check_commas():
     """
 
     def count_word(loclow, lochigh):
-        """ Returns the number of words in ParseList between loclow and lochigh - 1  """
+        """
+        Returns the number of words in ParseList between loclow and lochigh - 1
+        """
         cwkt = 0
         ka = loclow
         while ka < lochigh:
@@ -2061,8 +2076,10 @@ def check_commas():
         return cwkt
 
     def find_end():
-        """ Returns location of tag on punctuation at end of phrase, defined as
-        last element without ~  """
+        """
+        Returns location of tag on punctuation at end of phrase, defined as
+        last element without ~
+        """
         ka = len(ParseList) - 1
         while ka >= 2 and ParseList[ka][0] == '~':
             ka -= 1
@@ -2202,8 +2219,10 @@ def assign_NEcodes():
     """ Assigns non-null codes to NE phrases where appropriate """
 
     def expand_compound_element(kstart):
-        """ An almost but not quite a recursive call on
-        expand_compound_NEPhrase()."""
+        """
+        An almost but not quite a recursive call on
+        expand_compound_NEPhrase().
+        """
         # this difference is that the (NEC has already been established so we
         # are just adding elements inside the list and there is no further
         # check: we're not allowing any further nesting of compounds. That
@@ -2838,15 +2857,6 @@ def do_coding(event_dict, out_file):
             #something
             read_TreeBank()
             reset_event_list(True)
-#        ka = 0
-#        while True:
-#            try:
-#                read_record()
-#            except EOFError:
-#                print "Closing:", path
-#                PETRreader.close_FIN()
-#                write_events()
-#                break
 
 #TODO
 #Can implement this easily. The sentences are organized by story in the dicts
@@ -2897,13 +2907,11 @@ def do_coding(event_dict, out_file):
 #                if coded_events and PETRglobals.IssueFileName != "":
 #                    StoryIssues[SentenceID[-2:]] = get_issues()
 
-#            if PETRglobals.PauseBySentence:
-#                if len(raw_input("Press Enter to continue...")) > 0:
-#                    sys.exit()
+            if PETRglobals.PauseBySentence:
+                if len(raw_input("Press Enter to continue...")) > 0:
+                    sys.exit()
 
-    #    write_events()
 
-    #fevt.close()  # need to handle this somewhere
 #    print "Summary:"
 #    print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
 #    print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
@@ -2961,7 +2969,7 @@ def main():
         PETRreader.parse_Config('../PETR_config.ini')
         if not cli_args.inputs:
             validation_file = utilities._get_data('data/text',
-                                        'PETR.UnitTest.records.xml')
+                                                  'PETR.UnitTest.records.xml')
             do_validation(validation_file)
         else:
             do_validation(cli_args.inputs)
@@ -3010,8 +3018,6 @@ def read_dictionaries():
         for actdict in PETRglobals.ActorFileList:
             actor_path = utilities._get_data('data/dictionaries', actdict)
             PETRreader.read_actor_dictionary(actor_path)
-        # debug
-        # PETRreader.show_ActorDict('ActorDict.content.txt')
 
         print 'Agent dictionary:', PETRglobals.AgentFileName
         agent_path = utilities._get_data('data/dictionaries',

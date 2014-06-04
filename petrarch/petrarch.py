@@ -96,6 +96,7 @@ import xml.etree.ElementTree as ET
 import PETRglobals  # global variables
 import PETRreader  # input routines
 import PETRwriter  # output routines
+import utilities
 
 
 # ================================  PARSER/CODER GLOBALS  ================== #
@@ -386,11 +387,8 @@ def evaluate_validation_record(item):
         raise StopCoding
         return True
 
-    parsed = item.find('Parse').text.split('\n')
-    parsed = [line.strip() + ' ' for line in [line1.strip() for line1 in
-                                              parsed if line1] if line]
-    parsed = [line.replace(')', ' ) ').upper() for line in parsed]
-    treestr = ''.join(parsed)
+    parsed = item.find('Parse').text
+    treestr = utilities._format_parsed_str(parsed)
 
     try:
         read_TreeBank()
@@ -641,15 +639,15 @@ Validation File Format
     PETRwriter.ErrorN += 0
 
     print 'Verb dictionary:', PETRglobals.VerbFileName
-    verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
+    verb_path = utilities._get_data('data/dictionaries', PETRglobals.VerbFileName)
     PETRreader.read_verb_dictionary(verb_path)
 
     print 'Actor dictionaries:', PETRglobals.ActorFileList[0]
-    actor_path = _get_data('data/dictionaries', PETRglobals.ActorFileList[0])
+    actor_path = utilities._get_data('data/dictionaries', PETRglobals.ActorFileList[0])
     PETRreader.read_actor_dictionary(actor_path)
 
     print 'Agent dictionary:', PETRglobals.AgentFileName
-    agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
+    agent_path = utilities._get_data('data/dictionaries', PETRglobals.AgentFileName)
     PETRreader.read_agent_dictionary(agent_path)
 
 
@@ -1335,6 +1333,10 @@ def get_loccodes(thisloc):
             # necessarily unbalanced
             raise_parsing_error('get_loccodes()-3')
 #		print 'GLC3',neitem
+        StoryEventList.append([SentenceID])
+        for event in CodedEvents:
+            StoryEventList.append(event)
+#			print SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2]
         if '(NEC' in neitem:  # extract the compound codes
             ka = thisloc[0] + 1
             while '~NEC' not in LowerSeq[ka]:
@@ -2391,6 +2393,9 @@ def make_event_strings():
     tarcodes = get_loccodes(TargetLoc)
     expand_compound_codes(tarcodes)
 
+#TODO: This needs to be fixed
+    SentenceLoc = ''
+
 #	print 'MES2: ',srccodes, tarcodes, EventCode
     if len(srccodes) == 0 or len(tarcodes) == 0:
         # <14.02.27> This is here temporarily (ha!) to just get this thing to
@@ -2674,10 +2679,7 @@ def code_record():
     check_verbs()
 
     if len(CodedEvents) > 0:
-        StoryEventList.append([SentenceID])
-        for event in CodedEvents:
-            StoryEventList.append(event)
-#			print SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2]
+        return CodedEvents
     else:
         NEmpty += 1
         print "No events coded"
@@ -2791,13 +2793,12 @@ def do_validation(filepath):
                 sys.exit()
 
 
-def do_coding(filepaths, out_file):
+def do_coding(event_dict, out_file):
     """
-    Main coding loop
-    Note that entering any character other than 'Enter' at the prompt will stop
-    the program: this is deliberate.
+    Main coding loop Note that entering any character other than 'Enter' at the
+    prompt will stop the program: this is deliberate.
     <14.02.28>: Bug: PETRglobals.PauseByStory actually pauses after the first
-    sentence of the *next* story
+                sentence of the *next* story
     """
     global StoryDate, StorySource, SentenceID, SentenceCat, SentenceText
     global CurStoryID, SkipStory
@@ -2807,8 +2808,11 @@ def do_coding(filepaths, out_file):
     global StoryIssues
     global CodedEvents
 
-    fevt = open(out_file, 'w')
-    print "Writing events to:", out_file
+    #These are pulled from read_record()
+    global SentenceDate, SentenceSource
+    #Things to make local and global namespaces not conflict
+    #TODO: Change this
+    global treestr, ParseList
 
     NStory = 0
     NSent = 0
@@ -2818,31 +2822,47 @@ def do_coding(filepaths, out_file):
     NDiscardStory = 0
     NParseErrors = 0
 
-    for path in filepaths:
-        PETRreader.open_FIN(path, "text")
-        reset_event_list(True)
-        ka = 0
-        while True:
-            try:
-                read_record()
-            except EOFError:
-                print "Closing:", path
-                PETRreader.close_FIN()
-                write_events()
-                break
-# print SentenceID[-6:-3],':',CurStoryID   # debug
+    for key in event_dict:
+        print 'Processing {}'.format(key)
+        StoryDate = event_dict[key]['meta']['date']
+        StorySource = 'TEMP'
+        for sent in event_dict[key]['sents']:
+            SentenceID = key + '_' + sent
+            SentenceText = event_dict[key]['sents'][sent]['content']
+            SentenceDate = StoryDate
+            SentenceSource = 'TEMP'
 
-            if not PETRglobals.CodeBySentence:
-                # write events when we hit a new story
-                if SentenceID[-6:-3] != CurStoryID:
-                    if not SkipStory:
-                        write_events()
-                    reset_event_list()
-                    if PETRglobals.PauseByStory:
-                        if len(raw_input("Press Enter to continue...")) > 0:
-                            sys.exit()
-            else:
-                reset_event_list()
+            parsed = event_dict[key]['sents'][sent]['parsed']
+            treestr = parsed
+            #TODO: Make read_TreeBank take treestr as an arg and return
+            #something
+            read_TreeBank()
+            reset_event_list(True)
+#        ka = 0
+#        while True:
+#            try:
+#                read_record()
+#            except EOFError:
+#                print "Closing:", path
+#                PETRreader.close_FIN()
+#                write_events()
+#                break
+
+#TODO
+#Can implement this easily. The sentences are organized by story in the dicts
+#so it's easy to rework this. Just when we're done with a key then write out
+#the events for the included sentences. Gonna skip it for now
+#            if not PETRglobals.CodeBySentence:
+#                # write events when we hit a new story
+#                if SentenceID[-6:-3] != CurStoryID:
+#                    if not SkipStory:
+#                        write_events()
+#                    reset_event_list()
+#                    if PETRglobals.PauseByStory:
+#                        if len(raw_input("Press Enter to continue...")) > 0:
+#                            sys.exit()
+#            else:
+#                reset_event_list()
 
             if SkipStory:
                 print "Skipped"
@@ -2858,36 +2878,36 @@ def do_coding(filepaths, out_file):
                     SkipStory = True
                     NDiscardStory += 1
 
+                coded_events = None
+
             else:
                 try:
-                    code_record()
-# try: make_fake_events(); CodedEvents = ['xxx']  # debug
+                    coded_events = code_record()
                 except UnbalancedTree as why:
                     print "Unable to interpret parse tree:", why
-                    CodedEvents = []
+                    coded_events = None
 
-                if len(CodedEvents) > 0 and PETRglobals.IssueFileName != "":
-                    StoryIssues[SentenceID[-2:]] = get_issues()
-# print SentenceID[-2:]   # debug
+            if coded_events:
+                event_dict[key]['sents'][sent]['events'] = coded_events
 
-            if PETRglobals.CodeBySentence:   # debug
-                if not SkipStory:
-                    write_events()
-                reset_event_list()
+    return event_dict
 
-            if PETRglobals.PauseBySentence:
-                if len(raw_input("Press Enter to continue...")) > 0:
-                    sys.exit()
+#TODO
+#Pull this out for now since I'm not 100% sure on the SentenceID thing
+#                if coded_events and PETRglobals.IssueFileName != "":
+#                    StoryIssues[SentenceID[-2:]] = get_issues()
 
-            ka += 1  # debug
-# if ka > 32: break  # debug
-        write_events()
+#            if PETRglobals.PauseBySentence:
+#                if len(raw_input("Press Enter to continue...")) > 0:
+#                    sys.exit()
 
-    fevt.close()  # need to handle this somewhere
-    print "Summary:"
-    print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
-    print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
-    print "Parsing errors:", NParseErrors
+    #    write_events()
+
+    #fevt.close()  # need to handle this somewhere
+#    print "Summary:"
+#    print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
+#    print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
+#    print "Parsing errors:", NParseErrors
 
 
 def parse_cli_args():
@@ -2907,6 +2927,9 @@ PETRARCH
     parse_command.add_argument('-i', '--inputs',
                                help='File, or directory of files, to parse.',
                                required=True)
+    parse_command.add_argument('-P', '--parsed', action='store_true',
+                               default=False, help="""Whether the input
+                               document contains StanfordNLP-parsed text.""")
     parse_command.add_argument('-o', '--output',
                                help='File to write parsed events.',
                                required=True)
@@ -2937,7 +2960,7 @@ def main():
     if cli_args.command_name == 'validate':
         PETRreader.parse_Config('../PETR_config.ini')
         if not cli_args.inputs:
-            validation_file = _get_data('data/text',
+            validation_file = utilities._get_data('data/text',
                                         'PETR.UnitTest.records.xml')
             do_validation(validation_file)
         else:
@@ -2951,46 +2974,22 @@ def main():
         else:
             PETRreader.parse_Config('../PETR_config.ini')
 
-        # need to allow this to be set in the config file or command line
-        PETRwriter.open_ErrorFile()
-        print 'Verb dictionary:', PETRglobals.VerbFileName
-        verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
-        PETRreader.read_verb_dictionary(verb_path)
-
-        print 'Actor dictionaries:', PETRglobals.ActorFileList
-        for actdict in PETRglobals.ActorFileList:
-            actor_path = _get_data('data/dictionaries', actdict)
-            PETRreader.read_actor_dictionary(actor_path)
-        # debug
-        # PETRreader.show_ActorDict('ActorDict.content.txt')
-
-        print 'Agent dictionary:', PETRglobals.AgentFileName
-        agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
-        PETRreader.read_agent_dictionary(agent_path)
-
-        print 'Discard dictionary:', PETRglobals.DiscardFileName
-        discard_path = _get_data('data/dictionaries',
-                                 PETRglobals.DiscardFileName)
-        PETRreader.read_discard_list(discard_path)
-
-        if PETRglobals.IssueFileName != "":
-            print 'Issues dictionary:', PETRglobals.IssueFileName
-            issue_path = _get_data('data/dictionaries',
-                                   PETRglobals.IssueFileName)
-            PETRreader.read_issue_list(issue_path)
+        read_dictionaries()
 
         if os.path.isdir(cli_args.inputs):
             if cli_args.inputs[-1] != '/':
-                paths = glob.glob(cli_args.inputs + '/*')
+                paths = glob.glob(cli_args.inputs + '/*.xml')
             else:
-                paths = glob.glob(cli_args.inputs + '*')
+                paths = glob.glob(cli_args.inputs + '*.xml')
         elif os.path.isfile(cli_args.inputs):
             paths = [cli_args.inputs]
         else:
             print 'Please enter a valid directory or file of source texts.'
             sys.exit()
 
-        do_coding(paths, cli_args.output)
+        print '\n\n'
+
+        run(paths, cli_args.output, cli_args.parsed)
 
         print "Coding time:", time.time() - start_time
         # note that this will be removed if there are no errors
@@ -2999,13 +2998,44 @@ def main():
     print "Finished"
 
 
-def _get_data(dir_path, path):
-    """Private function to get the absolute path to the installed files."""
-    cwd = os.path.abspath(os.path.dirname(__file__))
-    joined = os.path.join(dir_path, path)
-    out_dir = os.path.join(cwd, joined)
-    print out_dir
-    return out_dir
+def read_dictionaries():
+        # need to allow this to be set in the config file or command line
+        PETRwriter.open_ErrorFile()
+        print 'Verb dictionary:', PETRglobals.VerbFileName
+        verb_path = utilities._get_data('data/dictionaries',
+                                        PETRglobals.VerbFileName)
+        PETRreader.read_verb_dictionary(verb_path)
+
+        print 'Actor dictionaries:', PETRglobals.ActorFileList
+        for actdict in PETRglobals.ActorFileList:
+            actor_path = utilities._get_data('data/dictionaries', actdict)
+            PETRreader.read_actor_dictionary(actor_path)
+        # debug
+        # PETRreader.show_ActorDict('ActorDict.content.txt')
+
+        print 'Agent dictionary:', PETRglobals.AgentFileName
+        agent_path = utilities._get_data('data/dictionaries',
+                                         PETRglobals.AgentFileName)
+        PETRreader.read_agent_dictionary(agent_path)
+
+        print 'Discard dictionary:', PETRglobals.DiscardFileName
+        discard_path = utilities._get_data('data/dictionaries',
+                                           PETRglobals.DiscardFileName)
+        PETRreader.read_discard_list(discard_path)
+
+        if PETRglobals.IssueFileName != "":
+            print 'Issues dictionary:', PETRglobals.IssueFileName
+            issue_path = utilities._get_data('data/dictionaries',
+                                             PETRglobals.IssueFileName)
+            PETRreader.read_issue_list(issue_path)
+
+
+def run(filepaths, out_file, s_parsed):
+    events = PETRreader.read_xml_input(filepaths, s_parsed)
+    if not s_parsed:
+        events = utilities.stanford_parse(events)
+    updated_events = do_coding(events, 'TEMP')
+    utilities.write_events(updated_events, out_file)
 
 
 if __name__ == '__main__':

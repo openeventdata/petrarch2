@@ -1,3 +1,4 @@
+import os
 import corenlp
 import PETRglobals
 
@@ -29,6 +30,9 @@ def write_events(event_dict, output_file):
     global StorySource
     global NEvents
     global StoryIssues
+
+    #TODO: Make this a real thing
+    StorySource = 'TEMP'
 
 #TODO
 #Shouldn't need this since only coded events are put into the dict
@@ -134,3 +138,22 @@ def output_pipeline(event_dict):
     event_output = [event for event in event_output if event]
 
     return event_output
+
+
+def _format_parsed_str(parsed_str):
+    parsed = parsed_str.split('\n')
+    parsed = [line.strip() + ' ' for line in [line1.strip() for line1 in
+                                              parsed if line1] if line]
+    parsed = [line.replace(')', ' ) ').upper() for line in parsed]
+    treestr = ''.join(parsed)
+
+    return treestr
+
+
+def _get_data(dir_path, path):
+    """Private function to get the absolute path to the installed files."""
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    joined = os.path.join(dir_path, path)
+    out_dir = os.path.join(cwd, joined)
+    print out_dir
+    return out_dir

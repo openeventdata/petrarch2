@@ -5025,7 +5025,7 @@ for coal-- the source of about 70 percent of China's energy.
 </Sentence>
 
 
-<Sentence date = "20090101" id ="AFP0909-01-0096-4">
+<Sentence date = "20090101" category="PARSING" valid="true" id ="AFP0909-01-0096-4">
 <!-- Sentence from hell in terms of nesting compounds -->
 <!-- Last update: 14.05.12 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -8238,7 +8238,6 @@ clearly inebriated Bree official said today.
 <!-- clause -->
 <!-- Last update: TABARI validation with modification -->
 <EventCoding sourcecode="CAL" targetcode="---" eventcode="222"></EventCoding>
-<EventCoding noevents = "True"></EventCoding>
 <Text>
 Arnor is about to improve full diplomatic ties with Gondor, almost 
 five years after Calenardhon crowds burned down its embassy,  a 

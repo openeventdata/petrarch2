@@ -274,8 +274,8 @@ def check_balance():
 def change_Config_Options(line):
     """Changes selected configuration options."""
     # need more robust error checking
-    theoption = PETRreader.check_attribute(line['option'])
-    value = PETRreader.check_attribute(line['value'])
+    theoption = line['option']
+    value = line['value']
     print "<Config>: changing", theoption, "to", value
     if theoption == 'new_actor_length':
         try:
@@ -386,11 +386,11 @@ def evaluate_validation_record(item):
         raise StopCoding
         return True
 
-    treestr = item.find('Parse').text
-    treestr = treestr.replace('\n', '')
-    treestr = treestr.replace(')', ' ) ')
-    treestr = treestr.upper()
-    print treestr
+    parsed = item.find('Parse').text.split('\n')
+    parsed = [line.strip() + ' ' for line in [line1.strip() for line1 in
+                                              parsed if line1] if line]
+    parsed = [line.replace(')', ' ) ').upper() for line in parsed]
+    treestr = ''.join(parsed)
 
     try:
         read_TreeBank()
@@ -1089,12 +1089,6 @@ def read_TreeBank():
     vpindex = 1
     npindex = 1
     ncindex = 1
-#    treestr = treestr.strip() + ' '
-#    treestr = treestr.replace(')', ' ) ')
-#    treestr = treestr.upper()
-
-    print 'Treestr within read_TreeBank: '
-    print treestr
 
     if ShowRTTrees:
 #	if False:
@@ -1244,9 +1238,6 @@ def read_TreeBank():
             raise_parsing_error('end of read_TreeBank()')
         except UnbalancedTree:
             raise SkipRecord
-
-    print 'Hit the end of the read_TreeBank. Print ParseList'
-    print ParseList
 
 # ================== CODING ROUTINES  ================== #
 

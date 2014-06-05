@@ -58,8 +58,6 @@ the Boolean switches in the DEBUGGING GLOBALS. In addition, a wide variety of
 function- specific print statements have been left in the code but commented
 out.
 
-CODE REPOSITORY: https://github.com/openeventdata/PETRARCH-Development
-
 PROVENANCE:
 Programmer: Philip A. Schrodt
             Parus Analytical Systems
@@ -3051,14 +3049,21 @@ def run(filepaths, out_file, s_parsed):
     utilities.write_events(updated_events, out_file)
 
 
-def run_pipeline(data, out_file):
+def run_pipeline(data, out_file=None, write_output=True):
     PETRreader.parse_Config('../PETR_config.ini')
     read_dictionaries()
 
     events = PETRreader.read_pipeline_input(data)
     events = utilities.stanford_parse(events)
     updated_events = do_coding(events, 'TEMP')
-    utilities.write_events(updated_events, out_file)
+    if not write_output:
+        output_events = utilities.pipe_output(updated_events)
+        return output_events
+    elif write_output and not out_file:
+        print 'Please specify an output file...'
+        sys.exit()
+    elif write_output and out_file:
+        utilities.write_events(updated_events, out_file)
 
 
 if __name__ == '__main__':

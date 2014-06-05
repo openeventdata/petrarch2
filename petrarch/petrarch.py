@@ -729,10 +729,7 @@ def get_NE(NPphrase):
             nparen = 1  # paren count
             while nparen > 0:
                 if ka >= len(seg):
-                    print '\tBIG BAD get_NE()-1 ERROR HERE!!'
-                    print '\t {}'.format(NPphrase)
-                    pass
-                    #raise_parsing_error('get_NE()-1')
+                    raise_parsing_error('get_NE()-1')
                 if seg[ka][0] == '(':
                     nparen += 1
                 elif seg[ka] == ')':

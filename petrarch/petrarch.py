@@ -729,7 +729,10 @@ def get_NE(NPphrase):
             nparen = 1  # paren count
             while nparen > 0:
                 if ka >= len(seg):
-                    raise_parsing_error('get_NE()-1')
+                    print '\tBIG BAD get_NE()-1 ERROR HERE!!'
+                    print '\t {}'.format(NPphrase)
+                    pass
+                    #raise_parsing_error('get_NE()-1')
                 if seg[ka][0] == '(':
                     nparen += 1
                 elif seg[ka] == ')':
@@ -2693,7 +2696,10 @@ def code_record():
     except SkipRecord:
         return
 
-    assign_NEcodes()
+    try:
+        assign_NEcodes()
+    except NameError:
+        print SentenceOrdDate
     if ShowParseList:
         print 'code_rec-Parselist::', ParseList
 
@@ -2830,7 +2836,7 @@ def do_coding(event_dict, out_file):
     global CodedEvents
 
     #These are pulled from read_record()
-    global SentenceDate, SentenceSource
+    global SentenceDate, SentenceSource, SentenceOrdDate
     #Things to make local and global namespaces not conflict
     #TODO: Change this
     global treestr, ParseList
@@ -2848,9 +2854,11 @@ def do_coding(event_dict, out_file):
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in event_dict[key]['sents']:
-            SentenceID = key + '_' + sent
-            SentenceText = event_dict[key]['sents'][sent]['content']
+            SentenceID = '{}_{}'.format(key, sent)
+            #TODO: This is why Python 3 might be nice.
+            SentenceText = event_dict[key]['sents'][sent]['content'].encode('utf-8')
             SentenceDate = StoryDate
+            SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
             SentenceSource = 'TEMP'
 
             parsed = event_dict[key]['sents'][sent]['parsed']
@@ -3042,6 +3050,16 @@ def run(filepaths, out_file, s_parsed):
     events = PETRreader.read_xml_input(filepaths, s_parsed)
     if not s_parsed:
         events = utilities.stanford_parse(events)
+    updated_events = do_coding(events, 'TEMP')
+    utilities.write_events(updated_events, out_file)
+
+
+def run_pipeline(data, out_file):
+    PETRreader.parse_Config('../PETR_config.ini')
+    read_dictionaries()
+
+    events = PETRreader.read_pipeline_input(data)
+    events = utilities.stanford_parse(events)
     updated_events = do_coding(events, 'TEMP')
     utilities.write_events(updated_events, out_file)
 

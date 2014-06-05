@@ -27,6 +27,7 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
+import re
 import os
 import sys
 import math  # required for ordinal date calculations
@@ -1567,12 +1568,109 @@ def read_xml_input(filepaths, parsed=False):
 def read_pipeline_input(pipeline_list):
     holding = {}
     for entry in pipeline_list:
-        entry_id = entry['_id']
-        meta_content = {'date': entry['date'],
+        entry_id = str(entry['_id'])
+        meta_content = {'date': utilities._format_datestr(entry['date']),
                         'date_added': entry['date_added'],
                         'source': entry['source'],
                         'story_title': entry['title']}
-        content_dict = {'sentences': {}, 'meta': meta_content}
+        split_sents = _sentence_segmenter(entry['content'])
+        #TODO Make the number of sents a setting
+        sent_dict = {}
+        for i, sent in enumerate(split_sents[:7]):
+            sent_dict[i] = {'content': sent}
+
+        content_dict = {'sents': sent_dict, 'meta': meta_content}
         holding[entry_id] = content_dict
 
     return holding
+
+
+def _sentence_segmenter(paragr):
+    """
+    Function to break a string 'paragraph' into a list of sentences based on
+    the following rules:
+
+    1. Look for terminal [.,?,!] followed by a space and [A-Z]
+    2. If ., check against abbreviation list ABBREV_LIST: Get the string
+    between the . and the previous blank, lower-case it, and see if it is in
+    the list. Also check for single-letter initials. If true, continue search
+    for terminal punctuation
+    3. Extend selection to balance (...) and "...". Reapply termination rules
+    4. Add to sentlist if the length of the string is between MIN_SENTLENGTH
+    and MAX_SENTLENGTH
+    5. Returns sentlist
+
+    Parameters
+    ----------
+
+    paragr: String.
+            Content that will be split into constituent sentences.
+
+    Returns
+    -------
+
+    sentlist: List.
+                List of sentences.
+
+    """
+    # this is relatively high because we are only looking for sentences that
+    # will have subject and object
+    MIN_SENTLENGTH = 100
+    MAX_SENTLENGTH = 512
+
+    # sentence termination pattern used in sentence_segmenter(paragr)
+    terpat = re.compile('[\.\?!]\s+[A-Z\"]')
+
+    # source: LbjNerTagger1.11.release/Data/KnownLists/known_title.lst from
+    # University of Illinois with editing
+    ABBREV_LIST = ['mrs.', 'ms.', 'mr.', 'dr.', 'gov.', 'sr.', 'rev.', 'r.n.',
+                   'pres.', 'treas.', 'sect.', 'maj.', 'ph.d.', 'ed. psy.',
+                   'proc.', 'fr.', 'asst.', 'p.f.c.', 'prof.', 'admr.',
+                   'engr.', 'mgr.', 'supt.', 'admin.', 'assoc.', 'voc.',
+                   'hon.', 'm.d.', 'dpty.',  'sec.', 'capt.', 'c.e.o.',
+                   'c.f.o.', 'c.i.o.', 'c.o.o.', 'c.p.a.', 'c.n.a.', 'acct.',
+                   'llc.', 'inc.', 'dir.', 'esq.', 'lt.', 'd.d.', 'ed.',
+                   'revd.', 'psy.d.', 'v.p.',  'senr.', 'gen.', 'prov.',
+                   'cmdr.', 'sgt.', 'sen.', 'col.', 'lieut.', 'cpl.', 'pfc.',
+                   'k.p.h.', 'cent.', 'deg.', 'doz.', 'Fahr.', 'Cel.', 'F.',
+                   'C.', 'K.', 'ft.', 'fur.',  'gal.', 'gr.', 'in.', 'kg.',
+                   'km.', 'kw.', 'l.', 'lat.', 'lb.', 'lb per sq in.', 'long.',
+                   'mg.', 'mm.,, m.p.g.', 'm.p.h.', 'cc.', 'qr.', 'qt.', 'sq.',
+                   't.', 'vol.',  'w.', 'wt.']
+
+    sentlist = []
+    # controls skipping over non-terminal conditions
+    searchstart = 0
+    terloc = terpat.search(paragr)
+    while terloc:
+        isok = True
+        if paragr[terloc.start()] == '.':
+            if (paragr[terloc.start() - 1].isupper() and
+                    paragr[terloc.start() - 2] == ' '):
+                        isok = False      # single initials
+            else:
+                # check abbreviations
+                loc = paragr.rfind(' ', 0, terloc.start() - 1)
+                if loc > 0:
+                    if paragr[loc + 1:terloc.start() + 1].lower() in ABBREV_LIST:
+                        isok = False
+        if paragr[:terloc.start()].count('(') != paragr[:terloc.start()].count(')'):
+            isok = False
+        if paragr[:terloc.start()].count('"') % 2 != 0:
+            isok = False
+        if isok:
+            if (len(paragr[:terloc.start()]) > MIN_SENTLENGTH and
+                    len(paragr[:terloc.start()]) < MAX_SENTLENGTH):
+                sentlist.append(paragr[:terloc.start() + 2])
+            paragr = paragr[terloc.end() - 1:]
+            searchstart = 0
+        else:
+            searchstart = terloc.start() + 2
+
+        terloc = terpat.search(paragr, searchstart)
+
+    # add final sentence
+    if (len(paragr) > MIN_SENTLENGTH and len(paragr) < MAX_SENTLENGTH):
+        sentlist.append(paragr)
+
+    return sentlist

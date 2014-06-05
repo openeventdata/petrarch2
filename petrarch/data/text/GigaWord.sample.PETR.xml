@@ -1,0 +1,518 @@
+<!-- # PETRARCH GigaWord sample file
+# These are a very very tiny, as in "fair use" on the "research" clause of the copyright 
+# statutes sample of sentences from the LDC Gigaword corpus file AFP0808-02.txt that 
+# demonstrate some of the basic coding capabilities of PETRARCH. While these are actual 
+# sentences, this sample is intended as a "proof-of-concept" only and are not 
+# representative of the overall performance of the system, which is still in development 
+# mode and many pattern-matching features are not fully implemented.
+# 
+# For further information on the GigaWord corpus:  http://catalog.ldc.upenn.edu/LDC2011T07
+# Last update: 28 Feb 2014
+-->
+<Sentences>
+<Sentence date = "20080804" id ="AFP0808020625_4" sentence = "True">
+<Text>
+The stopover came as the US leader prepared to attend the Beijing Olympics, an 
+event which will test his vow to keep politics out of the Games. 
+</Text>
+<Parse>
+( (S 
+(NP (DT The) (NN stopover)) 
+(VP (VBD came) (SBAR (IN as) (S 
+(NP (DT the) (NNP US) (NN leader)) 
+(VP (VBD prepared) (S 
+(VP (TO to) 
+(VP (VB attend) 
+(NP (NP (DT the) (NNP Beijing) (NNP Olympics)) (, ,) 
+(NP (NP (DT an) (NN event)) (SBAR (WHNP (WDT which)) (S 
+(VP (MD will) 
+(VP (VB test) 
+(NP (PRP$ his) (NN vow) (S 
+(VP (TO to) 
+(VP (VB keep) 
+(NP (NNS politics)) 
+(PP (IN out) 
+(PP (IN of) 
+(NP (DT the) (NNPS Games))))))))))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020675_1" sentence = "True">
+<Text>
+Brazil and the United States are seeking to deepen a partnership in energy, 
+especially by promoting biofuels and other alternatives to oil, US Deputy 
+Secretary of Energy Jeffrey Kupfer said here Wednesday. 
+</Text>
+<Parse>
+( (S (S 
+(NP (NP (NNP Brazil)) (CC and) 
+(NP (DT the) (NNP United) (NNPS States))) 
+(VP (AUXP are) 
+(VP (VBG seeking) (S 
+(VP (TO to) 
+(VP (VB deepen) 
+(NP (NP (DT a) (NN partnership)) 
+(PP (IN in) 
+(NP (NN energy)))) (, ,) 
+(PP (ADVP (RB especially)) (IN by) (S 
+(VP (VBG promoting) 
+(NP (NP (NNS biofuels)) (CC and) 
+(NP (JJ other) (NNS alternatives))) 
+(PP (TO to) 
+(NP (NN oil)))))))))))) (, ,) 
+(NP (NNP US) (NML (NNP Deputy) (NNP Secretary) 
+(PP (IN of) 
+(NP (NNP Energy)))) (NNP Jeffrey) (NNP Kupfer)) 
+(VP (VBD said) 
+(NP (RB here) (NNP Wednesday))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020705_1" sentence = "True">
+<Text>
+A court in Guyana has issued arrest warrants for two Brazilian men sought in 
+the brutal slaying of two American missionaries in southern Guyana three years 
+ago, a senior Guyanese police officer said Wednesday. 
+</Text>
+<Parse>
+( (S (S 
+(NP (NP (DT A) (NN court)) 
+(PP (IN in) 
+(NP (NNP Guyana)))) 
+(VP (AUXZ has) 
+(VP (VBN issued) 
+(NP (NP (NN arrest) (NNS warrants)) 
+(PP (IN for) 
+(NP (NP (CD two) (JJ Brazilian) (NNS men)) 
+(VP (VBN sought) 
+(PP (IN in) 
+(NP (NP (DT the) (JJ brutal) (NN slaying)) 
+(PP (IN of) 
+(NP (CD two) (JJ American) (NNS missionaries))))) 
+(PP (IN in) 
+(NP (JJ southern) (NNP Guyana))) (ADVP 
+(NP (CD three) (NNS years)) (RB ago))))))))) (, ,) 
+(NP (DT a) (JJ senior) (NNP Guyanese) (NN police) (NN officer)) 
+(VP (VBD said) 
+(NP (NNP Wednesday))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020742_2" sentence = "True">
+<Text>
+Washington said such a step enjoyed support from Moscow and Beijing-- which 
+have resisted taking a harder line on the Islamic republic-- but China 
+remained mum and Russia's UN ambassador said he was unaware of such agreement. 
+</Text>
+<Parse>
+( (S (S 
+(NP (NNP Washington)) 
+(VP (VBD said) (SBAR (S 
+(NP (PDT such) (DT a) (NN step)) 
+(VP (VBD enjoyed) 
+(NP (NP (NN support)) 
+(PP (IN from) 
+(NP (NNP Moscow) (CC and) (NNP Beijing))))))))) (PRN (: --) (SBAR (WHNP (WDT which)) (S 
+(VP (AUXP have) 
+(VP (VBN resisted) (S 
+(VP (VBG taking) 
+(NP (DT a) (JJR harder) (NN line)) 
+(PP (IN on) 
+(NP (DT the) (JJ Islamic) (NN republic))))))))) (: --)) (CC but) (S (S 
+(NP (NNP China)) 
+(VP (VBD remained) (ADJP (JJ mum)))) (CC and) (S 
+(NP (NP (NNP Russia) (POS 's)) (JJ UN) (NN ambassador)) 
+(VP (VBD said) (SBAR (S 
+(NP (PRP he)) 
+(VP (VBD was) (ADJP (JJ unaware) 
+(PP (IN of) 
+(NP (JJ such) (NN agreement)))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020776_5" sentence = "True">
+<Text>
+The statement by the French presidency comes a day before Sarkozy heads to 
+Beijing for the Friday opening of the Olympic Games, seeking to mend ties with 
+China frayed by an initial threat to boycott the ceremony. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (DT The) (NN statement)) 
+(PP (IN by) 
+(NP (DT the) (JJ French) (NN presidency)))) 
+(VP (VBZ comes) (SBAR 
+(NP (DT a) (NN day)) (IN before) (S 
+(NP (NNP Sarkozy)) 
+(VP (VBZ heads) 
+(PP (TO to) 
+(NP (NNP Beijing))) 
+(PP (IN for) 
+(NP (NP (DT the) (NNP Friday) (NN opening)) 
+(PP (IN of) 
+(NP (DT the) (NNP Olympic) (NNPS Games))))) (, ,) (S 
+(VP (VBG seeking) 
+(PP (TO to) 
+(NP (NP (JJ mend) (NNS ties)) 
+(PP (IN with) 
+(NP (NNP China))) 
+(VP (VBN frayed) 
+(PP (IN by) 
+(NP (DT an) (JJ initial) (NN threat) (S 
+(VP (TO to) 
+(VP (VB boycott) 
+(NP (DT the) (NN ceremony)))))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020824_1" sentence = "True">
+<Text>
+A Tunisian court has jailed a man for two years for helping young militants 
+join an armed Islamic group in Lebanon, his lawyer said Wednesday. 
+</Text>
+<Parse>
+( (S (S 
+(NP (DT A) (NNP Tunisian) (NN court)) 
+(VP (AUXZ has) 
+(VP (VBN jailed) 
+(NP (DT a) (NN man)) 
+(PP (IN for) 
+(NP (CD two) (NNS years))) 
+(PP (IN for) (S 
+(VP (VBG helping) (S 
+(NP (JJ young) (NNS militants)) 
+(VP (VB join) 
+(NP (NP (DT an) (JJ armed) (JJ Islamic) (NN group)) 
+(PP (IN in) 
+(NP (NNP Lebanon)))))))))))) (, ,) 
+(NP (PRP$ his) (NN lawyer)) 
+(VP (VBD said) 
+(NP (NNP Wednesday))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020840_1" sentence = "True">
+<Text>
+France on Wednesday condemned as`` unacceptable'' allegations by Rwanda that it 
+had played an active role in the 1994 genocide, as Kigali said it hoped French 
+officials would be indicted for war crimes. 
+</Text>
+<Parse>
+( (S 
+(NP (NNP France)) 
+(PP (IN on) 
+(NP (NNP Wednesday))) 
+(VP (VBD condemned) 
+(PP (IN as) (`` ``) (ADJP (JJ unacceptable)) ('' '')) 
+(NP (NP (NNS allegations)) 
+(PP (IN by) 
+(NP (NNP Rwanda))) (SBAR (IN that) (S 
+(NP (PRP it)) 
+(VP (AUXD had) 
+(VP (VBN played) 
+(NP (NP (DT an) (JJ active) (NN role)) 
+(PP (IN in) 
+(NP (DT the) (CD 1994) (NN genocide))))))))) (, ,) (SBAR (IN as) (S 
+(NP (NNP Kigali)) 
+(VP (VBD said) (SBAR (S 
+(NP (PRP it)) 
+(VP (VBD hoped) (SBAR (S 
+(NP (JJ French) (NNS officials)) 
+(VP (MD would) 
+(VP (AUXB be) 
+(VP (VBN indicted) 
+(PP (IN for) 
+(NP (NN war) (NNS crimes))))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020840_2" sentence = "True">
+<Text>
+A 500-page report released Tuesday in the Rwandan capital alleged that France 
+was aware of preparations for the genocide, and that the French military in 
+Rwanda helped to plan and carry out killings. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (DT A) (JJ 500-page) (NN report)) 
+(VP (VBN released) 
+(NP (NNP Tuesday)) 
+(PP (IN in) 
+(NP (DT the) (NNP Rwandan) (NN capital))))) 
+(VP (VBD alleged) (SBAR (SBAR (IN that) (S 
+(NP (NNP France)) 
+(VP (VBD was) (ADJP (JJ aware) 
+(PP (IN of) 
+(NP (NP (NNS preparations)) 
+(PP (IN for) 
+(NP (DT the) (NN genocide))))))))) (, ,) (CC and) (SBAR (IN that) (S 
+(NP (NP (DT the) (JJ French) (NN military)) 
+(PP (IN in) 
+(NP (NNP Rwanda)))) 
+(VP (VBD helped) (S 
+(VP (TO to) 
+(VP 
+(VP (VB plan)) (CC and) 
+(VP (VB carry) (PRT (RP out)) 
+(NP (NNS killings))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020857_1" sentence = "True">
+<Text>
+Israel on Wednesday released the mayor of the northern West Bank city of 
+Nablus, a member of the Islamist Hamas movement jailed over a year ago, 
+Palestinian security officials said. 
+</Text>
+<Parse>
+( (S (S 
+(NP (NNP Israel)) 
+(PP (IN on) 
+(NP (NNP Wednesday))) 
+(VP (VBD released) 
+(NP (NP (DT the) (NN mayor)) 
+(PP (IN of) 
+(NP (NP (DT the) (JJ northern) (NNP West) (NNP Bank) (NN city)) 
+(PP (IN of) 
+(NP (NP (NNP Nablus)) (, ,) 
+(NP (NP (DT a) (NN member)) 
+(PP (IN of) 
+(NP (NP (DT the) (NNP Islamist) (NNP Hamas) (NN movement)) 
+(VP (VBN jailed) 
+(PP (IN over) (ADVP 
+(NP (DT a) (NN year)) (RB ago)))))))))))))) (, ,) 
+(NP (JJ Palestinian) (NN security) (NNS officials)) 
+(VP (VBD said)) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020857_2" sentence = "True">
+<Text>
+The release of Adli Yaish, who had been arrested 15 months ago, came as Israel 
+announced it would free over 150 Palestinian prisoners by the end of August as 
+a goodwill gesture to Palestinian president Mahmud Abbas. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (DT The) (NN release)) 
+(PP (IN of) 
+(NP (NP (NNP Adli) (NNP Yaish)) (, ,) (SBAR (WHNP (WP who)) (S 
+(VP (AUXD had) 
+(VP (AUXN been) 
+(VP (VBN arrested) (ADVP 
+(NP (CD 15) (NNS months)) (RB ago))))))) (, ,)))) 
+(VP (VBD came) (SBAR (IN as) (S 
+(NP (NNP Israel)) 
+(VP (VBD announced) (SBAR (S 
+(NP (PRP it)) 
+(VP (MD would) 
+(VP (VB free) (PRT (RP over)) 
+(NP (CD 150) (JJ Palestinian) (NNS prisoners)) 
+(PP (IN by) 
+(NP (NP (DT the) (NN end)) 
+(PP (IN of) 
+(NP (NNP August))))) 
+(PP (IN as) 
+(NP (NP (DT a) (NN goodwill) (NN gesture)) 
+(PP (TO to) 
+(NP (JJ Palestinian) (NN president) (NNP Mahmud) (NNP Abbas))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020905_1" sentence = "True">
+<Text>
+The US commander in Iraq, General David Petraeus, held talks with President 
+Michel Sleiman during a surprise visit to Beirut on Wednesday, offering 
+further military support to Lebanon. 
+</Text>
+<Parse>
+( (S 
+(NP (NP 
+(NP (DT The) (NNP US) (NN commander)) 
+(PP (IN in) 
+(NP (NNP Iraq)))) (, ,) 
+(NP (NNP General) (NNP David) (NNP Petraeus)) (, ,)) 
+(VP (VBD held) 
+(NP (NP (NNS talks)) 
+(PP (IN with) 
+(NP (NNP President) (NNP Michel) (NNP Sleiman)))) 
+(PP (IN during) 
+(NP (DT a) (NN surprise) (NN visit))) 
+(PP (TO to) 
+(NP (NNP Beirut))) 
+(PP (IN on) 
+(NP (NNP Wednesday))) (, ,) (S 
+(VP (VBG offering) 
+(NP (JJ further) (JJ military) (NN support)) 
+(PP (TO to) 
+(NP (NNP Lebanon)))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020937_1" sentence = "True">
+<Text>
+US and British activists staged a dramatic protest in Beijing on Wednesday, 
+scaling a pole and unfurling giant`` Free Tibet'' banners close to the stadium 
+where the Olympics will open in two days. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (PRP US)) (CC and) 
+(NP (JJ British) (NNS activists))) 
+(VP (VBD staged) 
+(NP (DT a) (JJ dramatic) (NN protest)) 
+(PP (IN in) 
+(NP (NNP Beijing))) 
+(PP (IN on) 
+(NP (NNP Wednesday))) (, ,) (S 
+(VP 
+(VP (VBG scaling) 
+(NP (DT a) (NN pole))) (CC and) 
+(VP (VBG unfurling) 
+(NP (JJ giant) (`` ``) (NNP Free) (NNP Tibet) ('' '') (NNS banners)) (ADVP (RB close) 
+(PP (TO to) 
+(NP (DT the) (NN stadium)))) (SBAR (WHADVP (WRB where)) (S 
+(NP (DT the) (NNPS Olympics)) 
+(VP (MD will) 
+(VP (VB open) 
+(PP (IN in) 
+(NP (CD two) (NNS days))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080806" id ="AFP0808020955_1" sentence = "True">
+<Text>
+Rwanda's information minister said Wednesday she hoped a raft of French 
+political and military officials accused of playing a role in the country's 
+1994 genocide would soon be indicted for war crimes. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (NNP Rwanda) (POS 's)) (NN information) (NN minister)) 
+(VP (VBD said) 
+(NP (NNP Wednesday)) (SBAR (S 
+(NP (PRP she)) 
+(VP (VBD hoped) (SBAR (S 
+(NP (NP (DT a) (NN raft)) 
+(PP (IN of) 
+(NP (NP (JJ French) (ADJP (JJ political) (CC and) (JJ military)) (NNS officials)) 
+(VP (VBN accused) 
+(PP (IN of) (S 
+(VP (VBG playing) 
+(NP (NP (DT a) (NN role)) 
+(PP (IN in) 
+(NP (NP (DT the) (NN country) (POS 's)) (CD 1994) (NN genocide))))))))))) 
+(VP (MD would) (ADVP (RB soon)) 
+(VP (AUXB be) 
+(VP (VBN indicted) 
+(PP (IN for) 
+(NP (NN war) (NNS crimes)))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020957_1" sentence = "True">
+<Text>
+France on Wednesday accused Rwanda of making`` unacceptable accusations'' by 
+alleging Paris played an active role in the 1994 genocide, but said it was 
+still determined to mend damaged ties with Kigali. 
+</Text>
+<Parse>
+( (S 
+(NP (NNP France)) 
+(PP (IN on) 
+(NP (NNP Wednesday))) 
+(VP 
+(VP (VBD accused) 
+(NP (NNP Rwanda)) 
+(PP (IN of) (S 
+(VP (VBG making) 
+(NP (`` ``) 
+(NP (JJ unacceptable) (NNS accusations)) ('' '') 
+(PP (IN by) (S 
+(VP (VBG alleging) (SBAR (S 
+(NP (NNP Paris)) 
+(VP (VBD played) 
+(NP (NP (DT an) (JJ active) (NN role)) 
+(PP (IN in) 
+(NP (DT the) (CD 1994) (NN genocide))))))))))))))) (, ,) (CC but) 
+(VP (VBD said) (SBAR (S 
+(NP (PRP it)) 
+(VP (VBD was) (ADVP (RB still)) (ADJP (JJ determined) (S 
+(VP (TO to) 
+(VP (VB mend) 
+(NP (JJ damaged) (NNS ties)) 
+(PP (IN with) 
+(NP (NNP Kigali)))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808020957_2" sentence = "True">
+<Text>
+A 500-page report released Tuesday in the Rwandan capital alleged that France 
+was aware of preparations for the genocide, and that the French military in 
+Rwanda contributed to planning the massacres and actively took part in the 
+killing. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (DT A) (JJ 500-page) (NN report)) 
+(VP (VBN released) 
+(NP (NNP Tuesday)) 
+(PP (IN in) 
+(NP (DT the) (NNP Rwandan) (NN capital))))) 
+(VP 
+(VP (VBD alleged) (SBAR (SBAR (IN that) (S 
+(NP (NNP France)) 
+(VP (VBD was) (ADJP (JJ aware) 
+(PP (IN of) 
+(NP (NP (NNS preparations)) 
+(PP (IN for) 
+(NP (DT the) (NN genocide))))))))) (, ,) (CC and) (SBAR (IN that) (S 
+(NP (NP (DT the) (JJ French) (NN military)) 
+(PP (IN in) 
+(NP (NNP Rwanda)))) 
+(VP (VBD contributed) 
+(PP (TO to) (S 
+(VP (VBG planning) 
+(NP (DT the) (NNS massacres)))))))))) (CC and) 
+(VP (ADVP (RB actively)) (VBD took) 
+(NP (NP (NN part)) 
+(PP (IN in) 
+(NP (DT the) (NN killing)))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080806" id ="AFP0808021021_3" sentence = "True">
+<Text>
+Before leaving for Beijing on Thursday, Bush was scheduled to give a speech 
+here on US relations with Asia and meet with exiled dissidents from 
+military-ruled Myanmar. 
+</Text>
+<Parse>
+( (S 
+(PP (IN Before) (S 
+(VP (VBG leaving) 
+(PP (IN for) 
+(NP (NNP Beijing))) 
+(PP (IN on) 
+(NP (NNP Thursday)))))) (, ,) 
+(NP (NNP Bush)) 
+(VP (AUXD was) 
+(VP (VBN scheduled) (S 
+(VP (TO to) 
+(VP 
+(VP (VB give) 
+(NP (DT a) (NN speech)) (ADVP (RB here)) 
+(PP (IN on) 
+(NP (NP (NNP US) (NNS relations)) 
+(PP (IN with) 
+(NP (NNP Asia)))))) (CC and) 
+(VP (VB meet) 
+(PP (IN with) 
+(NP (VBN exiled) (NNS dissidents))) 
+(PP (IN from) 
+(NP (JJ military-ruled) (NNP Myanmar))))))))) (. .)))
+</Parse>
+</Sentence>
+</Sentences>

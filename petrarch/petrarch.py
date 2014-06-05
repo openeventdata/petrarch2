@@ -91,10 +91,12 @@ import sys
 import glob
 import time
 import argparse
+import xml.etree.ElementTree as ET
 
 import PETRglobals  # global variables
 import PETRreader  # input routines
 import PETRwriter  # output routines
+import utilities
 
 
 # ================================  PARSER/CODER GLOBALS  ================== #
@@ -209,7 +211,9 @@ def raise_parsing_error(call_location_string):
 # ========================== DEBUGGING FUNCTIONS ========================== #
 
 def show_tree_string(sent):
-    """ Indexes the () or (~in a string tree and prints as an indented list. """
+    """
+    Indexes the () or (~in a string tree and prints as an indented list.
+    """
 # show_tree_string() also prints the totals
 # call with ' '.join(list) to handle the list versions of the string
     newlev = False
@@ -254,7 +258,10 @@ def show_tree_string(sent):
 
 
 def check_balance():
-    """ Check the (/~ count in a ParseList and raises UnbalancedTree if it is not balanced. """
+    """
+    Check the (/~ count in a ParseList and raises UnbalancedTree if it is not
+    balanced.
+    """
     nopen = 0
     nclose = 0
     ka = 0
@@ -273,9 +280,8 @@ def check_balance():
 def change_Config_Options(line):
     """Changes selected configuration options."""
     # need more robust error checking
-    PETRreader.extract_attributes(line)
-    theoption = PETRreader.check_attribute('option')
-    value = PETRreader.check_attribute('value')
+    theoption = line['option']
+    value = line['value']
     print "<Config>: changing", theoption, "to", value
     if theoption == 'new_actor_length':
         try:
@@ -315,7 +321,7 @@ def change_Config_Options(line):
         PETRwriter.write_FIN_error("<Config>: unrecognized option")
 
 
-def extract_EventCoding_info(theline):
+def extract_EventCoding_info(codings):
     """Extracts fields from <EventCoding record and appends to ValidEvents."""
 # currently does not raise errors if the information is missing but instead
 # sets the fields to null strings
@@ -326,19 +332,18 @@ def extract_EventCoding_info(theline):
     """
     global ValidEvents
 
-    PETRreader.extract_attributes(theline)
-    if ('noevents' in PETRglobals.AttributeList[1]):
-        ValidEvents = []
-        return
-    else:
-#		print "EEC-1:",PETRglobals.AttributeList
-        ValidEvents.append(
-            [PETRreader.check_attribute('sourcecode'),
-             PETRreader.check_attribute('targetcode'),
-             PETRreader.check_attribute('eventcode')])
+    for coding in codings:
+        event_attrs = coding.attrib
+        if 'noevents' in event_attrs:
+            ValidEvents = []
+            return
+        else:
+            ValidEvents.append([event_attrs['sourcecode'],
+                                event_attrs['targetcode'],
+                                event_attrs['eventcode']])
 
 
-def evaluate_validation_record():
+def evaluate_validation_record(item):
     """
     def evaluate_validation_record(): Read validation record, setting EventID
     and a list of correct coded events, code using read_TreeBank(), then check
@@ -354,71 +359,51 @@ def evaluate_validation_record():
     global CodedEvents, ValidEvents
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
     global ParseList
+    #TODO: remove this and make read_TreeBank take it as an arg
+    global treestr
 
     ValidEvents = []  # code triples that should be produced
     # code triples that were produced; set in make_event_strings
     CodedEvents = []
-    line = PETRreader.read_FIN_line()
-    while line:
 #		print line
-        if ('<Sentence ' in line):
-            try:
-                extract_Sentence_info(line)
-            except MissingAttr:
-                print 'Skipping sentence: Missing date field in', line,
-                return  # let SkipRecord be caught by calling routine
+    extract_Sentence_info(item.attrib)
 
-            if ValidOnly and not SentenceValid:
-                raise SkipRecord
-                return True
+    if ValidOnly and not SentenceValid:
+        raise SkipRecord
+        return True
 
-            if len(ValidInclude) > 0 and SentenceCat not in ValidInclude:
-                raise SkipRecord
-                return True
+    if len(ValidInclude) > 0 and SentenceCat not in ValidInclude:
+        raise SkipRecord
+        return True
 
-            if len(ValidExclude) > 0 and SentenceCat in ValidExclude:
-                raise SkipRecord
-                return True
+    if len(ValidExclude) > 0 and SentenceCat in ValidExclude:
+        raise SkipRecord
+        return True
 
-        if ('<EventCoding ' in line):
-            extract_EventCoding_info(line)
-#			print "EVR-2:",ValidEvents
+    extract_EventCoding_info(item.findall('EventCoding'))
 
-        if ('<Text>' in line):
-            SentenceText = ''
-            line = PETRreader.read_FIN_line()
-            while '</Text>' not in line:
-                SentenceText += line[:-1]
-                if ' ' not in SentenceText[-1]:
-                    SentenceText += ' '
-                line = PETRreader.read_FIN_line()
+    SentenceText = item.find('Text').text.replace('\n', '')
 
-        if ('<Skip ' in line):  # handle skipping -- leave fin at end of tree
-#			print "EVR-1: <Skip"
-            raise SkipRecord
-            return True
+    if item.find('Skip'):  # handle skipping -- leave fin at end of tree
+        raise SkipRecord
+        return True
 
-        if '<Config' in line:
-            change_Config_Options(line)
+    if item.find('Stop'):
+        raise StopCoding
+        return True
 
-        if ('<Stop>' in line):
-            raise StopCoding
-            return True
+    parsed = item.find('Parse').text
+    treestr = utilities._format_parsed_str(parsed)
 
-        if '<Parse>' in line:
-            try:
-                read_TreeBank()
-            except UnbalancedTree:
-                PETRwriter.write_record_error(
-                    ErrMsgUnbalancedTree,
-                    SentenceID,
-                    SentenceCat)
-            break
-
-        line = PETRreader.read_FIN_line()
-
-    if not line:
-        raise EOFError
+    try:
+        read_TreeBank()
+    except UnbalancedTree:
+        PETRwriter.write_record_error(
+            ErrMsgUnbalancedTree,
+            SentenceID,
+            SentenceCat)
+    #TODO: maybe?
+    #break
 
     print '\nSentence:', SentenceID, '[', SentenceCat, ']'
     print SentenceText
@@ -498,7 +483,7 @@ def check_envirattr(line, stag, sattr):
         sys.exit()
 
 
-def open_validation_file(filepath):
+def open_validation_file(xml_root):
     """
 def open_validation_file():
 
@@ -626,81 +611,29 @@ Validation File Format
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
 
-    PETRreader.open_FIN(filepath, "validation")
-
-    try:
-        PETRreader.find_tag('<Environment')
-    except EOFError:
-        print "Missing <Environment> block in validation file\nExiting program"
+    environment = xml_root.find('Environment')
+    if environment is None:
+        print 'Missing <Environment> block in validation file'
+        print 'Exiting program.'
         sys.exit()
 
-    gotErrorfile = False
-    line = ""
-    while "</Environment>" not in line:
-        try:
-            line = PETRreader.read_FIN_line()
-        except EOFError:
-            print "Unexpected end of file, possibly due to missing </Environment> tag in validation file\nExiting program"
-            sys.exit()
+    ValidInclude, ValidExclude, ValidPause, gotErrorfile, ValidOnly = _check_envr(environment)
 
-        if ("<Verbfile " in line):
-            check_envirattr(line, '<Verbfile>', 'name')
-            PETRglobals.VerbFileName = PETRreader.get_attribute('name')
-
-        if ("<Actorfile " in line):
-            check_envirattr(line, '<Actorfile>', 'name')
-            PETRglobals.ActorFileList[0] = PETRreader.get_attribute('name')
-
-        if ("<Agentfile " in line):
-            check_envirattr(line, '<Agentfile>', 'name')
-            PETRglobals.AgentFileName = PETRreader.get_attribute('name')
-
-        if ("<Errorfile " in line):
-            check_envirattr(line, '<Errorfile>', 'name')
-            PETRwriter.open_ErrorFile(
-                PETRreader.check_attribute('name'),
-                PETRreader.check_attribute('unique'))
-            gotErrorfile = True
-
-        if ("<Include " in line):
-            check_envirattr(line, '<Include>', 'categories')
-            loclist = PETRreader.get_attribute('categories')
-            ValidInclude = loclist.split()
-            print '<Include> categories', ValidInclude
-            if 'valid' in ValidInclude:
-                ValidOnly = True
-                ValidInclude.remove('valid')
-
-        if ("<Exclude " in line):
-            check_envirattr(line, '<Exclude>', 'categories')
-            loclist = PETRreader.get_attribute('categories')
-            ValidExclude = loclist.split()
-            print '<Exclude> categories', ValidExclude
-
-        if ("<Pause " in line):
-            check_envirattr(line, '<Pause>', 'value')
-            theval = PETRreader.get_attribute('value')
-            if 'lways' in theval:
-                ValidPause = 1   # skip first char to allow upper/lower case
-            elif 'ever' in theval:
-                ValidPause = 2
-            elif 'top' in theval:
-                ValidPause = 3
-            else:
-                ValidPause = 0
-
-    PETRreader.close_FIN()
-
-    if (len(PETRglobals.VerbFileName) == 0) or (len(PETRglobals.ActorFileList) == 0) or (len(PETRglobals.AgentFileName) == 0):
+    check1 = [len(PETRglobals.VerbFileName) == 0,
+              len(PETRglobals.ActorFileList) == 0,
+              len(PETRglobals.AgentFileName) == 0]
+    if any(check1):
         print "Missing <Verbfile>, <AgentFile> or <ActorFile> in validation file <Environment> block", ErrMsgExitValidation
         sys.exit()
 
     if not gotErrorfile:
         PETRwriter.open_ErrorFile()
-    PETRwriter.write_ErrorFile('Validation file: ' + PETRglobals.TextFileList[0] +
-                               '\nVerbs file: ' + PETRglobals.VerbFileName + '\nActors file: ' +
-                               PETRglobals.ActorFileList[0] + '\n' + '\nAgents file: ' +
-                               PETRglobals.AgentFileName + '\n')
+    PETRwriter.write_ErrorFile('Validation file: ' +
+                               PETRglobals.TextFileList[0] + '\nVerbs file: ' +
+                               PETRglobals.VerbFileName + '\nActors file: ' +
+                               PETRglobals.ActorFileList[0] + '\n' +
+                               '\nAgents file: ' + PETRglobals.AgentFileName +
+                               '\n')
     if len(ValidInclude):
         PETRwriter.write_ErrorFile(
             'Include list: ' + ', '.join(ValidInclude) + '\n')
@@ -711,27 +644,68 @@ Validation File Format
     PETRwriter.ErrorN += 0
 
     print 'Verb dictionary:', PETRglobals.VerbFileName
-    verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
+    verb_path = utilities._get_data('data/dictionaries',
+                                    PETRglobals.VerbFileName)
     PETRreader.read_verb_dictionary(verb_path)
 
     print 'Actor dictionaries:', PETRglobals.ActorFileList[0]
-    actor_path = _get_data('data/dictionaries', PETRglobals.ActorFileList[0])
+    actor_path = utilities._get_data('data/dictionaries',
+                                     PETRglobals.ActorFileList[0])
     PETRreader.read_actor_dictionary(actor_path)
 
     print 'Agent dictionary:', PETRglobals.AgentFileName
-    agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
+    agent_path = utilities._get_data('data/dictionaries',
+                                     PETRglobals.AgentFileName)
     PETRreader.read_agent_dictionary(agent_path)
 
-#    print 'Verb dictionary:', PETRglobals.VerbFileName
-#    PETRreader.read_verb_dictionary()
-#    print 'Actor dictionary:', PETRglobals.ActorFileList[0]
-#    PETRreader.read_actor_dictionary(PETRglobals.ActorFileList[0])
-#    print 'Agent dictionary:', PETRglobals.AgentFileName
-#    PETRreader.read_agent_dictionary()
-#	sys.exit()
 
+def _check_envr(environ):
+    for elem in environ:
+        if elem.tag == 'Verbfile':
+            PETRglobals.VerbFileName = elem.text
+
+        if elem.tag == 'Actorfile':
+            PETRglobals.ActorFileList[0] = elem.text
+
+        if elem.tag == 'Agentfile':
+            PETRglobals.AgentFileName = elem.text
+
+        if elem.tag == 'Errorfile':
+            PETRwriter.open_ErrorFile(
+                elem.text,
+                PETRreader.check_attribute('unique'))
+            gotErrorfile = True
+
+        if elem.tag == 'Include':
+            ValidInclude = elem.text.split()
+            print '<Include> categories', ValidInclude
+            if 'valid' in ValidInclude:
+                ValidOnly = True
+                ValidInclude.remove('valid')
+        else:
+            ValidInclude = ''
+
+        if elem.tag == 'Exclude':
+            ValidExclude = elem.tag.split()
+            print '<Exclude> categories', ValidExclude
+        else:
+            ValidExclude = ''
+
+        if elem.tag == 'Pause':
+            theval = elem.text
+            if 'lways' in theval:
+                ValidPause = 1   # skip first char to allow upper/lower case
+            elif 'ever' in theval:
+                ValidPause = 2
+            elif 'top' in theval:
+                ValidPause = 3
+            else:
+                ValidPause = 0
+
+    return ValidInclude, ValidExclude, ValidPause, gotErrorfile, ValidOnly
 
 # ================== TEXTFILE INPUT ================== #
+
 
 def get_NE(NPphrase):
     """
@@ -1122,13 +1096,7 @@ def read_TreeBank():
     vpindex = 1
     npindex = 1
     ncindex = 1
-    treestr = ''
-    line = PETRreader.read_FIN_line()
-    while '</Parse>' not in line:
-        line = line.strip() + ' '
-        line = line.replace(')', ' ) ')
-        treestr += line.upper()
-        line = PETRreader.read_FIN_line()
+
     if ShowRTTrees:
 #	if False:
         print 'RT1:', treestr  # debug
@@ -1374,6 +1342,10 @@ def get_loccodes(thisloc):
             # necessarily unbalanced
             raise_parsing_error('get_loccodes()-3')
 #		print 'GLC3',neitem
+        StoryEventList.append([SentenceID])
+        for event in CodedEvents:
+            StoryEventList.append(event)
+#			print SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2]
         if '(NEC' in neitem:  # extract the compound codes
             ka = thisloc[0] + 1
             while '~NEC' not in LowerSeq[ka]:
@@ -1603,14 +1575,17 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             if aseq[kseq] not in PETRglobals.VerbDict[patlist[kpatword]]:
                 for words in PETRglobals.VerbDict[patlist[kpatword]]:
 #					print '&&:',words
-                    """if words[0] == '&':  <14.05.08> Attempt to get this to work recursively, but not successful
+                    """
+                    #11,914 additions and 298 deletions
+                        if words[0] == '&':
                             if syn_match(isupperseq):
                                     if last_patword(): return True
                                     if last_seqword(): return False
                             else: return False
                     elif ' ' in words: # try to match a phrase """
                     if ' ' in words:  # try to match a phrase
-                        # <14.05.08> may want to pre-split this and store as a list
+                        # <14.05.08> may want to pre-split this and store as a
+                        # list
                         wordlist = words.split()
 #						print '>>:',wordlist, aseq
                         # need to go through phrase in reverse in upperseq
@@ -1711,8 +1686,9 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 # print "skip/VPM:", kseq, aseq,'\n', aseq[kseq-8:kseq-1]   # debug
                             # at this point some sort of markup we can't
                             # handle, not necessarily unbalanced
-                            raise_parsing_error(
-                                'find_ne(kseq) in skip assessment, verb_pattern_match()')
+                            raise_parsing_error("""find_ne(kseq) in skip
+                                                assessment,
+                                                verb_pattern_match()""")
                     if ShowVPM:
                         print "VPM/FN-1: Found NE:", kseq, aseq[kseq]   # debug
                     insideNE = False
@@ -2084,7 +2060,9 @@ def check_commas():
     """
 
     def count_word(loclow, lochigh):
-        """ Returns the number of words in ParseList between loclow and lochigh - 1  """
+        """
+        Returns the number of words in ParseList between loclow and lochigh - 1
+        """
         cwkt = 0
         ka = loclow
         while ka < lochigh:
@@ -2098,8 +2076,10 @@ def check_commas():
         return cwkt
 
     def find_end():
-        """ Returns location of tag on punctuation at end of phrase, defined as
-        last element without ~  """
+        """
+        Returns location of tag on punctuation at end of phrase, defined as
+        last element without ~
+        """
         ka = len(ParseList) - 1
         while ka >= 2 and ParseList[ka][0] == '~':
             ka -= 1
@@ -2239,8 +2219,10 @@ def assign_NEcodes():
     """ Assigns non-null codes to NE phrases where appropriate """
 
     def expand_compound_element(kstart):
-        """ An almost but not quite a recursive call on
-        expand_compound_NEPhrase()."""
+        """
+        An almost but not quite a recursive call on
+        expand_compound_NEPhrase().
+        """
         # this difference is that the (NEC has already been established so we
         # are just adding elements inside the list and there is no further
         # check: we're not allowing any further nesting of compounds. That
@@ -2430,6 +2412,9 @@ def make_event_strings():
     tarcodes = get_loccodes(TargetLoc)
     expand_compound_codes(tarcodes)
 
+#TODO: This needs to be fixed
+    SentenceLoc = ''
+
 #	print 'MES2: ',srccodes, tarcodes, EventCode
     if len(srccodes) == 0 or len(tarcodes) == 0:
         # <14.02.27> This is here temporarily (ha!) to just get this thing to
@@ -2507,24 +2492,28 @@ def reset_event_list(firstentry=False):
 #	print 'CurStoryID',CurStoryID
 
 
-def extract_Sentence_info(line):
-    """ Extracts  various global fields from the <Sentence record """
+def extract_Sentence_info(item):
+    """ Extracts  various global fields from the <Sentence record
+    item is a dictionary of attributes generated from the XML input
+    """
 # can raise SkipRecord if date is missing
 
     global SentenceDate, SentenceID, SentenceCat, SentenceLoc, SentenceValid
     global SentenceOrdDate
-    PETRreader.extract_attributes(line)
-    SentenceID = PETRreader.check_attribute('id')
-    SentenceCat = PETRreader.check_attribute('category')
-    SentenceLoc = PETRreader.check_attribute('place')
-    if PETRreader.check_attribute('valid').lower() == 'true':
+    SentenceID = item['id']
+    SentenceCat = item['category']
+    if 'place' in item:
+        SentenceLoc = item['place']
+    else:
+        SentenceLoc = ''
+    if item['valid'].lower() == 'true':
         SentenceValid = True
     else:
         SentenceValid = False
-    try:
-        SentenceDate = PETRreader.get_attribute('date')
+    if 'date' in item:
+        SentenceDate = item['date']
         SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
-    except MissingAttr:
+    else:
         PETRwriter.write_FIN_error(ErrMsgMissingDate)
         raise SkipRecord
 
@@ -2709,10 +2698,7 @@ def code_record():
     check_verbs()
 
     if len(CodedEvents) > 0:
-        StoryEventList.append([SentenceID])
-        for event in CodedEvents:
-            StoryEventList.append(event)
-#			print SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2]
+        return CodedEvents
     else:
         NEmpty += 1
         print "No events coded"
@@ -2775,65 +2761,63 @@ def make_fake_events():
 
 def do_validation(filepath):
     """ Coding using a validation file. """
-    open_validation_file(filepath)
-#	PETRreader.show_verb_dictionary("VerbDict.content.txt")
+    global NParseErrors
 
     start_time = time.time()
     nvalid = 0
-# PETRreader.show_actor_dictionary('ActorDict.content.txt') # debug
-#	sys.exit()
-    PETRreader.open_FIN(filepath, "validation")
-    line = PETRreader.read_FIN_line()
-    # no need to error check since open_validation_file already found this
-    while "</Environment>" not in line:
-        line = PETRreader.read_FIN_line()
 
-    while True:
-        try:
-            vresult = evaluate_validation_record()
-            if vresult:
-                print "Events correctly coded in", SentenceID, '\n'
-                nvalid += 1
-            else:
-                print "Error: Mismatched events in", SentenceID, '\n'
-                if ValidPause == 3:
-                    sys.exit()  # debug
+    tree = ET.parse(filepath)
+    root = tree.getroot()
 
-            if ValidPause == 2:
-                continue  # evaluate pause conditions
-            elif ValidPause == 1 or not vresult:
-                inkey = raw_input("Press <Return> to continue; 'q' to quit-->")
-                if 'q' in inkey or 'Q' in inkey:
-                    break
+    open_validation_file(root)
+    sents = root.find('Sentences')
 
-        except EOFError:
-            print "Exiting: end of file"
-            PETRreader.close_FIN()
-            print "Records coded correctly:", nvalid
-            sys.exit()
-        except StopCoding:
-            print "Exiting: <Stop> record "
-            PETRreader.close_FIN()
-            print "Records coded correctly:", nvalid
-            sys.exit()
-        except SkipRecord:
-            line = PETRreader.FINline
-            print "Skipping this record."
-            while '</Sentence>' not in line:
-                line = PETRreader.read_FIN_line()
-        except HasParseError:
-            print "Exiting: parsing error "
-            PETRreader.close_FIN()
-            sys.exit()
+    NParseErrors = 0
+    for item in sents:
+        if item.tag == 'Config':
+            change_Config_Options(item.attrib)
+        if item.tag == 'Sentence':
+            try:
+                vresult = evaluate_validation_record(item)
+                if vresult:
+                    print "Events correctly coded in", SentenceID, '\n'
+                    nvalid += 1
+                else:
+                    print "Error: Mismatched events in", SentenceID, '\n'
+                    if ValidPause == 3:
+                        sys.exit()  # debug
+
+                if ValidPause == 2:
+                    continue  # evaluate pause conditions
+                elif ValidPause == 1 or not vresult:
+                    inkey = raw_input("Press <Return> to continue; 'q' to quit-->")
+                    if 'q' in inkey or 'Q' in inkey:
+                        break
+
+            except EOFError:
+                print "Exiting: end of file"
+                PETRreader.close_FIN()
+                print "Records coded correctly:", nvalid
+                sys.exit()
+            except StopCoding:
+                print "Exiting: <Stop> record "
+                PETRreader.close_FIN()
+                print "Records coded correctly:", nvalid
+                sys.exit()
+            except SkipRecord:
+                print "Skipping this record."
+            except HasParseError:
+                print "Exiting: parsing error "
+                PETRreader.close_FIN()
+                sys.exit()
 
 
-def do_coding(filepaths, out_file):
+def do_coding(event_dict, out_file):
     """
-    Main coding loop
-    Note that entering any character other than 'Enter' at the prompt will stop
-    the program: this is deliberate.
+    Main coding loop Note that entering any character other than 'Enter' at the
+    prompt will stop the program: this is deliberate.
     <14.02.28>: Bug: PETRglobals.PauseByStory actually pauses after the first
-    sentence of the *next* story
+                sentence of the *next* story
     """
     global StoryDate, StorySource, SentenceID, SentenceCat, SentenceText
     global CurStoryID, SkipStory
@@ -2843,8 +2827,11 @@ def do_coding(filepaths, out_file):
     global StoryIssues
     global CodedEvents
 
-    fevt = open(out_file, 'w')
-    print "Writing events to:", out_file
+    #These are pulled from read_record()
+    global SentenceDate, SentenceSource
+    #Things to make local and global namespaces not conflict
+    #TODO: Change this
+    global treestr, ParseList
 
     NStory = 0
     NSent = 0
@@ -2854,31 +2841,38 @@ def do_coding(filepaths, out_file):
     NDiscardStory = 0
     NParseErrors = 0
 
-    for path in filepaths:
-        PETRreader.open_FIN(path, "text")
-        reset_event_list(True)
-        ka = 0
-        while True:
-            try:
-                read_record()
-            except EOFError:
-                print "Closing:", path
-                PETRreader.close_FIN()
-                write_events()
-                break
-# print SentenceID[-6:-3],':',CurStoryID   # debug
+    for key in event_dict:
+        print 'Processing {}'.format(key)
+        StoryDate = event_dict[key]['meta']['date']
+        StorySource = 'TEMP'
+        for sent in event_dict[key]['sents']:
+            SentenceID = key + '_' + sent
+            SentenceText = event_dict[key]['sents'][sent]['content']
+            SentenceDate = StoryDate
+            SentenceSource = 'TEMP'
 
-            if not PETRglobals.CodeBySentence:
-                # write events when we hit a new story
-                if SentenceID[-6:-3] != CurStoryID:
-                    if not SkipStory:
-                        write_events()
-                    reset_event_list()
-                    if PETRglobals.PauseByStory:
-                        if len(raw_input("Press Enter to continue...")) > 0:
-                            sys.exit()
-            else:
-                reset_event_list()
+            parsed = event_dict[key]['sents'][sent]['parsed']
+            treestr = parsed
+            #TODO: Make read_TreeBank take treestr as an arg and return
+            #something
+            read_TreeBank()
+            reset_event_list(True)
+
+#TODO
+#Can implement this easily. The sentences are organized by story in the dicts
+#so it's easy to rework this. Just when we're done with a key then write out
+#the events for the included sentences. Gonna skip it for now
+#            if not PETRglobals.CodeBySentence:
+#                # write events when we hit a new story
+#                if SentenceID[-6:-3] != CurStoryID:
+#                    if not SkipStory:
+#                        write_events()
+#                    reset_event_list()
+#                    if PETRglobals.PauseByStory:
+#                        if len(raw_input("Press Enter to continue...")) > 0:
+#                            sys.exit()
+#            else:
+#                reset_event_list()
 
             if SkipStory:
                 print "Skipped"
@@ -2894,32 +2888,30 @@ def do_coding(filepaths, out_file):
                     SkipStory = True
                     NDiscardStory += 1
 
+                coded_events = None
+
             else:
                 try:
-                    code_record()
-# try: make_fake_events(); CodedEvents = ['xxx']  # debug
+                    coded_events = code_record()
                 except UnbalancedTree as why:
                     print "Unable to interpret parse tree:", why
-                    CodedEvents = []
+                    coded_events = None
 
-                if len(CodedEvents) > 0 and PETRglobals.IssueFileName != "":
-                    StoryIssues[SentenceID[-2:]] = get_issues()
-# print SentenceID[-2:]   # debug
+            if coded_events:
+                event_dict[key]['sents'][sent]['events'] = coded_events
 
-            if PETRglobals.CodeBySentence:   # debug
-                if not SkipStory:
-                    write_events()
-                reset_event_list()
+
+            if coded_events and PETRglobals.IssueFileName != "":
+                event_issues = get_issues()
+                if event_issues:
+                    event_dict[key]['sents'][sent]['issues'] = event_issues
 
             if PETRglobals.PauseBySentence:
                 if len(raw_input("Press Enter to continue...")) > 0:
                     sys.exit()
 
-            ka += 1  # debug
-# if ka > 32: break  # debug
-        write_events()
+    return event_dict
 
-    fevt.close()  # need to handle this somewhere
     print "Summary:"
     print "Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents
     print "Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty
@@ -2943,6 +2935,9 @@ PETRARCH
     parse_command.add_argument('-i', '--inputs',
                                help='File, or directory of files, to parse.',
                                required=True)
+    parse_command.add_argument('-P', '--parsed', action='store_true',
+                               default=False, help="""Whether the input
+                               document contains StanfordNLP-parsed text.""")
     parse_command.add_argument('-o', '--output',
                                help='File to write parsed events.',
                                required=True)
@@ -2973,8 +2968,8 @@ def main():
     if cli_args.command_name == 'validate':
         PETRreader.parse_Config('../PETR_config.ini')
         if not cli_args.inputs:
-            validation_file = _get_data('data/text',
-                                        'PETR.UnitTest.records.txt')
+            validation_file = utilities._get_data('data/text',
+                                                  'PETR.UnitTest.records.xml')
             do_validation(validation_file)
         else:
             do_validation(cli_args.inputs)
@@ -2987,46 +2982,22 @@ def main():
         else:
             PETRreader.parse_Config('../PETR_config.ini')
 
-        # need to allow this to be set in the config file or command line
-        PETRwriter.open_ErrorFile()
-        print 'Verb dictionary:', PETRglobals.VerbFileName
-        verb_path = _get_data('data/dictionaries', PETRglobals.VerbFileName)
-        PETRreader.read_verb_dictionary(verb_path)
-
-        print 'Actor dictionaries:', PETRglobals.ActorFileList
-        for actdict in PETRglobals.ActorFileList:
-            actor_path = _get_data('data/dictionaries', actdict)
-            PETRreader.read_actor_dictionary(actor_path)
-        # debug
-        # PETRreader.show_ActorDict('ActorDict.content.txt')
-
-        print 'Agent dictionary:', PETRglobals.AgentFileName
-        agent_path = _get_data('data/dictionaries', PETRglobals.AgentFileName)
-        PETRreader.read_agent_dictionary(agent_path)
-
-        print 'Discard dictionary:', PETRglobals.DiscardFileName
-        discard_path = _get_data('data/dictionaries',
-                                 PETRglobals.DiscardFileName)
-        PETRreader.read_discard_list(discard_path)
-
-        if PETRglobals.IssueFileName != "":
-            print 'Issues dictionary:', PETRglobals.IssueFileName
-            issue_path = _get_data('data/dictionaries',
-                                   PETRglobals.IssueFileName)
-            PETRreader.read_issue_list(issue_path)
+        read_dictionaries()
 
         if os.path.isdir(cli_args.inputs):
             if cli_args.inputs[-1] != '/':
-                paths = glob.glob(cli_args.inputs + '/*')
+                paths = glob.glob(cli_args.inputs + '/*.xml')
             else:
-                paths = glob.glob(cli_args.inputs + '*')
+                paths = glob.glob(cli_args.inputs + '*.xml')
         elif os.path.isfile(cli_args.inputs):
             paths = [cli_args.inputs]
         else:
             print 'Please enter a valid directory or file of source texts.'
             sys.exit()
 
-        do_coding(paths, cli_args.output)
+        print '\n\n'
+
+        run(paths, cli_args.output, cli_args.parsed)
 
         print "Coding time:", time.time() - start_time
         # note that this will be removed if there are no errors
@@ -3035,13 +3006,42 @@ def main():
     print "Finished"
 
 
-def _get_data(dir_path, path):
-    """Private function to get the absolute path to the installed files."""
-    cwd = os.path.abspath(os.path.dirname(__file__))
-    joined = os.path.join(dir_path, path)
-    out_dir = os.path.join(cwd, joined)
-    print out_dir
-    return out_dir
+def read_dictionaries():
+        # need to allow this to be set in the config file or command line
+        PETRwriter.open_ErrorFile()
+        print 'Verb dictionary:', PETRglobals.VerbFileName
+        verb_path = utilities._get_data('data/dictionaries',
+                                        PETRglobals.VerbFileName)
+        PETRreader.read_verb_dictionary(verb_path)
+
+        print 'Actor dictionaries:', PETRglobals.ActorFileList
+        for actdict in PETRglobals.ActorFileList:
+            actor_path = utilities._get_data('data/dictionaries', actdict)
+            PETRreader.read_actor_dictionary(actor_path)
+
+        print 'Agent dictionary:', PETRglobals.AgentFileName
+        agent_path = utilities._get_data('data/dictionaries',
+                                         PETRglobals.AgentFileName)
+        PETRreader.read_agent_dictionary(agent_path)
+
+        print 'Discard dictionary:', PETRglobals.DiscardFileName
+        discard_path = utilities._get_data('data/dictionaries',
+                                           PETRglobals.DiscardFileName)
+        PETRreader.read_discard_list(discard_path)
+
+        if PETRglobals.IssueFileName != "":
+            print 'Issues dictionary:', PETRglobals.IssueFileName
+            issue_path = utilities._get_data('data/dictionaries',
+                                             PETRglobals.IssueFileName)
+            PETRreader.read_issue_list(issue_path)
+
+
+def run(filepaths, out_file, s_parsed):
+    events = PETRreader.read_xml_input(filepaths, s_parsed)
+    if not s_parsed:
+        events = utilities.stanford_parse(events)
+    updated_events = do_coding(events, 'TEMP')
+    utilities.write_events(updated_events, out_file)
 
 
 if __name__ == '__main__':

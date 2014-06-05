@@ -4,9 +4,8 @@
 ##
 # CODE REPOSITORY: https://github.com/eventdata/PETRARCH
 ##
-# SYSTEM REQUIREMENTS
-# This program has been successfully run under Mac OS 10.6; it is standard Python 2.5
-# so it should also run in Unix or Windows.
+# SYSTEM REQUIREMENTS This program has been successfully run under Mac OS 10.6;
+# it is standard Python 2.5 so it should also run in Unix or Windows.
 ##
 # PROVENANCE:
 # Programmer: Philip A. Schrodt
@@ -27,9 +26,9 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
-# Global variables are listed below: additional details on their structure can be
-# found in various function definitions. The various options are described in more detail
-# in the config.ini file.
+# Global variables are listed below: additional details on their structure can
+# be found in various function definitions. The various options are described
+# in more detail in the config.ini file.
 
 VerbDict = {}  # verb dictionary
 ActorDict = {}  # actor dictionary
@@ -65,8 +64,8 @@ CodeBySentence = False
 PauseBySentence = False
 PauseByStory = False
 
-# COMMA OPTION : These adjust the length (in words) of comma-delimited clauses that are eliminated
-#         from the parse. To deactivate, set the max to zero.
+# COMMA OPTION : These adjust the length (in words) of comma-delimited clauses
+# that are eliminated from the parse. To deactivate, set the max to zero.
 #         Defaults, based on TABARI, are in ()
 #         comma_min :  internal clause minimum length [2]
 #         comma_max :  internal clause maximum length [8]
@@ -80,3 +79,5 @@ CommaBMin = 0
 CommaBMax = 0
 CommaEMin = 2
 CommaEMax = 8
+
+stanfordnlp = ''

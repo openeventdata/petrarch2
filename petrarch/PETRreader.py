@@ -27,12 +27,15 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
+import os
 import sys
 import math  # required for ordinal date calculations
+import xml.etree.ElementTree as ET
 from ConfigParser import ConfigParser
 
 import PETRglobals
 import PETRwriter   # uses the error reporting functions
+import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
@@ -103,6 +106,9 @@ def parse_Config(config_path):
         PETRglobals.DiscardFileName = parser.get(
             'Dictionaries',
             'discardfile_name')
+
+        direct = parser.get('StanfordNLP', 'stanford_dir')
+        PETRglobals.stanfordnlp = os.path.expanduser(direct)
 
         filestring = parser.get('Dictionaries', 'actorfile_list')
         PETRglobals.ActorFileList = filestring.split(', ')
@@ -1502,3 +1508,71 @@ def show_AgentDict(filename=''):
         for locword, loclist in PETRglobals.AgentDict.iteritems():
             print locword, "::"
             print loclist
+
+# ==== Input format reading
+
+
+def read_xml_input(filepaths, parsed=False):
+    holding = {}
+
+    for path in filepaths:
+        tree = ET.iterparse(path)
+
+        for event, elem in tree:
+            if event == "end" and elem.tag == "Sentence":
+                story = elem
+
+                #Check to make sure all the proper XML attributes are included
+                attribute_check = [key in story.attrib for key in
+                                   ['date', 'id', 'sentence']]
+                if not attribute_check:
+                    print 'Need to properly format your XML...'
+                    break
+
+                #If the XML contains StanfordNLP parsed data, pull that out
+                if parsed:
+                    parsed_content = story.find('Parse').text
+                    parsed_content = utilities._format_parsed_str(parsed_content)
+                else:
+                    parsed_content = ''
+
+                #Get the sentence information
+                if story.attrib['sentence'] == 'True':
+                    entry_id, sent_id = story.attrib['id'].split('_')
+
+                    text = story.find('Text').text
+                    text = text.replace('\n', '').replace('  ', '')
+                    sent_dict = {'content': text, 'parsed': parsed_content}
+                else:
+                    entry_id = story.attrib['id']
+
+                    text = story.find('Text').text
+                    text = text.replace('\n', '').replace('  ', '')
+                    #Create unique dicts for each
+
+                meta_content = {'date': story.attrib['date']}
+                content_dict = {'sents': {sent_id: sent_dict},
+                                'meta': meta_content}
+
+                if entry_id not in holding:
+                    holding[entry_id] = content_dict
+                else:
+                    holding[entry_id]['sents'][sent_id] = sent_dict
+
+                elem.clear()
+
+    return holding
+
+
+def read_pipeline_input(pipeline_list):
+    holding = {}
+    for entry in pipeline_list:
+        entry_id = entry['_id']
+        meta_content = {'date': entry['date'],
+                        'date_added': entry['date_added'],
+                        'source': entry['source'],
+                        'story_title': entry['title']}
+        content_dict = {'sentences': {}, 'meta': meta_content}
+        holding[entry_id] = content_dict
+
+    return holding

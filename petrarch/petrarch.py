@@ -1266,7 +1266,9 @@ def get_loccodes(thisloc):
     be processed with named-entity- resolution software to extend the
     dictionaries.
     """
-    global UpperSeq, LowerSeq, codelist
+    global UpperSeq, LowerSeq, codelist, StoryEventList
+
+    StoryEventList = []
 
     def add_code(neloc, isupperseq):
     # appends the code or phrase from UpperSeq/LowerSeq starting at neloc

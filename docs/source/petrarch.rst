@@ -1,42 +1,5 @@
-PETRARCH Package
-========================
+PETRARCH
+========
 
-:mod:`petrarch` Module
-----------------------
-                
-.. automodule:: petrarch
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`PETRglobals` Module
--------------------------
-
-.. automodule:: PETRglobals
-    :members:
-    :undoc-members:
-    :show-inheritance:
-        
-:mod:`PETRreader` Module
-------------------------
-        
-.. automodule:: PETRreader
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`PETRwriter` Module
-----------------------
-                
-.. automodule:: PETRwriter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`utilities` Module
------------------------
-                
-.. automodule:: utilities
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Some general notes about PETRARCH. Things like how the data is stored and
+processed internally. Some information about how to hook into the program, etc.

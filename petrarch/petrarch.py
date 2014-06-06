@@ -377,143 +377,13 @@ def evaluate_validation_record(item):
     return allokay
 
 
-def check_envirattr(line, stag, sattr):
-# checks whether line contains sattr and exits with error if not found.
-# this doesn't do anything with the attribute, just extracts the list and
-# checks for it
-    PETRreader.extract_attributes(line)
-    try:
-        PETRreader.get_attribute(sattr)
-    except MissingAttr:
-        print "Missing '" + sattr + "' field in " + stag + " line", ErrMsgExitValidation
-        sys.exit()
-
-
 def open_validation_file(xml_root):
     """
-def open_validation_file():
-
-1. Opens validation file TextFilename as FIN
-2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various
-validation options, then reads the dictionaries (exits if these are not set)
-3. Can raise MissingXML
-4. Can exit on EOFError, MissingAttr
-
-Validation File Format
-    Validation files are used for debugging and unit testing, combining the
-    contents of a project file and text file as well as providing information
-    on the correct coding for each record. \footnote{This approach is used
-    based on some decidedly aggravating experiences during the TABARI
-    development where the validation records and the required .verbs and
-    .actors files were not properly synchronized.}
-
-    Required elements in the <Environment> block
-            <Environment>
-                    <Verbfile name="<filename>">
-                    <Actorfile name="<filename>">  (there can only be one,
-                                                    unlike in the config file,
-                                                    which allows a list)
-                    <Agentfile name="<filename>">
-            </Environment>
-
-    Options elements in the <Environment> block
-            <Include categories="<space-delimited list of categories to include in test>">
-                    if 'valid' is included as a category, only records
-                    containing valid="true" in <SENTENCE> will be evaluated.
-            <Exclude categories="<space-delimited list of categories to exclude in test>">
-            [if a category is in both lists, the case is excluded. But please
-            don't do this]
-            <Pause value="<always, never>">
-                    Pause conditions:
-                            always  -- pause after every record
-                            never   -- never pause (errors are still recorded
-                                                    in file)
-                            stop    -- exit program on the default condition
-                                        [below]
-                            default -- pause only when EventCodes record
-                                        doesn't correspond to the generated
-                                        events or if there is no EventCodes
-                                        record
-
-    General record fields : all of these tags should occur on their own lines
-    <Sentence>...</Sentence>:
-            Delimits the record. The <Sentence...> tag can have the following
-            fields: date: date of the text in YYYYMMDD format. This is
-            required; if it is not present the record will be skipped
-
-              id : identification string in any format [optional] category:
-                  category in any format; this is used by the <Include> and
-                  <Exclude> options [optional]
-
-              place: code to be used for anonymous actors [optional]
-
-    </Text>...</Text>:
-            delimits the source text. This is used only for the display. The
-            tags should occur on their own lines
-    <Parse>...</Parse>
-            Delimits the TreeBank parse tree text: this used only for the
-            actual coding.
-
-    Required elements in each record: for validation, one or more of these
-    should occur prior to the TreeBank. If none are present, the record is
-    coded and the program pauses unless <Pause value = "never'> has been used.
-
-    <EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">
-    <EventCodes noevents = "True"> : indicates the record generates no events
-              (presently, system just looks for the presence of a 'noevents'
-              attribute) (This is also equivalent to no <EventCodes record, but
-              better to state this explicitly.)
-
-    Optional elements in record
-            <Skip>: skip this record without coding
-            <Stop>: stop coding and exit program
-            <Config option ="<config.ini option from list below>" value ="<value>">:
-                    Change values of PETR_config.ini globals.
-                    Currently works for: new_actor_length, require_dyad,
-                    stop_on_error, comma_*
-
-    Additional notes:
-    1. The validation file currently does not use a discard file.
-
-    === EXAMPLE ===
-
-    <Sentence date="19950101" id="DEMO-01" category="DEMO">
-            <!-- [Simple coding] -->
-            <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
-            <Text>
-            Arnor is about to restore full diplomatic ties with Gondor almost
-            five years after crowds trashed its embassy, a senior official
-            said on Saturday.
-            </Text>
-            <Parse>
-            (ROOT
-              (S
-                    (S
-                      (NP (NNP Arnor))
-                      (VP (VBZ is)
-                            (VP (IN about)
-                              (S
-                                    (VP (TO to)
-                                      (VP (VB restore)
-                                            (NP (JJ full) (JJ diplomatic) (NNS ties))
-                                            (PP (IN with)
-                                              (NP (NNP Gondor)))
-                                            (SBAR
-                                              (NP (RB almost) (CD five) (NNS years))
-                                              (IN after)
-                                              (S
-                                                    (NP (NNS crowds))
-                                                    (VP (VBD trashed)
-                                                      (NP (PRP$ its) (NN embassy)))))))))))
-                    (, ,)
-                    (NP (DT a) (JJ senior) (NN official))
-                    (VP (VBD said)
-                      (PP (IN on)
-                            (NP (NNP Saturday))))
-                    (. .)))
-            </Parse>
-            </Sentence>
-
+    1. Opens validation file TextFilename as FIN
+    2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various
+    validation options, then reads the dictionaries (exits if these are not set)
+    3. Can raise MissingXML
+    4. Can exit on EOFError, MissingAttr
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
     logger = logging.getLogger('petr_log')
@@ -1150,17 +1020,16 @@ def get_loccodes(thisloc):
     Returns the list of codes from a compound, or just a single code if not
     compound.
 
-    get_loccodes(thisloc): Extracting noun phrases which are not in the
-    dictionary: If no actor or agent generating a non-null code can be found
-    using the source/target rules, PETRARCH can output the noun phrase in
-    double-quotes. This is controled by the configuration file option
-    new_actor_length, which is set to an integer which gives the maximum length
-    for new actor phrases extracted. If this is set to zero [default], no
-    extraction is done andthe behavior is the same as TABARI. Setting this to a
-    large number will extract anything found in a (NP noun phrase, though
-    usually true actors contain a small number of words. These phrases can then
-    be processed with named-entity- resolution software to extend the
-    dictionaries.
+    Extracting noun phrases which are not in the dictionary: If no actor or
+    agent generating a non-null code can be found using the source/target
+    rules, PETRARCH can output the noun phrase in double-quotes. This is
+    controled by the configuration file option new_actor_length, which is set
+    to an integer which gives the maximum length for new actor phrases
+    extracted. If this is set to zero [default], no extraction is done andthe
+    behavior is the same as TABARI. Setting this to a large number will extract
+    anything found in a (NP noun phrase, though usually true actors contain a
+    small number of words. These phrases can then be processed with
+    named-entity- resolution software to extend the dictionaries.
     """
     global UpperSeq, LowerSeq, codelist, StoryEventList
 
@@ -1266,7 +1135,6 @@ def get_loccodes(thisloc):
 
 def find_source():
     """
-    def find_source():
     Assign SourceLoc to the first coded or compound (NE in the UpperSeq; if
     neither found then first (NE with --- code Note that we are going through
     the sentence in normal order, so we go through UpperSeq in reverse order.
@@ -1295,15 +1163,17 @@ def find_source():
 
 
 def find_target():
-# Assign TargetLoc
-    """ Priorities for assigning target:
-            1. first coded (NE in LowerSeq that does not have the same code as
-            SourceLoc; codes are not checked with either SourceLoc or the
-            candidate target are compounds (NEC
-            2. first null-coded (NE in LowerSeq ;
-            3. first coded (NE in UpperSeq -- that is, searching backwards from
-            the verb -- that does not have the same code as SourceLoc;
-            4. first null-coded (NE in UpperSeq
+    """
+    Assigns TargetLoc
+
+    Priorities for assigning target:
+        1. first coded (NE in LowerSeq that does not have the same code as
+        SourceLoc; codes are not checked with either SourceLoc or the
+        candidate target are compounds (NEC
+        2. first null-coded (NE in LowerSeq ;
+        3. first coded (NE in UpperSeq -- that is, searching backwards from
+        the verb -- that does not have the same code as SourceLoc;
+        4. first null-coded (NE in UpperSeq
     """
 
     global UpperSeq, LowerSeq, SourceLoc, TargetLoc
@@ -1648,10 +1518,11 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 
 
 def check_verbs():
-# Primary coding loop which looks for verbs, checks whether any of their
-# patterns match, then fills in the source and target if there has been a
-# match. Stores events in EventList.
     """
+    Primary coding loop which looks for verbs, checks whether any of their
+    patterns match, then fills in the source and target if there has been a
+    match. Stores events in EventList.
+
     Note: the "upper" sequence is the part before the verb -- that is, higher
     on the screen -- and the "lower" sequence is the part after the verb.
     Assuming, of course, that I've used these consistently.
@@ -1943,18 +1814,18 @@ def check_commas():
     """
     Removes comma-delimited clauses from ParseList.
 
-     check_commas() Note that the order here is to remove initial, remove
-     terminal, then remove intermediate. Initial and terminal remove are done
-     only once; the intermediate is iterated. In a sentence where the clauses
-     can in fact be removed without affecting the structure, the result will
-     still be balanced. If this is not the case, the routine raises a
-     Skip_Record rather than continuing with whatever mess is left.
+    Note that the order here is to remove initial, remove terminal, then remove
+    intermediate. Initial and terminal remove are done only once; the
+    intermediate is iterated. In a sentence where the clauses can in fact be
+    removed without affecting the structure, the result will still be balanced.
+    If this is not the case, the routine raises a Skip_Record rather than
+    continuing with whatever mess is left.
 
     Because this is working with ParseList, any commas inside (NP should
     already have had their tags removed as they were converted to (NE
 
-    This was a whole lot simpler in TABARI, but TABARI also made some
-    really weird matches following comma-clause deletion.
+    This was a whole lot simpler in TABARI, but TABARI also made some really
+    weird matches following comma-clause deletion.
     """
 
     def count_word(loclow, lochigh):
@@ -2168,11 +2039,13 @@ def assign_NEcodes():
         return kstart + len(newlist)
 
     def expand_compound_NEPhrase(kstart, kend):
-        # Expand the compound phrases inside an (NE: this replaces these with a
-        # list of NEs with the remaining text simply duplicated. Code and agent
-        # resolution will then be done on these phrases as usual. This will
-        # handle two separate (NECs, which is as deep as one generally
-        # encounters.
+        """
+        Expand the compound phrases inside an (NE: this replaces these with a
+        list of NEs with the remaining text simply duplicated. Code and agent
+        resolution will then be done on these phrases as usual. This will
+        handle two separate (NECs, which is as deep as one generally
+        encounters.
+        """
         global ParseList
     #	print 'exNEp0:', ParseList[kstart:kend]
         ncstart = ParseList.index('(NEC', kstart, kend)
@@ -2261,8 +2134,10 @@ def assign_NEcodes():
 
 
 def make_event_strings():
-# creates the set of event strings, handing compound actors and symmetric
-# events
+    """
+    Creates the set of event strings, handing compound actors and symmetric
+    events.
+    """
     global SentenceLoc, SentenceID
     global EventCode, SourceLoc, TargetLoc
     global CodedEvents
@@ -2365,9 +2240,11 @@ def make_event_strings():
 
 
 def reset_event_list(firstentry=False):
-# set the event list and story globals for the current story or just intialize
-# if firstentry probably should replace the magic numbers -6:-3 here and in
-# do_coding
+    """
+    Set the event list and story globals for the current story or just
+    intialize if firstentry probably should replace the magic numbers -6:-3
+    here and in do_coding.
+    """
     global SentenceDate, StoryDate, SentenceSource, StorySource
     global SentenceID, CurStoryID, SkipStory
     global StoryEventList, StoryIssues
@@ -2389,8 +2266,9 @@ def reset_event_list(firstentry=False):
 
 
 def extract_Sentence_info(item):
-    """ Extracts  various global fields from the <Sentence record
-    item is a dictionary of attributes generated from the XML input
+    """
+    Extracts various global fields from the <Sentence record
+    item is a dictionary of attributes generated from the XML input.
     """
 # can raise SkipRecord if date is missing
 
@@ -2542,8 +2420,9 @@ def check_discards():
 def get_issues():
     """
     Finds the issues in SentenceText, returns as a list of [code,count]
-    Current version  <14.02.28> stops coding and sets the issues to zero if it
-    finds *any* ignore phrase
+
+    <14.02.28> stops coding and sets the issues to zero if it finds *any*
+    ignore phrase
     """
     global SentenceText
 
@@ -2569,10 +2448,12 @@ def get_issues():
 
 
 def code_record():
-# code using ParseList read_TreeBank, then return results in StoryEventList
-# first element of StoryEventList for each sentence -- this signals the start
-# of a list events for a sentence -- followed by  lists containing
-# source/target/event triples
+    """
+    Code using ParseList read_TreeBank, then return results in StoryEventList
+    first element of StoryEventList for each sentence -- this signals the start
+    of a list events for a sentence -- followed by lists containing
+    source/target/event triples.
+    """
     global CodedEvents
     global ParseList
     global SentenceID
@@ -2604,49 +2485,6 @@ def code_record():
 #	if len(raw_input("Press Enter to continue...")) > 0: sys.exit()
 
 
-def write_events():
-    """
-    Check for duplicates in the article_list, then write the records in PETR
-    format
-    <14.02.28>: Duplicate checking currently not implemented
-    <14.02.28>: Currently set to code only events with identified national
-    actors
-    """
-    global StoryDate, StorySource, SentenceID, StoryEventList, fevt
-    global NEvents
-    global StoryIssues
-
-    if len(StoryEventList) == 0:
-        return
-#	print "we: Mk0", StoryEventList
-    for eventlist in StoryEventList:
-#		print "we: Mk1", eventlist
-        if len(eventlist) == 1:  # signals new sentence id
-            sent_id = eventlist[0]
-        else:  # write the event
-            # do not print unresolved agents
-            if eventlist[0][0] != '-' and eventlist[1][0] != '-':
-                print 'Event:', StoryDate + '\t' + eventlist[0] + '\t' + eventlist[1] + '\t' + eventlist[2] + '\t' + sent_id + '\t' + StorySource
-                if PETRglobals.IssueFileName != "" and len(StoryIssues[sent_id[-2:]]) > 0:
-                    print '       Issues:', StoryIssues[sent_id[-2:]]
-                fevt.write(
-                    SentenceDate + '\t' + eventlist[0] + '\t' + eventlist[1] + '\t' + eventlist[2])
-
-                if PETRglobals.IssueFileName != "":
-                    fevt.write('\t')
-                    ka = 0
-                    while ka < len(StoryIssues[sent_id[-2:]]):
-                        # output code and count
-                        fevt.write(
-                            StoryIssues[sent_id[-2:]][ka][0] + ' ' + str(StoryIssues[sent_id[-2:]][ka][1]))
-                        if ka < len(StoryIssues[sent_id[-2:]]) - 1:
-                            fevt.write(', ')
-                        ka += 1
-
-                fevt.write('\t' + sent_id + '\t' + StorySource + '\n')
-                NEvents += 1
-
-
 def make_fake_events():
 # just for debugging, but you probably always guessed that
     global SentenceID, StoryEventList
@@ -2661,7 +2499,6 @@ def do_validation(filepath):
     """ Coding using a validation file. """
     global NParseErrors
 
-    start_time = time.time()
     nvalid = 0
 
     tree = ET.parse(filepath)
@@ -2907,7 +2744,6 @@ def main():
 
 
 def read_dictionaries():
-        # need to allow this to be set in the config file or command line
         print 'Verb dictionary:', PETRglobals.VerbFileName
         verb_path = utilities._get_data('data/dictionaries',
                                         PETRglobals.VerbFileName)
@@ -2946,7 +2782,6 @@ def run(filepaths, out_file, s_parsed):
 def run_pipeline(data, out_file=None, write_output=True):
     PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
     utilities.init_logger('PETRARCH.log')
-    logger = logging.getLogger('petr_log')
 
     read_dictionaries()
 

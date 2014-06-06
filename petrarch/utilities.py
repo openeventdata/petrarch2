@@ -1,6 +1,6 @@
 import os
+import logging
 import corenlp
-import utilities
 import PETRglobals
 import dateutil.parser
 
@@ -20,7 +20,7 @@ def stanford_parse(event_dict):
                 sent_dict['coref'] = stanford_result['coref']
 
             #TODO: To go backwards you'd do str.replace(' ) ', ')')
-            sent_dict['parsed'] = utilities._format_parsed_str(s_parsetree)
+            sent_dict['parsed'] = _format_parsed_str(s_parsetree)
 
     print 'Done with StanfordNLP parse...\n\n'
 
@@ -156,3 +156,19 @@ def _get_config(config_name):
     cwd = os.path.abspath(os.path.dirname(__file__))
     out_dir = os.path.join(cwd, '..', config_name)
     return out_dir
+
+
+def init_logger(logger_filename):
+
+    logger = logging.getLogger('petr_log')
+    logger.setLevel(logging.INFO)
+
+    cwd = os.getcwd()
+    logger_filepath = os.path.join(cwd, logger_filename)
+
+    fh = logging.FileHandler(logger_filepath, 'w')
+    formatter = logging.Formatter('%(levelname)s %(asctime)s: %(message)s')
+    fh.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.info('Running')

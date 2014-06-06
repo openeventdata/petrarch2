@@ -2,12 +2,12 @@ import os
 import sys
 import glob
 import time
+import logging
 import argparse
 import xml.etree.ElementTree as ET
 
 import PETRglobals  # global variables
 import PETRreader  # input routines
-import PETRwriter  # output routines
 import utilities
 
 
@@ -110,7 +110,7 @@ def raise_parsing_error(call_location_string):
 # we've hit something unexpected.
     global SentenceID, NParseErrors, DoValidation
     errorstring = 'Parsing error in ' + call_location_string
-    PETRwriter.write_record_error(errorstring, SentenceID)
+    logger.warning('{}{}'.format(errorstring, SentenceID))
 #	print errorstring
     if not DoValidation:
         NParseErrors += 1
@@ -199,8 +199,7 @@ def change_Config_Options(line):
         try:
             PETRglobals.NewActorLength = int(value)
         except ValueError:
-            PETRwriter.write_FIN_error(
-                "<Config>: new_actor_length value must be an integer; command ignored")
+            logger.warning("<Config>: new_actor_length must be an integer; command ignored")
     elif theoption == 'require_dyad':
         PETRglobals.RequireDyad = not 'false' in value.lower()
     elif theoption == 'stop_on_error':
@@ -209,8 +208,7 @@ def change_Config_Options(line):
         try:
             cval = int(value)
         except ValueError:
-            PETRwriter.write_FIN_error(
-                "<Config>: comma_* value must be an integer; command ignored")
+            logger.warning("<Config>: comma_* value must be an integer; command ignored")
             return
         if '_min' in theoption:
             PETRglobals.CommaMin = cval
@@ -225,12 +223,11 @@ def change_Config_Options(line):
         elif '_emax' in theoption:
             PETRglobals.CommaEMax = cval
         else:
-            PETRwriter.write_FIN_error(
-                "<Config>: unrecognized option beginning with comma_; command ignored")
+            logger.warning("<Config>: unrecognized option beginning with comma_; command ignored")
     # insert further options here in elif clauses as this develops; also
     # update the docs in open_validation_file():
     else:
-        PETRwriter.write_FIN_error("<Config>: unrecognized option")
+        logger.warning("<Config>: unrecognized option")
 
 
 def extract_EventCoding_info(codings):
@@ -310,12 +307,9 @@ def evaluate_validation_record(item):
     try:
         read_TreeBank()
     except UnbalancedTree:
-        PETRwriter.write_record_error(
-            ErrMsgUnbalancedTree,
-            SentenceID,
-            SentenceCat)
-    #TODO: maybe?
-    #break
+        warning_str = '{}: {} {}'.format(ErrMsgUnbalancedTree, SentenceID,
+                                         SentenceCat)
+        logger.warning(warning_str)
 
     print '\nSentence:', SentenceID, '[', SentenceCat, ']'
     print SentenceText
@@ -522,6 +516,7 @@ Validation File Format
 
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
+    logger = logging.getLogger('petr_log')
 
     environment = xml_root.find('Environment')
     if environment is None:
@@ -529,7 +524,7 @@ Validation File Format
         print 'Exiting program.'
         sys.exit()
 
-    ValidInclude, ValidExclude, ValidPause, gotErrorfile, ValidOnly = _check_envr(environment)
+    ValidInclude, ValidExclude, ValidPause, ValidOnly = _check_envr(environment)
 
     check1 = [len(PETRglobals.VerbFileName) == 0,
               len(PETRglobals.ActorFileList) == 0,
@@ -538,22 +533,14 @@ Validation File Format
         print "Missing <Verbfile>, <AgentFile> or <ActorFile> in validation file <Environment> block", ErrMsgExitValidation
         sys.exit()
 
-    if not gotErrorfile:
-        PETRwriter.open_ErrorFile()
-    PETRwriter.write_ErrorFile('Validation file: ' +
-                               PETRglobals.TextFileList[0] + '\nVerbs file: ' +
-                               PETRglobals.VerbFileName + '\nActors file: ' +
-                               PETRglobals.ActorFileList[0] + '\n' +
-                               '\nAgents file: ' + PETRglobals.AgentFileName +
-                               '\n')
+    logger.info('Validation file: ' + PETRglobals.TextFileList[0] +
+                '\nVerbs file: ' + PETRglobals.VerbFileName +
+                '\nActors file: ' + PETRglobals.ActorFileList[0] + '\n' +
+                '\nAgents file: ' + PETRglobals.AgentFileName + '\n')
     if len(ValidInclude):
-        PETRwriter.write_ErrorFile(
-            'Include list: ' + ', '.join(ValidInclude) + '\n')
+        logger.info('Include list: ' + ', '.join(ValidInclude) + '\n')
     if len(ValidExclude):
-        PETRwriter.write_ErrorFile(
-            'Exclude list: ' + ', '.join(ValidExclude) + '\n')
-    PETRwriter.write_ErrorFile('\n')
-    PETRwriter.ErrorN += 0
+        logger.info('Exclude list: ' + ', '.join(ValidExclude) + '\n')
 
     print 'Verb dictionary:', PETRglobals.VerbFileName
     verb_path = utilities._get_data('data/dictionaries',
@@ -583,10 +570,7 @@ def _check_envr(environ):
             PETRglobals.AgentFileName = elem.text
 
         if elem.tag == 'Errorfile':
-            PETRwriter.open_ErrorFile(
-                elem.text,
-                PETRreader.check_attribute('unique'))
-            gotErrorfile = True
+            print 'This is deprecated. Defaulting to a different errorfile.'
 
         if elem.tag == 'Include':
             ValidInclude = elem.text.split()
@@ -614,7 +598,7 @@ def _check_envr(environ):
             else:
                 ValidPause = 0
 
-    return ValidInclude, ValidExclude, ValidPause, gotErrorfile, ValidOnly
+    return ValidInclude, ValidExclude, ValidPause, ValidOnly
 
 # ================== TEXTFILE INPUT ================== #
 
@@ -2334,9 +2318,7 @@ def make_event_strings():
         # <14.02.27> This is here temporarily (ha!) to just get this thing to
         # handle timing tests (and in the presence of some known bugs): this
         # should not be a persistent issue. Really
-        PETRwriter.write_record_error(
-            'Empty codes in make_event_strings()',
-            SentenceID)
+        logger.warning('Empty codes in make_event_strings(): {}'.format(SentenceID))
         return
 
     if ':' in EventCode:  # symmetric event
@@ -2428,7 +2410,7 @@ def extract_Sentence_info(item):
         SentenceDate = item['date']
         SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
     else:
-        PETRwriter.write_FIN_error(ErrMsgMissingDate)
+        logger.warning(ErrMsgMissingDate)
         raise SkipRecord
 
 
@@ -2500,10 +2482,9 @@ def read_record():
             # without the 'break', this will just skip processing the record
             # and go to the next one
             except UnbalancedTree:
-                PETRwriter.write_record_error(
-                    ErrMsgUnbalancedTree,
-                    SentenceID,
-                    SentenceCat)
+                logger.warning('{}: {} {}'.format(ErrMsgUnbalancedTree,
+                                                  SentenceID,
+                                                  SentenceCat))
             except EOFError:
                 raise
 
@@ -2881,6 +2862,8 @@ PETRARCH
 
 def main():
     cli_args = parse_cli_args()
+    utilities.init_logger('PETRARCH.log')
+    logger = logging.getLogger('petr_log')
 
     PETRglobals.RunTimeString = time.asctime()
 
@@ -2919,15 +2902,12 @@ def main():
         run(paths, cli_args.output, cli_args.parsed)
 
         print "Coding time:", time.time() - start_time
-        # note that this will be removed if there are no errors
-        PETRwriter.close_ErrorFile()
 
     print "Finished"
 
 
 def read_dictionaries():
         # need to allow this to be set in the config file or command line
-        PETRwriter.open_ErrorFile()
         print 'Verb dictionary:', PETRglobals.VerbFileName
         verb_path = utilities._get_data('data/dictionaries',
                                         PETRglobals.VerbFileName)
@@ -2965,6 +2945,9 @@ def run(filepaths, out_file, s_parsed):
 
 def run_pipeline(data, out_file=None, write_output=True):
     PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
+    utilities.init_logger('PETRARCH.log')
+    logger = logging.getLogger('petr_log')
+
     read_dictionaries()
 
     events = PETRreader.read_pipeline_input(data)

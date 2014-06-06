@@ -2929,7 +2929,7 @@ def parse_cli_args():
 PETRARCH
 (https://openeventdata.github.io/) (v. 0.01)
     """
-    aparse = argparse.ArgumentParser(prog='PETRARCH',
+    aparse = argparse.ArgumentParser(prog='petrarch',
                                      description=__description__)
 
     sub_parse = aparse.add_subparsers(dest='command_name')
@@ -2971,7 +2971,7 @@ def main():
     PETRglobals.RunTimeString = time.asctime()
 
     if cli_args.command_name == 'validate':
-        PETRreader.parse_Config('../PETR_config.ini')
+        PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
         if not cli_args.inputs:
             validation_file = utilities._get_data('data/text',
                                                   'PETR.UnitTest.records.xml')
@@ -2985,7 +2985,7 @@ def main():
         if cli_args.config:
             PETRreader.parse_Config(cli_args.config)
         else:
-            PETRreader.parse_Config('../PETR_config.ini')
+            PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
 
         read_dictionaries()
 
@@ -3050,7 +3050,7 @@ def run(filepaths, out_file, s_parsed):
 
 
 def run_pipeline(data, out_file=None, write_output=True):
-    PETRreader.parse_Config('../PETR_config.ini')
+    PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
     read_dictionaries()
 
     events = PETRreader.read_pipeline_input(data)

@@ -150,3 +150,9 @@ def _get_data(dir_path, path):
     joined = os.path.join(dir_path, path)
     out_dir = os.path.join(cwd, joined)
     return out_dir
+
+
+def _get_config(config_name):
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    out_dir = os.path.join(cwd, '..', config_name)
+    return out_dir

@@ -26,7 +26,7 @@ PETRARCH Package
     :show-inheritance:
 
 :mod:`PETRwriter` Module
-----------------------
+------------------------
                 
 .. automodule:: PETRwriter
     :members:

@@ -1,10 +1,10 @@
 Some Notes
 ==========
 
-Notes pulled from the head of `petrarch.py`.
+Notes pulled from the head of `petrarch.py` and some other places.
 
 
-Status of the program 12-may-2014
+Status of the program 12-May-2014
 ---------------------------------
 
 This now has most of the functionality of TABARI except for the following:
@@ -116,6 +116,22 @@ since the TreeBank format is standard across many languages. It will still be
 necessary to adjust for some of the phrase and word-ordering rules, but because
 of the complete markup, and the fact that the system works *only* with this
 markup, modification for other languages should be easier.
+
+Compatibilities with TABARI dictionaries
+----------------------------------------
+
+PETRARCH has a much richer dictionary syntax than TABARI, which will eventually
+accommodate the WordNet-enhanced dictionaries developed at Penn State as well
+as reducing the level of redundancy in the existing dictionaries. While the
+initial version of the program could use existing TABARI dictionaries, this
+compatibility will decline with further developments and only the
+PETRARCH-specific dictionaries can be used
+
+15-Nov-2013: Requires TABARI 0.8 indented date restrictions, not older in-line format
+
+23-Apr-2014: PETRARCH-formatted agents dictionary required
+
+12-May-2014: Disjunctive phrases no longer recognized in the .verbs dictionary
 
 
 Notes for the manual

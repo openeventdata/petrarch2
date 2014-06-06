@@ -18,10 +18,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-    current.rst
-    petrarch.rst
-    modules.rst
-    inputs.rst
+   current.rst
+   petrarch.rst
+   modules.rst
+   inputs.rst
 
 
 

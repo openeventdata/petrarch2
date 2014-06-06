@@ -19,9 +19,12 @@ change moving forward. Seriously, install in a virtual environment.
 To install (you're in a virtual environment, right?):
 
 1) Clone the repo
+
   - For example, download the zip file into ``~/Downloads``.
   - This will put the repo into something like ``~/Downloads/petrarch``.
+
 2) Run ``pip install -e ~/Downloads/petrarch``
+
 
 This will install the program with a command-line hook. You can now run the program using:
 
@@ -30,6 +33,14 @@ This will install the program with a command-line hook. You can now run the prog
 You can get more information using:
 
 ``petrarch -h``
+
+**StanfordNLP:**
+
+If you plan on using StanfordNLP for parsing within the program you will also
+need to download that program. PETRARCH uses StanfordNLP 3.2.0, which can be
+obtained from `Stanford <http://www-nlp.stanford.edu/software/stanford-corenlp-full-2013-06-20.zip>`_. 
+PETRARCH's default configuration file assumes that this is unzipped and located
+in the user's home directory in a directory named ``stanford-corenlp/``, e.g., ``~/stanford-corenlp``.
 
 The program is stable enough that it is probably useable. The main thing that's
 going to change are the underlying dictionaries and some organization of the
@@ -48,6 +59,10 @@ If not installed:
 
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.
+
+When you run the program, a ``PETRARCH.log`` file will be opened in the current
+working directory. This file will contain general information, e.g., which
+files are being opened, and error messages.
 
 Unit tests
 ----------
@@ -74,6 +89,7 @@ The final record should read
     Exiting: <Stop> record 
 
 Contents:
+---------
 
 .. toctree::
    :maxdepth: 2

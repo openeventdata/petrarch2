@@ -1,7 +1,11 @@
 from distutils.core import setup
 
+with open('requirements.txt', 'r') as f:
+    required = f.read().splitlines()
+
 setup(
-    name='PETRARCH',
+    name='petrarch',
+    install_requires=required,
     entry_points={
         'console_scripts': ['petrarch = petrarch.petrarch:main']},
     version='0.01a',

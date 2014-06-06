@@ -377,18 +377,6 @@ def evaluate_validation_record(item):
     return allokay
 
 
-def check_envirattr(line, stag, sattr):
-# checks whether line contains sattr and exits with error if not found.
-# this doesn't do anything with the attribute, just extracts the list and
-# checks for it
-    PETRreader.extract_attributes(line)
-    try:
-        PETRreader.get_attribute(sattr)
-    except MissingAttr:
-        print "Missing '" + sattr + "' field in " + stag + " line", ErrMsgExitValidation
-        sys.exit()
-
-
 def open_validation_file(xml_root):
     """
     1. Opens validation file TextFilename as FIN
@@ -2497,49 +2485,6 @@ def code_record():
 #	if len(raw_input("Press Enter to continue...")) > 0: sys.exit()
 
 
-#def write_events():
-#    """
-#    Check for duplicates in the article_list, then write the records in PETR
-#    format
-#    <14.02.28>: Duplicate checking currently not implemented
-#    <14.02.28>: Currently set to code only events with identified national
-#    actors
-#    """
-#    global StoryDate, StorySource, SentenceID, StoryEventList, fevt
-#    global NEvents
-#    global StoryIssues
-#
-#    if len(StoryEventList) == 0:
-#        return
-##	print "we: Mk0", StoryEventList
-#    for eventlist in StoryEventList:
-##		print "we: Mk1", eventlist
-#        if len(eventlist) == 1:  # signals new sentence id
-#            sent_id = eventlist[0]
-#        else:  # write the event
-#            # do not print unresolved agents
-#            if eventlist[0][0] != '-' and eventlist[1][0] != '-':
-#                print 'Event:', StoryDate + '\t' + eventlist[0] + '\t' + eventlist[1] + '\t' + eventlist[2] + '\t' + sent_id + '\t' + StorySource
-#                if PETRglobals.IssueFileName != "" and len(StoryIssues[sent_id[-2:]]) > 0:
-#                    print '       Issues:', StoryIssues[sent_id[-2:]]
-#                fevt.write(
-#                    SentenceDate + '\t' + eventlist[0] + '\t' + eventlist[1] + '\t' + eventlist[2])
-#
-#                if PETRglobals.IssueFileName != "":
-#                    fevt.write('\t')
-#                    ka = 0
-#                    while ka < len(StoryIssues[sent_id[-2:]]):
-#                        # output code and count
-#                        fevt.write(
-#                            StoryIssues[sent_id[-2:]][ka][0] + ' ' + str(StoryIssues[sent_id[-2:]][ka][1]))
-#                        if ka < len(StoryIssues[sent_id[-2:]]) - 1:
-#                            fevt.write(', ')
-#                        ka += 1
-#
-#                fevt.write('\t' + sent_id + '\t' + StorySource + '\n')
-#                NEvents += 1
-
-
 def make_fake_events():
 # just for debugging, but you probably always guessed that
     global SentenceID, StoryEventList
@@ -2554,7 +2499,6 @@ def do_validation(filepath):
     """ Coding using a validation file. """
     global NParseErrors
 
-    start_time = time.time()
     nvalid = 0
 
     tree = ET.parse(filepath)
@@ -2800,7 +2744,6 @@ def main():
 
 
 def read_dictionaries():
-        # need to allow this to be set in the config file or command line
         print 'Verb dictionary:', PETRglobals.VerbFileName
         verb_path = utilities._get_data('data/dictionaries',
                                         PETRglobals.VerbFileName)
@@ -2839,7 +2782,6 @@ def run(filepaths, out_file, s_parsed):
 def run_pipeline(data, out_file=None, write_output=True):
     PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
     utilities.init_logger('PETRARCH.log')
-    logger = logging.getLogger('petr_log')
 
     read_dictionaries()
 

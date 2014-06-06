@@ -4,7 +4,7 @@ Some Notes
 Notes pulled from the head of `petrarch.py`.
 
 
-STATUS OF THE PROGRAM 12-MAY-2014
+Status of the program 12-may-2014
 ---------------------------------
 
 This now has most of the functionality of TABARI except for the following:
@@ -50,7 +50,7 @@ dictionary.
 
 
 
-DIFFERENCES FROM TABARI
+Differences from TABARI
 -----------------------
 
 [which will be of little interest unless you are one of the fifty or so people
@@ -118,7 +118,7 @@ of the complete markup, and the fact that the system works *only* with this
 markup, modification for other languages should be easier.
 
 
-NOTES FOR THE MANUAL
+Notes for the manual
 --------------------
 
 1. There are an assortment of comments that contain the string '???' which

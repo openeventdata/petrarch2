@@ -20,8 +20,8 @@ Contents:
 
    current.rst
    petrarch.rst
-   modules.rst
    inputs.rst
+   modules.rst
 
 
 

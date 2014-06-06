@@ -1531,6 +1531,7 @@ def read_xml_input(filepaths, parsed=False):
                     break
 
                 #If the XML contains StanfordNLP parsed data, pull that out
+                #TODO: what to do about parsed content at the story level, i.e., multiple parsed sentences within the XML entry?
                 if parsed:
                     parsed_content = story.find('Parse').text
                     parsed_content = utilities._format_parsed_str(parsed_content)
@@ -1544,16 +1545,24 @@ def read_xml_input(filepaths, parsed=False):
                     text = story.find('Text').text
                     text = text.replace('\n', '').replace('  ', '')
                     sent_dict = {'content': text, 'parsed': parsed_content}
+                    meta_content = {'date': story.attrib['date']}
+                    content_dict = {'sents': {sent_id: sent_dict},
+                                    'meta': meta_content}
                 else:
                     entry_id = story.attrib['id']
 
                     text = story.find('Text').text
                     text = text.replace('\n', '').replace('  ', '')
-                    #Create unique dicts for each
+                    split_sents = _sentence_segmenter(text)
+                    #TODO Make the number of sents a setting
+                    sent_dict = {}
+                    for i, sent in enumerate(split_sents[:7]):
+                        sent_dict[i] = {'content': sent, 'parsed': parsed_content}
 
-                meta_content = {'date': story.attrib['date']}
-                content_dict = {'sents': {sent_id: sent_dict},
-                                'meta': meta_content}
+                    meta_content = {'date': story.attrib['date']}
+                    content_dict = {'sents': sent_dict, 'meta': meta_content}
+
+
 
                 if entry_id not in holding:
                     holding[entry_id] = content_dict

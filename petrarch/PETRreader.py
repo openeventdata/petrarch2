@@ -31,11 +31,11 @@ import re
 import os
 import sys
 import math  # required for ordinal date calculations
+import logging
 import xml.etree.ElementTree as ET
 from ConfigParser import ConfigParser
 
 import PETRglobals
-import PETRwriter   # uses the error reporting functions
 import utilities
 
 """
@@ -458,10 +458,8 @@ def read_discard_list(discard_path):
     BATSMEN  # MleH 12 Jul 2009
     """
 
-    PETRwriter.write_ErrorFile(
-        "Reading " +
-        PETRglobals.DiscardFileName +
-        "\n")  # assumes this is already open
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.DiscardFileName)
     open_FIN(discard_path, "discard")
 
     line = read_FIN_line()
@@ -542,11 +540,8 @@ def read_issue_list(issue_path):
     </ISSUE>
 
     """
-
-    PETRwriter.write_ErrorFile(
-        "Reading " +
-        PETRglobals.IssueFileName +
-        "\n")  # assumes this is already open
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.IssueFileName)
     open_FIN(issue_path, "issues")
 
     PETRglobals.IssueCodes.append('~')  # initialize the ignore codes
@@ -746,8 +741,8 @@ def read_verb_dictionary(verb_path):
         while ka < len(phlist):
             if len(phlist[ka]) > 0:
                 if (phlist[ka][0] == '&') and (phlist[ka] not in PETRglobals.VerbDict):
-                    PETRwriter.write_FIN_error(
-                        "Synset " + phlist[ka] + " has not been defined; pattern skipped")
+                    logger.warning("Synset " + phlist[ka] +
+                                   " has not been defined; pattern skipped")
                     raise ValueError  # this will do...
             ka += 2
         return phlist
@@ -779,7 +774,8 @@ def read_verb_dictionary(verb_path):
         PETRglobals.VerbDict[vscr] = [False, theverb]
 
     # note that this will be ignored if there are no errors
-    PETRwriter.write_ErrorFile("Reading " + PETRglobals.VerbFileName + "\n")
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.VerbFileName)
     open_FIN(verb_path, "verb")
 
     theverb = ''
@@ -1108,7 +1104,8 @@ def read_actor_dictionary(actorfile):
 
     dateerrorstr = "String in date restriction could not be interpreted; line skipped"
 
-    PETRwriter.write_ErrorFile("Reading " + actorfile + "\n")
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + actorfile)
     open_FIN(actorfile, "actor")
 
     # location where codes for current actor will be stored
@@ -1125,8 +1122,7 @@ def read_actor_dictionary(actorfile):
             try:
                 brack = line.index('[')
             except ValueError:
-# PETRwriter.write_FIN_error('Mk1'+dateerrorstr) 	# debug
-                PETRwriter.write_FIN_error(dateerrorstr)
+                logger.warning(dateerrorstr)
                 line = read_FIN_line()
                 continue
             part = line[brack + 1:].strip().partition(' ')
@@ -1146,7 +1142,7 @@ def read_actor_dictionary(actorfile):
                 try:
                     ord = dstr_to_ordate(rest[ka:kb])
                 except DateError:
-                    PETRwriter.write_FIN_error(dateerrorstr)
+                    logger.warning(dateerrorstr)
                     line = read_FIN_line()
                     continue
 
@@ -1163,13 +1159,11 @@ def read_actor_dictionary(actorfile):
                     pt2 = part2[0].strip()
                     ord2 = dstr_to_ordate(pt2)
                 except DateError:
-                    PETRwriter.write_FIN_error(dateerrorstr)
-#					PETRwriter.write_FIN_error('Mk3: -'+ pt0 + '- -' + pt2 + '-' )
+                    logger.warning(dateerrorstr)
                     line = read_FIN_line()
                     continue
                 if ord2 < ord1:
-                    PETRwriter.write_FIN_error(
-                        "End date in interval date restriction is less than starting date; line skipped")
+                    logger.warning("End date in interval date restriction is less than starting date; line skipped")
                     line = read_FIN_line()
                     continue
                 curlist.append([2, ord1, ord2, code])
@@ -1394,7 +1388,7 @@ def read_agent_dictionary(agent_path):
     def define_marker(line):
         global subdict
         if line[line.find('!') + 1:].find('!') < 0 or line[line.find('!'):].find('=') < 0:
-            PETRwriter.write_FIN_error(markdeferrorstr + enderrorstr)
+            logger.warning(markdeferrorstr + enderrorstr)
             return
         ka = line.find('!') + 1
         marker = line[ka:line.find('!', ka)]
@@ -1409,24 +1403,15 @@ def read_agent_dictionary(agent_path):
         global subdict
         if agent[agent.find('!') + 1:].find('!') < 0:
             ka = agent.find('!')
-            PETRwriter.write_FIN_error(
-                "Substitution marker \"" +
-                agent[
-                    ka:agent.find(
-                        ' ',
-                        ka) +
-                    1] +
-                "\" syntax incorrect" +
-                enderrorstr)
+            logger.warning("Substitution marker \"" +
+                           agent[ka:agent.find(' ', ka) + 1] +
+                           "\" syntax incorrect" + enderrorstr)
             return
         part = agent.partition('!')
         part2 = part[2].partition('!')
         if part2[0] not in subdict:
-            PETRwriter.write_FIN_error(
-                "Substitution marker !" +
-                part2[
-                    0] +
-                "! missing in .agents file; line skipped")
+            logger.warning("Substitution marker !" + part2[0] +
+                           "! missing in .agents file; line skipped")
             return
         for subst in subdict[part2[0]]:
 #			print part[0]+subst+part2[2]
@@ -1442,7 +1427,8 @@ def read_agent_dictionary(agent_path):
     subdict = {}  # substitution set dictionary
 
     # note that this will be ignored if there are no errors
-    PETRwriter.write_ErrorFile("Reading " + PETRglobals.AgentFileName + "\n")
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.AgentFileName + "\n")
     open_FIN(agent_path, "agent")
 
     line = read_FIN_line()
@@ -1454,7 +1440,7 @@ def read_agent_dictionary(agent_path):
             continue
 
         if '[' not in line:  # code specified?
-            PETRwriter.write_FIN_error(codeerrorstr + enderrorstr)
+            logger.warning(codeerrorstr + enderrorstr)
             line = read_FIN_line()
             continue
 
@@ -1465,7 +1451,7 @@ def read_agent_dictionary(agent_path):
             store_marker(agent, code)  # handle a substitution marker
         elif '{' in part[0]:
             if '}' not in part[0]:
-                PETRwriter.write_FIN_error(brackerrorstr + enderrorstr)
+                logger.warning(brackerrorstr + enderrorstr)
                 line = read_FIN_line()
                 continue
             agent = part[0][:part[0].find('{')].strip() + ' '

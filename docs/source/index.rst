@@ -6,8 +6,10 @@
 Welcome to PETRARCH's documentation!
 ====================================
 
-This is a very rough dump of some notes from the code. Nothing to see here.
-Move along. These are not the drones you're looking for. Etc. Etc.
+The Python Engine for Text Resolution And Related
+Coding Hierarchy (PETRARCH) coder is the next-generation successor to the
+`TABARI <http://eventdata.parusanalytics.com/software.dir/tabari.html>`_ event-data coding software. More information about the differences
+between PETRARCH and TABARI can be found on the `Notes <current.html>`_ page.
 
 Installing
 ----------

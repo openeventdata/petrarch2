@@ -42,7 +42,8 @@ You can get more information using:
 
 If you plan on using StanfordNLP for parsing within the program you will also
 need to download that program. PETRARCH uses StanfordNLP 3.2.0, which can be
-obtained from `Stanford <http://www-nlp.stanford.edu/software/stanford-corenlp-full-2013-06-20.zip>`_. 
+obtained from
+[Stanford](http://www-nlp.stanford.edu/software/stanford-corenlp-full-2013-06-20.zip). 
 PETRARCH's default configuration file assumes that this is unzipped and located
 in the user's home directory in a directory named ``stanford-corenlp/``, e.g., ``~/stanford-corenlp``.
 
@@ -80,8 +81,6 @@ program. Alternative files can be indicated using the ``-i`` option. For example
 ``petrarch validate -i data/text/PETR.UnitTest.records.xml``
 
 The final record should read
-
-::
 
     Sentence: FINAL-RECORD [ DEMO ]
     ALL OF THE UNIT TESTS WERE CODED CORRECTLY. 

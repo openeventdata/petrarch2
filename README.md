@@ -11,8 +11,8 @@ implemented and the CAMEO dictionary still uses the old TABARI-style stemming wh
 not work in PATRARCH, which is to say there are a *lot* of patterns that no longer work. 
 However, it now has almost all of the features of the TABARI coder.
 
-Documentation could also use a little work (really??) but is fairly complete, though 
-scattered in `"""..."""` blocks throughout the program.
+For more information, please visit the (work-in-progress)
+[documentation](http://petrarch.readthedocs.org/en/latest/#).
 
 ##Installing
 

@@ -3,15 +3,19 @@ import logging
 import corenlp
 import PETRglobals
 import dateutil.parser
+from collections import defaultdict, Counter
 
 
 def stanford_parse(event_dict):
+    logger = logging.getLogger('petr_log')
     #What is dead can never die...
-    print "\nSetting up StanfordNLP. The program isn't dead. Promise."
+    print "\nSetting up StanfordNLP. The program isn't dead. Promise.\n"
+    logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp)
     for key in event_dict:
         for sent in event_dict[key]['sents']:
             print 'StanfordNLP parsing {}_{}...'.format(key, sent)
+            logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
 
             stanford_result = core.raw_parse(sent_dict['content'])
@@ -23,109 +27,60 @@ def stanford_parse(event_dict):
             sent_dict['parsed'] = _format_parsed_str(s_parsetree)
 
     print 'Done with StanfordNLP parse...\n\n'
+    logger.info('Done with StanfordNLP parse.')
 
     return event_dict
 
 
-def write_events(event_dict, output_file):
+def story_filter(story_dict, story_id):
     """
-    Check for duplicates in the article_list, then write the records in PETR
-    format
-    <14.02.28>: Duplicate checking currently not implemented
-    <14.02.28>: Currently set to code only events with identified national
-    actors
+    One-a-story filter for the events. There can only be only one unique
+    (DATE, SRC, TGT, EVENT) tuple per story.
+
+    Parameters
+    ----------
+
+    story_dict: Dictionary.
+                Story-level dictionary as stored in the main event-holding
+                dictionary within PETRARCH.
+
+    story_id: String.
+                Unique StoryID in standard PETRARCH format.
+
+    Returns
+    -------
+
+    filtered: Dictionary.
+                Holder for filtered events with the format
+                {(EVENT TUPLE): {'issues': [], 'ids': []}} where the 'issues'
+                list is optional.
     """
-    global StorySource
-    global NEvents
-    global StoryIssues
+    filtered = defaultdict(dict)
+    story_date = story_dict['meta']['date']
+    for sent in story_dict['sents']:
+        sent_dict = story_dict['sents'][sent]
+        sent_id = '{}_{}'.format(story_id, sent)
+        if 'events' in sent_dict:
+            events = story_dict['sents'][sent]['events']
+            for event in events:
+                # do not print unresolved agents
+                if event[0][0] != '-' and event[1][0] != '-':
+                    event_tuple = (story_date, event[0], event[1], event[2])
+                    filtered[event_tuple]
+                    if 'issues' in sent_dict:
+                        filtered[event_tuple]['issues'] = Counter()
+                        issues = sent_dict['issues']
+                        for issue in issues:
+                            filtered[event_tuple]['issues'][issue[0]] += issue[1]
 
-    #TODO: Make this a real thing
-    StorySource = 'TEMP'
+                    #Will keep track of this info, but not necessarily write it
+                    #out
+                    filtered[event_tuple]['ids'] = []
+                    filtered[event_tuple]['ids'].append(sent_id)
+        else:
+            pass
 
-    event_output = []
-    for key in event_dict:
-        story_dict = event_dict[key]
-        story_output = []
-        story_date = story_dict['meta']['date']
-        if 'source' in story_dict['meta']:
-            StorySource = story_dict['meta']['source']
-        for sent in story_dict['sents']:
-            sent_dict = event_dict[key]['sents'][sent]
-            if 'events' in sent_dict:
-                event_list = sent_dict['events']
-            else:
-                print 'No events...'
-                event_list = []
-
-            sent_id = '{}_{}'.format(key, sent)
-            if event_list:
-                for event in event_list:
-                    # do not print unresolved agents
-                    if event[0][0] != '-' and event[1][0] != '-':
-                        print 'Event:', story_date + '\t' + event[0] + '\t' + event[1] + '\t' + event[2] + '\t' + sent_id + '\t' + StorySource
-                        event_str = '{}\t{}\t{}\t{}'.format(story_date,
-                                                            event[0],
-                                                            event[1],
-                                                            event[2])
-                        if 'issues' in sent_dict:
-                            issues = sent_dict['issues']
-                            joined_issues = '\t'.join(['{}\t{}'.format(iss[0],
-                                                                    iss[1])
-                                                    for iss in issues])
-                            print 'Issues: {}'.format(joined_issues)
-
-                            event_str += '\t{}'.format(joined_issues)
-
-                        event_str += '\t{}\t{}'.format(sent_id, StorySource)
-                        story_output.append(event_str)
-        story_events = '\n'.join(story_output)
-        event_output.append(story_events)
-
-    #Filter out blank lines
-    event_output = [event for event in event_output if event]
-    final_event_str = '\n'.join(event_output)
-    with open(output_file, 'w') as f:
-        f.write(final_event_str)
-
-
-def pipe_output(event_dict):
-    final_out = {}
-    for key in event_dict:
-        story_dict = event_dict[key]
-        story_output = []
-        story_date = story_dict['meta']['date']
-        if 'source' in story_dict['meta']:
-            StorySource = story_dict['meta']['source']
-        for sent in story_dict['sents']:
-            sent_dict = event_dict[key]['sents'][sent]
-            if 'events' in sent_dict:
-                event_list = sent_dict['events']
-            else:
-                event_list = []
-
-            sent_id = '{}_{}'.format(key, sent)
-            if event_list:
-                for event in event_list:
-                    # do not print unresolved agents
-                    if event[0][0] != '-' and event[1][0] != '-':
-                        print 'Event:', story_date + '\t' + event[0] + '\t' + event[1] + '\t' + event[2] + '\t' + sent_id + '\t' + StorySource
-                        if 'issues' in sent_dict:
-                            issues = sent_dict['issues']
-                            joined_issues = ';'.join(['{},{}'.format(iss[0],
-                                                                     iss[1])
-                                                      for iss in issues])
-
-                            event_str = (story_date, event[0], event[1],
-                                         event[2], joined_issues, sent_id,
-                                         StorySource)
-                        else:
-                            event_str = (story_date, event[0], event[1],
-                                         event[2], sent_id, StorySource)
-                        story_output.append(event_str)
-        if story_output:
-            final_out[key] = story_output
-
-    return final_out
+    return filtered
 
 
 def _format_parsed_str(parsed_str):

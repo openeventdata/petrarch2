@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 
 import PETRglobals  # global variables
 import PETRreader  # input routines
+import PETRwriter
 import utilities
 
 
@@ -2576,12 +2577,15 @@ def do_coding(event_dict, out_file):
     NDiscardStory = 0
     NParseErrors = 0
 
+    logger = logging.getLogger('petr_log')
     for key in event_dict:
+        logger.info('Processing {}'.format(key))
         print 'Processing {}'.format(key)
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in event_dict[key]['sents']:
             SentenceID = '{}_{}'.format(key, sent)
+            logger.info('\tProcessing {}'.format(SentenceID))
             #TODO: This is why Python 3 might be nice.
             SentenceText = event_dict[key]['sents'][sent]['content'].encode('utf-8')
             SentenceDate = StoryDate
@@ -2776,7 +2780,7 @@ def run(filepaths, out_file, s_parsed):
     if not s_parsed:
         events = utilities.stanford_parse(events)
     updated_events = do_coding(events, 'TEMP')
-    utilities.write_events(updated_events, out_file)
+    PETRwriter.write_events(updated_events, out_file)
 
 
 def run_pipeline(data, out_file=None, write_output=True):
@@ -2789,13 +2793,13 @@ def run_pipeline(data, out_file=None, write_output=True):
     events = utilities.stanford_parse(events)
     updated_events = do_coding(events, 'TEMP')
     if not write_output:
-        output_events = utilities.pipe_output(updated_events)
+        output_events = PETRwriter.pipe_output(updated_events)
         return output_events
     elif write_output and not out_file:
         print 'Please specify an output file...'
         sys.exit()
     elif write_output and out_file:
-        utilities.write_events(updated_events, out_file)
+        PETRwriter.write_events(updated_events, out_file)
 
 
 if __name__ == '__main__':

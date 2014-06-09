@@ -3,11 +3,18 @@ import utilities
 
 def write_events(event_dict, output_file):
     """
-    Check for duplicates in the article_list, then write the records in PETR
-    format
-    <14.02.28>: Duplicate checking currently not implemented
-    <14.02.28>: Currently set to code only events with identified national
-    actors
+    Formats and writes the coded event data to a file in a standard
+    event-data format.
+
+    Parameters
+    ----------
+
+    event_dict: Dictionary.
+                The main event-holding dictionary within PETRARCH.
+
+
+    output_file: String.
+                    Filepath to which events should be written.
     """
     global StorySource
     global NEvents
@@ -77,7 +84,12 @@ def pipe_output(event_dict):
 
     final_out: Dictionary.
                 StoryIDs as the keys and a list of coded event tuples as the
-                values, i.e.,
+                values, i.e., {StoryID: [(full_record), (full_record)]}. The
+                ``full_record`` portion is structured as
+                (story_date, source, target, code, joined_issues, ids,
+                StorySource) with the ``joined_issues`` field being optional.
+                The issues are joined in the format of ISSUE,COUNT;ISSUE,COUNT.
+                The IDs are joined as ID;ID;ID.
 
     """
     final_out = {}

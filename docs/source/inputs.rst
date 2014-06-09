@@ -38,7 +38,7 @@ In general, the XML format is:
 
     <Sentences>
 
-    <Sentence date = "YYYYMMDD" id = "storyString_sent#" sentence = "Boolean">
+    <Sentence date = "YYYYMMDD" id = "storyString_sent#" source = "AFP" sentence = "Boolean">
     <Text>
     </Text>
     <Parse>
@@ -53,7 +53,10 @@ entries has a fairly obvious role. The ``date`` attribute is the date of the
 entry in a ``YYYYMMDD`` format. The ``id`` attribute is a unique ID for the
 entry. If the entry is a single sentence, the format of the ID should be
 ``storyString_sentNumber`` or ``ABCDEFGHIJKLM_1`` which would indicate story
-``ABCDEFGHIJKLM`` and sentence 1. 
+``ABCDEFGHIJKLM`` and sentence 1. The ``sentence`` attribute indicates whether
+the text in the entry is from a single sentence or a block of sentences, such
+as from the lead paragraph of a news story. Finally, the ``source`` attribute
+indicates what source the material came from, such as Agence-France Presse.
 
 
 Validation Input

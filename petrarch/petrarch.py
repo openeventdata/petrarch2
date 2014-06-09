@@ -2783,8 +2783,11 @@ def run(filepaths, out_file, s_parsed):
     PETRwriter.write_events(updated_events, out_file)
 
 
-def run_pipeline(data, out_file=None, write_output=True):
-    PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
+def run_pipeline(data, out_file=None, config=None, write_output=True):
+    if config:
+        PETRreader.parse_Config(config)
+    else:
+        PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
     utilities.init_logger('PETRARCH.log')
 
     read_dictionaries()

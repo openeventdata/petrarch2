@@ -10,7 +10,7 @@
 # Last update: 28 Feb 2014
 -->
 <Sentences>
-<Sentence date = "20080804" id ="AFP0808020625_4" sentence = "True">
+<Sentence date = "20080804" id ="AFP0808020625_4" source = "AFP" sentence = "True">
 <Text>
 The stopover came as the US leader prepared to attend the Beijing Olympics, an 
 event which will test his vow to keep politics out of the Games. 
@@ -37,7 +37,7 @@ event which will test his vow to keep politics out of the Games.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020675_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020675_1" source = "AFP" sentence = "True">
 <Text>
 Brazil and the United States are seeking to deepen a partnership in energy, 
 especially by promoting biofuels and other alternatives to oil, US Deputy 
@@ -68,7 +68,7 @@ Secretary of Energy Jeffrey Kupfer said here Wednesday.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020705_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020705_1" source = "AFP" sentence = "True">
 <Text>
 A court in Guyana has issued arrest warrants for two Brazilian men sought in 
 the brutal slaying of two American missionaries in southern Guyana three years 
@@ -98,7 +98,7 @@ ago, a senior Guyanese police officer said Wednesday.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020742_2" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020742_2" source = "AFP" sentence = "True">
 <Text>
 Washington said such a step enjoyed support from Moscow and Beijing-- which 
 have resisted taking a harder line on the Islamic republic-- but China 
@@ -130,7 +130,7 @@ remained mum and Russia's UN ambassador said he was unaware of such agreement.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020776_5" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020776_5" source = "AFP" sentence = "True">
 <Text>
 The statement by the French presidency comes a day before Sarkozy heads to 
 Beijing for the Friday opening of the Olympic Games, seeking to mend ties with 
@@ -165,7 +165,7 @@ China frayed by an initial threat to boycott the ceremony.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020824_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020824_1" source = "AFP" sentence = "True">
 <Text>
 A Tunisian court has jailed a man for two years for helping young militants 
 join an armed Islamic group in Lebanon, his lawyer said Wednesday. 
@@ -191,7 +191,7 @@ join an armed Islamic group in Lebanon, his lawyer said Wednesday.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020840_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020840_1" source = "AFP" sentence = "True">
 <Text>
 France on Wednesday condemned as`` unacceptable'' allegations by Rwanda that it 
 had played an active role in the 1994 genocide, as Kigali said it hoped French 
@@ -226,7 +226,7 @@ officials would be indicted for war crimes.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020840_2" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020840_2" source = "AFP" sentence = "True">
 <Text>
 A 500-page report released Tuesday in the Rwandan capital alleged that France 
 was aware of preparations for the genocide, and that the French military in 
@@ -258,7 +258,7 @@ Rwanda helped to plan and carry out killings.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020857_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020857_1" source = "AFP" sentence = "True">
 <Text>
 Israel on Wednesday released the mayor of the northern West Bank city of 
 Nablus, a member of the Islamist Hamas movement jailed over a year ago, 
@@ -286,7 +286,7 @@ Palestinian security officials said.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020857_2" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020857_2" source = "AFP" sentence = "True">
 <Text>
 The release of Adli Yaish, who had been arrested 15 months ago, came as Israel 
 announced it would free over 150 Palestinian prisoners by the end of August as 
@@ -319,7 +319,7 @@ a goodwill gesture to Palestinian president Mahmud Abbas.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020905_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020905_1" source = "AFP" sentence = "True">
 <Text>
 The US commander in Iraq, General David Petraeus, held talks with President 
 Michel Sleiman during a surprise visit to Beirut on Wednesday, offering 
@@ -349,7 +349,7 @@ further military support to Lebanon.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020937_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020937_1" source = "AFP" sentence = "True">
 <Text>
 US and British activists staged a dramatic protest in Beijing on Wednesday, 
 scaling a pole and unfurling giant`` Free Tibet'' banners close to the stadium 
@@ -381,7 +381,7 @@ where the Olympics will open in two days.
 </Sentence>
 
 
-<Sentence date = "20080806" id ="AFP0808020955_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020955_1" source = "AFP" sentence = "True">
 <Text>
 Rwanda's information minister said Wednesday she hoped a raft of French 
 political and military officials accused of playing a role in the country's 
@@ -411,7 +411,7 @@ political and military officials accused of playing a role in the country's
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020957_1" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020957_1" source = "AFP" sentence = "True">
 <Text>
 France on Wednesday accused Rwanda of making`` unacceptable accusations'' by 
 alleging Paris played an active role in the 1994 genocide, but said it was 
@@ -447,7 +447,7 @@ still determined to mend damaged ties with Kigali.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808020957_2" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808020957_2" source = "AFP" sentence = "True">
 <Text>
 A 500-page report released Tuesday in the Rwandan capital alleged that France 
 was aware of preparations for the genocide, and that the French military in 
@@ -483,7 +483,7 @@ killing.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080806" id ="AFP0808021021_3" sentence = "True">
+<Sentence date = "20080806" id ="AFP0808021021_3" source = "AFP" sentence = "True">
 <Text>
 Before leaving for Beijing on Thursday, Bush was scheduled to give a speech 
 here on US relations with Asia and meet with exiled dissidents from 

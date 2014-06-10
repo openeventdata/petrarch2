@@ -66,29 +66,6 @@ When you run the program, a ``PETRARCH.log`` file will be opened in the current
 working directory. This file will contain general information, e.g., which
 files are being opened, and error messages.
 
-Unit tests
-----------
-
-Commits should always successfully complete
-
-``petrarch validate``
-
-This command defaults to the ``PETR.UnitTest.records.txt`` file included with the
-program. Alternative files can be indicated using the ``-i`` option. For example
-(this is equivalent to the default command):
-
-``petrarch validate -i data/text/PETR.UnitTest.records.xml``
-
-The final record should read
-
-::
-
-    Sentence: FINAL-RECORD [ DEMO ]
-    ALL OF THE UNIT TESTS WERE CODED CORRECTLY. 
-    No events should be coded
-    No events were coded
-    Events correctly coded in FINAL-RECORD
-    Exiting: <Stop> record 
 
 Contents:
 ---------
@@ -98,7 +75,9 @@ Contents:
 
    current.rst
    petrarch.rst
+   dictionaries.rst
    inputs.rst
+   contributing.rst
    modules.rst
 
 

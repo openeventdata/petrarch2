@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import glob
@@ -441,7 +443,7 @@ def _check_envr(environ):
             PETRglobals.AgentFileName = elem.text
 
         if elem.tag == 'Errorfile':
-            print 'This is deprecated. Defaulting to a different errorfile.'
+            print 'This is deprecated. Using a different errorfile. ¯\_(ツ)_/¯'
 
         if elem.tag == 'Include':
             ValidInclude = elem.text.split()
@@ -2800,6 +2802,7 @@ def run_pipeline(data, out_file=None, config=None, write_output=True):
         return output_events
     elif write_output and not out_file:
         print 'Please specify an output file...'
+        logger.warning('Need an output file. ¯\_(ツ)_/¯')
         sys.exit()
     elif write_output and out_file:
         PETRwriter.write_events(updated_events, out_file)

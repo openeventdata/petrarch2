@@ -52,6 +52,90 @@ through external hooks.
 Configuration File
 ------------------
 
+The configuration file for PETRARCH currently has three sections:
+``Dictionaries``, ``Options``, and ``StanfordNLP``. An example config file is
+outlined below. This is the same setup as the default configuration used within
+PETRARCH.
+
+::
+
+    [Dictionaries]
+    # See the PETRreader.py file for the purpose and format of these files
+    verbfile_name    = CAMEO.091003.master.verbs
+    #actorfile_list   = Phoenix.Countries.140227.actors.txt, Phoenix.Internatnl.140130.actors.txt, Phoenix.MNSA.140131.actors.txt
+    actorfile_list  = Phoenix.Countries.140227.actors.txt
+    agentfile_name   = Phoenix.140422.agents.txt
+    discardfile_name = Phoenix.140227.discards.txt
+    issuefile_name   = Phoenix.issues.140225.txt
+
+    [Options]
+    # textfile_list is a comma-delimited list of text files to code. This list has priority if 
+    #               both a textfile_list and textfile_name are present
+    textfile_list = GigaWord.sample.PETR.txt
+    #textfile_list = AFP0808-01.txt, AFP0909-01.txt, AFP1210-01.txt
+    # textfile_name is the name of a file containing a list of names of files to code, one 
+    # file name per line.
+    #textfile_name  = PETR.textfiles.benchmark.txt
+
+    # eventfile_name is the output file for the events
+    eventfile_name = events.PETR-Devel.txt
+
+
+    # INTERFACE OPTIONS: uncomment to activate
+    # Default: set all of these false, which is equivalent to an A)utocode in TABARI
+
+    # code_by_sentence: show events after each sentence has been coded; default is to 
+    #                   show events after all of the sentences in a story have been coded
+    code_by_sentence = True
+    # pause_by_sentence: pause after the coding of each sentence. Entering 'Return' will 
+    #                    cause the next sentence to be coded; entering any character will 
+    #                    cause the program to exit. Default is to code without any pausing. 
+    pause_by_sentence = True
+    # pause_by_story: pause after the coding of each story. 
+    #pause_by_story = True
+
+    
+    # CODING OPTIONS: 
+    # Defaults are more or less equivalent to TABARI
+
+    # new_actor_length: Maximum length for new actors extracted from noun phrases if no 
+    #                   actor or agent generating a code is found. To disable and just 
+    #                   use null codes "---", set to zero; this is the default. 
+    #                   Setting this to a large number will extract anything found in a (NP
+    #                   noun phrase, though usually true actors contain a small number of words 
+    #                   This must be an integer.                       
+    new_actor_length = 0
+
+    # require_dyad: Events require a non-null source and target: setting this false is likely
+    #               to result in a very large number of nonsense events. As happened with the 
+    #               infamous GDELT data set of 2013-2014. And certainly no one wants to see 
+    #               that again.
+    require_dyad = True
+
+    # stop_on_error: If True, parsing errors causing the program to halt; typically used for 
+    #                debugging. With the default [false], the error is written to the error 
+    #                file, record is skipped, and processing continues. 
+    stop_on_error = False
+
+    # commas: These adjust the length (in words) of comma-delimited clauses that are eliminated 
+    #         from the parse. To deactivate, set the max to zero. 
+    #         Defaults, based on TABARI, are in ()
+    #         comma_min :  internal clause minimum length [2]
+    #         comma_max :  internal clause maximum length [8]
+    #         comma_bmin : initial ("begin") clause minimum length [0]
+    #         comma_bmax : initial clause maximum length [0 : deactivated by default]
+    #         comma_emin : terminal ("end") clause minimum length [2]
+    #         comma_emax : terminal clause maximum length [8]
+    comma_min = 2
+    comma_max = 8
+    comma_bmin = 0
+    comma_bmax = 0
+    comma_emin = 2
+    comma_emax = 8
+
+    [StanfordNLP]
+    stanford_dir = ~/stanford-corenlp/
+
 Differences from TABARI
 -----------------------
 

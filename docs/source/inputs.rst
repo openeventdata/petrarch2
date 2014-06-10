@@ -20,7 +20,7 @@ dropped into the main processing pipeline script with a call such as:
 
 where ``holding`` is the list of dictionaries described above. For more
 information about ``run_pipeline()`` and its output formats, please view the
-relevant documentation.
+`relevant documentation <modules.html#PETRwriter.pipe_output>`_.
 
 XML Input
 ---------

@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import os
 import logging
 import corenlp
 import PETRglobals
 import dateutil.parser
+from progressbar import ProgressBar, Percentage, RotatingMarker, Bar
 from collections import defaultdict, Counter
 
 
@@ -14,19 +17,30 @@ def stanford_parse(event_dict):
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
                                    properties=_get_config('petrarch.properties'),
                                    memory='2g')
-    for key in event_dict:
+    widgets = ['Something: ', Percentage(), ' ', Bar(marker=RotatingMarker())]
+    pbar = ProgressBar(widgets=widgets,
+                       maxval=len(event_dict.keys()) * 100).start()
+    for i, key in enumerate(event_dict.keys()):
         for sent in event_dict[key]['sents']:
-            print 'StanfordNLP parsing {}_{}...'.format(key, sent)
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
 
-            stanford_result = core.raw_parse(sent_dict['content'])
-            s_parsetree = stanford_result['sentences'][0]['parsetree']
-            if 'coref' in stanford_result:
-                sent_dict['coref'] = stanford_result['coref']
+            if len(sent_dict['content']) > 500:
+                logger.warning('\tText too long. Probably two sentences.')
+                pass
+            else:
+                try:
+                    stanford_result = core.raw_parse(sent_dict['content'])
+                    s_parsetree = stanford_result['sentences'][0]['parsetree']
+                    if 'coref' in stanford_result:
+                        sent_dict['coref'] = stanford_result['coref']
 
-            #TODO: To go backwards you'd do str.replace(' ) ', ')')
-            sent_dict['parsed'] = _format_parsed_str(s_parsetree)
+                    #TODO: To go backwards you'd do str.replace(' ) ', ')')
+                    sent_dict['parsed'] = _format_parsed_str(s_parsetree)
+                except Exception as e:
+                    print 'Something went wrong. ¯\_(ツ)_/¯. See log file.'
+                    logger.warning('Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
+        pbar.update(10 * i + 1)
 
     print 'Done with StanfordNLP parse...\n\n'
     logger.info('Done with StanfordNLP parse.')

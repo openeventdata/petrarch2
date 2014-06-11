@@ -2586,72 +2586,76 @@ def do_coding(event_dict, out_file):
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in event_dict[key]['sents']:
-            SentenceID = '{}_{}'.format(key, sent)
-            logger.info('\tProcessing {}'.format(SentenceID))
-            #TODO: This is why Python 3 might be nice.
-            SentenceText = event_dict[key]['sents'][sent]['content'].encode('utf-8')
-            SentenceDate = StoryDate
-            SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
-            SentenceSource = 'TEMP'
+            if 'parsed' in event_dict[key]['sents'][sent]:
+                SentenceID = '{}_{}'.format(key, sent)
+                logger.info('\tProcessing {}'.format(SentenceID))
+                #TODO: This is why Python 3 might be nice.
+                SentenceText = event_dict[key]['sents'][sent]['content'].encode('utf-8')
+                SentenceDate = StoryDate
+                SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
+                SentenceSource = 'TEMP'
 
-            parsed = event_dict[key]['sents'][sent]['parsed']
-            treestr = parsed
-            #TODO: Make read_TreeBank take treestr as an arg and return
-            #something
-            read_TreeBank()
-            reset_event_list(True)
+                parsed = event_dict[key]['sents'][sent]['parsed']
+                treestr = parsed
+                #TODO: Make read_TreeBank take treestr as an arg and return
+                #something
+                read_TreeBank()
+                reset_event_list(True)
 
-#TODO
-#Can implement this easily. The sentences are organized by story in the dicts
-#so it's easy to rework this. Just when we're done with a key then write out
-#the events for the included sentences. Gonna skip it for now
-#            if not PETRglobals.CodeBySentence:
-#                # write events when we hit a new story
-#                if SentenceID[-6:-3] != CurStoryID:
-#                    if not SkipStory:
-#                        write_events()
-#                    reset_event_list()
-#                    if PETRglobals.PauseByStory:
-#                        if len(raw_input("Press Enter to continue...")) > 0:
-#                            sys.exit()
-#            else:
-#                reset_event_list()
+    #TODO
+    #Can implement this easily. The sentences are organized by story in the dicts
+    #so it's easy to rework this. Just when we're done with a key then write out
+    #the events for the included sentences. Gonna skip it for now
+    #            if not PETRglobals.CodeBySentence:
+    #                # write events when we hit a new story
+    #                if SentenceID[-6:-3] != CurStoryID:
+    #                    if not SkipStory:
+    #                        write_events()
+    #                    reset_event_list()
+    #                    if PETRglobals.PauseByStory:
+    #                        if len(raw_input("Press Enter to continue...")) > 0:
+    #                            sys.exit()
+    #            else:
+    #                reset_event_list()
 
-            if SkipStory:
-                print "Skipped"
-                continue
+                if SkipStory:
+                    print "Skipped"
+                    continue
 
-            disc = check_discards()
-            if disc[0] > 0:
-                if disc[0] == 1:
-                    print "Discard sentence:", disc[1]
-                    NDiscardSent += 1
-                else:
-                    print "Discard story:", disc[1]
-                    SkipStory = True
-                    NDiscardStory += 1
+                disc = check_discards()
+                if disc[0] > 0:
+                    if disc[0] == 1:
+                        print "Discard sentence:", disc[1]
+                        NDiscardSent += 1
+                    else:
+                        print "Discard story:", disc[1]
+                        SkipStory = True
+                        NDiscardStory += 1
 
-                coded_events = None
-
-            else:
-                try:
-                    coded_events = code_record()
-                except UnbalancedTree as why:
-                    print "Unable to interpret parse tree:", why
                     coded_events = None
 
-            if coded_events:
-                event_dict[key]['sents'][sent]['events'] = coded_events
+                else:
+                    try:
+                        coded_events = code_record()
+                    except UnbalancedTree as why:
+                        print "Unable to interpret parse tree:", why
+                        coded_events = None
+
+                if coded_events:
+                    event_dict[key]['sents'][sent]['events'] = coded_events
 
 
-            if coded_events and PETRglobals.IssueFileName != "":
-                event_issues = get_issues()
-                if event_issues:
-                    event_dict[key]['sents'][sent]['issues'] = event_issues
+                if coded_events and PETRglobals.IssueFileName != "":
+                    event_issues = get_issues()
+                    if event_issues:
+                        event_dict[key]['sents'][sent]['issues'] = event_issues
 
-            if PETRglobals.PauseBySentence:
-                if len(raw_input("Press Enter to continue...")) > 0:
-                    sys.exit()
+                if PETRglobals.PauseBySentence:
+                    if len(raw_input("Press Enter to continue...")) > 0:
+                        sys.exit()
+            else:
+                logger.info('{} has no parse information. Passing.'.format(SentenceID))
+                pass
 
     return event_dict
 

@@ -1598,7 +1598,7 @@ def check_verbs():
                 else:
                     # redirect from a synonym
                     patternlist = PETRglobals.VerbDict[
-                        PETRglobals.VerbDict[targ][1]]
+                        PETRglobals.VerbDict[targ][2]]
                 kpat = 2
                 if ShowPattMatch:
                     print "CV-2 patlist", patternlist
@@ -1615,10 +1615,10 @@ def check_verbs():
                             hasmatch = True
                             break
                     kpat += 1
-                if not hasmatch and patternlist[1] != '---':
+                if not hasmatch and PETRglobals.VerbDict[targ][1] != '---':
                     if ShowPattMatch:
                         print "Matched on the primary verb"   # debug
-                    EventCode = patternlist[1]
+                    EventCode = PETRglobals.VerbDict[targ][1]
                     hasmatch = True
 
                 if hasmatch:

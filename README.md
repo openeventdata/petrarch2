@@ -102,3 +102,6 @@ developments and only the PETRARCH-specific dictionaries can be used
 23-Apr-2014: PETRARCH-formatted agents dictionary required
 
 12-May-2014: Disjunctive phrases no longer recognized in the .verbs dictionary
+
+11-Jun-2014: PETRARCH-formatted verbs dictionary required: see the new 
+             data/dictionaries/CAMEO.verbpatterns.140609.txt 

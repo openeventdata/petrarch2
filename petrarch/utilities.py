@@ -11,7 +11,9 @@ def stanford_parse(event_dict):
     #What is dead can never die...
     print "\nSetting up StanfordNLP. The program isn't dead. Promise.\n"
     logger.info('Setting up StanfordNLP')
-    core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp)
+    core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
+                                   properties=_get_config('petrarch.properties'),
+                                   memory='2g')
     for key in event_dict:
         for sent in event_dict[key]['sents']:
             print 'StanfordNLP parsing {}_{}...'.format(key, sent)

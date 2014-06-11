@@ -18,8 +18,9 @@ def stanford_parse(event_dict):
                                    properties=_get_config('petrarch.properties'),
                                    memory='2g')
     widgets = ['Something: ', Percentage(), ' ', Bar(marker=RotatingMarker())]
-    pbar = ProgressBar(widgets=widgets,
-                       maxval=len(event_dict.keys()) * 100).start()
+    total = (len(event_dict.keys()) * 10) + 50
+    proportion = len(event_dict.keys())
+    pbar = ProgressBar(widgets=widgets, maxval=total).start()
     for i, key in enumerate(event_dict.keys()):
         for sent in event_dict[key]['sents']:
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
@@ -40,8 +41,8 @@ def stanford_parse(event_dict):
                 except Exception as e:
                     print 'Something went wrong. ¯\_(ツ)_/¯. See log file.'
                     logger.warning('Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
-        pbar.update(10 * i + 1)
-
+            pbar.update(proportion * i + 1)
+    pbar.finish()
     print 'Done with StanfordNLP parse...\n\n'
     logger.info('Done with StanfordNLP parse.')
 

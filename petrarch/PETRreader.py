@@ -35,8 +35,8 @@ import logging
 import xml.etree.ElementTree as ET
 from ConfigParser import ConfigParser
 
-import PETRglobals
-import utilities
+from . import PETRglobals
+from . import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
@@ -628,109 +628,109 @@ def read_issue_list(issue_path):
 def read_verb_dictionary(verb_path):
     """ Reads the verb dictionary from VerbFileName """
 
-    """ 
-    ======= VERB DICTIONARY ORGANIZATION ======= 
-    
-    The verb dictionary consists of a set of synsets followed by a series of verb 
+    """
+    ======= VERB DICTIONARY ORGANIZATION =======
+
+    The verb dictionary consists of a set of synsets followed by a series of verb
     synonyms and patterns.
-    
+
     VERB SYNONYM BLOCKS AND PATTERNS
-    
-    A verb synonym block is a set of verbs which are synonymous (or close enough) with 
-    respect to the patterns. The program automatically generates the regular forms of the 
-    verb -- see make_verb_forms(loccode) -- if it is regular (and, implicitly, English); 
-    otherwise the irregular forms can be specified in {...} following the primary verb. 
-    Note that if irregular forms are provided in {...}, ALL forms need to be included, 
-    even if some of those are the same as the regular form. An optional code for the 
-    isolated verb can follow in [...].  
-    
-    The verb block begins with a comment of the form 
-    
-    --- <GENERAL DESCRIPTION> [<CODE>] --- 
-    
-    where the "---" signals the beginning of a new block. The code in [...] is the 
-    primary code -- typically a two-digit+0 cue-category code -- for the block, and this 
-    will be used for all other verbs unless these have their own code. If no code is 
-    present, this defaults to the null code "---"  which indicates that the isolated verb 
-    does not generate an event. The null code also can be used as a secondary code. 
-    
-    This is followed by a set of patterns -- these begin with '-' -- which generally 
-    follow the same syntax as TABARI patterns. The pattern set is terminated with a 
+
+    A verb synonym block is a set of verbs which are synonymous (or close enough) with
+    respect to the patterns. The program automatically generates the regular forms of the
+    verb -- see make_verb_forms(loccode) -- if it is regular (and, implicitly, English);
+    otherwise the irregular forms can be specified in {...} following the primary verb.
+    Note that if irregular forms are provided in {...}, ALL forms need to be included,
+    even if some of those are the same as the regular form. An optional code for the
+    isolated verb can follow in [...].
+
+    The verb block begins with a comment of the form
+
+    --- <GENERAL DESCRIPTION> [<CODE>] ---
+
+    where the "---" signals the beginning of a new block. The code in [...] is the
+    primary code -- typically a two-digit+0 cue-category code -- for the block, and this
+    will be used for all other verbs unless these have their own code. If no code is
+    present, this defaults to the null code "---"  which indicates that the isolated verb
+    does not generate an event. The null code also can be used as a secondary code.
+
+    This is followed by a set of patterns -- these begin with '-' -- which generally
+    follow the same syntax as TABARI patterns. The pattern set is terminated with a
     blank line.
-        
+
     SYNSETS
     Synonym sets (synsets) are labelled with a string beginning with & and defined using
     the label followed by a series of lines beginning with + containing words or phrases.
-    The phrases are interpreted as requiring consecutive words; the words can be separated 
-    with either spaces or underscores (they are converted to spaces). Synset phrases can 
-    only contain words, not $, +, % or ^ tokens or synsets. At present, a synsets cannot  
-    contain another synset as an element. [see note below] Synsets be used anywhere in a  
-    pattern that a word or phrase can be used. A synset must be defined before it is used:  
-    a pattern containing an undefined synset will be ignored -- but those definitions can 
+    The phrases are interpreted as requiring consecutive words; the words can be separated
+    with either spaces or underscores (they are converted to spaces). Synset phrases can
+    only contain words, not $, +, % or ^ tokens or synsets. At present, a synsets cannot
+    contain another synset as an element. [see note below] Synsets be used anywhere in a
+    pattern that a word or phrase can be used. A synset must be defined before it is used:
+    a pattern containing an undefined synset will be ignored -- but those definitions can
     occur anywhere in the file.
-    
-    Plurals are generated automatically using the rules in read_verb_dictionary/ 
+
+    Plurals are generated automatically using the rules in read_verb_dictionary/
     make_plural(st) except when
-    
-      -- The phrase ends with '_' 
-      
-      -- The label ends with '_', in which case plurals are not generated for any of the 
+
+      -- The phrase ends with '_'
+
+      -- The label ends with '_', in which case plurals are not generated for any of the
          phrases; this is typically used for synonyms that are not nouns
-         
+
     The '_' is dropped in both cases
-    
+
     ====== EXAMPLE =====
-    
-    &CURRENCY 
+
+    &CURRENCY
     +DOLLARS
     +EUROS
     +AUSTRIAN FLORIN
     +GOLDEN_GOBLIN_GALLEONS_
     +PESO
     +KRONER_
-    +YUM YENNYEN 
+    +YUM YENNYEN
     +JAVANESE YEN
     +SWISS FRANCS
     +YEN
 
     &ALTCURR
     +BITCOIN
-    +PIRATE GOLD_   
+    +PIRATE GOLD_
     +LEPRECHAUN GOLD_
-    
+
     &AUXVERB3_
     +HAVE
     +HAS
     +HAD
 
 
-    ### GRANT ### 
+    ### GRANT ###
     GRANT [070]
     GIVE {GAVE GIVEN GIVING }  # jw  11/14/91
     CONTRIBUTE # tony  3/12/91
     - * &CURRENCY [903] # -PAS 12.01.12
     - * &ALTCURR [904] # -PAS 14.05.08
     - * RUPEES  [071]
-    
-    
-    ### EXPLAIN_VERBAL ### 
+
+
+    ### EXPLAIN_VERBAL ###
     EXPLAIN [010]
-    COMMENT 
-    ASSERT 
+    COMMENT
+    ASSERT
     SAY  {SAID SAYING }
     CLARIFY {CLARIFIES CLARIFIED CLARIFYING} [040]
-    CLEAR_UP 
-    - * RESTORATION RELATIONS [050:050]  # ANNOUNCE <ab 02 Dec 2005> 
-    - * COMMIT &MILITARY TO + [0332]  # SAY <sls 13 Mar 2008> 
-    - * ATTACK ON + AS &CRIME [018]  # DESCRIBE <ab 31 Dec 2005> 
+    CLEAR_UP
+    - * RESTORATION RELATIONS [050:050]  # ANNOUNCE <ab 02 Dec 2005>
+    - * COMMIT &MILITARY TO + [0332]  # SAY <sls 13 Mar 2008>
+    - * ATTACK ON + AS &CRIME [018]  # DESCRIBE <ab 31 Dec 2005>
     - * &CURRENCY DEBT_RELIEF [0331]  # ANNOUNCE <ab 02 Dec 2005>  , ANNOUNCE
-    - * WELCOMED OFFER FROM + [050]  # ANNOUNCE <ab 02 Dec 2005> 
-    - * + THAT $ WILL PULLOUT [0356]  # INFORM <sms 30 Nov 2007> 
-    - * POSSIBILITY OF &FIGHT [138]  # MENTION <OY 11 Mar 2006> 
-    - * AGREED JOIN COALITION [031]  # ANNOUNCE <OY 15 Mar 2006> 
+    - * WELCOMED OFFER FROM + [050]  # ANNOUNCE <ab 02 Dec 2005>
+    - * + THAT $ WILL PULLOUT [0356]  # INFORM <sms 30 Nov 2007>
+    - * POSSIBILITY OF &FIGHT [138]  # MENTION <OY 11 Mar 2006>
+    - * AGREED JOIN COALITION [031]  # ANNOUNCE <OY 15 Mar 2006>
     - * TRACES RESPONSIBILITY [112]  # REPORT
     - CONFIRMED * OF BOMBINGS [010]  # REPORT
-    - * INITIATIVE END &FIGHT [036]  # ANNOUNCE <ab 02 Dec 2005> 
+    - * INITIATIVE END &FIGHT [036]  # ANNOUNCE <ab 02 Dec 2005>
 
     &TESTSYN3
         +TO THE END
@@ -749,108 +749,110 @@ def read_verb_dictionary(verb_path):
     - * WAR  [173] ;tony  4/22/91
 
     PROGRAMMING NOTES
-    
+
     Notes
-    1.  TABARI allowed recursive synsets -- that is, synsetS embedded in patterns and other 
-        synsets. It should be possible to do this fairly easily, at least with basic 
+    1.  TABARI allowed recursive synsets -- that is, synsetS embedded in patterns and other
+        synsets. It should be possible to do this fairly easily, at least with basic
         synsets as elements (not as patterns) but a simple call in syn_match(isupperseq)
-        was not sufficient, so this needs more work.        
-    
-    2.  For TABARI legacy purposes, the construction "XXXX_ " is converted to "XXXX ",  
-        an open match.  However, per the comments below, generally TABARI dictionaries 
+        was not sufficient, so this needs more work.
+
+    2.  For TABARI legacy purposes, the construction "XXXX_ " is converted to "XXXX ",
+        an open match.  However, per the comments below, generally TABARI dictionaries
         should be converted before being used with PETRARCH.
-        
-    3.  The current version of the program cannot deal with multi-word "verbs" -- e.g. 
+
+    3.  The current version of the program cannot deal with multi-word "verbs" -- e.g.
         "SHOT_AND_KILLED" -- so these are skipped.
-        
+
     4. The verb dictionary is stored as follows:
         [0] True: primary form
         [1] Code
         [2:] 3-tuples of lower pattern, upper pattern and code. Upper pattern is stored
              in reverse order
-             
+
         [0] False
         [1]: optional verb-specific code (otherwise use the primary code)
-        [2]: primary form (use as a pointer to the pattern list)    
+        [2]: primary form (use as a pointer to the pattern list)
 
-        
+
     VERB DICTIONARY DIFFERENCES FROM TABARI
-    
-    On the *very* remote chance -- see Note 1 -- that you are trying to modify a TABARI  
-    .verbs dictionary to the PETRARCH format, the main thing you will need to eliminate 
-    are stemmed words:  PETRARCH only works with complete words. On the positive side, 
-    PETRARCH will only look at string as a "verb" if it has been identified as such by 
-    the parser -- that is, it is preceded with (VP and a tag that starts with (VB, so 
-    the [numerous] patterns required for noun/verb disambiguation are no longer 
-    needed. PETRARCH also does not allow disconjunctive sets in patterns: to accommodate 
+
+    On the *very* remote chance -- see Note 1 -- that you are trying to modify a TABARI
+    .verbs dictionary to the PETRARCH format, the main thing you will need to eliminate
+    are stemmed words:  PETRARCH only works with complete words. On the positive side,
+    PETRARCH will only look at string as a "verb" if it has been identified as such by
+    the parser -- that is, it is preceded with (VP and a tag that starts with (VB, so
+    the [numerous] patterns required for noun/verb disambiguation are no longer
+    needed. PETRARCH also does not allow disconjunctive sets in patterns: to accommodate
     legacy dictionaries, patterns containing these are skipped, but in order to work,
-    these should be replaced with synsets. Also see additional remarks at the beginning 
+    these should be replaced with synsets. Also see additional remarks at the beginning
     of the file.
-    
-    The other big difference between PETRARCH and TABARI is verb-noun disambiguation: 
-    the pattern-based approach of TABARI needed a lot of information to insure that a 
-    word that *might* be a verb was, in fact, a verb (or was a noun that occurred in a 
-    context where it indicated an event anyway: TABARI's [in]famous tendency to code the 
-    right thing for the wrong reason). PETRARCH, in contrast, only looks as a verb when 
-    the parsing has identified it as, in fact, a verb. This dramatically reduces false 
-    positives and eliminates the need for any pattern which was required simply for 
-    disambiguation, but it also means that PETRARCH is a lot more discriminating about 
-    what actually constitutes an event. The big difference here is that verb-only 
+
+    The other big difference between PETRARCH and TABARI is verb-noun disambiguation:
+    the pattern-based approach of TABARI needed a lot of information to insure that a
+    word that *might* be a verb was, in fact, a verb (or was a noun that occurred in a
+    context where it indicated an event anyway: TABARI's [in]famous tendency to code the
+    right thing for the wrong reason). PETRARCH, in contrast, only looks as a verb when
+    the parsing has identified it as, in fact, a verb. This dramatically reduces false
+    positives and eliminates the need for any pattern which was required simply for
+    disambiguation, but it also means that PETRARCH is a lot more discriminating about
+    what actually constitutes an event. The big difference here is that verb-only
     codes are the norm in PETRARCH dictionaries but the exception in TABARI dictionaries.
-    
-    The active PETRARCH verbs dictionary has been extensively reorganized into both 
-    verb and noun synonym sets, and you are probably better off adding vocabulary to 
-    this [see Note 1] than converting a dictionary, but it can be done. An unconverted 
-    TABARI dictionary, on the other hand, will generally not work particularly well with 
+
+    The active PETRARCH verbs dictionary has been extensively reorganized into both
+    verb and noun synonym sets, and you are probably better off adding vocabulary to
+    this [see Note 1] than converting a dictionary, but it can be done. An unconverted
+    TABARI dictionary, on the other hand, will generally not work particularly well with
     PETRARCH.
-    
-    Note 1. 
-    
-    Yeah, right. Every project we've encountered -- including those lavishly funded by  
-    multiple millions of taxpayers dollars and those allegedly producing multiple millions  
-    of events -- has regarded the NSF-funded CAMEO verbs dictionaries as a sacred artifact 
+
+    Note 1.
+
+    Yeah, right. Every project we've encountered -- including those lavishly funded by
+    multiple millions of taxpayers dollars and those allegedly producing multiple millions
+    of events -- has regarded the NSF-funded CAMEO verbs dictionaries as a sacred artifact
     of the [infamous] Data Fairy, lowered from Asgaard along the lines of this
-    
+
     http://www.wikiart.org/en/jacob-jordaens/allegory-of-the-peace-of-westphalia-1654
-    
-    [not exactly sure where the .verbs file is in that painting, but it must be in  
+
+    [not exactly sure where the .verbs file is in that painting, but it must be in
     there somewhere]
-    
-    but then subsequently subject said dictionaries to bitter complaints that they aren't 
+
+    but then subsequently subject said dictionaries to bitter complaints that they aren't
     coding comprehensively.
-    
-    Look, dudes and dudettes, these dictionaries have been open source for about as long 
-    as the US has been at war in Afghanistan -- which is to say, a really long time -- and 
-    if you don't like how the coding is being done, add some new open-source vocabulary 
+
+    Look, dudes and dudettes, these dictionaries have been open source for about as long
+    as the US has been at war in Afghanistan -- which is to say, a really long time -- and
+    if you don't like how the coding is being done, add some new open-source vocabulary
     to the dictionaries instead of merely parasitizing the existing work. Dudes.
-    
+
     The *real* problem, one suspects, is embodied in the following nugget of wisdom:
-    
-    Opportunity is missed by most people because it is dressed in overalls and looks 
+
+    Opportunity is missed by most people because it is dressed in overalls and looks
     like work.
     Thomas A. Edison
-    
+
     Dudes.
-        
+
     """
-    global theverb, verb # <14.05.07> : not needed, right?
+    global theverb, verb  # <14.05.07> : not needed, right?
 
     def make_phrase_list(thepat):
         """ Converts a pattern phrase into a list of alternating words and connectors """
-        if len(thepat) == 0: 
+        if len(thepat) == 0:
             return []
         phlist = []
         start = 0
         maxlen = len(thepat) + 1  # this is just a telltail
-        while start < len(thepat): # break phrase on ' ' and '_'
-            spfind = thepat.find(' ',start)
-            if spfind == -1: 
+        while start < len(thepat):  # break phrase on ' ' and '_'
+            spfind = thepat.find(' ', start)
+            if spfind == -1:
                 spfind = maxlen
-            unfind = thepat.find('_',start)
-            if unfind == -1: 
+            unfind = thepat.find('_', start)
+            if unfind == -1:
                 unfind = maxlen
-            if unfind < spfind:   # somehow think I don't need this check...well, I just need the terminating point, still need to see which is lower
-                phlist.append(thepat[start:unfind])  
+            # somehow think I don't need this check...well, I just need the
+            # terminating point, still need to see which is lower
+            if unfind < spfind:
+                phlist.append(thepat[start:unfind])
                 phlist.append('_')
                 start = unfind + 1
             else:
@@ -872,34 +874,37 @@ def read_verb_dictionary(verb_path):
         """  Read the irregular forms of a verb. """
         # need error checking here
         global verb, theverb
-        forms = verb[verb.find('{')+1:verb.find('}')].split()
+        forms = verb[verb.find('{') + 1:verb.find('}')].split()
 #       print '++',forms
         for wrd in forms:
             vscr = wrd + " "
-            PETRglobals.VerbDict[vscr] = [False, loccode, theverb]  
-    
+            PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+
     def make_verb_forms(loccode):
         """ Create the regular forms of a verb. """
         global verb, theverb
         vroot = verb[:-1]
         vscr = vroot + "S "
-        PETRglobals.VerbDict[vscr] = [False,  loccode, theverb]
-        if vroot[-1] == 'E' :  # root ends in 'E'
+        PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+        if vroot[-1] == 'E':  # root ends in 'E'
             vscr = vroot + "D "
             PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
             vscr = vroot[:-1] + "ING "
-        else: 
+        else:
             vscr = vroot + "ED "
             PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
             vscr = vroot + "ING "
-        PETRglobals.VerbDict[vscr] = [False, loccode, theverb]  
+        PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
 
     def make_plural(st):
         """ Create the plural of a synonym noun st """
-        if 'Y' == st[-1]: return st[:-1]+'IES'  # space is added below
-        elif 'S' == st[-1]: return st[:-1] +'ES'
-        else: return st +'S'
-    
+        if 'Y' == st[-1]:
+            return st[:-1] + 'IES'  # space is added below
+        elif 'S' == st[-1]:
+            return st[:-1] + 'ES'
+        else:
+            return st + 'S'
+
     # note that this will be ignored if there are no errors
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.VerbFileName)
@@ -908,16 +913,16 @@ def read_verb_dictionary(verb_path):
     theverb = ''
     newblock = False
     ka = 0   # primary verb count ( debug )
-    line = read_FIN_line() 
+    line = read_FIN_line()
     while len(line) > 0:  # loop through the file
         if '[' in line:
-            part = line.partition('[') 
+            part = line.partition('[')
             verb = part[0].strip() + ' '
             code = part[2][:part[2].find(']')]
         else:
             verb = line.strip() + ' '
             code = ''
-#       ka += 1 # line count debug
+# ka += 1 # line count debug
 #       if ka > 32: return
 
 #       print verb, code
@@ -925,116 +930,129 @@ def read_verb_dictionary(verb_path):
             if len(code) > 0:
                 primarycode = code
             else:
-                primarycode = '---'                 
+                primarycode = '---'
             newblock = True
-            line = read_FIN_line() 
-            
+            line = read_FIN_line()
+
         elif verb[0] == '-':   # pattern
-            if '{' in verb :  # TABARI legacy: currently aren't processing these
-                line = read_FIN_line() 
+            # TABARI legacy: currently aren't processing these
+            if '{' in verb:
+                line = read_FIN_line()
                 continue
 #           print 'RVD-1',verb
-            verb = verb.replace('_ ',' ')  # resolve the ambiguous '_ ' construction to ' '
+            # resolve the ambiguous '_ ' construction to ' '
+            verb = verb.replace('_ ', ' ')
             targ = verb[1:].partition('*')
             try:
                 highpat = make_phrase_list(targ[0].lstrip())
 #               print 'RVD-2',highpat
                 highpat.reverse()
                 lowphrase = targ[2].rstrip()
-                if len(lowphrase) == 0: 
+                if len(lowphrase) == 0:
                     lowpat = []
-                else: 
+                else:
                     lowpat = [targ[2][0]]   # start with connector
                     loclist = make_phrase_list(lowphrase[1:])
                     lowpat.extend(loclist[:-1])   # don't need the final blank
     #           print 'RVD-3',lowpat
                 PETRglobals.VerbDict[theverb].append([highpat, lowpat, code])
             except ValueError:
-                pass   # just trap the error, which will skip the line containing it
-            line = read_FIN_line() 
+                # just trap the error, which will skip the line containing it
+                pass
+            line = read_FIN_line()
 
-        elif verb[0] == '&': # Read and store a synset.
+        elif verb[0] == '&':  # Read and store a synset.
             if verb[-2] == '_':
                 noplural = True
-                verb = verb[:-2]  # remove final blank and _                
-            else: 
+                verb = verb[:-2]  # remove final blank and _
+            else:
                 noplural = False
                 verb = verb[:-1]  # remove final blank
             PETRglobals.VerbDict[verb] = []
             line = read_FIN_line()
             while line[0] == '+':
                 wordstr = line[1:].strip()
-                if noplural or wordstr[-1] == '_':          
-                    wordstr = wordstr.strip().replace('_',' ')  # get rid of internal _ since the strings themselves will handle consecutive matches
-                    PETRglobals.VerbDict[verb].append(wordstr)  # <14.05.08> Multi-word phrases are always converted to lists between checking, so probably it would be useful to store them as tuples once this has stabilized
+                if noplural or wordstr[-1] == '_':
+                    # get rid of internal _ since the strings themselves will
+                    # handle consecutive matches
+                    wordstr = wordstr.strip().replace('_', ' ')
+                    # <14.05.08> Multi-word phrases are always converted to lists between checking, so probably it would be useful to store them as tuples once this has stabilized
+                    PETRglobals.VerbDict[verb].append(wordstr)
                 else:
-                    wordstr = wordstr.replace('_',' ')
-                    PETRglobals.VerbDict[verb].append(wordstr) 
-                    PETRglobals.VerbDict[verb].append(make_plural(wordstr)) 
+                    wordstr = wordstr.replace('_', ' ')
+                    PETRglobals.VerbDict[verb].append(wordstr)
+                    PETRglobals.VerbDict[verb].append(make_plural(wordstr))
                 line = read_FIN_line()
 #           print "rvd/gs:",verb, PETRglobals.VerbDict[verb]
-            
+
         else:  # verb
-#           if theverb != '': print '::', theverb, PETRglobals.VerbDict[theverb]
-            if '_' in verb: # <14.06.09> skip all multiple-word verbs 
-                line = read_FIN_line() 
+# if theverb != '': print '::', theverb, PETRglobals.VerbDict[theverb]
+            if '_' in verb:  # <14.06.09> skip all multiple-word verbs
+                line = read_FIN_line()
                 continue
             if len(code) > 0:
                 curcode = code
             else:
                 curcode = primarycode
             if newblock:
-                if '{' in verb: 
-                    theverb = verb[:verb.find('{')].strip() + ' '  # theverb is the index to the pattern storage for the remainder of the block
-                else:           
+                if '{' in verb:
+                    # theverb is the index to the pattern storage for the
+                    # remainder of the block
+                    theverb = verb[:verb.find('{')].strip() + ' '
+                else:
                     theverb = verb
 #               print '** \"'+theverb+'\"'
                 PETRglobals.VerbDict[theverb] = [True, curcode]
                 newblock = False
-            if '{' in verb: 
+            if '{' in verb:
                 get_verb_forms(curcode)
-            else: 
+            else:
                 make_verb_forms(curcode)
             ka += 1   # counting primary verbs
 #           if ka > 16: return
-            line = read_FIN_line() 
+            line = read_FIN_line()
 
-            
-#       print "--:",line, 
-        
+#       print "--:",line,
     close_FIN()
-    
-def show_verb_dictionary(filename = ''):
-# debugging function: displays VerbDict to screen or writes to filename
-    if len(filename)>0:
-        fout = open(filename,'w')
-        fout.write('PETRARCH Verb Dictionary Internal Format\n')
-        fout.write('Run time: '+PETRglobals.RunTimeString+'\n')
 
-        for locword, loclist in PETRglobals.VerbDict.iteritems(): 
+
+def show_verb_dictionary(filename=''):
+# debugging function: displays VerbDict to screen or writes to filename
+    if len(filename) > 0:
+        fout = open(filename, 'w')
+        fout.write('PETRARCH Verb Dictionary Internal Format\n')
+        fout.write('Run time: ' + PETRglobals.RunTimeString + '\n')
+
+        for locword, loclist in PETRglobals.VerbDict.iteritems():
             if locword[0] == '&':   # debug: skip the synsets
                 continue
             fout.write(locword)
-            if loclist[0]: 
-                if len(loclist) > 1: fout.write("::\n" + str(loclist[1:]) + "\n")    # pattern list
-                else: 
+            if loclist[0]:
+                if len(loclist) > 1:
+                    # pattern list
+                    fout.write("::\n" + str(loclist[1:]) + "\n")
+                else:
                     fout.write(":: " + str(loclist[1]) + "\n")    # simple code
-            else: 
-                fout.write('-> ' + str(loclist[2]) +  ' [' + loclist[1] + ']\n')    # pointer
+            else:
+                # pointer
+                fout.write(
+                    '-> ' + str(loclist[2]) + ' [' + loclist[1] + ']\n')
         fout.close()
-    
+
     else:
-        for locword, loclist in PETRglobals.VerbDict.iteritems(): 
+        for locword, loclist in PETRglobals.VerbDict.iteritems():
             print locword,
-            if loclist[0]: 
-                if len(loclist) > 2: 
-                    print '::\n',loclist[1:]   # pattern list
-                else: 
-                    print ':: ',loclist[1]   # simple code
-            else: 
+            if loclist[0]:
+                if len(loclist) > 2:
+                    print '::\n', loclist[1:]   # pattern list
+                else:
+                    print ':: ', loclist[1]   # simple code
+            else:
                 print '-> ', loclist[2], '[' + loclist[1] + ']'
 
 # ================== ACTOR DICTIONARY INPUT ================== #
+
+
 def make_noun_list(nounst):
 # parses a noun string -- actor, agent or agent plural -- and returns in a list which
 # has the keyword and initial connector in the first tuple
@@ -1315,7 +1333,8 @@ def read_actor_dictionary(actorfile):
                     line = read_FIN_line()
                     continue
                 if ord2 < ord1:
-                    logger.warning("End date in interval date restriction is less than starting date; line skipped")
+                    logger.warning(
+                        "End date in interval date restriction is less than starting date; line skipped")
                     line = read_FIN_line()
                     continue
                 curlist.append([2, ord1, ord2, code])
@@ -1687,23 +1706,24 @@ def read_xml_input(filepaths, parsed=False):
             if event == "end" and elem.tag == "Sentence":
                 story = elem
 
-                #Check to make sure all the proper XML attributes are included
+                # Check to make sure all the proper XML attributes are included
                 attribute_check = [key in story.attrib for key in
                                    ['date', 'id', 'sentence', 'source']]
                 if not attribute_check:
                     print 'Need to properly format your XML...'
                     break
 
-                #If the XML contains StanfordNLP parsed data, pull that out
-                #TODO: what to do about parsed content at the story level,
-                #i.e., multiple parsed sentences within the XML entry?
+                # If the XML contains StanfordNLP parsed data, pull that out
+                # TODO: what to do about parsed content at the story level,
+                # i.e., multiple parsed sentences within the XML entry?
                 if parsed:
                     parsed_content = story.find('Parse').text
-                    parsed_content = utilities._format_parsed_str(parsed_content)
+                    parsed_content = utilities._format_parsed_str(
+                        parsed_content)
                 else:
                     parsed_content = ''
 
-                #Get the sentence information
+                # Get the sentence information
                 if story.attrib['sentence'] == 'True':
                     entry_id, sent_id = story.attrib['id'].split('_')
 
@@ -1720,7 +1740,7 @@ def read_xml_input(filepaths, parsed=False):
                     text = story.find('Text').text
                     text = text.replace('\n', '').replace('  ', '')
                     split_sents = _sentence_segmenter(text)
-                    #TODO Make the number of sents a setting
+                    # TODO Make the number of sents a setting
                     sent_dict = {}
                     for i, sent in enumerate(split_sents[:7]):
                         sent_dict[i] = {'content': sent, 'parsed':
@@ -1771,7 +1791,7 @@ def read_pipeline_input(pipeline_list):
                         'source': entry['source'],
                         'story_title': entry['title']}
         split_sents = _sentence_segmenter(entry['content'])
-        #TODO Make the number of sents a setting
+        # TODO Make the number of sents a setting
         sent_dict = {}
         for i, sent in enumerate(split_sents[:7]):
             sent_dict[i] = {'content': sent}
@@ -1824,16 +1844,16 @@ def _sentence_segmenter(paragr):
                    'pres.', 'treas.', 'sect.', 'maj.', 'ph.d.', 'ed. psy.',
                    'proc.', 'fr.', 'asst.', 'p.f.c.', 'prof.', 'admr.',
                    'engr.', 'mgr.', 'supt.', 'admin.', 'assoc.', 'voc.',
-                   'hon.', 'm.d.', 'dpty.',  'sec.', 'capt.', 'c.e.o.',
+                   'hon.', 'm.d.', 'dpty.', 'sec.', 'capt.', 'c.e.o.',
                    'c.f.o.', 'c.i.o.', 'c.o.o.', 'c.p.a.', 'c.n.a.', 'acct.',
                    'llc.', 'inc.', 'dir.', 'esq.', 'lt.', 'd.d.', 'ed.',
-                   'revd.', 'psy.d.', 'v.p.',  'senr.', 'gen.', 'prov.',
+                   'revd.', 'psy.d.', 'v.p.', 'senr.', 'gen.', 'prov.',
                    'cmdr.', 'sgt.', 'sen.', 'col.', 'lieut.', 'cpl.', 'pfc.',
                    'k.p.h.', 'cent.', 'deg.', 'doz.', 'Fahr.', 'Cel.', 'F.',
-                   'C.', 'K.', 'ft.', 'fur.',  'gal.', 'gr.', 'in.', 'kg.',
+                   'C.', 'K.', 'ft.', 'fur.', 'gal.', 'gr.', 'in.', 'kg.',
                    'km.', 'kw.', 'l.', 'lat.', 'lb.', 'lb per sq in.', 'long.',
                    'mg.', 'mm.,, m.p.g.', 'm.p.h.', 'cc.', 'qr.', 'qt.', 'sq.',
-                   't.', 'vol.',  'w.', 'wt.']
+                   't.', 'vol.', 'w.', 'wt.']
 
     sentlist = []
     # controls skipping over non-terminal conditions

@@ -30,6 +30,10 @@ def write_events(event_dict, output_file):
             StorySource = story_dict['meta']['source']
         else:
             StorySource = 'NULL'
+        if 'url' in story_dict['meta']:
+            url = story_dict['meta']['url']
+        else:
+            url = ''
         for event in filtered_events:
             story_date = event[0]
             source = event[1]
@@ -55,8 +59,12 @@ def write_events(event_dict, output_file):
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)
 
-            event_str += '\t{}\t{}'.format(ids, StorySource)
-            story_output.append(event_str)
+            if url:
+                event_str += '\t{}{}\t\t{}'.format(ids, url, StorySource)
+                story_output.append(event_str)
+            else:
+                event_str += '\t{}\t{}'.format(ids, StorySource)
+                story_output.append(event_str)
 
         story_events = '\n'.join(story_output)
         event_output.append(story_events)

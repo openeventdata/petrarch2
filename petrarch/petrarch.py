@@ -112,6 +112,7 @@ def raise_parsing_error(call_location_string):
 # functions, so it is not necessarily an actual unbalanced tree, just that
 # we've hit something unexpected.
     global SentenceID, NParseErrors, DoValidation
+    logger = logging.getLogger('petr_log')
     errorstring = 'Parsing error in ' + call_location_string
     logger.warning('{}{}'.format(errorstring, SentenceID))
 #	print errorstring
@@ -2429,7 +2430,7 @@ def get_issues():
     """
     global SentenceText
 
-    sent = SentenceText.upper()  # case insensitive matching
+    sent = SentenceText.upper().decode('utf-8')  # case insensitive matching
     issues = []
 
     for target in PETRglobals.IssueList:
@@ -2590,7 +2591,7 @@ def do_coding(event_dict, out_file):
                 SentenceID = '{}_{}'.format(key, sent)
                 logger.info('\tProcessing {}'.format(SentenceID))
                 #TODO: This is why Python 3 might be nice.
-                SentenceText = event_dict[key]['sents'][sent]['content'].encode('utf-8')
+                SentenceText = event_dict[key]['sents'][sent]['content'].decode('utf-8')
                 SentenceDate = StoryDate
                 SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
@@ -2646,9 +2647,12 @@ def do_coding(event_dict, out_file):
 
 
                 if coded_events and PETRglobals.IssueFileName != "":
-                    event_issues = get_issues()
-                    if event_issues:
-                        event_dict[key]['sents'][sent]['issues'] = event_issues
+                    try:
+                        event_issues = get_issues()
+                        if event_issues:
+                            event_dict[key]['sents'][sent]['issues'] = event_issues
+                    except (UnicodeDecodeError, UnicodeEncodeError):
+                        print 'There was a unicode error...'
 
                 if PETRglobals.PauseBySentence:
                     if len(raw_input("Press Enter to continue...")) > 0:

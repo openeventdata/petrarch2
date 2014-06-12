@@ -17,7 +17,7 @@ def stanford_parse(event_dict):
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
                                    properties=_get_config('petrarch.properties'),
                                    memory='2g')
-    widgets = ['Something: ', Percentage(), ' ', Bar(marker=RotatingMarker())]
+    widgets = ['Parse: ', Percentage(), ' ', Bar(marker=RotatingMarker())]
     total = (len(event_dict.keys()) * 10) + 50
     proportion = len(event_dict.keys())
     pbar = ProgressBar(widgets=widgets, maxval=total).start()

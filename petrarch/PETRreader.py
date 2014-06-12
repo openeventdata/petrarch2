@@ -35,8 +35,8 @@ import logging
 import xml.etree.ElementTree as ET
 from ConfigParser import ConfigParser
 
-from . import PETRglobals
-from . import utilities
+import PETRglobals
+import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
@@ -1748,7 +1748,8 @@ def read_pipeline_input(pipeline_list):
         meta_content = {'date': utilities._format_datestr(entry['date']),
                         'date_added': entry['date_added'],
                         'source': entry['source'],
-                        'story_title': entry['title']}
+                        'story_title': entry['title'],
+                        'url': entry['url']}
         split_sents = _sentence_segmenter(entry['content'])
         # TODO Make the number of sents a setting
         sent_dict = {}

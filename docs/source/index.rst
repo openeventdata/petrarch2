@@ -22,7 +22,7 @@ Over the last few decades, computational and social scientists have refined a pr
 
  1. First, is the collection of raw unstructured text including information about relevant events. For this step we have developed a web scraper that automatically pulls news stories form a white list of RSS feeds. Scraped stories are then stored in a MongoDB instance for easy future retrieval.
 
- 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system based on pattern recognition. This was traditionally done by shallow parsing using the TABARI system, but will soon be replaced with PETRARCH which works with fully-parsed inputs.**
+ 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system. This was traditionally done using the TABARI system, but will soon be replaced with PETRARCH which works with fully-parsed inputs.**
 
 The output of this process, event observations identified and extracted in a 'who-did-what-to-whom' format, is what we refer to as event data. At this most fundamental event event data consists of three component parts, **{SOURCE_ACTOR, ACTION_TYPE, TARGET_ACTOR}** as well as general attributes **{DATE_TIME, LOCATION}**:
 

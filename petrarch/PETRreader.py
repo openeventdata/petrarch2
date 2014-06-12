@@ -1465,7 +1465,7 @@ def read_agent_dictionary(agent_path):
 
             and used in the form
 
-                    CONGRESS!PERSON! [~LEG}
+                    CONGRESS!PERSON! [~LEG]
                     !MINIST!_OF_INTERNAL_AFFAIRS
 
             The marker for the substitution set is of the form !...! and is followed by an =
@@ -1473,50 +1473,11 @@ def read_agent_dictionary(agent_path):
             these can be added for clarity. Every time in the list is substituted for the marker,
             with no additional plural formation, so the first construction would generate
 
-                    CONGRESSMAN [~LEG}
-                    CONGRESSMEN [~LEG}
-                    CONGRESSWOMAN [~LEG}
-                    CONGRESSWOMEN [~LEG}
-                    CONGRESSPERSON [~LEG}
-
-
-    Agent code combination rules
-            By default, agent codes are assigned in the order they are found, and all phrases
-            that correspond to an agent are coded, followed by the removal of duplicate codes.
-            \footnote{This is in contrast to patterns,
-            where only the longest matching pattern is used. Someone is also welcome to
-            implement this alternative, but in the spirit of maximizing the information that
-            the agent system can extract, we're defaulting to ``all matches''}. This can lead
-            to information that is either redundant (e.g. (e.g. 'REBEL OPPOSITION GROUP [ROP]'
-            and 'OPPOSITION GROUP' [OPP] would yield ROPOPP where ROP is sufficient) or
-            situations where the same information produces codes in a different order, e.g.
-            'OPPOSITION' [OPP], 'LEGISLATOR' [LEG], 'PARIAMENTARY' [LEG] produces LEGOPP for
-            "pariamentary opposition" and "OPPLEG" for "opposition legislators."
-
-            Agent code combination rules provide a systematic way of deal with this. Rules can
-            have two forms:
-            [original code] => [replacement code] : substitute the replacement when the exact
-                                                                                            original code occurs
-            [original code] +> [replacement code] : substitute the replacement when the any
-                                                                                            permutation of the 3-character blocks in
-                                                                                            the original code occurs
-
-            Rules are applied until none occur, to 6- and 9-character codes can be transformed
-            using temporary substitutions.
-
-            Rules can be specified either in-line -- typically associated with a set of agents
-            relevant to the rules -- or in a block
-
-            Inline: <Combine rule = "...">
-            Block: delimited by <CombineBlock>
-                                                    ...
-                                                    </CombineBlock>
-                       with the rules on the intervening lines, one per line.
-
-            The command <Combine rule = "alphabetic"> specifies that the agents will first
-            be alphabetized by 3-character blocks -- prefixed and suffixed sets are treated
-            separately -- and then the rules applied. Again, longer codes can be dealt with
-            using substitutions.
+                    CONGRESSMAN [~LEG]
+                    CONGRESSMEN [~LEG]
+                    CONGRESSWOMAN [~LEG]
+                    CONGRESSWOMEN [~LEG]
+                    CONGRESSPERSON [~LEG]
 
     == Example ===
     <!-- PETRARCH VALIDATION SUITE AGENTS DICTIONARY -->
@@ -1531,12 +1492,10 @@ def read_agent_dictionary(agent_path):
     AIR_FORCE {} [~MIL] # ab 06 Jul 2005
     OFFICIAL_MEDIA {} [~GOVMED] # ab 16 Aug 2005
     ATTORNEY_GENERAL {ATTORNEYS_GENERAL} [~GOVATG] # mj 05 Jan 2006
-    <Combine rule = "LAWGOVATGMIL => GOV">  # remove match to ATTORNEY and GENERAL
     FOREIGN_MINISTRY [~GOV] # mj 17 Apr 2006
     HUMAN_RIGHTS_ACTIVISTS  [NGM~] # ns 6/14/01
     HUMAN_RIGHTS_BODY  [NGO~] # BNL 07 Dec 2001
-    <Combine rule = "NGMNGO +> NGM">
-    TROOP {} [~MIL] # ab 22 Aug 2005
+    TROOP [~MIL] # ab 22 Aug 2005
 
     """
     global subdict

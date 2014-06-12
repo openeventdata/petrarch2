@@ -4,12 +4,60 @@ PETRARCH Dictionary Formats
 There are five separate input dictionaries or lists that PETRACH makes use of:
 the verb dictionary, the actor dictionary, the agent dictionary, the discard
 list, and the issues list. The following sections describe these files in
-greater detail.
+greater detail. In addition to this documentation, which is intended for individuals 
+planning to work on dictionaries, the source code contains internal documentation on
+how the dictionary information is stored by the program.
+
+The PETRARCH dictionaries are generally derived from the earlier TABARI dictionaries, 
+and information on those formats can be found in the TABARI manual: 
+
+`http://eventdata.parusanalytics.com/tabari.dir/TABARI.0.8.4b2.manual.pdf <http://eventdata.parusanalytics.com/tabari.dir/TABARI.0.8.4b2.manual.pdf>`_
+
+General Rules for dictionaries
+------------------------------
+
+All of the files are in "flat ASCII" format and should only be edited using a program that produces a a file without embedded control codes; for example Emacs or BBEdit.
+
+**Comments in input files:**
+
+Comments should be delineated in either Python or XML style (which is inherited from HTML which 
+inherited it from SGML) are allowed, as long as you don't get too clever. Basically, 
+anything that looks like any of these is treated like a comment and skipped.
+
+::
+
+	<!-- [comment] -->
+	
+	things I want to actually read <!-- [comment] -->
+	
+	some things I want <!-- [comment] --> and more of them
+	
+	<!-- start of the comment
+	\[1 or more additional lines\]
+	end of the comment -->
+	
+	# this is a Python-like comment, inherited from Unix
+	
+	something I want # followed by a Python-like comment
+
+ 
+
+For the HTML-like comments,  the system doesn't use the formal definition that also says '--' is not allowed 
+inside a comment: it just looks for --> as a terminator
+
+The program is *not* set up to handle clever variations like nested comments,  multiple 
+comments on a line, or non-comment information in multi-line comments: yes, we are
+perfectly capable of writing code that could handle these contingencies, but it 
+is not a priority at the moment. We trust you can cope within these limits.
+
+Blank lines and lines with only whitespace are also skipped.
+
+For legacy purposes, anything following ';' is treated as a comment: this is the old KEDS/TABARI formatting rule and TABARI actor dictionaries still more or less work.
+
+
 
 Verb Dictionary
 ---------------
-
-**Verb Dictionary Organization:**
 
 The verb dictionary consists of a set of synsets followed by a series of verb 
 synonyms and patterns.
@@ -28,15 +76,14 @@ The verb block begins with a comment of the form
 
 --- <GENERAL DESCRIPTION> [<CODE>] ---
 
-where the ``###`` signals the beginning of a new block. The code IN [...] is the 
-primary code -- typically a two-digit cue-category code -- for the block, and this 
-will be used for all other verbs unless these have their own code. Th null code ``---``
-which indicates that the isolated verb does not generate an event can be used as 
-either a primary or secondary code.
+where the "---" signals the beginning of a new block. The code in [...] is the 
+primary code -- typically a two-digit+0 cue-category code -- for the block, and this 
+will be used for all other verbs unless these have their own code. If no code is 
+present, this defaults to the null code "---"  which indicates that the isolated verb 
+does not generate an event. The null code also can be used as a secondary code.	
 
-This is followed by a set of patterns -- these begin with ``-`` -- which generally 
-follow the same syntax as TABARI patterns. The pattern set is terminated with a 
-blank line.
+This is followed by a set of patterns -- these begin with '-' -- which generally 
+follow the same syntax as TABARI patterns (see Chapter 5 of the TABARI manual). The pattern set is terminated with a  blank line.
     
 **Synsets:**
 
@@ -50,15 +97,17 @@ pattern that a word or phrase can be used. A synset must be defined before it is
 a pattern containing an undefined synset will be ignored -- but those definitions can 
 occur anywhere in the file.
 
-Plurals are generated automatically using the rules in ``read_verb_dictionary``/ 
-``make_plural(st)`` except when
+Regular plurals are generated automatically  by adding 'S' to the root, adding 'IES' if the root ends in 'Y', and added 'ES' if the root ends in 'SS'.  Plurals are not created when [1]_
+
+.. [1] The method for handling irregular plurals is currently different for the verbs and agents dictionaries: these will be reconciled in the future, probably using the agents syntax. 
 
 * The phrase ends with ``_``. 
 
 * The label ends with ``_``, in which case plurals are not generated for any of
-  the phrases; this is typically used for synonyms that are not nouns
+  the phrases; this is typically used for synonym sets that do not involve nouns
         
-The ``_`` is dropped in both cases.
+The ``_`` is dropped in both cases. Irregular plurals do not have a special syntax; 
+just enter these as additional synonyms.
 
 **Example:**
 
@@ -131,23 +180,6 @@ The ``_`` is dropped in both cases.
     - ** RESIST  [112] ;tony  4/29/91
     - ** WAR  [173] ;tony  4/22/91
 
-**Programming Notes:**
-
-1. 	TABARI allowed recursive synsets -- that is, synsetS embedded in patterns and other synsets. It should be possible to do this fairly easily, at least with basic synsets as elements (not as patterns) but a simple call in syn_match(isupperseq) was not sufficient, so this needs more work.	    
-
-2.	For TABARI legacy purposes, the construction "XXXX_ " is converted to "XXXX_ ", an open match. However, per the comments below, generally TABARI dictionaries should be converted before being used with PETRARCH.
-    
-3. The verb dictionary is stored as follows:
-
-::
-
-        [0] True: primary form
-        [1] Code
-        [2:] 3-tuples of lower pattern, upper pattern and code. Upper pattern is stored
-                in reverse order
-        [0] False
-        [1]: optional verb-specific code (otherwise use the primary code)
-        [2]: primary form (use as a pointer to the pattern list)	
 
     
 **Verb Dictionary Differences from TABARI:**
@@ -203,6 +235,7 @@ The **real** problem, one suspects, is embodied in the following nugget of wisdo
 
     Opportunity is missed by most people because it is dressed in overalls and looks 
     like work.
+    
         -Thomas A. Edison
 
 Dude.
@@ -210,57 +243,14 @@ Dude.
 Actor Dictionary
 ----------------
 
-**Actor dictionary list elements:**
-
-Actors are stored in a dictionary of a list of pattern lists keyed on the first
-word of the phrase. The pattern lists are sorted by length.  The individual
-pattern lists begin with an integer index to the tuple of possible codes (that
-is, with the possibility of date restrictions) in PETRglobals.ActorCodes,
-followed by the connector from the key, and then a series of 2-tuples
-containing the remaining words and connectors. A 2-tuple of the form ('', ' ')
-signals the end of the list.
-
-<14.02.26>: Except at the moment these are just 2-item lists, not tuples, but
-this could be easily changed and presumably would be more efficient: these are
-not changed so they don't need to be lists.<>
-
-**Connector:**
-
-::
-
-    blank: words can occur between the previous word and the next word
-    _ (underscore): words must be consecutive: no intervening words
-
-The codes with possible date restrictions are stored as lists in a [genuine] tuple in
-``PETRglobals.ActorCodes`` in the following format where ``ordate`` is an ordinal date:
-
-::
-
-    [code] : unrestricted code
-    [0,ordate,code] : < restriction
-    [1,ordate,code] : > restriction
-    [2,ordate,ordate, code] : - (interval) restriction
-
-Synonyms simply use the integer code index to point to these tuples.
-
-**Strict Formatting of the Actor Dictionary:**
-
-[With some additional coding, this can be relaxed, but anything following these
-rules should read correctly]
-
-Basic structure is a series of records of the form
+Actor dictionaries are similar to those used in TABARI (see Chapter 5 of the manual) except that the date restrictions must be on separate lines (in TABARI, this was
+optional) The general structure of the actors dictionary is a series of records of the form
 
 ::
 
     [primary phrase]
     [optional synonym phrases beginning with '+']
     [optional date restrictions beginning with '\t']
-
-Material that is ignored:
-
-1. Anything following ';' (this is the old KEDS/TABARI format and should probably be replaced with '#' for consistency
-2. Any line beginning with '#' or <!
-3. Any null line (that is, line consisting of only \n
 
 A "phrase string" is a set of character strings separated by either blanks or
 underscores.
@@ -291,7 +281,7 @@ this is equivalent to a null code
 
 ``\t[code restriction]``
 
-where restriction -- everything is interpret as 'or equal' -- takes the form
+where ``\t`` is the tab character and the restriction [1]_ takes the form
 
 ::
 
@@ -299,7 +289,7 @@ where restriction -- everything is interpret as 'or equal' -- takes the form
     >date : applies to times after date
     date-date: applies to times between dates
 
-A date restriction of the form ``\t[code]`` is the same as a default restriction.
+The limits of the date restrictions are interpreted as "or equal to." A date restriction of the form ``\t[code]`` is the same as a default restriction.
 
 
 **Example:**
@@ -336,42 +326,25 @@ A date restriction of the form ``\t[code]`` is the same as a default restriction
 		[AFGGOV 791227-861124]
 		[AFGGOV 791227-810611]
 
+**Detecting actors which are not in the dictionary**
+
+Because PETRARCH uses parsed input, it has the option of detecting actors---noun phrases---which are not in the dictionary. This is set using the ``new_actor_length`` option in the ``PETR_config.ini`` file: see the description of that file for details.
+
 Agent Dictionary
 ----------------
 
-Agents are stored in a simpler version of the Actors dictionary: a list of
-phrases keyed on the first word of the phrase.  The individual phrase lists
-begin with the code, the connector from the key, and then a series of 2-tuples
-containing the remaining words and connectors. A 2-tuple of the form ``('', ' ')``
-signals the end of the list.
-
-**Connector:**
-
-::
-
-    blank: words can occur between the previous word and the next word
-    _ (underscore): words must be consecutive: no intervening words
-
-**Formatting of the Agent Dictionary:**
-
-[With some additional coding, this can be relaxed, but anything following these
-rules should read correctly]
-Basic structure is a series of records of the form
+Basic structure of the agents dictionary is a series of records of the form
 
 ::
 
         phrase_string {optional plural}  [agent_code]
 
-Material that is ignored:
-
-1. Anything following '#'
-2. Any line beginning with '#' or '<!'
-3. Any null line (that is, line consisting of only \n
 
 A "phrase string" is a set of character strings separated by either blanks or
-underscores.
+underscores. As with the verb patterns, a blank between words means that additional words can occur between the previous word and the next word; a ``_`` (underscore) means that the words must be consecutive.
 
-A "agent_code" is a character string without blanks that is either preceded (typically)
+
+An "agent_code" is a character string without blanks that is either preceded (typically)
 or followed by ``~``. If the ``~`` precedes the code, the code is added after the actor
 code; if it follows the code, the code is added before the actor code (usually done
 for organizations, e.g. ``NGO~``)
@@ -381,7 +354,7 @@ for organizations, e.g. ``NGO~``)
 Regular plurals -- those formed by adding 'S' to the root, adding 'IES' if the
 root ends in 'Y', and added 'ES' if the root ends in 'SS' -- are generated automatically
 
-If the plural has some other form, it follows the root inside {...}
+If the plural has some other form, it follows the root inside {...}  [1]_
 
 If a plural should not be formed -- that is, the root is only singular or only
 plural, or the singular and plural have the same form (e.g. "police"), use a null
@@ -391,7 +364,7 @@ If there is more than one form of the plural -- "attorneys general" and "attorne
 generals" are both in use -- just make a second entry with one of the plural forms
 nulled (though in this instance -- ain't living English wonderful? -- you could null
 the singular and use an automatic plural on the plural form) Though in a couple
-test sentences, this phrase confused SCNLP.
+test sentences, this phrase confused the CoreNLP parser.
 
 **Substitution Markers:**
 
@@ -411,7 +384,7 @@ and used in the form
 
 The marker for the substitution set is of the form !...! and is followed by an =
 and a comma-delimited list; spaces are stripped from the elements of the list so
-these can be added for clarity. Every time in the list is substituted for the marker,
+these can be added for clarity. Every item in the list is substituted for the marker,
 with no additional plural formation, so the first construction would generate
 
 ::
@@ -422,43 +395,6 @@ with no additional plural formation, so the first construction would generate
         CONGRESSWOMEN [~LEG}
         CONGRESSPERSON [~LEG}
 
-
-**Agent code combination rules:**
-
-By default, agent codes are assigned in the order they are found, and all
-phrases that correspond to an agent are coded, followed by the removal of
-duplicate codes.  This is in contrast to patterns, where only the longest
-matching pattern is used. Someone is also welcome to implement this
-alternative, but in the spirit of maximizing the information that the agent
-system can extract, we're defaulting to "all matches". This can lead to
-information that is either redundant (e.g. ``REBEL OPPOSITION GROUP [ROP]``
-and ``OPPOSITION GROUP [OPP]`` would yield ROPOPP where ROP is sufficient) or
-situations where the same information produces codes in a different order, e.g.
-``OPPOSITION' [OPP]``, ``LEGISLATOR [LEG]``, ``PARIAMENTARY [LEG]`` produces ``LEGOPP``
-for "pariamentary opposition" and ``OPPLEG`` for "opposition legislators."
-
-Agent code combination rules provide a systematic way of deal with this. Rules
-can have two forms:
-
-::
-
-    [original code] => [replacement code] : substitute the replacement when the exact original code occurs
-
-    [original code] +> [replacement code] : substitute the replacement when the any permutation of the 3-character blocks in the original code occurs
-
-Rules are applied until none occur, to 6- and 9-character codes can be transformed
-using temporary substitutions.
-
-Rules can be specified either in-line -- typically associated with a set of agents
-relevant to the rules -- or in a block
-
-Inline: ``<Combine rule = "...">``
-Block: delimited by ``<CombineBlock>...</CombineBlock>`` with the rules on the intervening lines, one per line.
-
-The command ``<Combine rule = "alphabetic">`` specifies that the agents will first
-be alphabetized by 3-character blocks -- prefixed and suffixed sets are treated
-separately -- and then the rules applied. Again, longer codes can be dealt with
-using substitutions.
 
 **Example:**
 
@@ -476,27 +412,22 @@ using substitutions.
     AIR_FORCE {} [~MIL] # ab 06 Jul 2005
     OFFICIAL_MEDIA {} [~GOVMED] # ab 16 Aug 2005
     ATTORNEY_GENERAL {ATTORNEYS_GENERAL} [~GOVATG] # mj 05 Jan 2006
-    <Combine rule = "LAWGOVATGMIL => GOV">  # remove match to ATTORNEY and GENERAL
     FOREIGN_MINISTRY [~GOV] # mj 17 Apr 2006
     HUMAN_RIGHTS_ACTIVISTS  [NGM~] # ns 6/14/01
     HUMAN_RIGHTS_BODY  [NGO~] # BNL 07 Dec 2001
-    <Combine rule = "NGMNGO +> NGM">
     TROOP {} [~MIL] # ab 22 Aug 2005
 
 Discard List
 ------------
 
-If the string, prefixed with ' ', is found in the ``<Text>...</Text>`` sentence, the
+The discard list is used to identify sentences that should not be coded, for example sports events and historical chronologies.[2]_ If the string, prefixed with ' ', is found in the ``<Text>...</Text>`` sentence, the
 sentence is not coded. Prefixing the string with a '+' means the entire story is not
-coded with the string is found [see ``read_record()`` for details on story/sentence
-identification]. If the string ends with '_', the matched string must also end with
+coded with the string is found. If the string ends with '_', the matched string must also end with
 a blank or punctuation mark; otherwise it is treated as a stem. The matching is not
 case sensitive.
 
-The file format allows ``#`` to be used as a in-line comment delimiter.
+.. [2] In TABARI, discards were intermixed in the ``.actors`` dictionary and ``.verbs`` patterns, using the ``[###]`` code. They are now a separate dictionary. 
 
-File is stored as a simple list and the interpretation of the strings is done in
-``check_discards()``.
 
 **Example:**
 
@@ -528,13 +459,12 @@ File is stored as a simple list and the interpretation of the strings is done in
 Issues List
 -----------
 
-"Issues" do simple string matching and return a comma-delimited list of codes.
-The standard format is simply
+The optional ``Issues`` dictionary is used to do simple string matching and return a comma-delimited list of codes. The standard format is simply a set of lines of the form
 
         ``<string> [<code>]``
 
 For purposes of matching, a ' ' is added to the beginning and end of the string: at
-present there are not wild cards, though that is easily added.
+present there are no wild cards, though that is easily added.
 
 The following expansions can be used (these apply to the string that follows up to
 the next blank):
@@ -546,10 +476,6 @@ the next blank):
         +: Create versions with ' ' and '-'
 
 The file format allows ``#`` to be used as a in-line comment delimiter.
-
-File is stored in ``PETRglobals.IssueList`` as a list of tuples (string, index) where
-index refers to the location of the code in ``PETRglobals.IssueCodes``. The coding is done
-in ``check_issues()``.
 
 Issues are written to the event record as a comma-delimited list to a tab-delimited
 field, e.g.

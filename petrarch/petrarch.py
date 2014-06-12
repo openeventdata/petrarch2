@@ -1469,7 +1469,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 
                 elif patlist[kpatword] == '%':  # deal with compound
                         ka = kseq
-                        while '(NEC' not in aseq[ka]: 
+                        while '(NEC' not in aseq[ka]:
                             if isupperseq: ka += 1
                             else: ka -= 1
                             if ka < 0 or ka >= len(aseq):
@@ -2802,11 +2802,14 @@ def run(filepaths, out_file, s_parsed):
 
 
 def run_pipeline(data, out_file=None, config=None, write_output=True):
+    utilities.init_logger('PETRARCH.log')
+    logger = logging.getLogger('petr_log')
     if config:
+        logger.info('Not using default config. Using {} instead.'.format(config))
+        print 'Not using default config. Using {} instead.'.format(config)
         PETRreader.parse_Config(config)
     else:
         PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
-    utilities.init_logger('PETRARCH.log')
 
     read_dictionaries()
 

@@ -1,15 +1,11 @@
 PETRARCH
 ========
 
-Current development for the new Python Engine for Text Resolution And Related
-Coding Hierarchy (PETRARCH) coder.
-
-In a 
-nutshell, this works -- it coded 60,000 AFP sentences from the GigaWord corpus without 
-crashing, using the included dictionaries -- but the pattern matching is only partially 
-implemented and the CAMEO dictionary still uses the old TABARI-style stemming which does 
-not work in PATRARCH, which is to say there are a *lot* of patterns that no longer work. 
-However, it now has almost all of the features of the TABARI coder.
+Code for the new Python Engine for Text Resolution And Related Coding Hierarchy (PETRARCH) 
+event data coder. The coder now has all of the functions from the older TABARI coder 
+and the new CAMEO.verbpatterns.140609.txt dictionary incorporates both parser-based matching 
+and extensive synonym sets. The program coded 60,000 AFP sentences from the GigaWord corpus 
+without crashing, using the included dictionaries.
 
 For more information, please visit the (work-in-progress)
 [documentation](http://petrarch.readthedocs.org/en/latest/#).
@@ -47,9 +43,8 @@ obtained from
 PETRARCH's default configuration file assumes that this is unzipped and located
 in the user's home directory in a directory named ``stanford-corenlp/``, e.g., ``~/stanford-corenlp``.
 
-The program is stable enough that it is probably useable. The main thing that's
-going to change are the underlying dictionaries and some organization of the
-code. It's not *that* likely that there will be large changes in the API. 
+The program is stable enough that it is useable, and it is not *that* likely that there 
+will be large changes in the API. 
 
 ##Running
 
@@ -91,17 +86,9 @@ The final record should read
 
 ##Compatibilities with TABARI dictionaries
 
-PETRARCH has a much richer dictionary syntax than TABARI, which will eventually accommodate 
-the WordNet-enhanced dictionaries developed at Penn State as well as reducing the level 
-of redundancy in the existing dictionaries. While the initial version of the program 
-could use existing TABARI dictionaries, this compatibility will decline with further 
-developments and only the PETRARCH-specific dictionaries can be used
+PETRARCH has a much richer dictionary syntax than TABARI, and because PETRARCH uses 
+parsed input, many dictionary entries used by TABARI for noun-verb disambiguation are 
+no longer needed. While the initial versions of the program could use existing TABARI 
+dictionaries, PETRARCH-formatted dictionaries are now required: these are available in 
+this repository and in https://github.com/openeventdata/Dictionaries.
 
-15-Nov-2013: Requires TABARI 0.8 indented date restrictions, not older in-line format
-
-23-Apr-2014: PETRARCH-formatted agents dictionary required
-
-12-May-2014: Disjunctive phrases no longer recognized in the .verbs dictionary
-
-11-Jun-2014: PETRARCH-formatted verbs dictionary required: see the new 
-             data/dictionaries/CAMEO.verbpatterns.140609.txt 

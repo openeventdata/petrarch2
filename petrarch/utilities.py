@@ -11,15 +11,17 @@ from collections import defaultdict, Counter
 def stanford_parse(event_dict):
     logger = logging.getLogger('petr_log')
     #What is dead can never die...
-    print "\nSetting up StanfordNLP. The program isn't dead. Promise.\n"
+    print "\nSetting up StanfordNLP. The program isn't dead. Promise."
     logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
                                    properties=_get_config('petrarch.properties'),
                                    memory='2g')
     total = len(event_dict.keys())
+    print "Stanford setup complete. Starting parse of {} stories...".format(total)
+    logger.info('Stanford setup complete. Starting parse of {} stories.'.format(total))
     for i, key in enumerate(event_dict.keys()):
         if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
-            print 'Parse is {}\% complete...'.format((i / float(total)) * 100)
+            print 'Parse is {}% complete...'.format((i / float(total)) * 100)
         for sent in event_dict[key]['sents']:
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]

@@ -60,7 +60,7 @@ def write_events(event_dict, output_file):
                 event_str += '\t{}'.format(joined_issues)
 
             if url:
-                event_str += '\t{}{}\t\t{}'.format(ids, url, StorySource)
+                event_str += '\t{}\t{}\t{}'.format(ids, url, StorySource)
                 story_output.append(event_str)
             else:
                 event_str += '\t{}\t{}'.format(ids, StorySource)
@@ -108,6 +108,8 @@ def pipe_output(event_dict):
             StorySource = story_dict['meta']['source']
         else:
             StorySource = 'NULL'
+        if 'url' in story_dict['meta']:
+            url = story_dict['meta']['url']
 
         if filtered_events:
             story_output = []
@@ -124,10 +126,10 @@ def pipe_output(event_dict):
                     issues = ['{},{}'.format(k, v) for k, v in iss.iteritems()]
                     joined_issues = ';'.join(issues)
                     event_str = (story_date, source, target, code,
-                                 joined_issues, ids, StorySource)
+                                 joined_issues, ids, url, StorySource)
                 else:
                     event_str = (story_date, source, target, code, ids,
-                                 StorySource)
+                                 url, StorySource)
 
                 story_output.append(event_str)
 

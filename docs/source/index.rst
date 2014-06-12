@@ -28,15 +28,9 @@ process of systematically coding events from news summaries and event
 descriptions referred to as “event data.” This process consists of two
 component parts:
 
- 1. First, is the collection of raw unstructured text including information
-     about relevant events. For this step we have developed a web scraper that
-     automatically pulls news stories form a white list of RSS feeds. Scraped
-     stories are then stored in a MongoDB instance for easy future retrieval.
+ 1. First, is the collection of raw unstructured text including information about relevant events. For this step we have developed a web scraper that automatically pulls news stories form a white list of RSS feeds. Scraped stories are then stored in a MongoDB instance for easy future retrieval.
 
- 2. **Second in this process is the extraction of structured data from scraped
-     unstructured texts using an event data coding system. This was
-     traditionally done using the TABARI system, but will soon be replaced with
-     PETRARCH which works with fully-parsed inputs.**
+ 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system. This was traditionally done using the TABARI system, but will soon be replaced with PETRARCH which works with fully-parsed inputs.**
 
 The output of this process, event observations identified and extracted in a
 'who-did-what-to-whom' format, is what we refer to as event data. At this most

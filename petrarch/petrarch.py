@@ -1014,7 +1014,8 @@ def read_TreeBank():
             # this can re-raise UnbalancedTree
             raise_parsing_error('end of read_TreeBank()')
         except UnbalancedTree:
-            raise SkipRecord
+            logger.warning('\tUnbalanced tree. Passing.'
+            #raise SkipRecord
 
 # ================== CODING ROUTINES  ================== #
 
@@ -2739,8 +2740,11 @@ def main():
         start_time = time.time()
 
         if cli_args.config:
+            print 'Using user-specified config: {}'.format(cli_args.config)
+            logger.info('Using user-specified config: {}'.format(cli_args.config))
             PETRreader.parse_Config(cli_args.config)
         else:
+            logger.info('Using default config file.')
             PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
 
         read_dictionaries()
@@ -2805,10 +2809,11 @@ def run_pipeline(data, out_file=None, config=None, write_output=True):
     utilities.init_logger('PETRARCH.log')
     logger = logging.getLogger('petr_log')
     if config:
-        logger.info('Not using default config. Using {} instead.'.format(config))
-        print 'Not using default config. Using {} instead.'.format(config)
+        print 'Using user-specified config: {}'.format(config)
+        logger.info('Using user-specified config: {}'.format(config))
         PETRreader.parse_Config(config)
     else:
+        logger.info('Using default config file.')
         PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
 
     read_dictionaries()

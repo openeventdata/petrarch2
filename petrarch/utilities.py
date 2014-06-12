@@ -5,7 +5,6 @@ import logging
 import corenlp
 import PETRglobals
 import dateutil.parser
-from progressbar import ProgressBar, Percentage, RotatingMarker, Bar
 from collections import defaultdict, Counter
 
 
@@ -17,11 +16,10 @@ def stanford_parse(event_dict):
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
                                    properties=_get_config('petrarch.properties'),
                                    memory='2g')
-    widgets = ['Parse: ', Percentage(), ' ', Bar(marker=RotatingMarker())]
-    total = (len(event_dict.keys()) * 10) + 50
-    proportion = len(event_dict.keys())
-    pbar = ProgressBar(widgets=widgets, maxval=total).start()
+    total = len(event_dict.keys())
     for i, key in enumerate(event_dict.keys()):
+        if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
+            print 'Parse is {}\% complete...'.format((i / float(total)) * 100)
         for sent in event_dict[key]['sents']:
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
@@ -41,8 +39,6 @@ def stanford_parse(event_dict):
                 except Exception as e:
                     print 'Something went wrong. ¯\_(ツ)_/¯. See log file.'
                     logger.warning('Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
-            pbar.update(proportion * i + 1)
-    pbar.finish()
     print 'Done with StanfordNLP parse...\n\n'
     logger.info('Done with StanfordNLP parse.')
 

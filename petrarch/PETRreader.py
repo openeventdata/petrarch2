@@ -35,8 +35,8 @@ import logging
 import xml.etree.ElementTree as ET
 from ConfigParser import ConfigParser
 
-from . import PETRglobals
-from . import utilities
+import PETRglobals
+import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT

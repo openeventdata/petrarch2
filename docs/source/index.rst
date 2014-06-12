@@ -3,13 +3,36 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PETRARCH's documentation!
-====================================
+Introduction
+============
 
-The Python Engine for Text Resolution And Related
-Coding Hierarchy (PETRARCH) coder is the next-generation successor to the
-`TABARI <http://eventdata.parusanalytics.com/software.dir/tabari.html>`_ event-data coding software. More information about the differences
-between PETRARCH and TABARI can be found on the `Notes <current.html>`_ page.
+A Python Engine for Text Resolution And Related Coding Hierarchy.
+
+PETRARCH is a natural language processing tool for machine-coding events data. It is designed to process fully-parsed news summaries in Penn Treebank format, from which 'whom-did-what-to-whom' relations are extracted. 
+
+PETRARCH is the next-generation successor to the `TABARI <http://eventdata.parusanalytics.com/software.dir/tabari.html>`_ event-data coding software. More information about the key differences between PETRARCH and TABARI can be be found `here <current.html>`_ .
+
+This software is MIT Licensed (MIT) Copyright &copy; 2014 Open Event Data Alliance
+
+
+Events Data
+===========
+
+Over the last few decades, computational and social scientists have refined a process of systematically coding events from news summaries and event descriptions referred to as “event data.” This process consists of two component parts:
+
+ 1. First, is the collection of raw unstructured text including information about relevant events. For this step we have developed a web scraper that automatically pulls news stories form a white list of RSS feeds. Scraped stories are then stored in a MongoDB instance for easy future retrieval.
+
+ 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system. This was traditionally done using the TABARI system, but will soon be replaced with PETRARCH which works with fully-parsed inputs.**
+
+The output of this process, event observations identified and extracted in a 'who-did-what-to-whom' format, is what we refer to as event data. At this most fundamental event event data consists of three component parts, **{SOURCE_ACTOR, ACTION_TYPE, TARGET_ACTOR}** as well as general attributes **{DATE_TIME, LOCATION}**:
+
+Sample Raw Event Data Output:
+
+| Date | Source | CAMEO Code | Target | Cameo Event |
+|:--------:|:------:|:----------:|:------:|:--------------------------------:
+| 19980312 | ISRMIL | 190 | PALINS | (Use conventional military face) |
+
+For more information on event data as well as event data related research see: http://eventdata.parusanalytics.com/
 
 Installing
 ----------
@@ -88,4 +111,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

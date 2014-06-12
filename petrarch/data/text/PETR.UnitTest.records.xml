@@ -1119,6 +1119,94 @@ fiercest foe.
 </Parse>
 </Sentence>
 
+<Sentence date="19950102" id="DEMO-25" category="DEMO" valid="true">
+<!-- Test of % (compounds) in a pattern.  Should match -->
+<!-- POSTPONE \n- % HAVE *  [191] -->
+<!-- This also provides a check of POSTPONE as a synonym with the default code -->
+<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<Text>
+Gondor and Osgiliath have postponed their meeting after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NNP Gondor) (CC and) (NNP Osgiliath)) 
+(VP (VBP have) (VP (VBN postponed) 
+(NP (PRP$ their) (NN meeting)) (SBAR (IN after) 
+(S (NP (DT a) (NN hafling)) (VP (VBD was) 
+(VP (VBN reported) (PP (IN on) 
+(NP (NP (DT the) (NN pass)) (PP (IN of) (NP (NNP Cirith) (NNP Ungol)))
+)))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="DEMO-26" category="DEMO" valid="true">
+<!-- Test of % (compounds) in a pattern.  Should match -->
+<!-- POSTPONE \n- % HAVE *  [191] -->
+<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<Text>
+Gondor and Osgiliath have delayed their meeting after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT (S 
+	(NP (NNP Gondor) (CC and) (NNP Osgiliath)) 
+	(VP (VBP have) (VP (VBN delayed) 
+	(NP (PRP$ their) (NN meeting)) (SBAR (IN after) 
+	(S (NP (DT a) (NN hafling)) (VP (VBD was) 
+	(VP (VBN reported) (PP (IN on) 
+	(NP (NP (DT the) (NN pass)) (PP (IN of) (NP (NNP Cirith) (NNP Ungol)))
+)))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="DEMO-27" category="DEMO" valid="true">
+<!-- Test of % (compounds) in a pattern.  Should match -->
+<!-- DOWNPLAY \n- % HAVE *  [191] -->
+<!-- This also provides a check of DOWNPLAY [014] as a synonym without a default code -->
+<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="014"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="014"></EventCoding>
+<Text>
+Gondor and Osgiliath have downplayed their meeting after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT (S 
+	(NP (NNP Gondor) (CC and) (NNP Osgiliath)) 
+	(VP (VBP have) (VP (VBN downplayed) 
+	(NP (PRP$ their) (NN meeting)) (SBAR (IN after) 
+	(S (NP (DT a) (NN hafling)) (VP (VBD was) 
+	(VP (VBN reported) (PP (IN on) 
+	(NP (NP (DT the) (NN pass)) (PP (IN of) (NP (NNP Cirith) (NNP Ungol)))
+)))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="DEMO-28" category="DEMO" valid="true">
+<!-- Test of % (compounds) in a pattern; match is not at the beginning of the sentence  -->
+<!-- Should match -->
+<!-- DELAY \n- % HAVE *  [191] -->
+<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<Text>
+It has been reported that </Text>
+<Parse>
+(ROOT (S 
+	(NP (PRP It)) 
+	(VP (VBZ has) (VP (VBN been) (VP (VBN noted) 
+	(SBAR (IN that) 
+	(S (NP (NNP Gondor) (CC and) (NNP Osgiliath)) 
+	(VP (VBP have) (VP (VBN delayed) 
+	(NP (PRP$ their) (NN meeting)) (SBAR (IN after) 
+	(S (NP (DT a) (NN hafling)) 
+	(VP (VBD was) (VP (VBN reported) (PP (IN on) 
+	(NP (NP (DT the) (NN pass)) (PP (IN of) (NP (NNP Cirith) (NNP Ungol))))
+)))))))))))) (. .)))
+</Parse>
+</Sentence>
+
 
 <!--
 ##########################################################################################

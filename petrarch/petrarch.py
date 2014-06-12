@@ -1466,8 +1466,15 @@ def verb_pattern_match(patlist, aseq, isupperseq):
 # print "VPM-2:" , kseq, aseq[kseq]   # debug
 # print "VPM-3:" , aseq, isupperseq   # debug
 
-                elif patlist[kpatword] == '%':
-                    pass  # deal with compound
+                elif patlist[kpatword] == '%':  # deal with compound
+                        ka = kseq
+                        while '(NEC' not in aseq[ka]: 
+                            if isupperseq: ka += 1
+                            else: ka -= 1
+                            if ka < 0 or ka >= len(aseq):
+                                return False
+                        SourceLoc = [ka,isupperseq]
+                        TargetLoc = [ka,isupperseq]
 
                 if ShowVPM:
                     # debug
@@ -2504,6 +2511,7 @@ def do_validation(filepath):
 
     nvalid = 0
 
+    print '++', filepath
     tree = ET.parse(filepath)
     root = tree.getroot()
 

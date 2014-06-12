@@ -1,6 +1,6 @@
 <!-- PETRARCH VALIDATION SUITE VERBS DICTIONARY -->
-<!-- VERSION: 0.5 -->
-<!-- Last Update: 10 June 2014 -->
+<!-- VERSION: 0.1 -->
+<!-- Last Update: 28 April 2014 -->
 
 <!-- Note: This dictionary started out as part of a KEDS dictionary -- hence most of   -->
 <!-- the codes are WEIS, not CAMEO -- and then small parts of it were tweaked quite    -->
@@ -435,6 +435,13 @@ DEFY
 - * CRITICISM  [141]  # tony  4/26/91
 - HAVE * BAN  [112]  # tony  3/12/91
 
+--- DELAY [191]  [031:031]  ---
+DELAY
+DOWNPLAY [014]
+POSTPONE    # -PAS 2/9/96
+- % HAVE  *  [191]
+- SAID WOULD NOT *  [112]  # tony  4/19/91
+
 --- DELIVER  [031]  ---
 DELIVER    # tony  3/13/91
 - * PROTEST  [132]
@@ -779,9 +786,6 @@ PAID
 --- PARADE  [017] ---
 PARADE  
 - ANTI- + *  [111]  # pas   4/26/03 #  test of "replace:" facility
-
---- PASS BILL SUPPORT  [073]  ---
-PASS BILL SUPPORT    # tony  3/11/91
 
 --- PAY  [---] ---
 PAY  

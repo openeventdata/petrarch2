@@ -21,7 +21,6 @@ def write_events(event_dict, output_file):
     global StoryIssues
 
     event_output = []
-    print 'hitting write_events...'
     for key in event_dict:
         story_dict = event_dict[key]
         story_output = []

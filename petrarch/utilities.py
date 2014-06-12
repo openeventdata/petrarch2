@@ -26,8 +26,8 @@ def stanford_parse(event_dict):
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
 
-            if len(sent_dict['content']) > 500:
-                logger.warning('\tText too long. Probably two sentences.')
+            if len(sent_dict['content']) > 512 or len(sent_dict['content']) < 64:
+                logger.warning('\tText length wrong. Either too long or too short.')
                 pass
             else:
                 try:

@@ -2816,6 +2816,7 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
         PETRreader.parse_Config(config)
     else:
         logger.info('Using default config file.')
+        logger.info('Config path: {}'.format(utilities._get_config('PETR_config.ini')))
         PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
 
     read_dictionaries()

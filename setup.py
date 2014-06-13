@@ -13,7 +13,7 @@ setup(
     author_email='openeventdata@gmail.com',
     packages=['petrarch'],
     package_dir={'petrarch': 'petrarch'},
-    package_data={'petrarch': ['data/*', 'data/dictionaries/*', 'data/text/*']},
+    package_data={'petrarch.data': ['*', 'dictionaries/*', 'text/*']},
     url='openeventdata.org',
     license='LICENSE.txt',
     description='PETRARCH parser for event data.',

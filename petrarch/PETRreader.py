@@ -1752,7 +1752,6 @@ def read_pipeline_input(pipeline_list):
                         'url': entry['url']}
         if 'parsed_sents' in entry:
             parsetrees = entry['parsed_sents']
-            print parsetrees
         else:
             parsetrees = ''
         if 'corefs' in entry:

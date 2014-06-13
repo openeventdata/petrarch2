@@ -124,7 +124,7 @@ def _get_data(dir_path, path):
 
 def _get_config(config_name):
     cwd = os.path.abspath(os.path.dirname(__file__))
-    out_dir = os.path.join(cwd, '..', config_name)
+    out_dir = os.path.join(cwd, config_name)
     return out_dir
 
 

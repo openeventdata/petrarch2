@@ -1752,6 +1752,7 @@ def read_pipeline_input(pipeline_list):
                         'url': entry['url']}
         if 'parsed' in entry:
             parsetrees = entry['parsed']
+            print parsetrees
         else:
             parsetrees = ''
         if 'corefs' in entry:
@@ -1764,6 +1765,7 @@ def read_pipeline_input(pipeline_list):
         for i, sent in enumerate(split_sents[:7]):
             if parsetrees:
                 tree = utilities._format_parsed_str(parsetrees[i])
+                print tree
                 sent_dict[i] = {'content': sent, 'parsed': tree}
             else:
                 sent_dict[i] = {'content': sent}

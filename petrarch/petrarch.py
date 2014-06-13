@@ -2805,7 +2805,8 @@ def run(filepaths, out_file, s_parsed):
     PETRwriter.write_events(updated_events, out_file)
 
 
-def run_pipeline(data, out_file=None, config=None, write_output=True):
+def run_pipeline(data, out_file=None, config=None, write_output=True,
+                 parsed=False):
     utilities.init_logger('PETRARCH.log')
     logger = logging.getLogger('petr_log')
     if config:
@@ -2819,8 +2820,11 @@ def run_pipeline(data, out_file=None, config=None, write_output=True):
     read_dictionaries()
 
     events = PETRreader.read_pipeline_input(data)
-    events = utilities.stanford_parse(events)
-    updated_events = do_coding(events, 'TEMP')
+    if parsed:
+        updated_events = do_coding(events, 'TEMP')
+    else:
+        events = utilities.stanford_parse(events)
+        updated_events = do_coding(events, 'TEMP')
     if not write_output:
         output_events = PETRwriter.pipe_output(updated_events)
         return output_events

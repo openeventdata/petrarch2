@@ -14,7 +14,7 @@ def stanford_parse(event_dict):
     print "\nSetting up StanfordNLP. The program isn't dead. Promise."
     logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
-                                   properties=_get_data('./',
+                                   properties=_get_data('data/config/',
                                                         'petrarch.properties'),
                                    memory='2g')
     total = len(event_dict.keys())

@@ -862,6 +862,7 @@ def read_TreeBank():
 #		print 'PPP3: ',exst
         return nepph
 
+    logger = logging.getLogger('petr_log')
     fullline = ''
     vpindex = 1
     npindex = 1
@@ -1014,7 +1015,7 @@ def read_TreeBank():
             # this can re-raise UnbalancedTree
             raise_parsing_error('end of read_TreeBank()')
         except UnbalancedTree:
-            logger.warning('\tUnbalanced tree. Passing.'
+            logger.warning('\tUnbalanced tree. Passing.')
             #raise SkipRecord
 
 # ================== CODING ROUTINES  ================== #

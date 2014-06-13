@@ -1750,11 +1750,22 @@ def read_pipeline_input(pipeline_list):
                         'source': entry['source'],
                         'story_title': entry['title'],
                         'url': entry['url']}
+        if 'parsed' in entry:
+            parsetrees = entry['parsed']
+        else:
+            parsetrees = ''
+        if 'corefs' in entry:
+            corefs = entry['corefs']
+            meta_content.update({'corefs': corefs})
+
         split_sents = _sentence_segmenter(entry['content'])
         # TODO Make the number of sents a setting
         sent_dict = {}
         for i, sent in enumerate(split_sents[:7]):
-            sent_dict[i] = {'content': sent}
+            if parsetrees:
+                sent_dict[i] = {'content': sent, 'parsed': parsetrees[i]}
+            else:
+                sent_dict[i] = {'content': sent}
 
         content_dict = {'sents': sent_dict, 'meta': meta_content}
         holding[entry_id] = content_dict

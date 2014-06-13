@@ -2192,6 +2192,7 @@ def make_event_strings():
                     codelist.insert(ka, parts[kb])
                     kb -= 1
 
+    logger = logging.getLogger('petr_log')
 #	print 'MES1: ',SourceLoc, TargetLoc
     srccodes = get_loccodes(SourceLoc)
     expand_compound_codes(srccodes)

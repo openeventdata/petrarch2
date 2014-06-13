@@ -1764,8 +1764,10 @@ def read_pipeline_input(pipeline_list):
         sent_dict = {}
         for i, sent in enumerate(split_sents[:7]):
             if parsetrees:
-                tree = utilities._format_parsed_str(parsetrees[i])
-                print tree
+                try:
+                    tree = utilities._format_parsed_str(parsetrees[i])
+                except IndexError:
+                    tree = ''
                 sent_dict[i] = {'content': sent, 'parsed': tree}
             else:
                 sent_dict[i] = {'content': sent}

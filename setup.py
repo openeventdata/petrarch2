@@ -12,6 +12,8 @@ setup(
     author='Philip Schrodt, John Beieler',
     author_email='openeventdata@gmail.com',
     packages=['petrarch'],
+    package_dir={'petrarch': 'petrarch'},
+    package_data={'petrarch': ['data/*']},
     url='openeventdata.org',
     license='LICENSE.txt',
     description='PETRARCH parser for event data.',

@@ -2729,7 +2729,8 @@ def main():
     PETRglobals.RunTimeString = time.asctime()
 
     if cli_args.command_name == 'validate':
-        PETRreader.parse_Config(utilities._get_data('./', 'PETR_config.ini'))
+        PETRreader.parse_Config(utilities._get_data('data/',
+                                                    'PETR_config.ini'))
         if not cli_args.inputs:
             validation_file = utilities._get_data('data/text',
                                                   'PETR.UnitTest.records.xml')
@@ -2746,7 +2747,8 @@ def main():
             PETRreader.parse_Config(cli_args.config)
         else:
             logger.info('Using default config file.')
-            PETRreader.parse_Config(utilities._get_data('./', 'PETR_config.ini'))
+            PETRreader.parse_Config(utilities._get_data('data/',
+                                                        'PETR_config.ini'))
 
         read_dictionaries()
 
@@ -2816,9 +2818,10 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
         PETRreader.parse_Config(config)
     else:
         logger.info('Using default config file.')
-        logger.info('Config path: {}'.format(utilities._get_data('./',
+        logger.info('Config path: {}'.format(utilities._get_data('data/',
                                                                  'PETR_config.ini')))
-        PETRreader.parse_Config(utilities._get_data('./', 'PETR_config.ini'))
+        PETRreader.parse_Config(utilities._get_data('data/',
+                                                    'PETR_config.ini'))
 
     read_dictionaries()
 

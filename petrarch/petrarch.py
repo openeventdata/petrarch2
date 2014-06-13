@@ -2826,7 +2826,9 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
     read_dictionaries()
 
     if parsed:
+        logger.info('Hitting read events...')
         events = PETRreader.read_pipeline_input(data)
+        logger.info('Hitting do_coding')
         updated_events = do_coding(events, 'TEMP')
     else:
         events = utilities.stanford_parse(events)

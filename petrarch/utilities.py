@@ -14,7 +14,8 @@ def stanford_parse(event_dict):
     print "\nSetting up StanfordNLP. The program isn't dead. Promise."
     logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
-                                   properties=_get_config('petrarch.properties'),
+                                   properties=_get_data('data/config/',
+                                                        'petrarch.properties'),
                                    memory='2g')
     total = len(event_dict.keys())
     print "Stanford setup complete. Starting parse of {} stories...".format(total)
@@ -124,7 +125,7 @@ def _get_data(dir_path, path):
 
 def _get_config(config_name):
     cwd = os.path.abspath(os.path.dirname(__file__))
-    out_dir = os.path.join(cwd, '..', config_name)
+    out_dir = os.path.join(cwd, config_name)
     return out_dir
 
 

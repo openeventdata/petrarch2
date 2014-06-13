@@ -2192,6 +2192,7 @@ def make_event_strings():
                     codelist.insert(ka, parts[kb])
                     kb -= 1
 
+    logger = logging.getLogger('petr_log')
 #	print 'MES1: ',SourceLoc, TargetLoc
     srccodes = get_loccodes(SourceLoc)
     expand_compound_codes(srccodes)
@@ -2729,7 +2730,8 @@ def main():
     PETRglobals.RunTimeString = time.asctime()
 
     if cli_args.command_name == 'validate':
-        PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
+        PETRreader.parse_Config(utilities._get_data('data/config/',
+                                                    'PETR_config.ini'))
         if not cli_args.inputs:
             validation_file = utilities._get_data('data/text',
                                                   'PETR.UnitTest.records.xml')
@@ -2746,7 +2748,8 @@ def main():
             PETRreader.parse_Config(cli_args.config)
         else:
             logger.info('Using default config file.')
-            PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
+            PETRreader.parse_Config(utilities._get_data('data/config/',
+                                                        'PETR_config.ini'))
 
         read_dictionaries()
 
@@ -2816,12 +2819,17 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
         PETRreader.parse_Config(config)
     else:
         logger.info('Using default config file.')
-        PETRreader.parse_Config(utilities._get_config('PETR_config.ini'))
+        logger.info('Config path: {}'.format(utilities._get_data('data/config/',
+                                                                 'PETR_config.ini')))
+        PETRreader.parse_Config(utilities._get_data('data/config/',
+                                                    'PETR_config.ini'))
 
     read_dictionaries()
 
-    events = PETRreader.read_pipeline_input(data)
     if parsed:
+        logger.info('Hitting read events...')
+        events = PETRreader.read_pipeline_input(data)
+        logger.info('Hitting do_coding')
         updated_events = do_coding(events, 'TEMP')
     else:
         events = utilities.stanford_parse(events)

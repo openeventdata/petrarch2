@@ -1750,8 +1750,8 @@ def read_pipeline_input(pipeline_list):
                         'source': entry['source'],
                         'story_title': entry['title'],
                         'url': entry['url']}
-        if 'parsed' in entry:
-            parsetrees = entry['parsed']
+        if 'parsed_sents' in entry:
+            parsetrees = entry['parsed_sents']
         else:
             parsetrees = ''
         if 'corefs' in entry:
@@ -1763,7 +1763,10 @@ def read_pipeline_input(pipeline_list):
         sent_dict = {}
         for i, sent in enumerate(split_sents[:7]):
             if parsetrees:
-                tree = utilities._format_parsed_str(parsetrees[i])
+                try:
+                    tree = utilities._format_parsed_str(parsetrees[i])
+                except IndexError:
+                    tree = ''
                 sent_dict[i] = {'content': sent, 'parsed': tree}
             else:
                 sent_dict[i] = {'content': sent}

@@ -49,6 +49,9 @@
 
 --- ABANDON  [345]  ---
 ABANDON    # pas 15 Jul 2003
++ABC_DEF_GHI
+KLM_NOP_+RST [002]
++ABC_AARDVARK_ADVOCATE [003]
 - * NEW_&TIETYPES_RELATIONS [903] #  -PAS 12.01.12
 - * IMPROVED &TIETYPES RELATIONS [904] #  -PAS 12.01.12
 - * EFFORT  [987]  # pas 15 Jul 2003
@@ -139,7 +142,7 @@ APPRECIATE
 - * POSITION  [042]
 
 --- ARM_ [182]  ---
-ARM_   # jw   9/23/91
+ARM   # jw   9/23/91
 - * OUR FRIENDS  [def]  # pas 07 Apr 2000
 - * THE WOGS  [abc]  # pas 07 Apr 2000
 
@@ -257,7 +260,7 @@ BRIEF
 BROADCAST    # jw 9/29/91
 
 --- BRUSH ASIDE REPORTS  [142]  ---
-BRUSH ASIDE REPORTS    # tony  4/28/91 #  also MARK-06 to 12
+BRUSH_ASIDE REPORTS    # tony  4/28/91 #  also MARK-06 to 12
 
 --- BURN [---] ---
 BURN 
@@ -363,8 +366,10 @@ CONFINE
 CONFIRM    # tony  3/13/91
 - * WOULD VISIT  [082]  # tony  4/29/91
 
---- CONFISCATE  [211] ---
+--- CONFISCATE  [171] ---
 CONFISCATE  
+WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
+- WILL NOT * [081]
 
 --- CONGRATULATE  [041]  ---
 CONGRATULATE    # tony  4/28/91
@@ -532,8 +537,10 @@ EXCHANG
 - * FEELERS  [031:032]
 - * FIRE  [223]
 
---- EXCLUDE  [112] ---
+--- EXCLUDE  [1721] ---
 EXCLUDE  
++CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
+- * FOR CONSTRUCTION [071]
 
 --- EXPAND [---] ---
 EXPAND 
@@ -752,7 +759,7 @@ MEET    # -PAS 2/9/96
 - NO *  [112]
 
 --- MEND RELATIONS  [065]  ---
-MEND RELATIONS    # tony  3/11/91
+MEND_RELATIONS    # tony  3/11/91
 
 --- MET  [031:032]  ---
 MET    # pas   9/24/91
@@ -908,8 +915,8 @@ REDUCE
 REESTABLISH  
 - * DIPLOMATIC  [064]
 
---- REFUS  [112] ---
-REFUS  
+--- REFUSE  [112] ---
+REFUSE  
 - * ASSURENCES  [142]
 
 --- REFUTE  [140] ---

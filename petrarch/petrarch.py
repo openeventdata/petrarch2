@@ -4,6 +4,7 @@ import os
 import sys
 import glob
 import time
+import types
 import logging
 import argparse
 import xml.etree.ElementTree as ET
@@ -751,9 +752,9 @@ def read_TreeBank():
                     nplist = ['(NE --- ']
                     if len(adjlist) > 0:
                         nplist.extend(adjlist)
-                    print '++1:', nplist
+#                    print '++1:', nplist
                     nplist.extend([seg[1], ' ) '])
-                    print '++2:', nplist
+#                    print '++2:', nplist
                 else:
                     nplist = get_NE(treestr[npbds[0]:npbds[1]])
                 if ShowMarkCompd:
@@ -1230,41 +1231,19 @@ def find_target():
         kseq += 1
 
 
-def make_check_sequences(verbloc, endtag):
-# create the upper and lower sequences to be checked by the verb patterns based
-# on the verb at ParseList[verbloc]. Lower sequence includes only words in the
-# VP Upper sequence currently terminated by ParseStart, ~S or ~,
-
-    """
-    Note-1: Adding location and code information to (NE
-    <13.11.15>
-    The trade-off here is storing this as text, which involves the cost of
-    str{kword) vs storing the information in a list, which means we need
-    something more complex then "if ('(NE'..." to check for it...that is, *Seq
-    now contains multiple data types. My logic here is that the *Seq lists are
-    potentially evaluated a large number of times, whereas the text only needs
-    to be decoded when a pattern in matched, but that could be wrong.
-
-    Hmmm, do we really need the location, or just the code? Getting the code is
-    cheap
-    """
+def get_upper_seq(kword):
+    """ Generate the upper sequence starting from kword; Upper sequence currently 
+    terminated by ParseStart, ~S or ~,"""
     global ParseList, ParseStart
-    global UpperSeq, LowerSeq
+    global UpperSeq
 
-#	print "MCS-0",verbloc, ParseList[verbloc], endtag
-#	print "MCS-0.5",len(ParseList)
-
-    # generate the upper sequence: note that this is in reverse word order
     UpperSeq = []
-    kword = verbloc - 1
     while kword >= ParseStart:
-#		if ('~S' in ParseList[kword]) or ('~,' in ParseList[kword]): break
-        if ('~,' in ParseList[kword]):
-            break
+#       if ('~S' in ParseList[kword]) or ('~,' in ParseList[kword]): break
+        if ('~,' in ParseList[kword]): break
         if ('(NE' == ParseList[kword]):
             code = UpperSeq.pop()  # remove the code
-            # <pas 13.07.26> See Note-1
-            UpperSeq.append(ParseList[kword] + '<' + str(kword) + '>' + code)
+            UpperSeq.append(ParseList[kword]+'<'+str(kword)+'>'+code)  # <pas 13.07.26> See Note-1 
         elif ('NEC' in ParseList[kword]):
             UpperSeq.append(ParseList[kword])
         elif ('~NE' in ParseList[kword]):
@@ -1273,20 +1252,20 @@ def make_check_sequences(verbloc, endtag):
             UpperSeq.append(ParseList[kword])
         kword -= 1
 
-    if ShowCodingSeq:
-        print "Upper sequence:", UpperSeq
-# for alist in UpperSeq: print alist  # debug
+    if ShowCodingSeq: print "Upper sequence:",UpperSeq
+#   for alist in UpperSeq: print alist  # debug
+        
+def get_lower_seq(kword, endtag):
+    """ Generate the lower sequence starting from kword; lower sequence includes only 
+    words in the VP"""
+    global ParseList
+    global LowerSeq
 
-    # generate the lower sequence
     LowerSeq = []
-    kword = verbloc + 1
-    # limit this to the verb phrase itself
-    while (endtag not in ParseList[kword]):
-#		print "MCS-2",kword, ParseList[kword]
+    while (endtag not in ParseList[kword]):  # limit this to the verb phrase itself
+#       print "MCS-2",kword, ParseList[kword]
         if ('(NE' == ParseList[kword]):
-            # <pas 13.07.26> See Note-1
-            LowerSeq.append(
-                ParseList[kword] + '<' + str(kword) + '>' + ParseList[kword + 1])
+            LowerSeq.append(ParseList[kword]+'<'+str(kword)+'>'+ParseList[kword+1])  # <pas 13.07.26> See Note-1 
             kword += 1  # skip code
         elif ('NEC' in ParseList[kword]):
             LowerSeq.append(ParseList[kword])
@@ -1295,17 +1274,72 @@ def make_check_sequences(verbloc, endtag):
         elif (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
             LowerSeq.append(ParseList[kword])
         kword += 1
-        # <14.04.23>: need to just set this to len(ParseList)?
-        if kword >= len(ParseList):
-            # at this point some sort of markup we can't handle, not
-            # necessarily unbalanced
-            raise_parsing_error('make_check_sequences()')
-            return
+        if kword >= len(ParseList):  # <14.04.23>: need to just set this to len(ParseList)?
+            raise_parsing_error('get_lower_seq()') # at this point some sort of markup we can't handle, not necessarily unbalanced 
+            return   
 
-    if ShowCodingSeq:
-        print "Lower sequence:", LowerSeq
-# for alist in LowerSeq: print alist  # debug
+    if ShowCodingSeq: print "Lower sequence:",LowerSeq
+#   for alist in LowerSeq: print alist  # debug
 
+def make_check_sequences(verbloc, endtag):
+    """ Create the upper and lower sequences to be checked by the verb patterns based on the 
+    verb at ParseList[verbloc]. """ 
+
+    """ Note-1: Adding location and code information to (NE
+    <13.11.15>
+    The trade-off here is storing this as text, which involves the cost of str{kword)
+    vs storing the information in a list, which means we need something more complex
+    then "if ('(NE'..." to check for it...that is, *Seq now contains multiple data
+    types. My logic here is that the *Seq lists are potentially evaluated a large 
+    number of times, whereas the text only needs to be decoded when a pattern in 
+    matched, but that could be wrong.
+    Hmmm, do we really need the location, or just the code? Getting the code is cheap
+    
+    <14.06.14>: get_uppper_seq and get_lower_seq were split out when make_multi_sequences()
+    was created, so this can probably now be made into in-line code and removed as a 
+    function.
+    """
+    
+#   print "MCS-0",verbloc, ParseList[verbloc], endtag
+#   print "MCS-0.5",len(ParseList)
+
+    get_upper_seq(verbloc - 1)
+    get_lower_seq(verbloc + 1, endtag)
+
+def make_multi_sequences(multilist, verbloc, endtag):
+    """ check if the multi-word list in multilist is valid for the verb at ParseList[verbloc], 
+    then create the upper and lower sequences to be checked by the verb patterns. Lower 
+    sequence includes only words in the VP; upper sequence currently terminated by ParseStart, 
+    ~S or ~, Returns False if the multilist is not valid, True otherwise."""
+
+    global ParseList, ParseStart
+    
+    ka = 1
+    if multilist[0]:  # words follow the verb
+        kword = verbloc + 1
+        while ka < len(multilist):
+            if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
+                if ParseList[kword] == multilist[ka]:
+                    ka += 1
+                else:
+                    return False
+            kword += 1
+        get_upper_seq(verbloc - 1)
+        get_lower_seq(kword, endtag)
+        return True
+    else: 
+        kword = verbloc - 1
+        while ka < len(multilist):
+            if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
+                if ParseList[kword] == multilist[ka]:
+                    ka += 1
+                else:
+                    return False
+            kword -= 1
+        get_upper_seq(kword)
+        get_lower_seq(verbloc + 1, endtag)
+        return True
+                
 
 def verb_pattern_match(patlist, aseq, isupperseq):
     """
@@ -1333,7 +1367,6 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             else:
                 ka -= 1
             if ka < 0 or ka >= len(aseq):
-                print "++:", ka
                 # at this point some sort of markup we can't handle, not
                 # necessarily unbalanced
                 raise_parsing_error('find_ne(kseq) in verb_pattern_match()')
@@ -1602,33 +1635,41 @@ def check_verbs():
                     print "CV-1 Found", targ
                 endtag = '~' + ParseList[vpstart][1:]
                 hasmatch = False
-                make_check_sequences(kitem + 2, endtag)
                 if PETRglobals.VerbDict[targ][0]:
                     patternlist = PETRglobals.VerbDict[targ]
+                    ka = 2
+                    while (ka < len(patternlist) 
+                        and type(patternlist[ka][0]) is types.StringType): # check for multi-word.
+                        if ShowPattMatch: print "CV/mult-1: Checking",targ, patternlist[ka]
+                        if make_multi_sequences(patternlist[ka][2], kitem+2, endtag):
+                            if ShowPattMatch: print "CV/mult-1: Found",targ, patternlist[ka]
+                            verbcode = patternlist[ka][0]  # save the default multi-word verb code
+                            patternlist = PETRglobals.VerbDict[patternlist[ka][1]]  # redirect to the list for the primary verb                             
+                            break
+                        ka += 1
+                    else: 
+                        make_check_sequences(kitem+2, endtag)
+                        verbcode = patternlist[1]
                 else:
-                    # redirect from a synonym
-                    patternlist = PETRglobals.VerbDict[
-                        PETRglobals.VerbDict[targ][2]]
+                    patternlist = PETRglobals.VerbDict[PETRglobals.VerbDict[targ][2]]  # redirect from a synonym
+                    make_check_sequences(kitem+2, endtag)
+                    verbcode = PETRglobals.VerbDict[targ][1]
                 kpat = 2
-                if ShowPattMatch:
-                    print "CV-2 patlist", patternlist
+                if ShowPattMatch: print "CV-2 patlist", patternlist
                 while kpat < len(patternlist):
-                    SourceLoc = [-1, True]
-                    TargetLoc = [-1, True]
+                    SourceLoc = [-1,True] ; TargetLoc = [-1,True]  
                     if verb_pattern_match(patternlist[kpat][0], UpperSeq, True):
-                        if ShowPattMatch:
-                            print "Found upper pattern match"   # debug
+                        if ShowPattMatch: print "Found upper pattern match"   # debug
                         if verb_pattern_match(patternlist[kpat][1], LowerSeq, False):
-                            if ShowPattMatch:
-                                print "Found lower pattern match"   # debug
+                            if ShowPattMatch: print "Found lower pattern match"   # debug
                             EventCode = patternlist[kpat][2]
                             hasmatch = True
                             break
                     kpat += 1
-                if not hasmatch and PETRglobals.VerbDict[targ][1] != '---':
-                    if ShowPattMatch:
-                        print "Matched on the primary verb"   # debug
-                    EventCode = PETRglobals.VerbDict[targ][1]
+                if not hasmatch and verbcode != '---':
+                    if ShowPattMatch: print "Matched on the primary verb"   # debug
+#                       EventCode = PETRglobals.VerbDict[targ][1]
+                    EventCode = verbcode
                     hasmatch = True
 
                 if hasmatch:
@@ -2515,7 +2556,6 @@ def do_validation(filepath):
 
     nvalid = 0
 
-    print '++', filepath
     tree = ET.parse(filepath)
     root = tree.getroot()
 

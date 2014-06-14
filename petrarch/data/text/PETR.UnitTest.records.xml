@@ -1207,6 +1207,92 @@ It has been reported that </Text>
 </Parse>
 </Sentence>
 
+<Sentence date="19950101" id="DEMO-29" category="DEMO" valid="true">
+<!-- Coding the simple multiword verb +CORDONED_OFF -->
+<!-- Last update: 13-June-2014 -->
+<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="1721"></EventCoding>
+<Text>
+Soldiers from Gondor have cordoned off the roads leading into Mordor along the pass 
+of Cirith Ungol.
+</Text>
+<Parse> 
+(ROOT (S 
+(NP (NP (NNS Soldiers)) (PP (IN from) (NP (NNP Gondor)))) 
+(VP (VBP have) (VP (VBN cordoned) (PRT (RP off)) 
+(NP (DT the) (NNS roads)) 
+(S (VP (VBG leading) (PP (IN into) (NP (NNP Mordor))) 
+(PP (IN along) 
+(NP (NP (DT the) (NN pass)) (PP (IN of) (NP (NNP Cirith) (NNP Ungol))))
+))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="DEMO-30" category="DEMO" valid="true">
+<!-- Coding the simple multiword verb WIRE_+TAPPED -->
+<!-- Last update: 13-June-2014 -->
+<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="171"></EventCoding>
+<Text>
+Soldiers from Gondor wire tapped all communication links leading into Mordor along the 
+pass of Cirith Ungol.
+</Text>
+<Parse> 
+(ROOT (S 
+(NP (NP (NNS Soldiers)) 
+(PP (IN from) 
+(NP (NNP Gondor) (NN wire)))) 
+(VP (VBD tapped) 
+(NP (NP (DT all) (NN communication) (NNS links)) 
+(VP (VBG leading) (PP (IN into) (NP (NNP Mordor))) 
+(PP (IN along) (NP (NP (DT the) (NN pass)) 
+(PP (IN of) (NP (NNP Cirith) (NNP Ungol)))
+))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="DEMO-31" category="DEMO" valid="true">
+<!-- Coding the multiword verb WIRE_+TAPPED with a pattern -->
+<!-- Last update: 14-June-2014 -->
+<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="081"></EventCoding>
+<Text>
+Soldiers from Gondor will not wire tap the communication links leading into Mordor along  
+the pass of Cirith Ungol.
+</Text>
+<Parse> 
+(ROOT (S 
+(NP (NP (NNS Soldiers)) (PP (IN from) (NP (NNP Gondor)))) 
+(VP (MD will) (RB not) (VP (VB wire) (VP (VB tap) 
+(NP (NP (DT the) (NN communication) (NNS links)) 
+(VP (VBG leading) (PP (IN into) (NP (NNP Mordor))) 
+(PP (IN along) 
+(NP (NP (DT the) (NN pass)) 
+(PP (IN of) (NP (NNP Cirith) (NNP Ungol)))
+))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="DEMO-32" category="DEMO" valid="true">
+<!-- Coding the multiword verb +CORDONED_OFF with a pattern -->
+<!-- Last update: 14-June-2014 -->
+<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="071"></EventCoding>
+<Text>
+Soldiers from Gondor have cordoned off for construction the roads leading into Mordor 
+along the pass of Cirith Ungol.
+</Text>
+<Parse> 
+(ROOT (S 
+(NP (NP (NNS Soldiers)) (PP (IN from) (NP (NNP Gondor)))) 
+(VP (VBP have) (VP (VBN cordoned) (PRT (RP off)) 
+(PP (IN for) (NP (NN construction))) 
+(NP (NP (DT the) (NNS roads)) 
+(VP (VBG leading) (PP (IN into) (NP (NNP Mordor))))) 
+(PP (IN along) 
+(NP (NP (DT the) (NN pass)) 
+(PP (IN of) (NP (NNP Cirith) (NNP Ungol))))))) (. .)))
+</Parse>
+</Sentence>
+
+
 
 <!--
 ##########################################################################################

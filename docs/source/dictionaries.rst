@@ -84,7 +84,23 @@ does not generate an event. The null code also can be used as a secondary code.
 
 This is followed by a set of patterns -- these begin with '-' -- which generally 
 follow the same syntax as TABARI patterns (see Chapter 5 of the TABARI manual). The pattern set is terminated with a  blank line.
-    
+
+**Multiple-word verbs**
+
+Multiple-word "verbs" such as ``CONDON OFF``, ``WIRE TAP`` and ``BEEF UP`` are entered by 
+connecting the word with an underscore (these must be consecutive) and putting a '+' 
+in front of the verb. Alternative forms must be specified: they are not constructed 
+automatically. These are treated in patterns just as single-word verbs are treated.
+
+Example:
+
+::
+
+    +BEEF_UP {+BEEFS_UP +BEEFED_UP +BEEFING_UP}
+    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
+    WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
+
+
 **Synsets:**
 
 Synonym sets (synsets) are labelled with a string beginning with & and defined using

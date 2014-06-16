@@ -1943,6 +1943,7 @@ def check_commas():
 
     global ParseList
 
+    logger = logging.getLogger('petr_log')
     # displays trees at various points as ParseList is mangled
     ShowCCtrees = True
     ShowCCtrees = False

@@ -61,7 +61,7 @@ def write_events(event_dict, output_file):
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)
             else:
-                event_str += '\t\t'
+                event_str += '\t'
 
             if url:
                 event_str += '\t{}\t{}\t{}'.format(ids, url, StorySource)

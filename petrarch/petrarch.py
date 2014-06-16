@@ -345,15 +345,11 @@ def evaluate_validation_record(item):
         print('Expected Events:')
         for event in ValidEvents:
             print(event)
-    else:
-        print('No events should be coded')
 
     if len(CodedEvents) > 0:
         print('Coded Events:')
         for event in CodedEvents:
             print(SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2])
-    else:
-        print('No events were coded')
 
     if (len(ValidEvents) == 0) and (len(CodedEvents) == 0):
         return True  # noevents option
@@ -927,7 +923,9 @@ def read_TreeBank():
                     # cases of a possessive on a compound, so skip it for now
                     check_balance()
                 except:
-                    raise SkipRecord
+                    logger.warning('\tUnbalancedTree. Skipping.')
+                    pass
+                    #raise SkipRecord
 
             elif '(PP' in treestr[ka + 3:npbds[1]]:  # prepositional phrase
                 if False:
@@ -2040,7 +2038,9 @@ def check_commas():
             # this can re-raise UnbalancedTree
             raise_parsing_error('end of check_comma()')
         except UnbalancedTree:
-            raise SkipRecord
+            logger.warning('\tUnbalanced tree. Passing.')
+            pass
+            #raise SkipRecord
 
 
 def assign_NEcodes():
@@ -2349,7 +2349,8 @@ def extract_Sentence_info(item):
         SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
     else:
         logger.warning(ErrMsgMissingDate)
-        raise SkipRecord
+        pass
+        #raise SkipRecord
 
 
 def read_record():
@@ -2540,7 +2541,6 @@ def code_record():
         return CodedEvents
     else:
         NEmpty += 1
-        print("No events coded")
 
 #	if len(raw_input("Press Enter to continue...")) > 0: sys.exit()
 

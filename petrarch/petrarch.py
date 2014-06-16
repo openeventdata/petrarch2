@@ -2484,7 +2484,7 @@ def get_issues():
     """
     global SentenceText
 
-    sent = SentenceText.upper().decode('utf-8')  # case insensitive matching
+    sent = SentenceText.upper()  # case insensitive matching
     issues = []
 
     for target in PETRglobals.IssueList:
@@ -2699,14 +2699,10 @@ def do_coding(event_dict, out_file):
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
 
-
                 if coded_events and PETRglobals.IssueFileName != "":
-                    try:
-                        event_issues = get_issues()
-                        if event_issues:
-                            event_dict[key]['sents'][sent]['issues'] = event_issues
-                    except (UnicodeDecodeError, UnicodeEncodeError):
-                        print('There was a unicode error...')
+                    event_issues = get_issues()
+                    if event_issues:
+                        event_dict[key]['sents'][sent]['issues'] = event_issues
 
                 if PETRglobals.PauseBySentence:
                     if len(input("Press Enter to continue...")) > 0:

@@ -30,6 +30,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import io
 import re
 import os
 import sys
@@ -249,7 +250,7 @@ def open_FIN(filename, descrstr):
     global FIN
     global FINline, FINnline, CurrentFINname
     try:
-        FIN = open(filename, 'r')
+        FIN = io.open(filename, 'r', encoding='utf-8')
         CurrentFINname = filename
         FINnline = 0
     except IOError:

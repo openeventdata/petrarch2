@@ -2645,7 +2645,7 @@ def do_coding(event_dict, out_file):
                 SentenceID = '{}_{}'.format(key, sent)
                 logger.info('\tProcessing {}'.format(SentenceID))
                 #TODO: This is why Python 3 might be nice.
-                SentenceText = event_dict[key]['sents'][sent]['content'].decode('utf-8')
+                SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = StoryDate
                 SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'

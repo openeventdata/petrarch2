@@ -1669,6 +1669,8 @@ def check_verbs():
                             hasmatch = True
                             break
                     kpat += 1
+                if hasmatch and EventCode == '---':
+                    hasmatch = False
                 if not hasmatch and verbcode != '---':
                     if ShowPattMatch: print("Matched on the primary verb")   # debug
 #                       EventCode = PETRglobals.VerbDict[targ][1]

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import logging
 import corenlp
-from . import PETRglobals
 import dateutil.parser
+from . import PETRglobals
 from collections import defaultdict, Counter
 
 

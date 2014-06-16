@@ -27,13 +27,21 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import re
 import os
 import sys
 import math  # required for ordinal date calculations
 import logging
 import xml.etree.ElementTree as ET
-from configparser import ConfigParser
+
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
+
 
 from . import PETRglobals
 from . import utilities
@@ -657,16 +665,16 @@ def read_verb_dictionary(verb_path):
     This is followed by a set of patterns -- these begin with '-' -- which generally
     follow the same syntax as TABARI patterns. The pattern set is terminated with a
     blank line.
-    
+
     -- Multiple-word verbs --
-    Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by 
-    connecting the word with an underscore (these must be consecutive) and putting a '+' 
-    in front of the verb. Alternative forms must be specified: they are not constructed 
+    Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
+    connecting the word with an underscore (these must be consecutive) and putting a '+'
+    in front of the verb. Alternative forms must be specified: they are not constructed
     automatically. These are treated in patterns just as single-word verbs are treated.
-    
+
     Examples
     +BEEF_UP {+BEEFS_UP +BEEFED_UP +BEEFING_UP}
-    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
+    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF}
     WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
 
     SYNSETS
@@ -781,10 +789,10 @@ def read_verb_dictionary(verb_path):
               list, tuple of words -- see store_multi_word_verb(loccode):)
         [n:] 3-lists of lower pattern, upper pattern and code. Upper pattern is stored
              in reverse order
-             
+
         [0] False
         [1]: optional verb-specific code (otherwise use the primary code)
-        [2]: primary form (use as a pointer to the pattern list)    
+        [2]: primary form (use as a pointer to the pattern list)
 
     VERB DICTIONARY DIFFERENCES FROM TABARI
 
@@ -894,11 +902,11 @@ def read_verb_dictionary(verb_path):
 
     def store_multi_word_verb(loccode):
         """  Store a multi-word verb and optional irregular forms. """
-        """ Multi-words are stored in a list consisting of 
+        """ Multi-words are stored in a list consisting of
             code
             primary form (use as a pointer to the pattern
             tuple: (True if verb is at start of list, False otherwise; remaining words) """
-            
+
         global verb, theverb
         if '{' in verb:
             forms = verb[verb.find('{')+1:verb.find('}')].split()
@@ -918,12 +926,12 @@ def read_verb_dictionary(verb_path):
                     for ka in range(2,len(words)+1):
                         multilist.append(words[len(words)-ka])
                     targverb = words[len(words)-1][1:]+' '
-                    
-                if targverb in PETRglobals.VerbDict: 
+
+                if targverb in PETRglobals.VerbDict:
                     PETRglobals.VerbDict[targverb].insert(2,[loccode, theverb, tuple(multilist)])
                 else:
                     PETRglobals.VerbDict[targverb] = [True, '---', [loccode, theverb, tuple(multilist)]]
-    
+
     def make_verb_forms(loccode):
         """ Create the regular forms of a verb. """
         global verb, theverb
@@ -1045,12 +1053,12 @@ def read_verb_dictionary(verb_path):
 #               print '** \"'+theverb+'\"'
                 PETRglobals.VerbDict[theverb] = [True, curcode]
                 newblock = False
-            if '_' in verb: 
-                store_multi_word_verb(curcode) 
+            if '_' in verb:
+                store_multi_word_verb(curcode)
             else:
-                if '{' in verb: 
+                if '{' in verb:
                     get_verb_forms(curcode)
-                else: 
+                else:
                     make_verb_forms(curcode)
             ka += 1   # counting primary verbs
 #           if ka > 16: return

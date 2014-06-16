@@ -27,16 +27,25 @@
 # 28-Apr-14:	Latest version
 # ------------------------------------------------------------------------
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import io
 import re
 import os
 import sys
 import math  # required for ordinal date calculations
 import logging
 import xml.etree.ElementTree as ET
-from ConfigParser import ConfigParser
 
-import PETRglobals
-import utilities
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
+
+
+from . import PETRglobals
+from . import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
@@ -88,14 +97,14 @@ def parse_Config(config_path):
        follow the examples.
     """
 
-    print '\n',
+    print('\n', end=' ')
     parser = ConfigParser()
 #		logger.info('Found a config file in working directory')
 #	print "pc",PETRglobals.ConfigFileName
     confdat = parser.read(config_path)
     if len(confdat) == 0:
-        print "\aError: Could not find the config file:", PETRglobals.ConfigFileName
-        print "Terminating program"
+        print("\aError: Could not find the config file:", PETRglobals.ConfigFileName)
+        print("Terminating program")
         sys.exit()
 
     try:
@@ -124,8 +133,8 @@ def parse_Config(config_path):
                 try:
                     fpar = open(filename, 'r')
                 except IOError:
-                    print "\aError: Could not find the text file list file:", filename
-                    print "Terminating program"
+                    print("\aError: Could not find the text file list file:", filename)
+                    print("Terminating program")
                     sys.exit()
                 PETRglobals.TextFileList = []
                 line = fpar.readline()
@@ -151,9 +160,9 @@ def parse_Config(config_path):
                     'Options',
                     'new_actor_length')
             except ValueError:
-                print "Error in config.ini Option: new_actor_length value must be an integer"
+                print("Error in config.ini Option: new_actor_length value must be an integer")
                 raise
-        print "new_actor_length =", PETRglobals.NewActorLength
+        print("new_actor_length =", PETRglobals.NewActorLength)
 
         if parser.has_option('Options', 'require_dyad'):
             try:
@@ -161,9 +170,9 @@ def parse_Config(config_path):
                     'Options',
                     'require_dyad')
             except ValueError:
-                print "Error in config.ini: require_dyad value must be `true' or `false'"
+                print("Error in config.ini: require_dyad value must be `true' or `false'")
                 raise
-        print "require_dyad =", PETRglobals.RequireDyad
+        print("require_dyad =", PETRglobals.RequireDyad)
 
         if parser.has_option('Options', 'stop_on_error'):
             try:
@@ -171,9 +180,9 @@ def parse_Config(config_path):
                     'Options',
                     'stop_on_error')
             except ValueError:
-                print "Error in config.ini: stop_on_error value must be `true' or `false'"
+                print("Error in config.ini: stop_on_error value must be `true' or `false'")
                 raise
-        print "stop_on_error =", PETRglobals.StoponError
+        print("stop_on_error =", PETRglobals.StoponError)
 
         # otherwise this was set in command line
         if len(PETRglobals.EventFileName) == 0:
@@ -182,15 +191,15 @@ def parse_Config(config_path):
         PETRglobals.CodeBySentence = parser.has_option(
             'Options',
             'code_by_sentence')
-        print "code-by-sentence", PETRglobals.CodeBySentence
+        print("code-by-sentence", PETRglobals.CodeBySentence)
         PETRglobals.PauseBySentence = parser.has_option(
             'Options',
             'pause_by_sentence')
-        print "pause_by_sentence", PETRglobals.PauseBySentence
+        print("pause_by_sentence", PETRglobals.PauseBySentence)
         PETRglobals.PauseByStory = parser.has_option(
             'Options',
             'pause_by_story')
-        print "pause_by_story", PETRglobals.PauseByStory
+        print("pause_by_story", PETRglobals.PauseByStory)
 
         try:
             if parser.has_option('Options', 'comma_min'):
@@ -206,28 +215,28 @@ def parse_Config(config_path):
             elif parser.has_option('Options', 'comma_emax'):
                 PETRglobals.CommaEMax = parser.getint('Options', 'comma_emax')
         except ValueError:
-            print "Error in config.ini Option: comma_*  value must be an integer"
+            print("Error in config.ini Option: comma_*  value must be an integer")
             raise
-        print "Comma-delimited clause elimination:"
-        print "Initial :",
+        print("Comma-delimited clause elimination:")
+        print("Initial :", end=' ')
         if PETRglobals.CommaBMax == 0:
-            print "deactivated"
+            print("deactivated")
         else:
-            print "min =", PETRglobals.CommaBMin, "   max =", PETRglobals.CommaBMax
-        print "Internal:",
+            print("min =", PETRglobals.CommaBMin, "   max =", PETRglobals.CommaBMax)
+        print("Internal:", end=' ')
         if PETRglobals.CommaMax == 0:
-            print "deactivated"
+            print("deactivated")
         else:
-            print "min =", PETRglobals.CommaMin, "   max =", PETRglobals.CommaMax
-        print "Terminal:",
+            print("min =", PETRglobals.CommaMin, "   max =", PETRglobals.CommaMax)
+        print("Terminal:", end=' ')
         if PETRglobals.CommaEMax == 0:
-            print "deactivated"
+            print("deactivated")
         else:
-            print "min =", PETRglobals.CommaEMin, "   max =", PETRglobals.CommaEMax
+            print("min =", PETRglobals.CommaEMin, "   max =", PETRglobals.CommaEMax)
 
     except Exception as e:
-        print 'parse_config() encountered an error: check the options in', PETRglobals.ConfigFileName
-        print "Terminating program"
+        print('parse_config() encountered an error: check the options in', PETRglobals.ConfigFileName)
+        print("Terminating program")
         sys.exit()
 #		logger.warning('Problem parsing config file. {}'.format(e))
 
@@ -241,12 +250,12 @@ def open_FIN(filename, descrstr):
     global FIN
     global FINline, FINnline, CurrentFINname
     try:
-        FIN = open(filename, 'r')
+        FIN = io.open(filename, 'r', encoding='utf-8')
         CurrentFINname = filename
         FINnline = 0
     except IOError:
-        print "\aError: Could not find the", descrstr, "file:", filename
-        print "Terminating program"
+        print("\aError: Could not find the", descrstr, "file:", filename)
+        print("Terminating program")
         sys.exit()
 
 
@@ -258,8 +267,8 @@ def close_FIN():
     try:
         FIN.close()
     except IOError:
-        print "\aError: Could not close the input file"
-        print "Terminating program"
+        print("\aError: Could not close the input file")
+        print("Terminating program")
         sys.exit()
 
 
@@ -321,7 +330,7 @@ def read_FIN_line():
             FINnline += 1
             continue
         if not line:  # handle EOF
-            print "EOF hit in read_FIN_line()"
+            print("EOF hit in read_FIN_line()")
             raise EOFError
             return line
         if (' #' in line):
@@ -657,16 +666,16 @@ def read_verb_dictionary(verb_path):
     This is followed by a set of patterns -- these begin with '-' -- which generally
     follow the same syntax as TABARI patterns. The pattern set is terminated with a
     blank line.
-    
+
     -- Multiple-word verbs --
-    Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by 
-    connecting the word with an underscore (these must be consecutive) and putting a '+' 
-    in front of the verb. Alternative forms must be specified: they are not constructed 
+    Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
+    connecting the word with an underscore (these must be consecutive) and putting a '+'
+    in front of the verb. Alternative forms must be specified: they are not constructed
     automatically. These are treated in patterns just as single-word verbs are treated.
-    
+
     Examples
     +BEEF_UP {+BEEFS_UP +BEEFED_UP +BEEFING_UP}
-    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
+    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF}
     WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
 
     SYNSETS
@@ -781,10 +790,10 @@ def read_verb_dictionary(verb_path):
               list, tuple of words -- see store_multi_word_verb(loccode):)
         [n:] 3-lists of lower pattern, upper pattern and code. Upper pattern is stored
              in reverse order
-             
+
         [0] False
         [1]: optional verb-specific code (otherwise use the primary code)
-        [2]: primary form (use as a pointer to the pattern list)    
+        [2]: primary form (use as a pointer to the pattern list)
 
     VERB DICTIONARY DIFFERENCES FROM TABARI
 
@@ -894,11 +903,11 @@ def read_verb_dictionary(verb_path):
 
     def store_multi_word_verb(loccode):
         """  Store a multi-word verb and optional irregular forms. """
-        """ Multi-words are stored in a list consisting of 
+        """ Multi-words are stored in a list consisting of
             code
             primary form (use as a pointer to the pattern
             tuple: (True if verb is at start of list, False otherwise; remaining words) """
-            
+
         global verb, theverb
         if '{' in verb:
             forms = verb[verb.find('{')+1:verb.find('}')].split()
@@ -918,12 +927,12 @@ def read_verb_dictionary(verb_path):
                     for ka in range(2,len(words)+1):
                         multilist.append(words[len(words)-ka])
                     targverb = words[len(words)-1][1:]+' '
-                    
-                if targverb in PETRglobals.VerbDict: 
+
+                if targverb in PETRglobals.VerbDict:
                     PETRglobals.VerbDict[targverb].insert(2,[loccode, theverb, tuple(multilist)])
                 else:
                     PETRglobals.VerbDict[targverb] = [True, '---', [loccode, theverb, tuple(multilist)]]
-    
+
     def make_verb_forms(loccode):
         """ Create the regular forms of a verb. """
         global verb, theverb
@@ -1045,12 +1054,12 @@ def read_verb_dictionary(verb_path):
 #               print '** \"'+theverb+'\"'
                 PETRglobals.VerbDict[theverb] = [True, curcode]
                 newblock = False
-            if '_' in verb: 
-                store_multi_word_verb(curcode) 
+            if '_' in verb:
+                store_multi_word_verb(curcode)
             else:
-                if '{' in verb: 
+                if '{' in verb:
                     get_verb_forms(curcode)
-                else: 
+                else:
                     make_verb_forms(curcode)
             ka += 1   # counting primary verbs
 #           if ka > 16: return
@@ -1067,7 +1076,7 @@ def show_verb_dictionary(filename=''):
         fout.write('PETRARCH Verb Dictionary Internal Format\n')
         fout.write('Run time: ' + PETRglobals.RunTimeString + '\n')
 
-        for locword, loclist in PETRglobals.VerbDict.iteritems():
+        for locword, loclist in PETRglobals.VerbDict.items():
             if locword[0] == '&':   # debug: skip the synsets
                 continue
             fout.write(locword)
@@ -1084,15 +1093,15 @@ def show_verb_dictionary(filename=''):
         fout.close()
 
     else:
-        for locword, loclist in PETRglobals.VerbDict.iteritems():
-            print locword,
+        for locword, loclist in PETRglobals.VerbDict.items():
+            print(locword, end=' ')
             if loclist[0]:
                 if len(loclist) > 2:
-                    print '::\n', loclist[1:]   # pattern list
+                    print('::\n', loclist[1:])   # pattern list
                 else:
-                    print ':: ', loclist[1]   # simple code
+                    print(':: ', loclist[1])   # simple code
             else:
-                print '-> ', loclist[2], '[' + loclist[1] + ']'
+                print('-> ', loclist[2], '[' + loclist[1] + ']')
 
 # ================== ACTOR DICTIONARY INPUT ================== #
 
@@ -1421,7 +1430,7 @@ def read_actor_dictionary(actorfile):
     close_FIN()
 
     # sort the patterns by the number of words
-    for lockey in PETRglobals.ActorDict.keys():
+    for lockey in list(PETRglobals.ActorDict.keys()):
         PETRglobals.ActorDict[lockey].sort(key=len, reverse=True)
 
 
@@ -1433,7 +1442,7 @@ def show_actor_dictionary(filename=''):
             'PETRARCH Actor Dictionary and Actor Codes Internal Format\n')
         fout.write('Run time: ' + PETRglobals.RunTimeString + '\n')
 
-        for locword, loclist in PETRglobals.ActorDict.iteritems():
+        for locword, loclist in PETRglobals.ActorDict.items():
             fout.write(locword + " ::\n" + str(loclist) + "\n")
 
         fout.write('\nActor Codes\n')
@@ -1445,12 +1454,12 @@ def show_actor_dictionary(filename=''):
         fout.close()
 
     else:
-        for locword, loclist in PETRglobals.ActorDict.iteritems():
-            print locword, "::"
+        for locword, loclist in PETRglobals.ActorDict.items():
+            print(locword, "::")
             if isinstance(loclist[0][0], str):
-                print loclist   # debug
+                print(loclist)   # debug
             else:
-                print 'PTR,', loclist
+                print('PTR,', loclist)
 
 
 # ================== AGENT DICTIONARY INPUT ================== #
@@ -1649,7 +1658,7 @@ def read_agent_dictionary(agent_path):
     close_FIN()
 
     # sort the patterns by the number of words
-    for lockey in PETRglobals.AgentDict.keys():
+    for lockey in list(PETRglobals.AgentDict.keys()):
         PETRglobals.AgentDict[lockey].sort(key=len, reverse=True)
 
 
@@ -1660,15 +1669,15 @@ def show_AgentDict(filename=''):
         fout.write('PETRARCH Agent Dictionary Internal Format\n')
         fout.write('Run time: ' + PETRglobals.RunTimeString + '\n')
 
-        for locword, loclist in PETRglobals.AgentDict.iteritems():
+        for locword, loclist in PETRglobals.AgentDict.items():
             fout.write(locword + " ::\n")
             fout.write(str(loclist) + "\n")
         fout.close()
 
     else:
-        for locword, loclist in PETRglobals.AgentDict.iteritems():
-            print locword, "::"
-            print loclist
+        for locword, loclist in PETRglobals.AgentDict.items():
+            print(locword, "::")
+            print(loclist)
 
 # ==== Input format reading
 
@@ -1713,7 +1722,7 @@ def read_xml_input(filepaths, parsed=False):
                 attribute_check = [key in story.attrib for key in
                                    ['date', 'id', 'sentence', 'source']]
                 if not attribute_check:
-                    print 'Need to properly format your XML...'
+                    print('Need to properly format your XML...')
                     break
 
                 # If the XML contains StanfordNLP parsed data, pull that out

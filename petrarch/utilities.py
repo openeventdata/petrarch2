@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import logging
 import corenlp
-import PETRglobals
 import dateutil.parser
+from . import PETRglobals
 from collections import defaultdict, Counter
 
 
 def stanford_parse(event_dict):
     logger = logging.getLogger('petr_log')
     #What is dead can never die...
-    print "\nSetting up StanfordNLP. The program isn't dead. Promise."
+    print("\nSetting up StanfordNLP. The program isn't dead. Promise.")
     logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
                                    properties=_get_data('data/config/',
                                                         'petrarch.properties'),
                                    memory='2g')
-    total = len(event_dict.keys())
-    print "Stanford setup complete. Starting parse of {} stories...".format(total)
+    total = len(list(event_dict.keys()))
+    print("Stanford setup complete. Starting parse of {} stories...".format(total))
     logger.info('Stanford setup complete. Starting parse of {} stories.'.format(total))
     for i, key in enumerate(event_dict.keys()):
         if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
-            print 'Parse is {}% complete...'.format((i / float(total)) * 100)
+            print('Parse is {}% complete...'.format((i / float(total)) * 100))
         for sent in event_dict[key]['sents']:
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
@@ -40,9 +43,9 @@ def stanford_parse(event_dict):
                     #TODO: To go backwards you'd do str.replace(' ) ', ')')
                     sent_dict['parsed'] = _format_parsed_str(s_parsetree)
                 except Exception as e:
-                    print 'Something went wrong. ¯\_(ツ)_/¯. See log file.'
+                    print('Something went wrong. ¯\_(ツ)_/¯. See log file.')
                     logger.warning('Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
-    print 'Done with StanfordNLP parse...\n\n'
+    print('Done with StanfordNLP parse...\n\n')
     logger.info('Done with StanfordNLP parse.')
 
     return event_dict

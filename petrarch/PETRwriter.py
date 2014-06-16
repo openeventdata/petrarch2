@@ -1,4 +1,7 @@
-import utilities
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from . import utilities
 
 
 def write_events(event_dict, output_file):
@@ -43,20 +46,22 @@ def write_events(event_dict, output_file):
 
             if 'issues' in filtered_events[event]:
                 iss = filtered_events[event]['issues']
-                issues = ['{},{}'.format(k, v) for k, v in iss.iteritems()]
+                issues = ['{},{}'.format(k, v) for k, v in iss.items()]
                 joined_issues = ';'.join(issues)
             else:
                 joined_issues = []
 
-            print 'Event: {}\t{}\t{}\t{}\t{}\t{}'.format(story_date, source,
+            print('Event: {}\t{}\t{}\t{}\t{}\t{}'.format(story_date, source,
                                                          target, code, ids,
-                                                         StorySource)
+                                                         StorySource))
             event_str = '{}\t{}\t{}\t{}'.format(story_date,
                                                 source,
                                                 target,
                                                 code)
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)
+            else:
+                event_str += '\t'
 
             if url:
                 event_str += '\t{}\t{}\t{}'.format(ids, url, StorySource)
@@ -122,7 +127,7 @@ def pipe_output(event_dict):
 
                 if 'issues' in filtered_events[event]:
                     iss = filtered_events[event]['issues']
-                    issues = ['{},{}'.format(k, v) for k, v in iss.iteritems()]
+                    issues = ['{},{}'.format(k, v) for k, v in iss.items()]
                     joined_issues = ';'.join(issues)
                     event_str = (story_date, source, target, code,
                                  joined_issues, ids, url, StorySource)

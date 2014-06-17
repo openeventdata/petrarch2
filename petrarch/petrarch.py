@@ -2121,7 +2121,7 @@ def assign_NEcodes():
     #				print treestr[ka:necbds[1]]
             if '(N' in ParseList[ka]:
                 endtag = '~' + ParseList[ka][1:]
-                itemlist = ['(NE']
+                itemlist = ['(NE', '---']
                 itemlist.extend(prelist)
                 ka += 1
                 while ParseList[ka] != endtag:

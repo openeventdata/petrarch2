@@ -2597,16 +2597,18 @@ def do_validation(filepath):
                 sys.exit()
             except StopCoding:
                 print("Exiting: <Stop> record ")
-                PETRreader.close_FIN()
-                print("Records coded correctly:", nvalid)
-                sys.exit()
+                break
             except SkipRecord:
                 print("Skipping this record.")
             except HasParseError:
                 print("Exiting: parsing error ")
                 PETRreader.close_FIN()
                 sys.exit()
-
+                
+    PETRreader.close_FIN()
+    print("Normal exit from validation\nRecords coded correctly:", nvalid)
+    sys.exit()
+    
 
 def do_coding(event_dict, out_file):
     """

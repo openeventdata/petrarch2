@@ -5231,6 +5231,45 @@ representation and voting rights on that and other Bretton Woods institutions.
 </Sentence>
 
 
+<Sentence date = "20080804" id ="TextCodes2" category="PARSING" valid="true">
+<!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier --> 
+<!-- versions, extracting non-code text for the source and target -->
+<!-- Last update: 16 June 2014 -->
+<EventCoding sourcecode="---GOVPRS" targetcode="---" eventcode="210"></EventCoding>
+<Text>
+President Ilham Aliyev and President of the European Commission Jose Manuel Barroso held 
+a one-on-one meeting on June 14.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NNP President) (NNP Ilham) (NNP Aliyev) (CC and) (NNP President)) 
+(PP (IN of) (NP (DT the) (JJ European) (NNP Commission) (NNP Jose) (NNP Manuel) 
+(NNP Barroso)))) (VP (VBD held) (NP (DT a) (JJ one-on-one) (NN meeting)) (PP (IN on) 
+(NP (NNP June) (CD 14)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080804" id ="TextCodes1" category="PARSING" valid="true">
+<!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier -->
+<!-- versions, extracting non-code text for the source and target -->
+<!-- Last update: 16 June 2014 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Abubakar also directed Zuokumor to ensure that there is adequate police presence in all 
+the polling units and collation centres in the state.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NNP Abubakar)) (ADVP (RB also)) 
+(VP (VBD directed) (S (NP (NNP Zuokumor)) 
+(VP (TO to) (VP (VB ensure) (SBAR (IN that) 
+(S (NP (EX there)) (VP (VBZ is) 
+(NP (NP (JJ adequate) (NN police) (NN presence)) (PP (IN in) 
+(NP (NP (NP (PDT all) 
+(DT the) (NN polling) (NNS units)) (CC and) (NP (NN collation) (NNS centres))) 
+(PP (IN in) (NP (DT the) (NN state))
+))))))))))) (. .)))
+</Parse>
+</Sentence>
 
 
 <!--

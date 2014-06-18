@@ -1329,7 +1329,7 @@ def make_multi_sequences(multilist, verbloc, endtag):
             except IndexError:
                 logger.warning('Something went wrong in make_multi_sequence. Passing.')
                 print('Something went wrong in make_multi_sequence. Passing.')
-                pass
+                break
             kword += 1
         get_upper_seq(verbloc - 1)
         get_lower_seq(kword, endtag)

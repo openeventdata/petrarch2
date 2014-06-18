@@ -1319,11 +1319,16 @@ def make_multi_sequences(multilist, verbloc, endtag):
     if multilist[0]:  # words follow the verb
         kword = verbloc + 1
         while ka < len(multilist):
-            if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
-                if ParseList[kword] == multilist[ka]:
-                    ka += 1
-                else:
-                    return False
+            try:
+                if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
+                    if ParseList[kword] == multilist[ka]:
+                        ka += 1
+                    else:
+                        return False
+            except IndexError:
+                logger.warning('Something went wrong in make_multi_sequence. Passing.')
+                print('Something went wrong in make_multi_sequence. Passing.')
+                pass
             kword += 1
         get_upper_seq(verbloc - 1)
         get_lower_seq(kword, endtag)
@@ -2604,11 +2609,11 @@ def do_validation(filepath):
                 print("Exiting: parsing error ")
                 PETRreader.close_FIN()
                 sys.exit()
-                
+
     PETRreader.close_FIN()
     print("Normal exit from validation\nRecords coded correctly:", nvalid)
     sys.exit()
-    
+
 
 def do_coding(event_dict, out_file):
     """

@@ -1315,6 +1315,7 @@ def make_multi_sequences(multilist, verbloc, endtag):
 
     global ParseList, ParseStart
 
+    logger = logging.getLogger('petr_log')
     ka = 1
     if multilist[0]:  # words follow the verb
         kword = verbloc + 1
@@ -2524,6 +2525,7 @@ def code_record():
     # code triples that were produced; this is set in make_event_strings
     CodedEvents = []
 
+    logger = logging.getLogger('petr_log')
     try:
         check_commas()
     except SkipRecord:
@@ -2536,7 +2538,11 @@ def code_record():
     if ShowParseList:
         print('code_rec-Parselist::', ParseList)
 
-    check_verbs()
+    try:
+        check_verbs()
+    except IndexError:
+        logger.warning('\tIndexError in parsing. Probably a bad sentence.')
+        print('\tIndexError in parsing. Probably a bad sentence.')
 
     if len(CodedEvents) > 0:
         return CodedEvents
@@ -2604,11 +2610,11 @@ def do_validation(filepath):
                 print("Exiting: parsing error ")
                 PETRreader.close_FIN()
                 sys.exit()
-                
+
     PETRreader.close_FIN()
     print("Normal exit from validation\nRecords coded correctly:", nvalid)
     sys.exit()
-    
+
 
 def do_coding(event_dict, out_file):
     """

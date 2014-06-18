@@ -1320,16 +1320,11 @@ def make_multi_sequences(multilist, verbloc, endtag):
     if multilist[0]:  # words follow the verb
         kword = verbloc + 1
         while ka < len(multilist):
-            try:
-                if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
-                    if ParseList[kword] == multilist[ka]:
-                        ka += 1
-                    else:
-                        return False
-            except IndexError:
-                logger.warning('Something went wrong in make_multi_sequence. Passing.')
-                print('Something went wrong in make_multi_sequence. Passing.')
-                break
+            if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
+                if ParseList[kword] == multilist[ka]:
+                    ka += 1
+                else:
+                    return False
             kword += 1
         get_upper_seq(verbloc - 1)
         get_lower_seq(kword, endtag)
@@ -2542,7 +2537,11 @@ def code_record():
     if ShowParseList:
         print('code_rec-Parselist::', ParseList)
 
-    check_verbs()
+    try:
+        check_verbs()
+    except IndexError:
+        logger.warning('\tIndexError in parsing. Probably a bad sentence.')
+        print('\tIndexError in parsing. Probably a bad sentence.')
 
     if len(CodedEvents) > 0:
         return CodedEvents

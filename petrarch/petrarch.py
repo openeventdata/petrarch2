@@ -2525,6 +2525,7 @@ def code_record():
     # code triples that were produced; this is set in make_event_strings
     CodedEvents = []
 
+    logger = logging.getLogger('petr_log')
     try:
         check_commas()
     except SkipRecord:

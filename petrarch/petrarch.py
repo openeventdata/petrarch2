@@ -1315,6 +1315,7 @@ def make_multi_sequences(multilist, verbloc, endtag):
 
     global ParseList, ParseStart
 
+    logger = logging.getLogger('petr_log')
     ka = 1
     if multilist[0]:  # words follow the verb
         kword = verbloc + 1

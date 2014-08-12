@@ -2317,7 +2317,7 @@ def reset_event_list(firstentry=False):
     here and in do_coding.
     """
     global SentenceDate, StoryDate, SentenceSource, StorySource
-    global SentenceID, CurStoryID, SkipStory
+    global SentenceID, CurStoryID
     global StoryEventList, StoryIssues
     global NStory
 
@@ -2325,7 +2325,6 @@ def reset_event_list(firstentry=False):
     if PETRglobals.IssueFileName != "":
         StoryIssues = {}
 
-    SkipStory = False
     if firstentry:
         CurStoryID = ''
     else:
@@ -2633,7 +2632,7 @@ def do_coding(event_dict, out_file):
                 sentence of the *next* story
     """
     global StoryDate, StorySource, SentenceID, SentenceCat, SentenceText
-    global CurStoryID, SkipStory
+    global CurStoryID
     global NStory, NSent, NEvents, NDiscardSent, NDiscardStory, NEmpty
     global NParseErrors
     global fevt
@@ -2701,9 +2700,11 @@ def do_coding(event_dict, out_file):
                     if disc[0] > 0:
                         if disc[0] == 1:
                             print("Discard sentence:", disc[1])
+                            logger.info('\tSentence discard. {}'.format(disc[1]))
                             NDiscardSent += 1
                         else:
                             print("Discard story:", disc[1])
+                            logger.info('\tStory discard. {}'.format(disc[1]))
                             SkipStory = True
                             NDiscardStory += 1
 

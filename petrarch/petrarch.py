@@ -2212,10 +2212,19 @@ def make_event_strings():
         global IsPassive
 
         for thissrc in codessrc:
+            if '(NEC' in thissrc:
+                logger.warning('(NEC source code found in make_event_strings(): {}'.format(SentenceID))
+                CodedEvents = []
+                return
             cursrccode = thissrc
+
             if thissrc[0:3] == '---' and len(SentenceLoc) > 0:
                 cursrccode = SentenceLoc + thissrc[3:]  # add location if known
             for thistar in codestar:
+                if '(NEC' in thistar:
+                    logger.warning('(NEC target code found in make_event_strings(): {}'.format(SentenceID))
+                    CodedEvents = []
+                    return
                 if thissrc != thistar:  # skip self-references
                     curtarcode = thistar
                     if thistar[0:3] == '---' and len(SentenceLoc) > 0:

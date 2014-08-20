@@ -7,7 +7,7 @@ import os
 import logging
 import corenlp
 import dateutil.parser
-from . import PETRglobals
+import PETRglobals
 from collections import defaultdict, Counter
 
 

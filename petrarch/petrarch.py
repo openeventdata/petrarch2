@@ -12,10 +12,10 @@ import logging
 import argparse
 import xml.etree.ElementTree as ET
 
-from . import PETRglobals  # global variables
-from . import PETRreader  # input routines
-from . import PETRwriter
-from . import utilities
+import PETRglobals  # global variables
+import PETRreader  # input routines
+import PETRwriter
+import utilities
 
 
 # ================================  PARSER/CODER GLOBALS  ================== #

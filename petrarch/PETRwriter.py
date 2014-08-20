@@ -1,7 +1,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import utilities
+import utilities
 
 
 def write_events(event_dict, output_file):

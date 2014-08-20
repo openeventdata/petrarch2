@@ -43,9 +43,8 @@ try:
 except ImportError:
     from configparser import ConfigParser
 
-
-from . import PETRglobals
-from . import utilities
+import PETRglobals
+import utilities
 
 """
 CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT

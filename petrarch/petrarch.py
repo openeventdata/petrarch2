@@ -186,13 +186,34 @@ def check_balance():
     nclose = 0
     ka = 0
     while ka < len(ParseList):
-        if ParseList[ka] == '(':
+        if ParseList[ka][0] == '(':
             nopen += 1
-        elif ParseList[ka] == '~':
+        elif ParseList[ka][0] == '~':
             nclose += 1
         ka += 1
     if nopen != nclose:
         raise UnbalancedTree
+
+def check_exceptions():
+    """
+    This checks for some known idiosyncratic ParseList patterns that indicate problems in 
+    the input text. Logs the specific issue but does not raise an error yet.
+    Currently tracking:
+       -- Dateline
+    """
+    ntag = 0
+    taglist = []
+    ka = 0
+    while ka < len(ParseList):
+        if ParseList[ka][0] == '(':
+            taglist.append(ParseList[ka])
+            ntag += 1
+            if ntag > 2: break  # this is all we need for dateline
+        ka += 1
+#    print('ce1:',taglist)
+    if taglist[:3] == ['(ROOT','(NE','(NEC']:
+        logger = logging.getLogger('petr_log')
+        logger.warning('Dateline pattern found in ParseList; record skipped: {}'.format(SentenceID))
 
 # ========================== VALIDATION FUNCTIONS ========================== #
 
@@ -674,7 +695,7 @@ def read_TreeBank():
                 # convert CC to CCP, though <14.05.12> we don't actually do
                 # anything with this yet: (NEC is the trigger for additional
                 # processing of compounds
-                treestr = treestr[:ka + 4] + 'P' + treestr[ka + 4:]
+                treestr = treestr[:ka + 3] + 'P' + treestr[ka + 3:]
                 if ShowMarkCompd:
                     print('\nMC2:', treestr[kb:])
             # nested compounds: don't go there...
@@ -1011,6 +1032,16 @@ def read_TreeBank():
     ParseStart = 2  # skip (ROOT (S
 
     try:
+        check_exceptions()
+    except:
+        try:
+            # this can re-raise UnbalancedTree
+            raise_parsing_error('end of read_TreeBank()')
+        except UnbalancedTree:
+            logger.warning('\tUnbalanced tree. Passing.')
+            #raise SkipRecord
+
+    try:
         check_balance()
     except:
         try:
@@ -1080,7 +1111,7 @@ def get_loccodes(thisloc):
                 codelist.append(accode)
 
     codelist = []
-#	print 'GLC0',thisloc
+#    print ('GLC0',thisloc)
 #	print '   USeq:',UpperSeq
 #	print '   LSeq:',LowerSeq
     if thisloc[1]:
@@ -1091,7 +1122,7 @@ def get_loccodes(thisloc):
             # necessarily unbalanced
             raise_parsing_error('get_loccodes()-1')
 
-#		print 'GLC1',neitem
+#        print ('GLC1',neitem)
         # extract the compound codes from the (NEC ... ~NEC sequence
         if '(NEC' in neitem:
             ka = thisloc[0] - 1  # UpperSeq is stored in reverse order
@@ -1116,11 +1147,11 @@ def get_loccodes(thisloc):
             # at this point some sort of markup we can't handle, not
             # necessarily unbalanced
             raise_parsing_error('get_loccodes()-3')
-#		print 'GLC3',neitem
+#        print ('GLC3',neitem)
         StoryEventList.append([SentenceID])
         for event in CodedEvents:
             StoryEventList.append(event)
-#			print SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2]
+            print(SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2])
         if '(NEC' in neitem:  # extract the compound codes
             ka = thisloc[0] + 1
             while '~NEC' not in LowerSeq[ka]:
@@ -1138,6 +1169,8 @@ def get_loccodes(thisloc):
         else:
             add_code(thisloc[0], False)  # simple code
 #	print 'GLC5',codelist
+    if len(codelist) == 0: # this can occur if all codes in an (NEC are null
+        codelist = ['---']
     return codelist
 
 
@@ -1361,8 +1394,8 @@ def verb_pattern_match(patlist, aseq, isupperseq):
     # return the location of the (NE element in aseq starting from kseq, which
     # is inside an NE
         ka = kseq
-# print "fn-1/VPM:" , ka, aseq[ka]   # debug
-# print "fn-2/VPM:" , aseq, isupperseq   # debug
+#        print("fn-1/VPM:" , ka, aseq[ka])   # debug
+#        print("fn-2/VPM:" , aseq, isupperseq)   # debug
         while '(NE' not in aseq[ka]:
             if isupperseq:
                 ka += 1
@@ -1371,9 +1404,10 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             if ka < 0 or ka >= len(aseq):
                 # at this point some sort of markup we can't handle, not
                 # necessarily unbalanced
+#                print('Bombed here, yessiree bob!...')
                 raise_parsing_error('find_ne(kseq) in verb_pattern_match()')
 
-# print "VPM/FN-1: Found NE:" , ka, aseq[ka]   # debug
+#        print("fn-3/VPM: Found NE:" , ka, aseq[ka])   # debug
         return ka
 
     def syn_match(isupperseq):
@@ -1413,11 +1447,11 @@ def verb_pattern_match(patlist, aseq, isupperseq):
                         if ka == len(wordlist):
                             # last_seq() will also increment
                             kseq += len(wordlist) - 1
-#							print words,"matches", kseq
+#                            print(words,"matches", kseq)
                             return True
                 return False
             else:
-#				print "&Match:",aseq[kseq]
+#                print( "&Match:",aseq[kseq])
                 return True
         else:
             # throw an error here, but actually should trap these in
@@ -1428,6 +1462,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
         global kseq
         kseq += 1
         if kseq >= len(aseq):
+#            print('Return on seqword')
             return True  # hit end of sequence before full pattern matched
         else:
             return False
@@ -1436,6 +1471,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
         global kpatword
         kpatword += 2  # skip connector
         if kpatword >= len(patlist):
+#            print('Return on patword')
             return True
         else:
             return False
@@ -1471,38 +1507,48 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             continue
 
         if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]):
-#			print "NE flip", kseq, aseq[kseq], insideNE,
+            """
+            print("NE flip", kseq, aseq[kseq], insideNE,)
+            if isupperseq:  # this doesn't always signal an error but tends to be associated with them
+                if '~NE' in aseq[kseq] and insideNE:
+                    print("  ==> insideNE error on ~NE")
+                if '(NE' in aseq[kseq] and not insideNE:
+                    print("  ==> insideNE error on (NE")
+            else:
+                if '~NE' in aseq[kseq] and not insideNE:
+                    print("  ==> insideNE error on ~NE")
+                if '(NE' in aseq[kseq] and insideNE:
+                    print("  ==> insideNE error on (NE") """                    
             if last_seqword():
                 return False  # hit end of sequence before full pattern matched
             insideNE = not insideNE
-#			print "NE result", insideNE
+#            print("NE result", insideNE)  # almost impossible for this to be the error
 
         elif len(patlist[kpatword]) == 1:  # deal with token assignments here
             if insideNE:
                 if patlist[kpatword] == '$':
+#                    print('vpm-mk1')
                     SourceLoc = [find_ne(kseq), isupperseq]
                 elif patlist[kpatword] == '+':
+#                    print('vpm-mk2')
                     TargetLoc = [find_ne(kseq), isupperseq]
 
                 elif patlist[kpatword] == '^': 	# skip to the end of the (NE
-#					print "Skipping",kseq, aseq[kseq:kseq+8], insideNE
+#                    print("Skipping-mk1:",kseq, aseq[kseq:kseq+8], insideNE)
                     while '~NE' not in aseq[kseq]:
                         if isupperseq:
                             kseq -= 1
                         else:
                             kseq += 1
                         if kseq < 0 or kseq >= len(aseq):
-# print "skip/VPM:", kseq, aseq,'\n', aseq[kseq-8:kseq-1]   # debug
+#                            print("skip/VPM error:", kseq, aseq,'\n', aseq[kseq-8:kseq-1])   # debug
                             # at this point some sort of markup we can't
                             # handle, not necessarily unbalanced
-                            raise_parsing_error("""find_ne(kseq) in skip
-                                                assessment,
-                                                verb_pattern_match()""")
+                            raise_parsing_error("find_ne(kseq) in skip  assessment, verb_pattern_match()")
                     if ShowVPM:
-                        print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug
-                    insideNE = False
-# print "VPM-2:" , kseq, aseq[kseq]   # debug
-# print "VPM-3:" , aseq, isupperseq   # debug
+                        print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug    
+                    insideNE = isupperseq
+#                    print("VPM-2:" , aseq, isupperseq)   # debug
 
                 elif patlist[kpatword] == '%':  # deal with compound
                         ka = kseq
@@ -1515,14 +1561,15 @@ def verb_pattern_match(patlist, aseq, isupperseq):
                         TargetLoc = [ka,isupperseq]
 
                 if ShowVPM:
-                    # debug
+                    # debug                    
+                    print('vpm-mk3')
                     print("VPM-4: Token assignment ", patlist[kpatword], aseq[find_ne(kseq)])
                 if last_patword():
                     return True
                 if last_seqword():
                     return False
-# print "VPM-4:" , kseq, aseq[kseq], insideNE   # debug
-# print "VPM-5:" , aseq, isupperseq   # debug
+#                print("VPM-4:" , kseq, aseq[kseq], insideNE)   # debug
+#                print("VPM-5:" , aseq, isupperseq)   # debug
             elif patlist[kpatword - 1] == ' ':
                 if last_seqword():
                     return False
@@ -1660,6 +1707,7 @@ def check_verbs():
                 if ShowPattMatch: print("CV-2 patlist", patternlist)
                 while kpat < len(patternlist):
                     SourceLoc = [-1,True] ; TargetLoc = [-1,True]
+                    if ShowPattMatch: print("CV-2: Checking",targ, patternlist[kpat])
                     if verb_pattern_match(patternlist[kpat][0], UpperSeq, True):
                         if ShowPattMatch: print("Found upper pattern match")   # debug
                         if verb_pattern_match(patternlist[kpat][1], LowerSeq, False):
@@ -2063,7 +2111,7 @@ def assign_NEcodes():
 
         try:
             kend = ParseList.index('~NE', kstart)
-            print('exCel1:', ParseList[kstart:kend])
+#            print('exCel1:', ParseList[kstart:kend])
             ncstart = ParseList.index('(NEC', kstart, kend)
             ncend = ParseList.index('~NEC', ncstart, kend)
         except ValueError:
@@ -2250,7 +2298,7 @@ def make_event_strings():
                     kb -= 1
 
     logger = logging.getLogger('petr_log')
-#	print 'MES1: ',SourceLoc, TargetLoc
+#    print('MES1: ',SourceLoc, TargetLoc)
     srccodes = get_loccodes(SourceLoc)
     expand_compound_codes(srccodes)
     tarcodes = get_loccodes(TargetLoc)
@@ -2259,11 +2307,8 @@ def make_event_strings():
 #TODO: This needs to be fixed
     SentenceLoc = ''
 
-#	print 'MES2: ',srccodes, tarcodes, EventCode
+#    print('MES2: ',srccodes, tarcodes, EventCode)
     if len(srccodes) == 0 or len(tarcodes) == 0:
-        # <14.02.27> This is here temporarily (ha!) to just get this thing to
-        # handle timing tests (and in the presence of some known bugs): this
-        # should not be a persistent issue. Really
         logger.warning('Empty codes in make_event_strings(): {}'.format(SentenceID))
         return
 
@@ -2821,7 +2866,7 @@ def main():
         elif os.path.isfile(cli_args.inputs):
             paths = [cli_args.inputs]
         else:
-            print('Please enter a valid directory or file of source texts.')
+            print('\nFatal runtime error:\n"'+cli_args.inputs+'" could not be located\nPlease enter a valid directory or file of source texts.')
             sys.exit()
 
         print('\n\n')

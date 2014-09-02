@@ -14,40 +14,29 @@ individual sentence. As can be seen in the section below, the data *is*
 organized within the program at the story level, but both the StanfordNLP and
 event coding process occurs stricly at the sentence level.
 
+Command Line Interface
+----------------------
 
-Internal Data Structures
-------------------------
+The following options can be used in the command line
 
-The main data format within PETRARCH is a Python dictionary that is structured
-around unique story IDs as the keys for the dictionary and another dictionary
-as the value. The value dictionary contains the relevant information for the
-sentences within the story, and the meta information about the story such as
-the date and source. The broad format of this internal dictionary is:
 
-::
+-i, --inputs    File, or directory of files, to parse.
 
-    {story_id: {'sents': {0: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
-                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
-                              'issues': 'Optional list of issues'},
-                          1: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
-                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
-                              'issues': 'Optional list of issues'}
-                          }
-                'meta': {'date': 'YYYYMMDD', 'other': "This is the holding dict for misc info."}
-            },
-     story_id: {'sents': {0: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
-                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
-                              'issues': 'Optional list of issues'},
-                          1: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
-                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
-                              'issues': 'Optional list of issues'}
-                          }
-                'meta': {'date': 'YYYYMMDD', 'other': "This is the holding dict for misc info."}
-            },
-    }
+-o, --output    Output file for parsed events
 
-This consistent internal format allows for the easy extension of the program
-through external hooks. 
+-P, --parsed    Input has already been parsed: all input records contain  StanfordNLP-parsed  <Parse>...</Parse> block. Defaults to ``False``.
+
+-c, --config    Filepath for the PETRARCH configuration file. Defaults to ``PETR_config.ini``.
+
+
+**Other options**
+
+``parse``
+  Run the PETRARCH parser
+  
+``validate``
+  Command to run the PETRARCH validation suite. If combined with ``-i``, validation records are read from that file (which needs to be in the validation file format, not the standard format) ; otherwise the input file is  PETR.UnitTest.records.txt
+
 
 Configuration File
 ------------------
@@ -135,4 +124,39 @@ PETRARCH.
 
     [StanfordNLP]
     stanford_dir = ~/stanford-corenlp/
+
+
+Internal Data Structures
+------------------------
+
+The main data format within PETRARCH is a Python dictionary that is structured
+around unique story IDs as the keys for the dictionary and another dictionary
+as the value. The value dictionary contains the relevant information for the
+sentences within the story, and the meta information about the story such as
+the date and source. The broad format of this internal dictionary is:
+
+::
+
+    {story_id: {'sents': {0: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
+                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
+                              'issues': 'Optional list of issues'},
+                          1: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
+                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
+                              'issues': 'Optional list of issues'}
+                          }
+                'meta': {'date': 'YYYYMMDD', 'other': "This is the holding dict for misc info."}
+            },
+     story_id: {'sents': {0: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
+                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
+                              'issues': 'Optional list of issues'},
+                          1: {'content': 'String of content', 'parsed': 'StanfordNLP parse tree',
+                              'coref': 'Optional list of corefs', 'events': 'List of coded events',
+                              'issues': 'Optional list of issues'}
+                          }
+                'meta': {'date': 'YYYYMMDD', 'other': "This is the holding dict for misc info."}
+            },
+    }
+
+This consistent internal format allows for the easy extension of the program
+through external hooks. 
 

@@ -17,6 +17,18 @@ event coding process occurs stricly at the sentence level.
 Command Line Interface
 ----------------------
 
+**Primary options**
+
+``batch``
+  Run the PETRARCH parser with all options specified in the config file. If combined with 
+  ``-c``, configuration will be read from that file; default config file is  ``PETR_config.ini``.
+
+``parse``
+  Run the PETRARCH parser specifying files in the command line
+  
+``validate``
+  Command to run the PETRARCH validation suite. If combined with ``-i``, validation records are read from that file (which needs to be in the validation file format, not the standard format) ; otherwise the input file is  PETR.UnitTest.records.txt
+
 The following options can be used in the command line
 
 
@@ -28,14 +40,6 @@ The following options can be used in the command line
 
 -c, --config    Filepath for the PETRARCH configuration file. Defaults to ``PETR_config.ini``.
 
-
-**Other options**
-
-``parse``
-  Run the PETRARCH parser
-  
-``validate``
-  Command to run the PETRARCH validation suite. If combined with ``-i``, validation records are read from that file (which needs to be in the validation file format, not the standard format) ; otherwise the input file is  PETR.UnitTest.records.txt
 
 
 Configuration File

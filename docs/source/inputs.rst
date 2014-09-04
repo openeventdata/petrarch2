@@ -154,15 +154,28 @@ Delimits the TreeBank parse tree text: this used only for the actual coding.
 **Required elements in each record for validation:**
 
 One or more of these should occur prior to the TreeBank. If none are present,
-the record is coded and the program pauses unless <Pause value = "never'> has
+the record is coded and the program pauses unless ``<Pause value = "never'>`` has
 been used.
 
-``<EventCodes sourcecode="<code>" targetcode="<code>" eventcode="<code>">``
+``<EventCoding  sourcecode="<srccode>" targetcode="<tarcode>" eventcode="<evtcode>"></EventCoding>``
 
-``<EventCodes noevents = "True">``:
+Coding should generate an event-triple ``-<srccode>-<tarcode>-<evtcode>``. If the coding produces 
+multiple events, there should be multiple ``<EventCoding>`` tags. The record is considered 
+an error unless the coded and expected events match exactly.
+
+``<EventCoding noevents = "True"></EventCoding>``:
 
 Indicates the record generates no events. Presently, system just looks for the presence of a 'noevents' attribute. This is also equivalent to no <EventCodes record, but better to state this explicitly.
 
+``<EventCoding error = "<error_string>"></EventCoding>``:
+
+Indicates the record will generate an error of the type <error_string>. If this occurs, the 
+record is treated as being correctly coded, even though no events are generated. Presently, 
+recognizes the following errors:
+
+- dateline: ``(ROOT (NE (NEC`` pattern detected by ``check_irregulars``
+
+ 
 **Optional elements in record:**
 
 ``<Skip>``:

@@ -5,7 +5,7 @@
 #                               PETRARCH UNIT TEST RECORDS
 #                 To run: python PETR.coder.py -v PETR.UnitTest.records.txt
 #                            Version compatibility: 0.5.0b1
-#                            Last Update: 9 May 2014
+#                            Last Update: 1 Sept 2014
 #
 #   These are the unit test records which should all correctly following any changes
 #   in the program. Really. All of them. If the program is working correctly, the
@@ -39,7 +39,7 @@
     <Actorfile>PETR.Validate.actors.txt</Actorfile>
     <Agentfile>PETR.Validate.agents.txt</Agentfile>
     <Errorfile>Errors.unit-test.txt</Errorfile>
-    <Include>valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET</Include>
+    <Include>valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET ERROR</Include>
     <Pause>Stop</Pause>
     <Config option="stop_on_error" value="True"></Config>
 </Environment>		
@@ -11041,6 +11041,137 @@ said on Saturday.
           (PP (IN on)  (NP (NNP Saturday)
         ) ) )
     ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<!--
+##################################################################
+#
+#                           ERRORS
+#  Tests correct detection of various error conditions 
+#
+##################################################################
+-->
+
+<Sentence date = "20080801" id ="ERROR-01"  category="ERROR" valid="true">
+<!-- 'dateline' pattern detected in check_irregulars -->
+<!-- Last update: 26 August 2014 -->
+<EventCoding error="dateline"></EventCoding>
+<Text>
+CEBU CITY: -- Cordova Mayor Adelino Sitoy and the town's fisherfolk filed on Thursday a 
+P225-million suit against two shipping firms whose vessels collided off Talisay City in 
+August last year and caused a massive oil spill in Cebu.
+</Text>
+<Parse>
+(ROOT 
+(NP 
+(NP (NNP CEBU) (NNP CITY)) (: --) 
+(NP 
+(NP 
+(NP (NNP Cordova) (NNP Mayor) (NNP Adelino) (NNP Sitoy)) (CC and) 
+(NP 
+(NP (DT the) (NN town) (POS 's)) (NN fisherfolk))) 
+(VP (VBN filed) (PP (IN on) 
+(NP (NNP Thursday))) 
+(NP (DT a) (NN P225-million) (NN suit)) (PP (IN against) 
+(NP 
+(NP (CD two) (NN shipping) (NNS firms)) (SBAR (WHNP (WP$ whose) (NNS vessels)) 
+(S 
+(VP 
+(VP (VBD collided) (PRT (RP off)) 
+(NP (NNP Talisay) (NNP City)) (PP (IN in) 
+(NP (NNP August))) 
+(NP (JJ last) (NN year))) (CC and) 
+(VP (VBD caused) 
+(NP (DT a) (JJ massive) (NN oil) (NN spill)) (PP (IN in) 
+(NP (NNP Cebu))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="ERROR-02" category="ERROR" valid="true">
+<!-- This has unbalanced input with a missing (VP -->
+<!-- Last update: 2 Sept 2014 -->
+<EventCoding error="bad_input_parse"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="ERROR-03" category="ERROR" valid="true">
+<!-- This has unbalanced input with a couple of missing )) -->
+<!-- Last update: 2 Sept 2014 -->
+<EventCoding error="bad_input_parse"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) ) )
+    )
   )  (. .)
 ) )
 </Parse>

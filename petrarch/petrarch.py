@@ -1729,6 +1729,7 @@ def check_verbs():
             try:
             	pv = check_passive(kitem)
             except CheckVerbsError:
+                kitem += 1
             	continue
             IsPassive = (pv > 0)
             if IsPassive:

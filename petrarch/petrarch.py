@@ -54,14 +54,14 @@ ValidErrorType = ''  # expected error code
 
 # ================================  DEBUGGING GLOBALS  ==================== #
 # (comment out the second line in the pair to activate. Like you couldn't
-# figure that out.) 
+# figure that out.)
 
 #prints ParseList in evaluate_validation_record()/code_record() following NE assignment
 ShowParseList = True
 ShowParseList = False
 
 # displays parse trees in read_TreeBank
-ShowRTTrees = True  
+ShowRTTrees = True
 ShowRTTrees = False
 
 # prints upper and lower sequences ParseList in make_check_sequences()
@@ -69,7 +69,7 @@ ShowCodingSeq = True
 ShowCodingSeq = False
 
 # prints pattern match info in check_verbs()
-ShowPattMatch = True  
+ShowPattMatch = True
 ShowPattMatch = False
 
 # prints search and intermediate strings in the (NE conversion
@@ -77,7 +77,7 @@ ShowNEParsing = True
 ShowNEParsing = False
 
 # prints intermediate strings in the compound markup
-ShowMarkCompd = True  
+ShowMarkCompd = True
 ShowMarkCompd = False
 
 
@@ -101,19 +101,19 @@ class SkipRecord(Exception):  # skip a validation record
 class UnbalancedTree(Exception):  # unbalanced () in the parse tree
     pass
 
-class IrregularPattern(Exception):  # problems were found at some point in read_TreeBank  
+class IrregularPattern(Exception):  # problems were found at some point in read_TreeBank
     pass
 
-#class ParseListIssue(Exception):  # problems were found at some point during the evaluation of ParseList  
+#class ParseListIssue(Exception):  # problems were found at some point during the evaluation of ParseList
 #    pass
 
-class CheckVerbsError(Exception):  # problems were found in a specific pattern in check_verbs [make this local to that function?]  
+class CheckVerbsError(Exception):  # problems were found in a specific pattern in check_verbs [make this local to that function?]
     pass
 
 # ================== ERROR FUNCTIONS ================== #
 
 """
-<14.09.014> This function has now been replaced by more specific error messages and 
+<14.09.014> This function has now been replaced by more specific error messages and
 it should be possible to eliminate it
 def raise_parsing_error(call_location_string):
 # <14.02.27: this is currently used as a generic escape from misbehaving
@@ -128,14 +128,14 @@ def raise_parsing_error(call_location_string):
         raise HasParseError
     else:
         raise UnbalancedTree(errorstring)
-"""        
+"""
 
 def raise_ParseList_error(call_location_string):
     """
-    Handle problems found at some point during the coding/evaluation of ParseList, and is 
+    Handle problems found at some point during the coding/evaluation of ParseList, and is
     called when the problem seems sufficiently important that the record should not be coded.
     Logs the error and raises HasParseError.
-    """ 
+    """
     global SentenceID, ValidError
     warningstr = call_location_string+'; record skipped: {}'.format(SentenceID)
     logger = logging.getLogger('petr_log')
@@ -361,7 +361,7 @@ def evaluate_validation_record(item):
     if ShowParseList:
         print('EVR-Parselist::', ParseList)
 
-    check_verbs()  # this can throw HasParseError which is caught in do_validation    
+    check_verbs()  # this can throw HasParseError which is caught in do_validation
 
 #	print 'EVR-2.1:',ValidEvents
 #	print 'EVR-2.2:',CodedEvents
@@ -506,27 +506,27 @@ def _check_envr(environ):
 
 def read_TreeBank():
     """
-    Reads parsed sentence in the Penn TreeBank II format and puts the linearized version 
-    in the list ParseList. Sets ParseStart. Leaves global input file fin at line 
+    Reads parsed sentence in the Penn TreeBank II format and puts the linearized version
+    in the list ParseList. Sets ParseStart. Leaves global input file fin at line
     following </parse>. The routine is appears to be agnostic towards the line-feed and tab
     formatting of the parse tree
-    
-    TO DO <14.09.03>: Does this handle an unexpected EOF error?   
 
-    TO DO <14.09.03>: This really belongs as a separate module and the code seems 
-    sufficiently stable now that this could be done   
+    TO DO <14.09.03>: Does this handle an unexpected EOF error?
 
-    read_TreeBank() can raise quite a few different named errors which are handled by 
-    check_irregulars(); these can be checked as ValidErrorType. ParseList should come out 
-    of this balanced. In addition to the error trapping there is extensive commented-out 
+    TO DO <14.09.03>: This really belongs as a separate module and the code seems
+    sufficiently stable now that this could be done
+
+    read_TreeBank() can raise quite a few different named errors which are handled by
+    check_irregulars(); these can be checked as ValidErrorType. ParseList should come out
+    of this balanced. In addition to the error trapping there is extensive commented-out
     debugging code.
 
     ======= ParseList coding =========
-    
+
     Because they are still based in a shallow parsing approach, the KEDS/TABARI/PETR
-    dictionaries are based on linear string matching rather than a tree representation, 
-    which differs from the VRA-Reader and BBN-Serif approach, but is much faster, or 
-    perhaps more accurately, let the Treebank parser do the work once, rather than 
+    dictionaries are based on linear string matching rather than a tree representation,
+    which differs from the VRA-Reader and BBN-Serif approach, but is much faster, or
+    perhaps more accurately, let the Treebank parser do the work once, rather than
     re-evaluating a tree every time events are coded. The information in the tree is used
     primarily for clause delineation.
 
@@ -572,7 +572,7 @@ def read_TreeBank():
     5. (VP and complex (NP are indexed so that the end of the phrase can be
     identified so these have the form (XXn and ~XXn
 
-    The routine check_irregulars() handles a variety of conditions where the input 
+    The routine check_irregulars() handles a variety of conditions where the input
     or the parsing is not going well; check the various error messages for details
 
 
@@ -595,7 +595,7 @@ def read_TreeBank():
     def check_irregulars(knownerror = ''):
         """
         Checks for some known idiosyncratic ParseList patterns that indicate problems in the
-        the input text or, if knownrecord != '', just raises an already detected error. In 
+        the input text or, if knownrecord != '', just raises an already detected error. In
         either case, logs the specific issue, sets the global ValidError (for unit tests)
         and raises IrregularPattern.
         Currently tracking:
@@ -634,7 +634,7 @@ def read_TreeBank():
             logger.warning(warningstr.format(SentenceID))
             ValidError = knownerror
             raise IrregularPattern
-        
+
         ntag = 0
         taglist = []
         ka = 0
@@ -650,7 +650,7 @@ def read_TreeBank():
             logger.warning('Dateline pattern found in ParseList; record skipped: {}'.format(SentenceID))
             ValidError = 'dateline'
             raise IrregularPattern
-            
+
     def get_NE(NPphrase):
         """
         Convert (NP...) ) to NE: copies any (NEC phrases with markup, remainder of
@@ -836,7 +836,7 @@ def read_TreeBank():
                          nplist = get_NE(treestr[npbds[0]:npbds[1]])
                     except IrregularPattern:
                         check_irregulars('resolve_compounds')
-                    	
+
                 if ShowMarkCompd:
                     print('rc/RTB-2: NE:', nplist)
                 for kb in range(len(nplist)):
@@ -850,7 +850,7 @@ def read_TreeBank():
 
     def reduce_SBAR(kstart):
         """
-        collapse SBAR beginning at kstart to a string without any markup; change clause 
+        collapse SBAR beginning at kstart to a string without any markup; change clause
         marker to SBR, which is subsequently eliminated
         """
         global treestr
@@ -877,7 +877,7 @@ def read_TreeBank():
 
     def process_preposition(ka):
         """
-        Process (NP containing a (PP and return an nephrase: if this doesn't have a 
+        Process (NP containing a (PP and return an nephrase: if this doesn't have a
         simple structure of  (NP (NP ...) (PP...) (NP/NEC ...)) without any further
         (PP -- i.e. multiple levels of prep phrases -- it returns a null string.
         """
@@ -944,7 +944,7 @@ def read_TreeBank():
 # exst = '\"'+ nepph + '\"'  # add quotes to see exactly what we've got here
 #		print 'PPP3: ',exst
         return nepph
-        
+
     def filter_treestr():
         """
         Filters known problematic strings in treestr
@@ -964,10 +964,10 @@ def read_TreeBank():
         print('RT1 count:', treestr.count('('), treestr.count(')'))
         show_tree_string(treestr)
     if treestr.count('(') != treestr.count(')'):
-        check_irregulars('bad_input_parse') 
+        check_irregulars('bad_input_parse')
 
     filter_treestr()
-    
+
     mark_compounds()
 
     if ShowRTTrees:
@@ -1033,10 +1033,10 @@ def read_TreeBank():
                     nplist = get_NE(nephrase)
                 except IrregularPattern:
                     check_irregulars('get_NE_error')
-                     
+
                 if not nplist:
                     # <14.02.27> Seems like an odd place to hit this error, and it will probably go away...
-			        check_irregulars('empty_nplist')      	
+			        check_irregulars('empty_nplist')
                 for kb in range(len(nplist)):
                     fullline += nplist[kb] + ' '
                 ka = npbds[1] + 1
@@ -1304,7 +1304,7 @@ def find_target():
 
 
 def get_upper_seq(kword):
-    """ 
+    """
     Generate the upper sequence starting from kword; Upper sequence currently
     terminated by ParseStart, ~S or ~,
     """
@@ -1325,7 +1325,7 @@ def get_upper_seq(kword):
         elif (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
             UpperSeq.append(ParseList[kword])
         kword -= 1
-        if kword < 0: 
+        if kword < 0:
             raise_ParseList_error('Bounds underflow in get_upper_seq()') # error is handled in check_verbs
             return  # not needed, right?
 
@@ -1333,7 +1333,7 @@ def get_upper_seq(kword):
 #   for alist in UpperSeq: print alist  # debug
 
 def get_lower_seq(kword, endtag):
-    """ 
+    """
     Generate the lower sequence starting from kword; lower sequence includes only
     words in the VP
     """
@@ -1361,9 +1361,9 @@ def get_lower_seq(kword, endtag):
 #   for alist in LowerSeq: print alist  # debug
 
 def make_check_sequences(verbloc, endtag):
-    """ 
+    """
     Create the upper and lower sequences to be checked by the verb patterns based on the
-    verb at ParseList[verbloc]. 
+    verb at ParseList[verbloc].
 
     Note-1: Adding location and code information to (NE
     <13.11.15>
@@ -1386,7 +1386,7 @@ def make_check_sequences(verbloc, endtag):
     get_lower_seq(verbloc + 1, endtag)
 
 def make_multi_sequences(multilist, verbloc, endtag):
-    """ 
+    """
     Check if the multi-word list in multilist is valid for the verb at ParseList[verbloc],
     then create the upper and lower sequences to be checked by the verb patterns. Lower
     sequence includes only words in the VP; upper sequence currently terminated by ParseStart,
@@ -1449,7 +1449,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
             else:
                 ka -= 1
 #                print('Bombed here, yessiree bob!...')
-                if ka < 0: 
+                if ka < 0:
                     raise_ParseList_error('Underflow error in find_ne(kseq) in verb_pattern_match()')
 
 #        print("fn-3/VPM: Found NE:" , ka, aseq[ka])   # debug
@@ -1563,7 +1563,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
                 if '~NE' in aseq[kseq] and not insideNE:
                     print("  ==> insideNE error on ~NE")
                 if '(NE' in aseq[kseq] and insideNE:
-                    print("  ==> insideNE error on (NE") """                    
+                    print("  ==> insideNE error on (NE") """
             if last_seqword():
                 return False  # hit end of sequence before full pattern matched
             insideNE = not insideNE
@@ -1591,7 +1591,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
                             # handle, not necessarily unbalanced
                             raise_ParseList_error("find_ne(kseq) in skip assessment, verb_pattern_match()")
                     if ShowVPM:
-                        print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug    
+                        print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug
                     insideNE = isupperseq
 #                    print("VPM-2:" , aseq, isupperseq)   # debug
 
@@ -1606,7 +1606,7 @@ def verb_pattern_match(patlist, aseq, isupperseq):
                         TargetLoc = [ka,isupperseq]
 
                 if ShowVPM:
-                    # debug                    
+                    # debug
                     print('vpm-mk3')
                     print("VPM-4: Token assignment ", patlist[kpatword], aseq[find_ne(kseq)])
                 if last_patword():
@@ -1680,13 +1680,13 @@ def check_verbs():
 
     def raise_CheckVerbs_error(kloc, call_location_string):
         """
-        Handle problems found at some point internal to check_verbs: skip the verb that 
-        caused the problem but do skip the sentence. Logs the error and information on the 
+        Handle problems found at some point internal to check_verbs: skip the verb that
+        caused the problem but do skip the sentence. Logs the error and information on the
         verb phrase and raises CheckVerbsError.
         This is currently only used for check_passive()
-        """ 
+        """
         global SentenceID, ParseList
-        warningstr = call_location_string+'in check_verbs; verb sequence {} skipped: {}'.format(' '.join(Parselist[kloc:kloc+5]), SentenceID)
+        warningstr = call_location_string+'in check_verbs; verb sequence {} skipped: {}'.format(' '.join(ParseList[kloc:kloc+5]), SentenceID)
         logger = logging.getLogger('petr_log')
         logger.warning(warningstr)
         raise CheckVerbsError
@@ -1729,7 +1729,7 @@ def check_verbs():
             try:
             	pv = check_passive(kitem)
             except CheckVerbsError:
-            	continue 
+            	continue
             IsPassive = (pv > 0)
             if IsPassive:
 #				print "Got passive"
@@ -1779,7 +1779,7 @@ def check_verbs():
                 if hasmatch and EventCode == '---':
                     hasmatch = False
                 if not hasmatch and verbcode != '---':
-                    if ShowPattMatch: 
+                    if ShowPattMatch:
                         print("Matched on the primary verb")   # debug
 #                       EventCode = PETRglobals.VerbDict[targ][1]
                     EventCode = verbcode
@@ -1805,8 +1805,8 @@ def check_verbs():
 
 
 def get_actor_code(index):
-    """ 
-    Get the actor code, resolving date restrictions. 
+    """
+    Get the actor code, resolving date restrictions.
     """
     global SentenceOrdDate
 
@@ -1831,7 +1831,7 @@ def get_actor_code(index):
 
 def actor_phrase_match(patphrase, phrasefrag):
     """
-    Determines whether the actor pattern patphrase occurs in phrasefrag. Returns True if 
+    Determines whether the actor pattern patphrase occurs in phrasefrag. Returns True if
     match is successful. Insha'Allah...
     """
 
@@ -2028,14 +2028,14 @@ def check_commas():
 
     def delete_phrases(loclow, lochigh):
         """
-        Deletes the complete phrases in ParseList between loclow and lochigh - 1, leaving 
+        Deletes the complete phrases in ParseList between loclow and lochigh - 1, leaving
         other mark-up.
 
-        This is the workhorse for this function only removes (xx...~xx delimited phrases 
-        when these are completely within the clause being removed. This will potentially 
+        This is the workhorse for this function only removes (xx...~xx delimited phrases
+        when these are completely within the clause being removed. This will potentially
         leave the tree in something of a mess grammatically, but it will be balanced.
-        
-        [Since you are wondering, we go through this in reverse in order to use index(), 
+
+        [Since you are wondering, we go through this in reverse in order to use index(),
         as there is no rindex() for lists.]
         """
         global ParseList  # 14.05.02: wtf is this needed??
@@ -2062,7 +2062,7 @@ def check_commas():
     ShowCCtrees = True
     ShowCCtrees = False
 
-        
+
     if '(,' not in ParseList:
         return
 
@@ -2072,8 +2072,8 @@ def check_commas():
 
     if PETRglobals.CommaBMax != 0:  # check for initial phrase
         """
-        Initial phrase elimination in check_commas(): delete_phrases() will tend to leave 
-        a lot of (xx opening tags in place, making the tree a grammatical mess, which is 
+        Initial phrase elimination in check_commas(): delete_phrases() will tend to leave
+        a lot of (xx opening tags in place, making the tree a grammatical mess, which is
         why initial clause deletion is turned off by default.
         """
 
@@ -2153,17 +2153,17 @@ def check_commas():
 
 
 def assign_NEcodes():
-    """ 
+    """
     Assigns non-null codes to NE phrases where appropriate.
     """
 
     def expand_compound_element(kstart):
         """
-        An almost but not quite a recursive call on expand_compound_NEPhrase().        
+        An almost but not quite a recursive call on expand_compound_NEPhrase().
         This difference is that the (NEC has already been established so we are just
         adding elements inside the list and there is no further check: we're not allowing
-        any further nesting of compounds. That could doubtlessly be done fairly easily 
-        with some possibly too-clever additional code but such constructions are virtually 
+        any further nesting of compounds. That could doubtlessly be done fairly easily
+        with some possibly too-clever additional code but such constructions are virtually
         unknown in actual news stories.
         """
         global ParseList
@@ -2534,7 +2534,7 @@ def extract_Sentence_info(item):
                                                   SentenceCat))
             except EOFError:
                 raise
-                
+
             except IrregularPattern:
 #            except IrregularPattern, UnbalancedTree:
                 raise BadReadTree
@@ -2649,7 +2649,7 @@ def code_record():
         print('code_rec-Parselist::', ParseList)
 
     try:
-        check_verbs()   # this can throw HasParseError which is caught in do_coding  
+        check_verbs()   # this can throw HasParseError which is caught in do_coding
     except IndexError:  # <14.09.04: HasParseError should get all of these now
         logger.warning('\tIndexError in parsing, but HasParseError should have caught this. Probably a bad sentence.')
         print('\tIndexError in parsing. Probably a bad sentence.')
@@ -2773,8 +2773,8 @@ def do_coding(event_dict, out_file):
                     parsed = event_dict[key]['sents'][sent]['parsed']
                     treestr = parsed
                     #TODO: Make read_TreeBank take treestr as an arg and return
-                    #something  
-                    # PAS <14.09.03>: yes, good idea: that global treestr is left over 
+                    #something
+                    # PAS <14.09.03>: yes, good idea: that global treestr is left over
                     #     from a much earlier version. Logically, it should return ParseList
                     try:
                         read_TreeBank()
@@ -2879,10 +2879,10 @@ PETRARCH
                                to the built-in PETR.UnitTest.records.txt""",
                                required=False)
 
-    batch_command = sub_parse.add_parser('batch', help="""Command to run a batch 
+    batch_command = sub_parse.add_parser('batch', help="""Command to run a batch
                                          process from parsed files specified by
                                          an optional config file.""",
-                                         description="""Command to run a batch 
+                                         description="""Command to run a batch
                                          process from parsed files specified by
                                          an optional config file.""")
     batch_command.add_argument('-c', '--config',
@@ -2926,7 +2926,7 @@ def main():
 
         print('\n\n')
 
-        if cli_args.command_name == 'parse':         
+        if cli_args.command_name == 'parse':
             if os.path.isdir(cli_args.inputs):
                 if cli_args.inputs[-1] != '/':
                     paths = glob.glob(cli_args.inputs + '/*.xml')

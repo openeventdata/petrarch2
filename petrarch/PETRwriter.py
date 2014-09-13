@@ -114,6 +114,8 @@ def pipe_output(event_dict):
             StorySource = 'NULL'
         if 'url' in story_dict['meta']:
             url = story_dict['meta']['url']
+        else:
+            url = ''
 
         if filtered_events:
             story_output = []

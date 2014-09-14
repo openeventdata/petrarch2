@@ -104,6 +104,17 @@ working directory. This file will contain general information, e.g., which
 files are being opened, and error messages.
 
 
+Logged Warnings
+---------------
+
+As of September 2014, we are regularly running PETRARCH on hundreds of thousands of sentences from a diverse set of sources and it is not crashing. If you encounter a situation where it is crashing, please let us know, ideally with a copy of the parsed input text that caused the error.
+
+Unexpected conditions where the program encountered a potentially fatal error are recorded in the log file with the word **WARNING**. These should be rare: in a couple of recent tests we coded 60,000 AFP sentences from the Gigaword corpus and found four such errors; in another test we coded about 360,000 records from BBC sources and had 43 errors. In short, these should be really, really rare and if you are getting them more frequently there is presumably some quirk in your processing pipeline or source texts that is giving you significantly different parsed input than we were working with.
+
+The one common error -- not included in those counts -- is the ``Dateline`` pattern, which is a particular pattern in the parse tree that occurs when the parsed material starts with a dateline such as "Beirut:'' or "Beijing (Xinhua News Agency):" rather than the actual start of the sentence. We probably aren't catching all dateline errors with this pattern but it gets a lot of them, and if you are seeing frequent occurrences of this warning you need to modify your pre-filters to remove the datelines.
+
+The remaining errors are due to very odd sentence constructions which either have confused CoreNLP so that the phrase structure is incorrect, or otherwise were not anticipated in the PETRARCH processing. Almost all of these occur in the translation from the Treebank format to PETRARCH's internal representation, so if you are looking through the PETRARCH code it should be easy to track down exactly where these are occurring based on the text of the warning. If you would like to modify the program to work around these, we would welcome additions to the code, but at present the set of such cases is sufficiently rare in the texts we are working with that this is not a priority for us.
+
 Contents:
 ---------
 

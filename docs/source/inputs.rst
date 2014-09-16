@@ -63,10 +63,10 @@ Validation Input
 ----------------
 
 Validation files are used for debugging and unit testing, combining the
-contents of a project file and text file as well as providing information on
-the correct coding for each record. This approach is used based on some
+contents of a ``config.ini`` file and text file as well as providing information on
+the correct coding for each record. This approach is based on some
 decidedly aggravating experiences during the TABARI development where the
-validation records and the required .verbs and .actors files were not properly
+validation records and the required ``.verbs`` and ``.actors`` files were not properly
 synchronized.
 
 The general format of the file is:
@@ -105,7 +105,13 @@ These elements are described in greater detail below.
 
 There can only be one actorfile, unlike in the config file, which allows a list.
 
-**Options elements in the <Environment> block:**
+**Optional elements in the <Environment> block:**
+
+``<Discardfile name="<filename>"></∂iscardfile>``
+
+Include a discard file: these phrases can be checked using the ``sentencediscard`` and 
+``storydiscard`` error conditions.
+
 
 ``<Include categories="<space-delimited list of categories to include in test>">``
 
@@ -174,6 +180,8 @@ record is treated as being correctly coded, even though no events are generated.
 recognizes the following errors:
 
 - dateline: ``(ROOT (NE (NEC`` pattern detected by ``check_irregulars``
+- sentencediscard: Sentence-level discard phrase was found in the text 
+- storydiscard: Story-level discard phrase was found in the text 
 
  
 **Optional elements in record:**
@@ -181,10 +189,6 @@ recognizes the following errors:
 ``<Skip>``:
 
 Skip this record without coding
-
-``<Stop>``:
-
-Stop coding and exit program
 
 ``<Config option ="<config.ini option from list below>" value ="<value>">``:
 
@@ -194,7 +198,8 @@ Currently works for: new_actor_length, require_dyad, stop_on_error, comma_*
 
 **Additional notes:**
 
-1. The validation file currently does not use a discard file.
+1. The record ``<Stop></Stop>`` will stop coding of file and exit program
+
 
 **Example:**
 

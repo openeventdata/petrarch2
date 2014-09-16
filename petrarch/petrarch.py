@@ -89,9 +89,6 @@ class DupError(Exception):  # template
 class MissingAttr(Exception):  # could not find expected attribute field
     pass
 
-class StopCoding(Exception):  # exit the coding due to <Stop>
-    pass
-
 class HasParseError(Exception):  # exit the coding due to parsing error
     pass
 
@@ -254,32 +251,6 @@ def change_Config_Options(line):
         logger.warning("<Config>: unrecognized option")
 
 
-def extract_EventCoding_info(codings):
-    """Extracts fields from <EventCoding record and appends to ValidEvents."""
-# currently does not raise errors if the information is missing but instead
-# sets the fields to null strings
-    """
-    Structure of ValidEvents
-    noevents: empty list
-    otherwise list of triples of [sourcecode, targetcode, eventcode]
-    """
-    global ValidEvents, ValidErrorType
-
-    for coding in codings:
-        event_attrs = coding.attrib
-        if 'noevents' in event_attrs:
-            ValidEvents = []
-            return
-        if 'error' in event_attrs:
-            ValidEvents = []
-            ValidErrorType = event_attrs['error']
-            return
-        else:
-            ValidEvents.append([event_attrs['sourcecode'],
-                                event_attrs['targetcode'],
-                                event_attrs['eventcode']])
-
-
 def evaluate_validation_record(item):
     """
     def evaluate_validation_record(): Read validation record, setting EventID
@@ -288,7 +259,6 @@ def evaluate_validation_record(item):
     or the event is skipped; false otherwise; also prints the
     mismatches
     Raises EOFError exception if EOF hit.
-    Raises StopCoding if <Stop> found or
     Raises SkipRecord if <Skip> found or record is skipped due to In/Exclude
     category lists
     """
@@ -298,6 +268,32 @@ def evaluate_validation_record(item):
     global ParseList
     #TODO: remove this and make read_TreeBank take it as an arg
     global treestr
+
+    def extract_EventCoding_info(codings):
+        """Extracts fields from <EventCoding record and appends to ValidEvents."""
+    # currently does not raise errors if the information is missing but instead
+    # sets the fields to null strings
+        """
+        Structure of ValidEvents
+        noevents: empty list
+        otherwise list of triples of [sourcecode, targetcode, eventcode]
+        """
+        global ValidEvents, ValidErrorType
+
+        for coding in codings:
+            event_attrs = coding.attrib
+            if 'noevents' in event_attrs:
+                ValidEvents = []
+                return
+            if 'error' in event_attrs:
+                ValidEvents = []
+                ValidErrorType = event_attrs['error']
+                return
+            else:
+                ValidEvents.append([event_attrs['sourcecode'],
+                                    event_attrs['targetcode'],
+                                    event_attrs['eventcode']])
+
 
     ValidEvents = []  # code triples that should be produced
     # code triples that were produced; set in make_event_strings
@@ -326,10 +322,6 @@ def evaluate_validation_record(item):
         raise SkipRecord
         return True
 
-    if item.find('Stop'):
-        raise StopCoding
-        return True
-
     parsed = item.find('Parse').text
     treestr = utilities._format_parsed_str(parsed)
 
@@ -346,7 +338,20 @@ def evaluate_validation_record(item):
 
     print('\nSentence:', SentenceID, '[', SentenceCat, ']')
     print(SentenceText)
-#	print '**',ParseList
+#   print '**',ParseList
+
+    disc = check_discards()
+#    print(disc,ValidErrorType)
+    if ((disc[0] == 0 and 'discard' in ValidErrorType) 
+        or (disc[0] == 1 and ValidErrorType != 'sentencediscard')
+        or (disc[0] == 2 and ValidErrorType != 'storydiscard')):
+        if disc[0] == 0:
+            print('"' + ValidErrorType + '" was not triggered in ' + SentenceID)
+        else:
+            print(disc[1] + ' did not trigger  "'+ValidErrorType+'" in ' + SentenceID)
+        return False
+    if disc[0]>0:
+        return True
 
     try:
         check_commas()
@@ -435,8 +440,10 @@ def open_validation_file(xml_root):
 
     logger.info('Validation file: ' + PETRglobals.TextFileList[0] +
                 '\nVerbs file: ' + PETRglobals.VerbFileName +
-                '\nActors file: ' + PETRglobals.ActorFileList[0] + '\n' +
-                '\nAgents file: ' + PETRglobals.AgentFileName + '\n')
+                '\nActors file: ' + PETRglobals.ActorFileList[0] + 
+                '\nAgents file: ' + PETRglobals.ActorFileList[0] + '\n')
+    if len(PETRglobals.DiscardFileName) > 0:
+        logger.info('Discard file: ' + PETRglobals.DiscardFileName + '\n')
     if len(ValidInclude):
         logger.info('Include list: ' + ', '.join(ValidInclude) + '\n')
     if len(ValidExclude):
@@ -457,6 +464,12 @@ def open_validation_file(xml_root):
                                      PETRglobals.AgentFileName)
     PETRreader.read_agent_dictionary(agent_path)
 
+    if len(PETRglobals.DiscardFileName) > 0:
+		print('Discard list:', PETRglobals.DiscardFileName)
+		discard_path = utilities._get_data('data/dictionaries',
+										 PETRglobals.DiscardFileName)
+		PETRreader.read_discard_list(discard_path)
+
 
 def _check_envr(environ):
     for elem in environ:
@@ -468,6 +481,9 @@ def _check_envr(environ):
 
         if elem.tag == 'Agentfile':
             PETRglobals.AgentFileName = elem.text
+
+        if elem.tag == 'Discardfile':
+            PETRglobals.DiscardFileName = elem.text
 
         if elem.tag == 'Errorfile':
             print('This is deprecated. Using a different errorfile. ¯\_(ツ)_/¯')
@@ -2450,95 +2466,6 @@ def extract_Sentence_info(item):
 
 
 
-# 14.09.02: THIS IS NO LONGER CALLED FROM ANYTHING, SO THE CODE CAN BE ELIMINATED, RIGHT?
-#def read_record():
-    """
-    Primary input routine: reads an input record, and directly sets
-    SentenceText and SentenceSource.
-
-    read_record() also sets various other sentence globals (e.g. SentenceDate,
-    SentenceID, ParseList ) via routines called from here.
-
-    Raises StopCoding if <Stop> found PETRreader.read_FIN_line() can raise
-    EOFError; this is passed through
-
-    PETR organizes records into 'stories' and 'sentences' using the final six
-    characters of the id field. These are assumed to be of the form NNN-SS
-    where NNN are the final three digits of the story ID and SS is the sentence
-    order. At present, the system just uses NNN -- that is, the ID[-6:-3] slice
-    -- to determine when a new story has been encountered, but the SS is useful
-    for determining lede and HLEAD sentences.
-
-    At present, the 'story' identification is used in two features
-     -- Tuple filtering is used within the story
-     -- A +<string> in the Discards file skips the entire story when the string
-         is found
-    """
-    """
-    global SentenceDate, SentenceText, SentenceID, SentenceSource
-    global NSent
-
-    SentenceSource = ''
-    line = PETRreader.read_FIN_line()
-    while line:
-#		print line
-        if ('<Sentence ' in line):
-            try:
-                extract_Sentence_info(line)
-            except MissingAttr:
-                print('Skipping sentence: Missing date field in', line, end=' ')
-                return  # let SkipRecord be caught by calling routine
-            NSent += 1
-            # debug
-            # add zero to match the new format
-            SentenceID = SentenceID[:-1] + '0' + SentenceID[-1]
-#			print SentenceID
-            # debug
-
-        # need to substitute something more robust here
-        if ('<Source ' in line):
-            extract_attributes(line)
-            SentenceSource = check_attribute('id')
-
-        if ('<Text>' in line):
-            SentenceText = ''
-            line = PETRreader.read_FIN_line()
-            while '</Text>' not in line:
-                SentenceText += line[:-1]
-                if ' ' not in SentenceText[-1]:
-                    SentenceText += ' '
-                line = PETRreader.read_FIN_line()
-
-        if ('<Stop>' in line):
-            raise StopCoding
-            return  # let StopCoding be caught by calling routine
-
-        if '<Parse>' in line:
-            try:
-                read_TreeBank()
-                break
-            # without the 'break', this will just skip processing the record
-            # and go to the next one
-            except UnbalancedTree:
-                logger.warning('{}: {} {}'.format(ErrMsgUnbalancedTree,
-                                                  SentenceID,
-                                                  SentenceCat))
-            except EOFError:
-                raise
-                
-            except IrregularPattern:
-#            except IrregularPattern, UnbalancedTree:
-                raise BadReadTree
-
-        line = PETRreader.read_FIN_line()
-
-    if not line:
-        raise EOFError
-    print('\nSentence:', SentenceDate, SentenceID)
-    print(SentenceText)
-#	print '**',ParseList
-"""
-
 def check_discards():
     """
     Checks whether any of the discard phrases are in SentenceText, giving
@@ -2550,6 +2477,8 @@ def check_discards():
     global SentenceText
 
     sent = SentenceText.upper()  # case insensitive matching
+    
+#    print('++:',PETRglobals.DiscardList)
 
     for target in PETRglobals.DiscardList:  # check all of the '+' cases first
         if target[0] == '+':
@@ -2664,7 +2593,7 @@ def make_fake_events():
 
 
 def do_validation(filepath):
-    """ Coding using a validation file. """
+    """ Unit tests using a validation file. """
     nvalid = 0
 
     tree = ET.parse(filepath)
@@ -2676,6 +2605,9 @@ def do_validation(filepath):
     for item in sents:
         if item.tag == 'Config':
             change_Config_Options(item.attrib)
+        if item.tag == 'Stop':
+            print("Exiting: <Stop> record ")
+            break
         if item.tag == 'Sentence':
             try:
                 vresult = evaluate_validation_record(item)
@@ -2699,9 +2631,6 @@ def do_validation(filepath):
                 PETRreader.close_FIN()
                 print("Records coded correctly:", nvalid)
                 sys.exit()
-            except StopCoding:
-                print("Exiting: <Stop> record ")
-                break
             except SkipRecord:
                 print("Skipping this record.")
             except HasParseError:
@@ -2749,88 +2678,88 @@ def do_coding(event_dict, out_file):
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in event_dict[key]['sents']:
-            if SkipStory:
-                logger.info('Hit a story skip. Passing.')
-                pass
-            else:
-                if 'parsed' in event_dict[key]['sents'][sent]:
-                    SentenceID = '{}_{}'.format(key, sent)
-                    logger.info('\tProcessing {}'.format(SentenceID))
-                    SentenceText = event_dict[key]['sents'][sent]['content']
-                    SentenceDate = StoryDate
-                    SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
-                    SentenceSource = 'TEMP'
+            if 'parsed' in event_dict[key]['sents'][sent]:
+                SentenceID = '{}_{}'.format(key, sent)
+                logger.info('\tProcessing {}'.format(SentenceID))
+                SentenceText = event_dict[key]['sents'][sent]['content']
+                SentenceDate = StoryDate
+                SentenceOrdDate = PETRreader.dstr_to_ordate(SentenceDate)
+                SentenceSource = 'TEMP'
 
-                    parsed = event_dict[key]['sents'][sent]['parsed']
-                    treestr = parsed
-                    #TODO: Make read_TreeBank take treestr as an arg and return
-                    #something  
-                    # PAS <14.09.03>: yes, good idea: that global treestr is left over 
-                    #     from a much earlier version. Logically, it should return ParseList
-                    try:
-                        read_TreeBank()
-                    except IrregularPattern:
+                parsed = event_dict[key]['sents'][sent]['parsed']
+                treestr = parsed
+                #TODO: Make read_TreeBank take treestr as an arg and return
+                #something  
+                # PAS <14.09.03>: yes, good idea: that global treestr is left over 
+                #     from a much earlier version. Logically, it should return ParseList
+                try:
+                    read_TreeBank()
+                except IrregularPattern:
+                    continue
+
+                reset_event_list(True)
+
+    #TODO
+    #Can implement this easily. The sentences are organized by story in the dicts
+    #so it's easy to rework this. Just when we're done with a key then write out
+    #the events for the included sentences. Gonna skip it for now
+    #            if not PETRglobals.CodeBySentence:
+    #                # write events when we hit a new story
+    #                if SentenceID[-6:-3] != CurStoryID:
+    #                    if not SkipStory:
+    #                        write_events()
+    #                    reset_event_list()
+    #                    if PETRglobals.PauseByStory:
+    #                        if len(raw_input("Press Enter to continue...")) > 0:
+    #                            sys.exit()
+    #            else:
+    #                reset_event_list()
+
+                disc = check_discards()
+                if disc[0] > 0:
+                    if disc[0] == 1:
+                        print("Discard sentence:", disc[1])
+                        logger.info('\tSentence discard. {}'.format(disc[1]))
+                        NDiscardSent += 1
                         continue
+                    else:
+                        print("Discard story:", disc[1])
+                        logger.info('\tStory discard. {}'.format(disc[1]))
+                        SkipStory = True
+                        NDiscardStory += 1
+                        break
 
-                    reset_event_list(True)
+                    coded_events = None  # <14.09.16> Probably isn't needed now that discards trigger either a continue or break
 
-        #TODO
-        #Can implement this easily. The sentences are organized by story in the dicts
-        #so it's easy to rework this. Just when we're done with a key then write out
-        #the events for the included sentences. Gonna skip it for now
-        #            if not PETRglobals.CodeBySentence:
-        #                # write events when we hit a new story
-        #                if SentenceID[-6:-3] != CurStoryID:
-        #                    if not SkipStory:
-        #                        write_events()
-        #                    reset_event_list()
-        #                    if PETRglobals.PauseByStory:
-        #                        if len(raw_input("Press Enter to continue...")) > 0:
-        #                            sys.exit()
-        #            else:
-        #                reset_event_list()
-
-                    disc = check_discards()
-                    if disc[0] > 0:
-                        if disc[0] == 1:
-                            print("Discard sentence:", disc[1])
-                            logger.info('\tSentence discard. {}'.format(disc[1]))
-                            NDiscardSent += 1
-                        else:
-                            print("Discard story:", disc[1])
-                            logger.info('\tStory discard. {}'.format(disc[1]))
-                            SkipStory = True
-                            NDiscardStory += 1
-
+                else:
+                    try:
+                        coded_events = code_record()
+                    except HasParseError:
                         coded_events = None
 
-                    else:
-                        try:
-                            coded_events = code_record()
-                        except HasParseError:
-                            coded_events = None
+                if coded_events:
+                    event_dict[key]['sents'][sent]['events'] = coded_events
 
-                    if coded_events:
-                        event_dict[key]['sents'][sent]['events'] = coded_events
+                if coded_events and PETRglobals.IssueFileName != "":
+                    event_issues = get_issues()
+                    if event_issues:
+                        event_dict[key]['sents'][sent]['issues'] = event_issues
 
-                    if coded_events and PETRglobals.IssueFileName != "":
-                        event_issues = get_issues()
-                        if event_issues:
-                            event_dict[key]['sents'][sent]['issues'] = event_issues
+                if PETRglobals.PauseBySentence:
+                    if len(input("Press Enter to continue...")) > 0:
+                        sys.exit()
+            else:
+                logger.info('{} has no parse information. Passing.'.format(SentenceID))
+                pass
 
-                    if PETRglobals.PauseBySentence:
-                        if len(input("Press Enter to continue...")) > 0:
-                            sys.exit()
-                else:
-                    logger.info('{} has no parse information. Passing.'.format(SentenceID))
-                    pass
-
-    return event_dict
+        if SkipStory: 
+            event_dict[key]['sents'] = None
 
     print("Summary:")
     print("Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents)
     print("Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty)
 
+    return event_dict
 
 def parse_cli_args():
     """Function to parse the command-line arguments for PETRARCH."""

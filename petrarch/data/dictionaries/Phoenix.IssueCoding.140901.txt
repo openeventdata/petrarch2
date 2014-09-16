@@ -65,6 +65,70 @@ n:tourer[TOURISM]
 n:tourist [TOURISM]
 </ISSUE>
 
+<ISSUE CATEGORY="ENERGY" TYPE="ALL">
+oil [OIL]
+light sweet crude [OIL]
+heavy crude [OIL]
+petroleum [OIL]
+tar n:sand [OIL]
+gasoline [OIL]
+diesel fuel [OIL]
+jet fuel [OIL]
+kerosene [OIL]
+petrol [OIL]
+vehicle fuel [OIL]
+fuel oil [OIL]
+fossil oil [OIL]
+~olive oil
+~non+oil
+~gutter oil
+~cooking oil
+~canola oil
+~sunflower oil
+~walnut oil
+~corn oil
+~fats and oils
+~whale oil
+~coconut oil
+~palm oil
+~soybean oil
+~peanut oil
+~safflower oil
+~sesame oil
+
+coal [COAL]
+anthracite [COAL]
+lignite [COAL]
+bituminous [COAL]
+
+methane [NATURAL_GAS]
+natural gas [NATURAL_GAS]
+frack [NATURAL_GAS]
+fracking [NATURAL_GAS]
+shale gas [NATURAL_GAS]
+
+nuclear energy [NUCLEAR_ENERGY]
+nuclear n:reactor [NUCLEAR_ENERGY]
+nuclear n:plant [NUCLEAR_ENERGY]
+nuclear power [NUCLEAR_ENERGY]
+
+solar n:panel [RENEWABLE_ENERGY]
+photovoltaic [RENEWABLE_ENERGY]
+solar power [RENEWABLE_ENERGY]
+solar+v:power [RENEWABLE_ENERGY]
+solar energy [RENEWABLE_ENERGY]
+wind n:turbine [RENEWABLE_ENERGY]
+wind n:farm [RENEWABLE_ENERGY]
+wind power [RENEWABLE_ENERGY]
+hydroelectric [RENEWABLE_ENERGY]
+hydroelectricity [RENEWABLE_ENERGY]
+hydropower [RENEWABLE_ENERGY]
+biomass [RENEWABLE_ENERGY]
+biofuel [RENEWABLE_ENERGY]
+geothermal energy [RENEWABLE_ENERGY]
+geothermal power [RENEWABLE_ENERGY]
+</ISSUE>
+
 
 <ISSUE CATEGORY="EUROPEAN_UNION" TYPE="ALL">
 eu [EUROPEAN_UNION]
@@ -119,7 +183,7 @@ donor aid [FOREIGN_AID]
 democracy assistance [FOREIGN_AID]
 democracy promotion [FOREIGN_AID]
 foreign assistance [FOREIGN_AID]
-usaid
+usaid [FOREIGN_AID]
 ~blood n:donor
 ~organ n:donor
 ~sperm n:donor
@@ -173,7 +237,7 @@ local n:organisation [CIVIL_SOCIETY]
 local n:activist [CIVIL_SOCIETY]
 rights n:group [CIVIL_SOCIETY]
 right n:group [CIVIL_SOCIETY]
-~~honda
+~honda
 </ISSUE>
 
 
@@ -200,9 +264,8 @@ v:massacre [ID_ATROCITY]
 </ISSUE>
 
 <ISSUE CATEGORY="CRIME" TYPE="ALL">
-n:cartel [CARTELS]
-drug n:corridor [CARTELS]
-drug n:lord [CARTELS]
+n:cartel [DRUG_CARTELS]
+drug n:lord [DRUG_CARTEL]
 drug lords [DRUG_CARTEL]
 drug trafficker [DRUG_CARTEL]
 drug trafficking [DRUG_CARTEL]
@@ -732,6 +795,21 @@ unmanned combat air vehicle [DRONE]
 ~~n:bee
 </ISSUE>
 
+<ISSUE CATEGORY="AIRSTRIKE" TYPE="ALL">
+n:airstrike [AIRSTRIKE]
+air n:raid [AIRSTRIKE]
+air n:strike [AIRSTRIKE]
+surgical n:strike [AIRSTRIKE]
+bombing run [AIRSTRIKE]
+aerial bombardment [AIRSTRIKE]
+bombing mission [AIRSTRIKE]
+v:strafe [AIRSTRIKE]
+air campaign [AIRSTRIKE]
+aerial campaign [AIRSTRIKE]
+aerial bombing [AIRSTRIKE]
+bombing campaign [AIRSTRIKE]
+close air support [AIRSTRIKE]
+</ISSUE>
 
 <ISSUE CATEGORY="ID_DEMOCRACY" TYPE="ALL">
 n:democracy [ID_DEMOCRACY]
@@ -1011,6 +1089,12 @@ nuclear umbrella  [NUCLEAR_WEAPONS]
 nuclear war [NUCLEAR_WEAPONS]
 nuclear warfare [NUCLEAR_WEAPONS]
 nuclear n:weapon [NUCLEAR_WEAPONS]
+nuclear n:arm [NUCLEAR_WEAPONS]
+thermonuclear n:weapon [NUCLEAR_WEAPONS]
+thermonuclear n:bomb [NUCLEAR_WEAPONS]
+thermonuclear n:missile [NUCLEAR_WEAPONS]
+weapons+grade uranium [NUCLEAR_WEAPONS]
+weapons_grade plutonium [NUCLEAR_WEAPONS]
 
 dirty n:bomb [RADIOLOGICAL_WEAPONS]
 radiological n:bomb [RADIOLOGICAL_WEAPONS]
@@ -1041,6 +1125,8 @@ chemical n:warfare [CHEMICAL_WEAPONS]
 chemical n:weapon [CHEMICAL_WEAPONS]
 use of poison gas [CHEMICAL_WEAPONS]
 gas attack [CHEMICAL_WEAPONS]
+chemical stockpile [CHEMICAL_WEAPONS]
+chemical attack [CHEMICAL_WEAPONS]
 sarin warhead [CHEMICAL_WEAPONS]
 sarin gas [CHEMICAL_WEAPONS]
 mustard gas [CHEMICAL_WEAPONS]
@@ -1331,6 +1417,7 @@ humanitarian n:disaster [HUMANITARIAN_CRISIS]
 humanitarian n:emergency [HUMANITARIAN_CRISIS]
 disaster n:relief [HUMANITARIAN_CRISIS]
 humanitarian n:relief [HUMANITARIAN_CRISIS]
+humanitarian situation [HUMANITARIAN_CRISIS]
 </ISSUE>
 
 <ISSUE CATEGORY="CORRUPTION" TYPE="ALL">
@@ -1444,7 +1531,7 @@ n:landslide [NATURAL_DISASTER]
 ~landslide defeat
 ~wins in landslide
 ~landslide win
-~~election
+~election
 levee failure [NATURAL_DISASTER]
 meteorite impact [NATURAL_DISASTER]
 mud n:flow [NATURAL_DISASTER]
@@ -1510,6 +1597,9 @@ light rail [PUBLIC_TRANSIT]
 ~~restaurant
 </ISSUE>
 
+<ISSUE CATEGORY="ELECTIONS" TYPE="ALL">
+# Start tagging articles to help with CAMEO expansion
+</ISSUE>
 
 <ISSUE CATEGORY="ECONOMIC" TYPE="ALL">
 n:subsidy [SUBSIDIES]

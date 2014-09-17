@@ -1,0 +1,11 @@
+# Story-level discards are indicated with a '+'. Sentence level discards are
+# without a '+'.
+MONTHS LATER
+YEARS LATER
++World Golf Championships   # pas 26-Feb-2014
++Manchester United   # pas 26-Feb-2014
+AFRICAN NATIONS CUP   # ab 13 Jun 2005 ;AB 13 JUN 2005
+BALLCLUB   # MleH 10 Aug 2009
+BASEBALL   
++TYPHOON   # ELH 04 Aug 2009
++ESPN2 

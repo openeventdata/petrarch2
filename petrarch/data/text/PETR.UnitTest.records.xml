@@ -38,11 +38,14 @@
     <Verbfile>PETR.Validate.verbs.txt</Verbfile>
     <Actorfile>PETR.Validate.actors.txt</Actorfile>
     <Agentfile>PETR.Validate.agents.txt</Agentfile>
+    <Discardfile>PETR.Validate.discards.txt</Discardfile>
     <Errorfile>Errors.unit-test.txt</Errorfile>
     <Include>valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET ERROR</Include>
     <Pause>Stop</Pause>
     <Config option="stop_on_error" value="True"></Config>
 </Environment>		
+
+<Sentences>
 
 <!--
 ##########################################################################################
@@ -52,7 +55,9 @@
 ##########################################################################################
 -->
 
-<Sentences>
+
+<!--Stop></Stop-->
+
 <Sentence date="19950101" id="DEMO-00" category="DEMO" valid="true">
 <!-- Simple coding: this is the `first light'/"Hello World!" record -->
 <!-- minus the final subordinate clause -->
@@ -11177,6 +11182,181 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
+<Sentence date="19950101" id="DISCARD-01" category="ERROR" valid="true">
+<!-- Single word story discard -->
+<!-- Last update: 16 Sept 2014 -->
+<EventCoding error="storydiscard"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost 
+five years after a typhoon trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (DT a) (NNS typhoon)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="DISCARD-02" category="ERROR"  valid="true">
+<!-- Multi-word story discard -->
+<!-- Last update: 16 Sept 2014 -->
+<EventCoding error="storydiscard"></EventCoding>
+<Text>
+Arnor is about to restore the World Golf Championships to Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (DT the) (JJ World) (JJ golf) (NNS Championships)
+              )  
+              (PP (IN to)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="DISCARD-03" category="ERROR" valid="true">
+<!-- Single word sentence discard -->
+<!-- Last update: 16 Sept 2014 -->
+<EventCoding error="sentencediscard"></EventCoding>
+<Text>
+Arnor is about to restore baseball competition with Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ baseball) (NNS competition)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="DISCARD-04" category="ERROR"  valid="true">
+<!-- Multi-word sentence discard -->
+<!-- Last update: 16 Sept 2014 -->
+<EventCoding error="sentencediscard"></EventCoding>
+<Text>
+Arnor is about to restore the African Nations Cup to Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (DT the) (JJ African) (JJ Nations) (NNS Cup)
+              )  
+              (PP (IN to)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
 
 <!--
 ##################################################################

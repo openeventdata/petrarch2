@@ -26,6 +26,8 @@ def write_events(event_dict, output_file):
     event_output = []
     for key in event_dict:
         story_dict = event_dict[key]
+        if not story_dict['sents']:
+            continue    # skip cases eliminated by story-level discard
         story_output = []
         filtered_events = utilities.story_filter(story_dict, key)
         if 'source' in story_dict['meta']:

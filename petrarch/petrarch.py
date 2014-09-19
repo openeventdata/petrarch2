@@ -1821,7 +1821,7 @@ def get_actor_code(index):
     if len(codelist) == 1 and len(codelist[0]) == 1:
         return codelist[0][0]  # no restrictions: the most common case
     for item in codelist:
-# print "GAC-1",index, item  # debug
+        print("GAC-1",index, item)  # debug
         if len(item) > 1:  # interval date restriction
             if item[0] == 0 and SentenceOrdDate <= item[1]:
                 return item[2]
@@ -1842,7 +1842,7 @@ def actor_phrase_match(patphrase, phrasefrag):
     match is successful. Insha'Allah...
     """
 
-# APMprint = True   # yes, kept having to come back to debug this...
+#    APMprint = True   # yes, kept having to come back to debug this...
     APMprint = False
     connector = patphrase[1]
     kfrag = 1   # already know first word matched
@@ -1873,7 +1873,7 @@ def actor_phrase_match(patphrase, phrasefrag):
             connector = patphrase[kpatword][1]
             kfrag += 1
             kpatword += 1
-            if kpatword >= len(patphrase):
+            if kpatword >= len(patphrase)-1:  # final element is just the terminator
                 return True  # complete pattern matched
         else:
             if APMprint:

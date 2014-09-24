@@ -1171,8 +1171,8 @@ hafling was reported on the pass of Cirith Ungol.
 <!-- Test of % (compounds) in a pattern.  Should match -->
 <!-- DOWNPLAY \n- % HAVE *  [191] -->
 <!-- This also provides a check of DOWNPLAY [014] as a synonym without a default code -->
-<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="014"></EventCoding>
-<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="014"></EventCoding>
+<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
 <Text>
 Gondor and Osgiliath have downplayed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -2983,7 +2983,6 @@ on Thursday.
 <!-- PETRARCH: 'Lions' generates a null coded actor and then we also pick up another -->
 <!-- from the final phrase -->
 <!-- Last update: 22-Apr-2014 -->
-<EventCoding sourcecode="---" targetcode="OSG" eventcode="041"></EventCoding>
 <EventCoding sourcecode="GON" targetcode="OSG" eventcode="041"></EventCoding>
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023"></EventCoding>
 <Text>
@@ -3028,7 +3027,6 @@ on Thursday.
 <!-- PETRARCH: 'Lions and tigers' generates a null coded actor (two events, both with  -->
 <!--           same code, so the duplicate event is eliminated  -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="---" targetcode="OSG" eventcode="041"></EventCoding>
 <EventCoding sourcecode="GON" targetcode="OSG" eventcode="041"></EventCoding>
 <EventCoding sourcecode="---GOV" targetcode="---" eventcode="023"></EventCoding>
 <Text>
@@ -3848,6 +3846,96 @@ show of support to his government by their countries.
     (. .)))
 </Parse>
 </Sentence>
+
+
+<Sentence date="19950103" id="COMPOUND-38" category="COMPOUND" valid="true">
+<!-- % AGREE generates a paired event coded on a compound -->
+<!-- Corrects errors uncovered by Halterman               -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="IGOEEU" eventcode="030"></EventCoding>
+<EventCoding sourcecode="IGOEEU" targetcode="PHL" eventcode="030"></EventCoding>
+<Text>
+The Philippines and the European Union (EU) agree that territorial disputes in the South China Sea should be resolved through international arbitration.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NP (DT The) (NNPS Philippines)) (CC and) (NP (DT the) (NNP European) (NNP Union))) (PRN (-LRB- -LRB-) (NP (NNP EU)) (-RRB- -RRB-))) (VP (VBP agree) (SBAR (IN that) (S (NP (NP (JJ territorial) (NNS disputes)) (PP (IN in) (NP (DT the) (NNP South) (NNP China) (NNP Sea)))) (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) (NP (JJ international) (NN arbitration))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="COMPOUND-39" category="COMPOUND" valid="true">
+<!-- % AGREE generates a paired event coded on a compound -->
+<!-- Corrects errors uncovered by Halterman               -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="FRA" eventcode="030"></EventCoding>
+<EventCoding sourcecode="FRA" targetcode="PHL" eventcode="030"></EventCoding>
+<Text>
+The Philippines and France agree that territorial disputes should be resolved through international arbitration.
+</Text>
+<Parse>
+(ROOT (S 
+(NP 
+    (NP (DT The) (NNPS Philippines)) 
+    (CC and) 
+    (NP (NNP France))) 
+(VP (VBP agree) 
+(SBAR (IN that) 
+(S 
+    (NP (JJ territorial) (NNS disputes)) 
+    (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) 
+    (NP (JJ international) (NN arbitration)))
+)))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="COMPOUND-40" category="COMPOUND" valid="true">
+<!-- % AGREE generates a paired event coded on a compound -->
+<!-- Corrects errors uncovered by Halterman               -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="CAF" eventcode="030"></EventCoding>
+<EventCoding sourcecode="CAF" targetcode="PHL" eventcode="030"></EventCoding>
+<Text>
+The Philippines and the Central African Republic agree that territorial disputes should be resolved through international arbitration.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (DT The) (NNPS Philippines)) (CC and) (NP (DT the)(NNP Central) (NNP African) (NNP Republic))) (VP (VBP agree) (SBAR (IN that) (S (NP (JJ territorial) (NNS disputes)) (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) (NP (JJ international) (NN arbitration))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="COMPOUND-41" category="COMPOUND" valid="true">
+<!-- % AGREE generates a paired event coded on a compound -->
+<!-- Corrects errors uncovered by Halterman               -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="FRA" eventcode="030"></EventCoding>
+<EventCoding sourcecode="FRA" targetcode="PHL" eventcode="030"></EventCoding>
+<Text>
+The Philippines and France agree that territorial disputes in the South China Sea should be resolved through international arbitration.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (DT The) (NNPS Philippines)) (CC and) (NP (NNP France))) (VP (VBP agree) (SBAR (IN that) (S (NP (NP (JJ territorial) (NNS disputes)) (PP (IN in) (NP (DT the) (NNP South) (NNP China) (NNP Sea)))) (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) (NP (JJ international) (NN arbitration))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="COMPOUND-42" category="COMPOUND" valid="true">
+<!-- AGREE WITH % checks for % following a verb  -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="ERI" targetcode="FRA" eventcode="031"></EventCoding>
+<EventCoding sourcecode="ERI" targetcode="PHL" eventcode="031"></EventCoding>
+<Text>
+Eriador agrees with the Philippines and France that territorial disputes should be resolved through international arbitration.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NNP Eriador)) 
+(VP (VBZ agrees) (PP (IN with) 
+(NP (NP (DT the) (NNPS Philippines)) (CC and) (NP (NNP France)))) 
+(SBAR (IN that) (S (NP (JJ territorial) (NNS disputes)) (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) (NP (JJ international) (NN arbitration))))))))) (. .)))
+</Parse>
+</Sentence>
+
 
 <!--
 ##########################################################################################
@@ -5239,8 +5327,8 @@ representation and voting rights on that and other Bretton Woods institutions.
 <Sentence date = "20080804" id ="TextCodes2" category="PARSING" valid="true">
 <!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier --> 
 <!-- versions, extracting non-code text for the source and target -->
-<!-- Last update: 16 June 2014 -->
-<EventCoding sourcecode="---GOVPRS" targetcode="---" eventcode="210"></EventCoding>
+<!-- Last update: 24 Sept 2014 -->
+<EventCoding noevents = "True"></EventCoding>
 <Text>
 President Ilham Aliyev and President of the European Commission Jose Manuel Barroso held 
 a one-on-one meeting on June 14.
@@ -5697,6 +5785,100 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
+<Sentence date="19950103" id="ACTOR-10" category="ACTOR" valid="true">
+<!-- Check for two word match of NEW ZEALAND rather than ZEALAND -->
+<!-- Last update: 23 Sept 2014 -->
+<EventCoding sourcecode="PRK" targetcode="NZE" eventcode="194"></EventCoding>
+<Text>
+The Hermit Kingdom fired two artillery shells at New Zealand on Thursday.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (DT The) (NNP Hermit) (NNP Kingdom)) 
+(VP (VBD fired) 
+(NP (CD two) (NN artillery) (NNS shells)) 
+(PP (IN at) 
+(NP (JJ New) (NNP Zealand))) 
+(PP (IN on) (NP (NNP Thursday)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950103" id="ACTOR-11" category="ACTOR" valid="true">
+<!-- Check for single word synonym match of ZEALAND rather than ZEALAND -->
+<!-- Last update: 23 Sept 2014 -->
+<EventCoding sourcecode="PRK" targetcode="DNK" eventcode="194"></EventCoding>
+<Text>
+The Hermit Kingdom fired two artillery shells at Zealand on Thursday.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP Hermit) (NNP Kingdom)) (VP (VBD fired) (NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Zealand))) (PP (IN on) (NP (NNP Thursday)))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="ACTOR-12" category="ACTOR" valid="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="USA" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+The United States on Thursday fired two artillery shells at Seoul.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (DT The) (NNP United) (NNPS States)) 
+(PP (IN on) (NP (NNP Thursday)))) 
+(VP (VBD fired) 
+(NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Seoul)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="ACTOR-13" category="ACTOR" valid="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PRK" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+North Korea on Thursday fired two artillery shells near a naval vessel from South Korea 
+on a routine patrol of an area south of the two nations’ disputed maritime boundary in the Yellow Sea, according to reports.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (NNP North) (NNP Korea)) (PP (IN on) (NP (NNP Thursday)))) 
+(VP (VBD fired) (NP (CD two) 
+(NN artillery) (NNS shells)) (PP (IN near) (NP (DT a) (JJ naval) (NN vessel))) (PP (IN from)
+ (NP (NNP South) (NNP Korea))) (PP (IN on) 
+ (NP (NP (DT a) (JJ routine) (NN patrol)) (PP (IN of) (NP (NP (DT an) (NN area) (NN south)) (PP (IN of) (NP (NP (NP (DT the) (CD two) (NNS nations) (POS ')) (VBN disputed) (NN maritime) (NN boundary)) (PP (IN in) (NP (DT the) (NNP Yellow) (NNP Sea))))))))) (, ,) (PP (VBG according) (PP (TO to) (NP (NNS reports))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950103" id="ACTOR-14" category="ACTOR" valid="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PRK" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+Pyongyang on Thursday fired two artillery shells at Seoul.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (NNP Pyongyang)) (PP (IN on) (NP (NNP Thursday)))) 
+(VP (VBD fired) (NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Seoul)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950103" id="ACTOR-15" category="ACTOR" valid="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PRK" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+The Hermit Kingdom fired two artillery shells at Seoul on Thursday.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP Hermit) (NNP Kingdom)) (VP (VBD fired) (NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Seoul))) (PP (IN on) (NP (NNP Thursday)))) (. .)))
+</Parse>
+</Sentence>
 
 <!--
 ##################################################################
@@ -7029,7 +7211,8 @@ Gollum abandoned efforts to stop an anti- Gondor parade on Saturday.
 </Sentence>
 
 <Sentence date="19920102" id="PATTERN-12" category="PATTERN" valid="true">
-<!-- Test of TABARI stemming, which PETR doesn't use, so modified dictionary  -->
+<!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
+<!-- accordingly -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="MOR" eventcode="024"></EventCoding>
 <Text>
@@ -7053,7 +7236,8 @@ Gollum allowed that Mordor isn't a really pleasant place to visit.
 </Sentence>
 
 <Sentence date="19920102" id="PATTERN-13" category="PATTERN" valid="true">
-<!-- Test of TABARI stemming, which PETR doesn't use, so modified dictionary  -->
+<!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
+<!-- accordingly -->
 <!-- Last update: TABARI validation on stemming  -->
 <EventCoding sourcecode="HOB" targetcode="MOR" eventcode="024"></EventCoding>
 <Text>
@@ -7565,6 +7749,44 @@ Arnor spokesmen said 54 civilians were killed or injured.
 </Parse>
 </Sentence>
 
+
+<Sentence date="19950103" id="PATTERN-29" category="PATTERN" valid="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="121"></EventCoding>
+<Text>
+The Philippines was criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NNP Eriador))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="PATTERN-30" category="PATTERN" valid="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="123"></EventCoding>
+<Text>
+The Philippines was heavily and unjustly criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (ADVP (ADVP (RB heavily)) (CC and) (ADVP (RB unjustly))) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NN Eriador))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="PATTERN-31" category="PATTERN" valid="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="122"></EventCoding>
+<Text>
+The Philippines was heavily criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (ADVP (RB heavily)) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NN Eriador))))) (. .)))
+</Parse>
+</Sentence>
 
 
 <!--

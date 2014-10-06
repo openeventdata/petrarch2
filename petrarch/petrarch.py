@@ -86,9 +86,6 @@ ShowMarkCompd = False
 class DupError(Exception):  # template
     pass
 
-class MissingAttr(Exception):  # could not find expected attribute field
-    pass
-
 class HasParseError(Exception):  # exit the coding due to parsing error
     pass
 
@@ -100,9 +97,6 @@ class UnbalancedTree(Exception):  # unbalanced () in the parse tree
 
 class IrregularPattern(Exception):  # problems were found at some point in read_TreeBank  
     pass
-
-#class ParseListIssue(Exception):  # problems were found at some point during the evaluation of ParseList  
-#    pass
 
 class CheckVerbsError(Exception):  # problems were found in a specific pattern in check_verbs [make this local to that function?]  
     pass
@@ -335,6 +329,10 @@ def evaluate_validation_record(item):
                 return False
             else:
                 return True
+        else:
+            print('\nSentence:', SentenceID, '[', SentenceCat, ']')
+            print('Record triggered the error "' + ValidError + '"')
+            return False
 
     print('\nSentence:', SentenceID, '[', SentenceCat, ']')
     print(SentenceText)
@@ -417,7 +415,7 @@ def open_validation_file(xml_root):
     2. After "</Environment>" found, closes FIN, opens ErrorFile, sets various
     validation options, then reads the dictionaries (exits if these are not set)
     3. Can raise MissingXML
-    4. Can exit on EOFError, MissingAttr
+    4. Can exit on EOFError
     """
     global ValidInclude, ValidExclude, ValidPause, ValidOnly
     logger = logging.getLogger('petr_log')
@@ -761,17 +759,14 @@ def read_TreeBank():
                 print('\nMC1:', treestr[kb:])
             # these aren't straightforward compound noun phrases we are looking for
             if '(VP' in treestr[bds[0]:bds[1]] or '(S' in treestr[bds[0]:bds[1]]:
-                # convert CC to CCP, though <14.05.12> we don't actually do
-                # anything with this yet: (NEC is the trigger for additional
-                # processing of compounds
+                # convert CC to CCP, though <14.05.12> we don't actually do anything with
+                # this: (NEC is a sufficient trigger for additional processing of compounds
                 treestr = treestr[:ka + 3] + 'P' + treestr[ka + 3:]
                 if ShowMarkCompd:
                     print('\nMC2:', treestr[kb:])
             # nested compounds: don't go there...
             elif treestr[bds[0]:bds[1]].count('(CC') > 1:
-                # convert CC to CCP, though <14.05.12> we don't actually do
-                # anything with this yet: (NEC is the trigger for additional
-                # processing of compounds
+                # convert CC to CCP: see note above
                 treestr = treestr[:ka + 4] + 'P' + treestr[ka + 4:]
                 if ShowMarkCompd:
                     print('\nMC3:', treestr[kb:])
@@ -1108,45 +1103,42 @@ def read_TreeBank():
 
 def get_loccodes(thisloc):
     """
-    Returns the list of codes from a compound, or just a single code if not
-    compound.
+    Returns the list of codes from a compound, or just a single code if not compound
 
-    Extracting noun phrases which are not in the dictionary: If no actor or
-    agent generating a non-null code can be found using the source/target
-    rules, PETRARCH can output the noun phrase in double-quotes. This is
-    controlled by the configuration file option new_actor_length, which is set
-    to an integer which gives the maximum length for new actor phrases
-    extracted. If this is set to zero [default], no extraction is done andthe
-    behavior is the same as TABARI. Setting this to a large number will extract
-    anything found in a (NP noun phrase, though usually true actors contain a
-    small number of words. These phrases can then be processed with
-    named-entity- resolution software to extend the dictionaries.
+    Extracting noun phrases which are not in the dictionary: If no actor or agent  
+    generating a non-null code can be found using the source/target rules, PETRARCH can 
+    output the noun phrase in double-quotes. This is controlled by the configuration file 
+    option new_actor_length, which is set to an integer which gives the maximum length 
+    for new actor phrases extracted. If this is set to zero [default], no extraction is 
+    done and the behavior is the same as TABARI. Setting this to a large number will 
+    extract anything found in a (NP noun phrase, though usually true actors contain a
+    small number of words. These phrases can then be processed with named-entity-resolution
+    software to extend the dictionaries.
     """
     global UpperSeq, LowerSeq, codelist, StoryEventList
 
     StoryEventList = []
 
     def add_code(neloc, isupperseq):
-    # appends the code or phrase from UpperSeq/LowerSeq starting at neloc
-    # isupperseq determines the choice of sequence
-
+        """
+        Appends the code or phrase from UpperSeq/LowerSeq starting at neloc.
+        isupperseq determines the choice of sequence
+        """
         global UpperSeq, LowerSeq, codelist
 
-        if isupperseq:
-            # "add_code neitem"; nothing to do with acne...
-            acneitem = UpperSeq[neloc]
+        if isupperseq:            
+            acneitem = UpperSeq[neloc] # "add_code neitem"; nothing to do with acne...
         else:
             acneitem = LowerSeq[neloc]
         accode = acneitem[acneitem.find('>') + 1:]
-#		print 'AC-1:',acneitem, accode
-        if accode != '---' or PETRglobals.NewActorLength == 0:
+#        print('AC-1:',neloc, acneitem, accode, codelist)
+        if accode != '---':
             codelist.append(accode)
-        else:  # get the phrase
+        elif PETRglobals.NewActorLength > 0:  # get the phrase
             if isupperseq:
                 acphr = "\"" + UpperSeq[neloc - 1]
                 ka = neloc - 2  # UpperSeq is stored in reverse order
-                # no bounds check here; hoping these are okay by now. Yeah,
-                # right
+                # no bounds check here; hoping these are okay by now. Yeah,right
                 while UpperSeq[ka][0] != '~':
                     acphr += ' ' + UpperSeq[ka]
                     ka -= 1
@@ -1161,11 +1153,12 @@ def get_loccodes(thisloc):
                 codelist.append(acphr)
             else:
                 codelist.append(accode)
+#        print('AC-2:',accode, codelist)
 
     codelist = []
 #    print ('GLC0',thisloc)
-#	print '   USeq:',UpperSeq
-#	print '   LSeq:',LowerSeq
+#    print ('   USeq:',UpperSeq)
+#    print ('   LSeq:',LowerSeq)
     if thisloc[1]:
         try:
             neitem = UpperSeq[thisloc[0]]
@@ -1180,12 +1173,9 @@ def get_loccodes(thisloc):
 #                print('GLC2',ka, UpperSeq[ka])
                 if '(NE' in UpperSeq[ka]:
                     add_code(ka, True)
-#					codelist.append(UpperSeq[ka][UpperSeq[ka].find('>')+1:])
                 ka -= 1
                 if ka < 0:
                     raise_ParseList_error('Bounds underflow on UpperSeq in get_loccodes()')
-
-# else: codelist.append(neitem[neitem.find('>')+1:]) # simple code
         else:
             add_code(thisloc[0], True)  # simple code
     else:
@@ -1201,18 +1191,15 @@ def get_loccodes(thisloc):
         if '(NEC' in neitem:  # extract the compound codes
             ka = thisloc[0] + 1
             while '~NEC' not in LowerSeq[ka]:
-#				print 'GLC4',ka, LowerSeq[ka]
+#                print('GLC4',ka, LowerSeq[ka])
                 if '(NE' in LowerSeq[ka]:
                     add_code(ka, False)
-#					codelist.append(LowerSeq[ka][LowerSeq[ka].find('>')+1:])
                 ka += 1
                 if ka >= len(LowerSeq):
                     raise_ParseList_error('Bounds overflow on LowerSeq in get_loccodes()')
-
-#		else: codelist.append(neitem[neitem.find('>')+1:])
         else:
             add_code(thisloc[0], False)  # simple code
-#	print 'GLC5',codelist
+#    print('GLC5',codelist)
     if len(codelist) == 0: # this can occur if all codes in an (NEC are null
         codelist = ['---']
     return codelist
@@ -1267,7 +1254,7 @@ def find_target():
         srccode = '>' + srccodelist[0]
     else:
         srccode = '>>>>'  # placeholder for a compound; this will not occur
-#	print 'FT-1: srccode',srccode
+#	print('FT-1: srccode',srccode)
 #	print UpperSeq, LowerSeq
     kseq = 0
     while kseq < len(LowerSeq):
@@ -1544,72 +1531,66 @@ def verb_pattern_match(patlist, aseq, isupperseq):
     if len(aseq) == 0:
         return False    # nothing to match, so fails
     insideNE = False
+    inNEC = False  # these do the same thing but "insideNEC" is an invitation to a typo
     kpatword = 1  # first word, skipping connector
     kseq = 0
     while kpatword < len(patlist):  # iterate over the words in the pattern
         if ShowVPM:
             print("VPM-1: pattern", patlist[kpatword])  # debug
 
-        # nothing to see here, move along, move along. Though in fact this
-        # should not occur
         if len(patlist[kpatword]) == 0:
-            if last_patword():
+            if last_patword(): # nothing to see here, move along, move along. Though in fact this should not occur
                 return False
             continue
 
-        if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]):
-            """
-            print("NE flip", kseq, aseq[kseq], insideNE,)
-            if isupperseq:  # this doesn't always signal an error but tends to be associated with them
-                if '~NE' in aseq[kseq] and insideNE:
-                    print("  ==> insideNE error on ~NE")
-                if '(NE' in aseq[kseq] and not insideNE:
-                    print("  ==> insideNE error on (NE")
+        if ('~NE' in aseq[kseq]) or ('(NE' in aseq[kseq]):            
+            if len(aseq[kseq]) > 3 and aseq[kseq][3] == 'C':
+#                print("NEC flip", kseq, aseq[kseq], inNEC,)
+                if last_seqword():
+                    return False  # hit end of sequence before full pattern matched
+                inNEC = not inNEC
+
             else:
-                if '~NE' in aseq[kseq] and not insideNE:
-                    print("  ==> insideNE error on ~NE")
-                if '(NE' in aseq[kseq] and insideNE:
-                    print("  ==> insideNE error on (NE") """                    
-            if last_seqword():
-                return False  # hit end of sequence before full pattern matched
-            insideNE = not insideNE
-#            print("NE result", insideNE)  # almost impossible for this to be the error
+#                print("NE flip", kseq, aseq[kseq], insideNE,)
+                if last_seqword():
+                    return False  # hit end of sequence before full pattern matched
+                insideNE = not insideNE
 
         elif len(patlist[kpatword]) == 1:  # deal with token assignments here
-            if insideNE:
-                if patlist[kpatword] == '$':
-#                    print('vpm-mk1')
-                    SourceLoc = [find_ne(kseq), isupperseq]
-                elif patlist[kpatword] == '+':
-#                    print('vpm-mk2')
-                    TargetLoc = [find_ne(kseq), isupperseq]
+            if insideNE or inNEC:
+                if insideNE:
+                    if patlist[kpatword] == '$':
+    #                    print('vpm-mk1')
+                        SourceLoc = [find_ne(kseq), isupperseq]
+                    elif patlist[kpatword] == '+':
+    #                    print('vpm-mk2')
+                        TargetLoc = [find_ne(kseq), isupperseq]
 
-                elif patlist[kpatword] == '^': 	# skip to the end of the (NE
-#                    print("Skipping-mk1:",kseq, aseq[kseq:kseq+8], insideNE)
-                    while '~NE' not in aseq[kseq]:
-                        if isupperseq:
-                            kseq -= 1
-                        else:
-                            kseq += 1
-                        if kseq < 0 or kseq >= len(aseq):
-#                            print("skip/VPM error:", kseq, aseq,'\n', aseq[kseq-8:kseq-1])   # debug
-                            # at this point some sort of markup we can't
-                            # handle, not necessarily unbalanced
-                            raise_ParseList_error("find_ne(kseq) in skip assessment, verb_pattern_match()")
-                    if ShowVPM:
-                        print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug    
-                    insideNE = isupperseq
-#                    print("VPM-2:" , aseq, isupperseq)   # debug
+                    elif patlist[kpatword] == '^': 	# skip to the end of the (NE
+    #                    print("Skipping-mk1:",kseq, aseq[kseq:kseq+8], insideNE)
+                        while '~NE' not in aseq[kseq]:
+                            if isupperseq:
+                                kseq -= 1
+                            else:
+                                kseq += 1
+                            if kseq < 0 or kseq >= len(aseq):
+    #                            print("skip/VPM error:", kseq, aseq,'\n', aseq[kseq-8:kseq-1])   # debug
+                                # at this point some sort of markup we can't handle
+                                raise_ParseList_error("find_ne(kseq) in skip assessment, verb_pattern_match()")
+                        if ShowVPM:
+                            print("VPM/FN-1: Found NE:", kseq, aseq[kseq])   # debug    
+                        insideNE = isupperseq
+    #                    print("VPM-2:" , aseq, isupperseq)   # debug
 
                 elif patlist[kpatword] == '%':  # deal with compound
-                        ka = kseq
-                        while '(NEC' not in aseq[ka]:
-                            if isupperseq: ka += 1
-                            else: ka -= 1
-                            if ka < 0 or ka >= len(aseq):
-                                return False
-                        SourceLoc = [ka,isupperseq]
-                        TargetLoc = [ka,isupperseq]
+                    ka = kseq
+                    while '(NEC' not in aseq[ka]:
+                        if isupperseq: ka += 1
+                        else: ka -= 1
+                        if ka < 0 or ka >= len(aseq):
+                            return False
+                    SourceLoc = [ka,isupperseq]
+                    TargetLoc = [ka,isupperseq]
 
                 if ShowVPM:
                     # debug                    
@@ -1667,7 +1648,7 @@ def check_verbs():
     """
     Primary coding loop which looks for verbs, checks whether any of their
     patterns match, then fills in the source and target if there has been a
-    match. Stores events in EventList.
+    match. Stores events using make_event_strings().
 
     Note: the "upper" sequence is the part before the verb -- that is, higher
     on the screen -- and the "lower" sequence is the part after the verb.
@@ -1679,7 +1660,6 @@ def check_verbs():
     [1]: True - located in UpperSeq, otherwise in LowerSeq
     """
     global EventCode, SourceLoc, TargetLoc
-    global EventList
     global IsPassive
     global ParseStart, ParseList
 
@@ -1727,7 +1707,6 @@ def check_verbs():
         else:
             return 0
 
-    EventList = []
     kitem = ParseStart
     while kitem < len(ParseList):
         if ('(VP' in ParseList[kitem]) and ('(VB' in ParseList[kitem + 1]):
@@ -1821,7 +1800,7 @@ def get_actor_code(index):
     if len(codelist) == 1 and len(codelist[0]) == 1:
         return codelist[0][0]  # no restrictions: the most common case
     for item in codelist:
-# print "GAC-1",index, item  # debug
+#        print("GAC-1",index, item)  # debug
         if len(item) > 1:  # interval date restriction
             if item[0] == 0 and SentenceOrdDate <= item[1]:
                 return item[2]
@@ -1842,7 +1821,7 @@ def actor_phrase_match(patphrase, phrasefrag):
     match is successful. Insha'Allah...
     """
 
-# APMprint = True   # yes, kept having to come back to debug this...
+#    APMprint = True   # yes, kept having to come back to debug this...
     APMprint = False
     connector = patphrase[1]
     kfrag = 1   # already know first word matched
@@ -1873,7 +1852,7 @@ def actor_phrase_match(patphrase, phrasefrag):
             connector = patphrase[kpatword][1]
             kfrag += 1
             kpatword += 1
-            if kpatword >= len(patphrase):
+            if kpatword >= len(patphrase)-1:  # final element is just the terminator
                 return True  # complete pattern matched
         else:
             if APMprint:
@@ -2310,8 +2289,9 @@ def make_event_strings():
     global IsPassive
 
     def make_events(codessrc, codestar, codeevt):
-    # create events from each combination in the actor lists except
-    # self-references
+        """
+        Create events from each combination in the actor lists except self-references
+        """
         global CodedEvents
         global SentenceLoc
         global IsPassive
@@ -2324,7 +2304,7 @@ def make_event_strings():
             cursrccode = thissrc
 
             if thissrc[0:3] == '---' and len(SentenceLoc) > 0:
-                cursrccode = SentenceLoc + thissrc[3:]  # add location if known
+                cursrccode = SentenceLoc + thissrc[3:]  # add location if known <14.09.24: this still hasn't been implemented <>
             for thistar in codestar:
                 if '(NEC' in thistar:
                     logger.warning('(NEC target code found in make_event_strings(): {}'.format(SentenceID))
@@ -2333,7 +2313,7 @@ def make_event_strings():
                 if thissrc != thistar:  # skip self-references
                     curtarcode = thistar
                     if thistar[0:3] == '---' and len(SentenceLoc) > 0:
-                        # add location if known
+                        # add location if known -- see note above
                         curtarcode = SentenceLoc + thistar[3:]
                     if IsPassive:
                         CodedEvents.append([curtarcode, cursrccode, codeevt])
@@ -2341,13 +2321,14 @@ def make_event_strings():
                         CodedEvents.append([cursrccode, curtarcode, codeevt])
 
     def expand_compound_codes(codelist):
-    # expand coded compounds, that is, codes of the format XXX/YYY
+        """
+        Expand coded compounds, that is, codes of the format XXX/YYY
+        """
         for ka in range(len(codelist)):
             if '/' in codelist[ka]:
                 parts = codelist[ka].split('/')
     # print 'MES2:', parts  # debug
-                # this will insert in order, which isn't necessary but might be
-                # helpful
+                # this will insert in order, which isn't necessary but might be helpful
                 kb = len(parts) - 2
                 codelist[ka] = parts[kb + 1]
                 while kb >= 0:
@@ -2361,7 +2342,8 @@ def make_event_strings():
     tarcodes = get_loccodes(TargetLoc)
     expand_compound_codes(tarcodes)
 
-#TODO: This needs to be fixed
+#TODO: This needs to be fixed: this is the placeholder code for having a general country-
+#      level location for the sentence or story
     SentenceLoc = ''
 
 #    print('MES2: ',srccodes, tarcodes, EventCode)
@@ -2370,6 +2352,7 @@ def make_event_strings():
         return
 
     if ':' in EventCode:  # symmetric event
+#        print('MES2A: ',srccodes, tarcodes, EventCode)
         if srccodes[0] == '---' or tarcodes[0] == '---':
             if tarcodes[0] == '---':
                 # <13.12.08> Is this behavior defined explicitly in the
@@ -2382,6 +2365,7 @@ def make_event_strings():
         make_events(srccodes, tarcodes, ecodes[0])
         make_events(tarcodes, srccodes, ecodes[2])
     else:
+#        print('MES2B: ',srccodes, tarcodes, EventCode)
         make_events(srccodes, tarcodes, EventCode)
 
     # remove null coded cases
@@ -2391,7 +2375,8 @@ def make_event_strings():
         while ka < len(CodedEvents):
             if CodedEvents[ka][0] == '---' or CodedEvents[ka][1] == '---':
                 del CodedEvents[ka]
-            ka += 1
+            else: 
+                ka += 1
     if len(CodedEvents) == 0:
         return
 
@@ -2403,7 +2388,8 @@ def make_event_strings():
         while kb < len(CodedEvents):
             if CodedEvents[ka] == CodedEvents[kb]:
                 del CodedEvents[kb]
-            kb += 1
+            else:
+                kb += 1
         ka += 1
 
 #	print "MES exit:",CodedEvents
@@ -2581,15 +2567,6 @@ def code_record():
 
 #	if len(raw_input("Press Enter to continue...")) > 0: sys.exit()
 
-
-def make_fake_events():
-# just for debugging, but you probably always guessed that
-    global SentenceID, StoryEventList
-    StoryEventList.append([SentenceID])
-    ka = 1
-    while ka < 5:
-        StoryEventList.append(['ABC', 'EDF', str(ka).zfill(4)])
-        ka += 1
 
 
 def do_validation(filepath):

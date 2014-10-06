@@ -116,6 +116,8 @@ AGREE
 - * TO_LET_ESCAPE  [066]  # tony  4/28/91
 - SAID * TO ATTEND  [082]
 - FAILED_TO_*  [111]  # jw 9/17/91
+- * WITH % [031]
+- % * [030:030]  # pas 14.09.18
 
 --- ALLEGE  [022] ---
 ALLEGE  
@@ -404,8 +406,10 @@ COURT
 
 --- CRITICIZE  [121]  ---
 CRITICIZE    # pas  3/1/91
-- DESPITE * FROM $  [121]  # tony  4/22/91
-- DESPITE $ *  [121]  # tony  4/22/91
+- DESPITE * FROM $  [122]  # tony  4/22/91
+- HEAVILY UNJUSTLY  *  [123]  # tony  4/22/91
+- HEAVILY *   [122]  # tony  4/22/91
+- DESPITE $ *  [123]  # tony  4/22/91
 
 --- CURSE  [122]  ---
 CURSE    # tony  4/22/91
@@ -591,6 +595,11 @@ FINALIZE
 --- FINANCE  [071]  ---
 FINANCE    # jw 9/17/91
 - HELP *  [071]  # jw 9/24/91
+
+
+--- FIRE  [071]  ---
+FIRE    # jw 9/17/91
+- * ARTILLERY  [194]  # jw 9/24/91
 
 --- FORCE  [220] ---
 FORCE  

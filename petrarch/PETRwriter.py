@@ -109,6 +109,8 @@ def pipe_output(event_dict):
     final_out = {}
     for key in event_dict:
         story_dict = event_dict[key]
+        if not story_dict['sents']:
+            continue    # skip cases eliminated by story-level discard
         filtered_events = utilities.story_filter(story_dict, key)
         if 'source' in story_dict['meta']:
             StorySource = story_dict['meta']['source']

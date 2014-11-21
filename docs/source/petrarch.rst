@@ -99,6 +99,15 @@ PETRARCH.
     #                   This must be an integer.                       
     new_actor_length = 0
 
+    # write_actor_root: If True, the event record will include the text of the actor root: 
+    #                   The root is the text at the head of the actor synonym set in the 
+    #                   dictionary. Default is False
+    write_actor_root = False
+
+    # write_actor_text: If True, the event record will include include the complete text of 
+    #                   the noun phrase that was used to identify the actor.  Default is False
+    write_actor_text = False
+
     # require_dyad: Events require a non-null source and target: setting this false is likely
     #               to result in a very large number of nonsense events. As happened with the 
     #               infamous GDELT data set of 2013-2014. And certainly no one wants to see 

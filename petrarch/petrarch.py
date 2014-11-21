@@ -12,6 +12,44 @@ import logging
 import argparse
 import xml.etree.ElementTree as ET
 
+##	petrarch.py 
+##
+# Automated event data coder
+##
+# SYSTEM REQUIREMENTS
+# This program has been successfully run under Mac OS 10.10; it is standard Python 2.7
+# so it should also run in Unix or Windows.
+#
+# INITIAL PROVENANCE:
+# Programmers: 
+#             Philip A. Schrodt
+#			  Parus Analytics
+#			  Charlottesville, VA, 22901 U.S.A.
+#			  http://eventdata.parusanalytics.com
+#
+#             John Beieler
+#			  Caerus Associates/Penn State University
+#			  Washington, DC / State College, PA, 16801 U.S.A.
+#			  http://caerusassociates.com
+#             http://bdss.psu.edu
+#
+# GitHub repository: https://github.com/openeventdata/petrarch
+#
+# Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
+#
+# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# were funded in part by National Science Foundation grant SES-1259190
+#
+# This code is covered under the MIT license
+#
+# Report bugs to: schrodt735@gmail.com
+#
+# REVISION HISTORY:
+# 22-Nov-13:	Initial version
+# Summer-14:	Numerous modifications to handle synonyms in actor and verb dictionaries
+# 20-Nov-14:	write_actor_root/text added to parse_Config  
+# ------------------------------------------------------------------------
+
 import PETRglobals  # global variables
 import PETRreader  # input routines
 import PETRwriter
@@ -377,7 +415,13 @@ def evaluate_validation_record(item):
     if len(CodedEvents) > 0:
         print('Coded Events:')
         for event in CodedEvents:
-            print(SentenceID + '\t' + event[0] + '\t' + event[1] + '\t' + event[2])
+            print(SentenceID)
+            for st in event:
+                if st:
+                    print('\t' + st, end='')
+                else:
+                    print('\t---', end='')
+            print()
 
     if (len(ValidEvents) == 0) and (len(CodedEvents) == 0):
         return True  # noevents option
@@ -456,6 +500,8 @@ def open_validation_file(xml_root):
     actor_path = utilities._get_data('data/dictionaries',
                                      PETRglobals.ActorFileList[0])
     PETRreader.read_actor_dictionary(actor_path)
+#    PETRreader.show_actor_dictionary('Actordict.txt')  # debug
+#    sys.exit()
 
     print('Agent dictionary:', PETRglobals.AgentFileName)
     agent_path = utilities._get_data('data/dictionaries',
@@ -1119,12 +1165,34 @@ def get_loccodes(thisloc):
 
     StoryEventList = []
 
+    def get_ne_text(neloc, isupperseq):
+        """ Returns the text of the phrase from UpperSeq/LowerSeq starting at neloc. """
+        if isupperseq:
+            acphr = UpperSeq[neloc - 1]
+            ka = neloc - 2  # UpperSeq is stored in reverse order
+            while ka >= 0 and UpperSeq[ka][0] != '~':  # we can get an unbalanced sequence when multi-word verbs cut into the noun phrase: see DEMO-30 in unit-tests
+                acphr += ' ' + UpperSeq[ka]
+                ka -= 1
+        else:
+            acphr = LowerSeq[neloc + 1]
+            ka = neloc + 2
+            while LowerSeq[ka][0] != '~':
+                acphr += ' ' + LowerSeq[ka]
+                ka += 1
+        
+        return acphr
+
     def add_code(neloc, isupperseq):
         """
         Appends the code or phrase from UpperSeq/LowerSeq starting at neloc.
         isupperseq determines the choice of sequence
+        
+        If PETRglobals.WriteActorText is True, root phrase is added to the code following the 
+        string PETRglobals.TextPrimer
         """
         global UpperSeq, LowerSeq, codelist
+        
+
 
         if isupperseq:            
             acneitem = UpperSeq[neloc] # "add_code neitem"; nothing to do with acne...
@@ -1135,24 +1203,17 @@ def get_loccodes(thisloc):
         if accode != '---':
             codelist.append(accode)
         elif PETRglobals.NewActorLength > 0:  # get the phrase
-            if isupperseq:
-                acphr = "\"" + UpperSeq[neloc - 1]
-                ka = neloc - 2  # UpperSeq is stored in reverse order
-                # no bounds check here; hoping these are okay by now. Yeah,right
-                while UpperSeq[ka][0] != '~':
-                    acphr += ' ' + UpperSeq[ka]
-                    ka -= 1
-            else:
-                acphr = "\"" + LowerSeq[neloc + 1]
-                ka = neloc + 2
-                while LowerSeq[ka][0] != '~':
-                    acphr += ' ' + LowerSeq[ka]
-                    ka += 1
-            acphr += "\""
+            acphr = '"' + get_ne_text(neloc, isupperseq) + '"'
             if acphr.count(' ') < PETRglobals.NewActorLength:
                 codelist.append(acphr)
             else:
                 codelist.append(accode)
+            if PETRglobals.WriteActorRoot:
+                codelist[-1] += PETRglobals.RootPrimer + '---'
+                
+        if PETRglobals.WriteActorText and len(codelist) > 0:
+            codelist[-1] += PETRglobals.TextPrimer + get_ne_text(neloc, isupperseq)
+
 #        print('AC-2:',accode, codelist)
 
     codelist = []
@@ -1306,6 +1367,7 @@ def get_upper_seq(kword):
 
     UpperSeq = []
     while kword >= ParseStart:
+#        print('%%%',kword,ParseList[kword]) 
 #       if ('~S' in ParseList[kword]) or ('~,' in ParseList[kword]): break
         if ('~,' in ParseList[kword]): break
         if ('(NE' == ParseList[kword]):
@@ -1323,7 +1385,6 @@ def get_upper_seq(kword):
             return  # not needed, right?
 
     if ShowCodingSeq: print("Upper sequence:",UpperSeq)
-#   for alist in UpperSeq: print alist  # debug
 
 def get_lower_seq(kword, endtag):
     """ 
@@ -1351,7 +1412,6 @@ def get_lower_seq(kword, endtag):
             return  # not needed, right?
 
     if ShowCodingSeq: print("Lower sequence:",LowerSeq)
-#   for alist in LowerSeq: print alist  # debug
 
 def make_check_sequences(verbloc, endtag):
     """ 
@@ -1372,8 +1432,8 @@ def make_check_sequences(verbloc, endtag):
     was created, so this can probably now be made into in-line code and removed as a
     function.
     """
-#   print "MCS-0",verbloc, ParseList[verbloc], endtag
-#   print "MCS-0.5",len(ParseList)
+#    print ("MCS-0",verbloc, ParseList[verbloc], endtag)
+#    print ("MCS-0.5",len(ParseList))
 
     get_upper_seq(verbloc - 1)
     get_lower_seq(verbloc + 1, endtag)
@@ -1398,18 +1458,21 @@ def make_multi_sequences(multilist, verbloc, endtag):
                 else:
                     return False
             kword += 1
+#        print ("MMS-1",verbloc, ParseList[verbloc], endtag)
         get_upper_seq(verbloc - 1)
         get_lower_seq(kword, endtag)
         return True
     else:
         kword = verbloc - 1
         while ka < len(multilist):
+#            print('@@@',kword,ParseList[kword])             
             if  (ParseList[kword][0] != '(') and (ParseList[kword][0] != '~'):
                 if ParseList[kword] == multilist[ka]:
                     ka += 1
                 else:
                     return False
             kword -= 1
+        print ("MMS-2",verbloc, ParseList[verbloc], endtag)
         get_upper_seq(kword)
         get_lower_seq(verbloc + 1, endtag)
         return True
@@ -1790,10 +1853,8 @@ def check_verbs():
         kitem += 1
 
 
-def get_actor_code(index):
-    """ 
-    Get the actor code, resolving date restrictions. 
-    """
+"""def get_actor_code(index):
+#    Get the actor code, resolving date restrictions. 
     global SentenceOrdDate
 
     codelist = PETRglobals.ActorCodes[index]
@@ -1812,8 +1873,40 @@ def get_actor_code(index):
     for item in codelist:
         if len(item) == 1:
             return item[0]
-    return '---' 	# if no condition is satisfied, return a null code;
+    return '---' 	# if no condition is satisfied, return a null code;"""
 
+def get_actor_code(index):
+    """ Get the actor code, resolving date restrictions. """
+    global SentenceOrdDate
+
+    thecode = None
+    codelist = PETRglobals.ActorCodes[index]
+    if len(codelist) == 1 and len(codelist[0]) == 1:
+        thecode = codelist[0][0]  # no restrictions: the most common case
+    for item in codelist:
+#        print("GAC-1",index, item)  # debug
+        if len(item) > 1:  # interval date restriction
+            if item[0] == 0 and SentenceOrdDate <= item[1]:
+                thecode = item[2]
+                break
+            if item[0] == 1 and SentenceOrdDate >= item[1]:
+                thecode = item[2]
+                break
+            if item[0] == 2 and SentenceOrdDate >= item[1] and SentenceOrdDate <= item[2]:
+                thecode = item[3]
+                break
+    # if interval search failed, look for an unrestricted code
+    if not thecode:
+        for item in codelist:  # assumes even if PETRglobals.WriteActorRoot, the actor name at the end of the list will have length >1 if 
+            if len(item) == 1:
+                thecode = item[0]
+            
+    if not thecode:
+        thecode = '---'
+    elif PETRglobals.WriteActorRoot:
+        thecode += PETRglobals.RootPrimer + codelist[-1]
+        
+    return thecode
 
 def actor_phrase_match(patphrase, phrasefrag):
     """
@@ -1885,6 +1978,9 @@ def check_NEphrase(nephrase):
     increments of 3 character blocks. That is, it assumes the CAMEO convention
     where actor and agent codes are usually 3 characters, occasionally 6 or 9,
     but always multiples of 3.
+    
+    If PETRglobals.WriteActorRoot is True, root phrase is added to the code following the 
+    string PETRglobals.RootPrimer
     """
 
     kword = 0
@@ -1896,8 +1992,7 @@ def check_NEphrase(nephrase):
         phrasefrag = nephrase[kword:]
         if ShowNEParsing:
             print("CNEPh Actor Check", phrasefrag[0])  # debug
-        # check whether patterns starting with this word exist in the
-        # dictionary
+        # check whether patterns starting with this word exist in the dictionary
         if phrasefrag[0] in PETRglobals.ActorDict:
             if ShowNEParsing:
                 print("                Found", phrasefrag[0])  # debug
@@ -1945,6 +2040,11 @@ def check_NEphrase(nephrase):
     if len(actorcode) == 0:
         actorcode = '---'   # unassigned agent
 
+    if PETRglobals.WriteActorRoot:
+        part = actorcode.partition(PETRglobals.RootPrimer)
+        actorcode = part[0]
+        actorroot = part[2]
+        
     for agentcode in agentlist:  # assemble the composite code
         if agentcode[0] == '~':
             agc = agentcode[1:]  # extract the code
@@ -1964,6 +2064,9 @@ def check_NEphrase(nephrase):
             actorcode += agc
         else:
             actorcode = agc + actorcode
+    if PETRglobals.WriteActorRoot:
+        actorcode += PETRglobals.RootPrimer + actorroot
+
     return [True, actorcode]
 
 
@@ -2287,6 +2390,26 @@ def make_event_strings():
     global EventCode, SourceLoc, TargetLoc
     global CodedEvents
     global IsPassive
+    
+    def extract_code_fields(fullcode):
+        """ Returns list containing actor code and optional root and text strings """
+        if PETRglobals.CodePrimer in fullcode:
+            maincode = fullcode[:fullcode.index(PETRglobals.CodePrimer)]
+            rootstrg = None
+            textstrg = None
+            if PETRglobals.WriteActorRoot:
+                part = fullcode.partition(PETRglobals.RootPrimer)
+                if PETRglobals.WriteActorText:
+                    rootstrg = part[2].partition(PETRglobals.TextPrimer)[0]
+                else:
+                    rootstrg = part[2]
+            if PETRglobals.WriteActorText:
+                textstrg = fullcode.partition(PETRglobals.TextPrimer)[2]
+            return [maincode,rootstrg,textstrg]
+            
+        else:
+            return [fullcode,None,None]
+    
 
     def make_events(codessrc, codestar, codeevt):
         """
@@ -2301,24 +2424,31 @@ def make_event_strings():
                 logger.warning('(NEC source code found in make_event_strings(): {}'.format(SentenceID))
                 CodedEvents = []
                 return
-            cursrccode = thissrc
+            srclist = extract_code_fields(thissrc)
+#            print('$$$',srclist)
 
-            if thissrc[0:3] == '---' and len(SentenceLoc) > 0:
-                cursrccode = SentenceLoc + thissrc[3:]  # add location if known <14.09.24: this still hasn't been implemented <>
+            if srclist[0][0:3] == '---' and len(SentenceLoc) > 0:
+                srclist[0] = SentenceLoc + srclist[0][3:]  # add location if known <14.09.24: this still hasn't been implemented <>
             for thistar in codestar:
                 if '(NEC' in thistar:
                     logger.warning('(NEC target code found in make_event_strings(): {}'.format(SentenceID))
                     CodedEvents = []
                     return
-                if thissrc != thistar:  # skip self-references
-                    curtarcode = thistar
-                    if thistar[0:3] == '---' and len(SentenceLoc) > 0:
+                tarlist  = extract_code_fields(thistar)
+#                print('+++',srclist)
+                if srclist[0] != tarlist[0]:  # skip self-references based on code
+                    if tarlist[0][0:3] == '---' and len(SentenceLoc) > 0:
                         # add location if known -- see note above
-                        curtarcode = SentenceLoc + thistar[3:]
+                        tarlist[0] = SentenceLoc + tarlist[0][3:]
                     if IsPassive:
-                        CodedEvents.append([curtarcode, cursrccode, codeevt])
-                    else:
-                        CodedEvents.append([cursrccode, curtarcode, codeevt])
+                        templist = srclist
+                        srclist = tarlist
+                        tarlist = templist
+                    CodedEvents.append([srclist[0], tarlist[0],codeevt])
+                    if PETRglobals.WriteActorRoot:
+                        CodedEvents[-1].extend([srclist[1], tarlist[1]])
+                    if PETRglobals.WriteActorText:
+                        CodedEvents[-1].extend([srclist[2], tarlist[2]])
 
     def expand_compound_codes(codelist):
         """
@@ -2355,8 +2485,7 @@ def make_event_strings():
 #        print('MES2A: ',srccodes, tarcodes, EventCode)
         if srccodes[0] == '---' or tarcodes[0] == '---':
             if tarcodes[0] == '---':
-                # <13.12.08> Is this behavior defined explicitly in the
-                # manual???
+                # <13.12.08> Is this behavior defined explicitly in the manual???
                 tarcodes = srccodes
             else:
                 srccodes = tarcodes
@@ -2860,6 +2989,7 @@ def read_dictionaries():
         agent_path = utilities._get_data('data/dictionaries',
                                          PETRglobals.AgentFileName)
         PETRreader.read_agent_dictionary(agent_path)
+        
 
         print('Discard dictionary:', PETRglobals.DiscardFileName)
         discard_path = utilities._get_data('data/dictionaries',

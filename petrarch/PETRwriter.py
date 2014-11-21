@@ -1,3 +1,28 @@
+# SYSTEM REQUIREMENTS
+# This program has been successfully run under Mac OS 10.10; it is standard Python 2.7
+# so it should also run in Unix or Windows.
+#
+# INITIAL PROVENANCE:
+# Programmer: Philip A. Schrodt
+#			  Parus Analytics
+#			  Charlottesville, VA, 22901 U.S.A.
+#			  http://eventdata.parusanalytics.com
+#
+# GitHub repository: https://github.com/openeventdata/petrarch
+#
+# Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
+#
+# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# were funded in part by National Science Foundation grant SES-1259190
+#
+# This code is covered under the MIT license
+#
+# Report bugs to: schrodt735@gmail.com
+#
+# REVISION HISTORY:
+# 22-Nov-13:	Initial version
+# ------------------------------------------------------------------------
+
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -56,10 +81,9 @@ def write_events(event_dict, output_file):
             print('Event: {}\t{}\t{}\t{}\t{}\t{}'.format(story_date, source,
                                                          target, code, ids,
                                                          StorySource))
-            event_str = '{}\t{}\t{}\t{}'.format(story_date,
-                                                source,
-                                                target,
-                                                code)
+#            event_str = '{}\t{}\t{}\t{}'.format(story_date,source,target,code)
+            event_str = '\t'.join(event)
+            print(event_str)
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)
             else:

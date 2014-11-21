@@ -1,29 +1,30 @@
 ##	PETRglobals.py [module]
 ##
 # Global variable initializations for the PETRARCH event coder
-##
-# CODE REPOSITORY: https://github.com/eventdata/PETRARCH
-##
-# SYSTEM REQUIREMENTS This program has been successfully run under Mac OS 10.6;
-# it is standard Python 2.5 so it should also run in Unix or Windows.
-##
-# PROVENANCE:
+#
+# SYSTEM REQUIREMENTS
+# This program has been successfully run under Mac OS 10.10; it is standard Python 2.7
+# so it should also run in Unix or Windows.
+#
+# INITIAL PROVENANCE:
 # Programmer: Philip A. Schrodt
-# Parus Analytical Systems
-# State College, PA, 16801 U.S.A.
-# http://eventdata.parusanalytics.com
-##
-# Copyright (c) 2014	Philip A. Schrodt
-##
-# This project was funded in part by National Science Foundation grant SES-1259190
-##
-# This code is covered under the MIT license as asserted in the file PETR.coder.py
-##
-# Report bugs to: schrodt735@gmail.com
-##
+#			  Parus Analytics
+#			  Charlottesville, VA, 22901 U.S.A.
+#			  http://eventdata.parusanalytics.com
+#
+# GitHub repository: https://github.com/openeventdata/petrarch
+#
+# Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
+#
+# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# were funded in part by National Science Foundation grant SES-1259190
+#
+# This code is covered under the MIT license
+#
 # REVISION HISTORY:
 # 22-Nov-13:	Initial version -- ptab.verbsonly.py
 # 28-Apr-14:	Latest version
+# 20-Nov-14:	WriteActorRoot/Text added  
 # ------------------------------------------------------------------------
 
 # Global variables are listed below: additional details on their structure can
@@ -56,6 +57,10 @@ NewActorLength = 0  # Maximum length for new actors extracted from noun phrases
 RequireDyad = True  # Events require a non-null source and target
 StoponError = False  # Raise stop exception on errors rather than recovering
 
+# OUTPUT OPTIONS
+WriteActorRoot = False  # Include actor root in event record
+WriteActorText = False  # Include actor text in event record
+
 RunTimeString = ''  # used in error and debugging files -- just set it once
 
 # INTERFACE OPTIONS: these can be changed in config.ini
@@ -81,3 +86,10 @@ CommaEMin = 2
 CommaEMax = 8
 
 stanfordnlp = ''
+
+# TEMPORARY VARIABLES
+# <14.11.20> Temporary in the sense that these won't be needed when we eventually 
+# refactor so that codes are some sort of structure other than a string
+CodePrimer = '=#='   # separates actor code from root and text strings  
+RootPrimer = CodePrimer + ':' # start of root string
+TextPrimer = CodePrimer + '+' # start of text string

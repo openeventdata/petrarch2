@@ -1,5 +1,36 @@
 # -*- coding: utf-8 -*-
 
+##	utilities.py [module] 
+##
+# Utilities for the PETRARCH event data coder
+##
+# SYSTEM REQUIREMENTS
+# This program has been successfully run under Mac OS 10.10; it is standard Python 2.7
+# so it should also run in Unix or Windows.
+#
+# INITIAL PROVENANCE:
+# Programmer: 
+#             John Beieler
+#			  Caerus Associates/Penn State University
+#			  Washington, DC / State College, PA, 16801 U.S.A.
+#			  http://caerusassociates.com
+#             http://bdss.psu.edu
+#
+# GitHub repository: https://github.com/openeventdata/petrarch
+#
+# Copyright (c) 2014	John Beieler.	All rights reserved.
+#
+# This project is part of the Open Event Data Alliance tool set
+#
+# This code is covered under the MIT license
+#
+# Report bugs to: john.b30@gmail.com
+#
+# REVISION HISTORY:
+# Summer-14:	Initial version
+# ------------------------------------------------------------------------
+
+
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -84,7 +115,12 @@ def story_filter(story_dict, story_id):
             for event in events:
                 # do not print unresolved agents
                 if event[0][0] != '-' and event[1][0] != '-':
-                    event_tuple = (story_date, event[0], event[1], event[2])
+                    alist = [story_date]
+#                    print('@@@',alist.extend(event))
+                    print('@@@',alist,event)
+                    alist.extend(event)
+                    print('@@@',alist)
+                    event_tuple = tuple(alist)
                     filtered[event_tuple]
                     if 'issues' in sent_dict:
                         filtered[event_tuple]['issues'] = Counter()

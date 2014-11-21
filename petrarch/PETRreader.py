@@ -5,26 +5,30 @@
 # CODE REPOSITORY: https://github.com/eventdata/PETRARCH
 ##
 # SYSTEM REQUIREMENTS
-# This program has been successfully run under Mac OS 10.6; it is standard Python 2.5
+# This program has been successfully run under Mac OS 10.10; it is standard Python 2.7
 # so it should also run in Unix or Windows.
-##
-# PROVENANCE:
+#
+# INITIAL PROVENANCE:
 # Programmer: Philip A. Schrodt
-# Parus Analytical Systems
-# State College, PA, 16801 U.S.A.
-# http://eventdata.parusanalytics.com
-##
-# Copyright (c) 2014	Philip A. Schrodt.
-##
-# This project was funded in part by National Science Foundation grant SES-1259190
-##
-# This code is covered under the MIT license as asserted in the file PETR.coder.py
-##
+#			  Parus Analytics
+#			  Charlottesville, VA, 22901 U.S.A.
+#			  http://eventdata.parusanalytics.com
+#
+# GitHub repository: https://github.com/openeventdata/petrarch
+#
+# Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
+#
+# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# were funded in part by National Science Foundation grant SES-1259190
+#
+# This code is covered under the MIT license
+#
 # Report bugs to: schrodt735@gmail.com
-##
+#
 # REVISION HISTORY:
-# 22-Nov-113:	Initial version
-# 28-Apr-14:	Latest version
+# 22-Nov-13:	Initial version
+# Summer-14:	Numerous modifications to handle synonyms in actor and verb dictionaries
+# 20-Nov-14:	write_actor_root/text added to parse_Config  
 # ------------------------------------------------------------------------
 
 from __future__ import print_function
@@ -96,6 +100,20 @@ def parse_Config(config_path):
        follow the examples.
     """
 
+    def get_config_boolean(optname):
+        """ Checks for the option optname, prints outcome and returns the result.
+        If optname not present, returns False """
+        if parser.has_option('Options', optname):
+            try:
+                result = parser.getboolean('Options',optname)
+                print(optname,"=", result)
+                return result
+            except ValueError:
+                print("Error in config.ini: "+optname+" value must be `true' or `false'")
+                raise
+        else:
+            return False
+
     print('\n', end=' ')
     parser = ConfigParser()
 #		logger.info('Found a config file in working directory')
@@ -108,13 +126,9 @@ def parse_Config(config_path):
 
     try:
         PETRglobals.VerbFileName = parser.get('Dictionaries', 'verbfile_name')
-        PETRglobals.AgentFileName = parser.get(
-            'Dictionaries',
-            'agentfile_name')
+        PETRglobals.AgentFileName = parser.get('Dictionaries','agentfile_name')
 #		print "pc",PETRglobals.AgentFileName
-        PETRglobals.DiscardFileName = parser.get(
-            'Dictionaries',
-            'discardfile_name')
+        PETRglobals.DiscardFileName = parser.get( 'Dictionaries','discardfile_name')
 
         direct = parser.get('StanfordNLP', 'stanford_dir')
         PETRglobals.stanfordnlp = os.path.expanduser(direct)
@@ -149,55 +163,37 @@ def parse_Config(config_path):
 #		print "pc",PETRglobals.TextFileList
 
         if parser.has_option('Dictionaries', 'issuefile_name'):
-            PETRglobals.IssueFileName = parser.get(
-                'Dictionaries',
-                'issuefile_name')
+            PETRglobals.IssueFileName = parser.get('Dictionaries','issuefile_name')
 
         if parser.has_option('Options', 'new_actor_length'):
             try:
-                PETRglobals.NewActorLength = parser.getint(
-                    'Options',
-                    'new_actor_length')
+                PETRglobals.NewActorLength = parser.getint('Options','new_actor_length')
             except ValueError:
                 print("Error in config.ini Option: new_actor_length value must be an integer")
                 raise
         print("new_actor_length =", PETRglobals.NewActorLength)
+        
+        PETRglobals.StoponError = get_config_boolean('stop_on_error')
+        PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
+        PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
 
-        if parser.has_option('Options', 'require_dyad'):
-            try:
-                PETRglobals.RequireDyad = parser.getboolean(
-                    'Options',
-                    'require_dyad')
-            except ValueError:
-                print("Error in config.ini: require_dyad value must be `true' or `false'")
-                raise
-        print("require_dyad =", PETRglobals.RequireDyad)
+        if parser.has_option('Options', 'require_dyad'):  # this one defaults to True
+            PETRglobals.RequireDyad = get_config_boolean('require_dyad')
+        else:
+            PETRglobals.RequireDyad = True
 
-        if parser.has_option('Options', 'stop_on_error'):
-            try:
-                PETRglobals.StoponError = parser.getboolean(
-                    'Options',
-                    'stop_on_error')
-            except ValueError:
-                print("Error in config.ini: stop_on_error value must be `true' or `false'")
-                raise
-        print("stop_on_error =", PETRglobals.StoponError)
 
         # otherwise this was set in command line
         if len(PETRglobals.EventFileName) == 0:
             PETRglobals.EventFileName = parser.get('Options', 'eventfile_name')
 
-        PETRglobals.CodeBySentence = parser.has_option(
-            'Options',
-            'code_by_sentence')
+        PETRglobals.CodeBySentence = parser.has_option('Options','code_by_sentence')
         print("code-by-sentence", PETRglobals.CodeBySentence)
-        PETRglobals.PauseBySentence = parser.has_option(
-            'Options',
-            'pause_by_sentence')
+        
+        PETRglobals.PauseBySentence = parser.has_option('Options','pause_by_sentence')
         print("pause_by_sentence", PETRglobals.PauseBySentence)
-        PETRglobals.PauseByStory = parser.has_option(
-            'Options',
-            'pause_by_story')
+        
+        PETRglobals.PauseByStory = parser.has_option('Options','pause_by_story')
         print("pause_by_story", PETRglobals.PauseByStory)
 
         try:
@@ -1243,6 +1239,8 @@ def read_actor_dictionary(actorfile):
 		[0,ordate,code] : < restriction
 		[1,ordate,code] : > restriction
 		[2,ordate,ordate, code] : - (interval) restriction
+	If PETRglobals.WriteActorRoot is True, the final element of a PETRglobals.ActorCodes 
+	list is the text of the actor at the beginning of the synonym list.
 
 	Synonyms simply use the integer code index to point to these tuples.
 
@@ -1401,7 +1399,15 @@ def read_actor_dictionary(actorfile):
                 actor = part[0][1:].strip() + ' '
             else:  					# primary phrase with code
                 if len(curlist) > 0:
-                    PETRglobals.ActorCodes.append(tuple(curlist))
+                    if PETRglobals.WriteActorRoot:
+                    	curlist.append(rootactor)
+#                    print(curlist)
+                    PETRglobals.ActorCodes.append(tuple(curlist)) # store code from previous entry
+                    """print(PETRglobals.ActorCodes[-1])
+                    thelist = PETRglobals.ActorCodes[-1]
+                    for item in thelist:
+                        if not isinstance(item,list):
+                            print('== Actor',item)"""
                     codeindex = len(PETRglobals.ActorCodes)
                     curlist = []
                 if '[' in line:  # code specified?
@@ -1412,6 +1418,7 @@ def read_actor_dictionary(actorfile):
                     # no code, so don't update curlist
                     part = line.partition(';')
                 actor = part[0].strip() + ' '
+                rootactor = actor
             nounlist = make_noun_list(actor)
             keyword = nounlist[0][0]
             phlist = [codeindex, nounlist[0][1]] + nounlist[1:]
@@ -1427,6 +1434,7 @@ def read_actor_dictionary(actorfile):
         line = read_FIN_line()
 
     close_FIN()
+#    <14.11.20: does this need to save the final entry? >
 
     # sort the patterns by the number of words
     for lockey in list(PETRglobals.ActorDict.keys()):

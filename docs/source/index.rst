@@ -121,7 +121,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   current.rst
+   status.rst
    petrarch.rst
    dictionaries.rst
    inputs.rst

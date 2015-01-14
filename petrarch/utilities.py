@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-##	utilities.py [module] 
+##	utilities.py [module]
 ##
 # Utilities for the PETRARCH event data coder
 ##
@@ -9,7 +9,7 @@
 # so it should also run in Unix or Windows.
 #
 # INITIAL PROVENANCE:
-# Programmer: 
+# Programmer:
 #             John Beieler
 #			  Caerus Associates/Penn State University
 #			  Washington, DC / State College, PA, 16801 U.S.A.
@@ -114,24 +114,27 @@ def story_filter(story_dict, story_id):
             events = story_dict['sents'][sent]['events']
             for event in events:
                 # do not print unresolved agents
-                if event[0][0] != '-' and event[1][0] != '-':
-                    alist = [story_date]
-#                    print('@@@',alist.extend(event))
-                    print('@@@',alist,event)
-                    alist.extend(event)
-                    print('@@@',alist)
-                    event_tuple = tuple(alist)
-                    filtered[event_tuple]
-                    if 'issues' in sent_dict:
-                        filtered[event_tuple]['issues'] = Counter()
-                        issues = sent_dict['issues']
-                        for issue in issues:
-                            filtered[event_tuple]['issues'][issue[0]] += issue[1]
+                try:
+                    if event[0][0] != '-' and event[1][0] != '-':
+                        alist = [story_date]
+    #                    print('@@@',alist.extend(event))
+                        print('@@@',alist,event)
+                        alist.extend(event)
+                        print('@@@',alist)
+                        event_tuple = tuple(alist)
+                        filtered[event_tuple]
+                        if 'issues' in sent_dict:
+                            filtered[event_tuple]['issues'] = Counter()
+                            issues = sent_dict['issues']
+                            for issue in issues:
+                                filtered[event_tuple]['issues'][issue[0]] += issue[1]
 
-                    #Will keep track of this info, but not necessarily write it
-                    #out
-                    filtered[event_tuple]['ids'] = []
-                    filtered[event_tuple]['ids'].append(sent_id)
+                        #Will keep track of this info, but not necessarily write it
+                        #out
+                        filtered[event_tuple]['ids'] = []
+                        filtered[event_tuple]['ids'].append(sent_id)
+                except IndexError:
+                    pass
         else:
             pass
 

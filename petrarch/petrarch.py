@@ -1879,10 +1879,13 @@ def get_actor_code(index):
     """ Get the actor code, resolving date restrictions. """
     global SentenceOrdDate
 
+    logger = logging.getLogger('petr_log')
+
     thecode = None
     try:
         codelist = PETRglobals.ActorCodes[index]
     except IndexError:
+        logger.warning('\tError processing actor in get_actor_code. Index: {}'.format(index))
         thecode = '---'
     if len(codelist) == 1 and len(codelist[0]) == 1:
         thecode = codelist[0][0]  # no restrictions: the most common case

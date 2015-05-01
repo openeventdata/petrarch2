@@ -642,12 +642,13 @@ def read_verb_dictionary(verb_path):
 
     A verb synonym block is a set of verbs which are synonymous (or close enough) with
     respect to the patterns. The program automatically generates the regular forms of the
-    verb -- see make_verb_forms(loccode) -- if it is regular (and, implicitly, English);
+    verb -- endings of 'S','ED' and 'ING' -- if it is regular (and, implicitly, English);
     otherwise the irregular forms can be specified in {...} following the primary verb.
     Note that if irregular forms are provided in {...}, ALL forms need to be included,
-    even if some of those are the same as the regular form. An optional code for the
+    even if some of those are the same as the regular form (in other words, no 
+    alternative forms are generated when {...} is present). An optional code for the
     isolated verb can follow in [...].
-
+    
     The verb block begins with a comment of the form
 
     --- <GENERAL DESCRIPTION> [<CODE>] ---
@@ -662,16 +663,35 @@ def read_verb_dictionary(verb_path):
     follow the same syntax as TABARI patterns. The pattern set is terminated with a
     blank line.
 
-    -- Multiple-word verbs --
+    MULTIPLE-WORD VERBS 
     Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
     connecting the word with an underscore (these must be consecutive) and putting a '+'
-    in front of the verb. Alternative forms must be specified: they are not constructed
-    automatically. These are treated in patterns just as single-word verbs are treated.
+    in front of the word -- only the first and last are currently allowed -- of the 
+    phrase that TreeBank is going to designate as the verb.If there is no {...}, regular 
+    forms are constructed for the word designated by '+'; otherwise all of the irregular 
+    forms are given in {...}. If you can't figure out which part of the phrase is the 
+    verb, the phrase you are looking at is probably a noun, not a verb. Multi-word verbs 
+    are treated in patterns just as single-word verbs are treated.
 
     Examples
-    +BEEF_UP {+BEEFS_UP +BEEFED_UP +BEEFING_UP}
+    +BEEF_UP
+    RE_+ARREST
     +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF}
-    WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
+    +COME_UPON {+COMES_UPON +CAME_UPON +COMING_UPON}
+    WIRE_+TAP {WIRE_+TAPS WIRE_+TAPPED  WIRE_+TAPPING }
+    
+    Multi-words are stored in a list consisting of
+        code
+        primary form (use as a pointer to the pattern
+        tuple: (True if verb is at start of phrase, False otherwise; remaining words) 
+        
+    [15.04.30] 
+    If a word occurs both as the verb in a multi-word and as a single word, it will be at
+    the end of the list of multi-word candidate strings: that is, the multi-world 
+    combinations are checked first, then only if none of these match is the single word
+    option used. Due to sub-optimized code, words that are the verb in a multi-word verb 
+    cannot be the first word in a block of verbs. The current dictionary has removed 
+    all of these. 
 
     SYNSETS
     Synonym sets (synsets) are labelled with a string beginning with & and defined using
@@ -719,8 +739,8 @@ def read_verb_dictionary(verb_path):
     +HAD
 
 
-    ### GRANT ###
-    GRANT [070]
+    --- GRANT [070] ---
+    GRANT 
     GIVE {GAVE GIVEN GIVING }  # jw  11/14/91
     CONTRIBUTE # tony  3/12/91
     - * &CURRENCY [903] # -PAS 12.01.12
@@ -728,8 +748,8 @@ def read_verb_dictionary(verb_path):
     - * RUPEES  [071]
 
 
-    ### EXPLAIN_VERBAL ###
-    EXPLAIN [010]
+    --- EXPLAIN_VERBAL [010] ---
+    EXPLAIN
     COMMENT
     ASSERT
     SAY  {SAID SAYING }
@@ -756,7 +776,8 @@ def read_verb_dictionary(verb_path):
     +TO THE END OF THE EARTH
     +TO THE DEATH
 
-    VOW  [170] ;tony  3/9/91
+    --- VOW  [170] ---
+    VOW ;tony  3/9/91
     - * RESIST &TESTSYN3 [113] ; pas 4/20/03
     - * RESIST &TESTSYN4  [115] ; pas 4/20/03
     - * RESISTANCE TO THE INVADING  [114] ; pas 4/20/03
@@ -775,10 +796,7 @@ def read_verb_dictionary(verb_path):
         an open match.  However, per the comments below, generally TABARI dictionaries
         should be converted before being used with PETRARCH.
 
-    3.  The current version of the program cannot deal with multi-word "verbs" -- e.g.
-        "SHOT_AND_KILLED" -- so these are skipped.
-
-    4. The verb dictionary is stored as follows:
+    3. The verb dictionary is stored as follows:
         [0] True: primary form
         [1] Code
         [2:n] 3-lists of multi-words: [code, primary form (use as a pointer to the pattern
@@ -886,6 +904,14 @@ def read_verb_dictionary(verb_path):
             ka += 2
         return phlist
 
+    def store_verb_form(targverb,thelist):
+        """  checks if form exists; if true stores thelist at end, otherwise creates """
+        # need error checking here
+        if targverb in PETRglobals.VerbDict:
+            PETRglobals.VerbDict[targverb].append(thelist)
+        else:
+            PETRglobals.VerbDict[targverb]= thelist
+           
     def get_verb_forms(loccode):
         """  Read the irregular forms of a verb. """
         # need error checking here
@@ -894,55 +920,77 @@ def read_verb_dictionary(verb_path):
 #       print '++',forms
         for wrd in forms:
             vscr = wrd + " "
-            PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+            store_verb_form(vscr,[False, loccode, theverb])
 
     def store_multi_word_verb(loccode):
         """  Store a multi-word verb and optional irregular forms. """
-        """ Multi-words are stored in a list consisting of
-            code
-            primary form (use as a pointer to the pattern
-            tuple: (True if verb is at start of list, False otherwise; remaining words) """
-
         global verb, theverb
+#        print('Mk11:',verb)
         if '{' in verb:
             forms = verb[verb.find('{')+1:verb.find('}')].split()
             forms.append(verb[:verb.find('{')].strip())
         else:
-            forms = [verb]
+            forms = [verb] 
+            plind = verb.index('+')+1  # add the regular forms to the verb designated by '+'
+            if verb.find('_',plind) > 0:
+                vroot = verb[plind:verb.find('_',plind)]
+            else:
+                vroot = verb[plind:-1]            
+            forms.append(verb.replace(vroot,vroot + "S"))
+            if vroot[-1] == 'E':  # root ends in 'E'
+                forms.append(verb.replace(vroot,vroot + "D"))
+                forms.append(verb.replace(vroot,vroot[:-1] + "ING"))
+            else:
+                forms.append(verb.replace(vroot,vroot + "ED"))
+                forms.append(verb.replace(vroot,vroot + "ING"))
+#        print("Forms:",forms)
+ 
         for phrase in forms:
             if '+' in phrase: # otherwise not in correct form so skip it
                 words = phrase.split('_')
+ #               print('Mk1:',words)
                 if words[0].startswith('+'):
                     multilist = [True]
                     for ka in range(1,len(words)):
                         multilist.append(words[ka])
                     targverb = words[0][1:]+' '
                 else:
+#                    print('Mk2:',words)  
                     multilist = [False]
                     for ka in range(2,len(words)+1):
                         multilist.append(words[len(words)-ka])
                     targverb = words[len(words)-1][1:]+' '
 
                 if targverb in PETRglobals.VerbDict:
-                    PETRglobals.VerbDict[targverb].insert(2,[loccode, theverb, tuple(multilist)])
+#                    print('Mk4.0:',targverb,PETRglobals.VerbDict[targverb])
+                    if PETRglobals.VerbDict[targverb][0]: # already a multi-word list, so store more
+                        PETRglobals.VerbDict[targverb].insert(2,[loccode, theverb, tuple(multilist)])
+                    else: # convert a primary list to a multi-word list
+                        alist = PETRglobals.VerbDict[targverb]
+                        PETRglobals.VerbDict[targverb] = [True, '---', [loccode, theverb, tuple(multilist)]]
+                        PETRglobals.VerbDict[targverb].append(alist)
                 else:
                     PETRglobals.VerbDict[targverb] = [True, '---', [loccode, theverb, tuple(multilist)]]
+#                print('Mk4.1:',targverb,PETRglobals.VerbDict[targverb])
+
+            else:
+                logger.warning('Error in read_verb_dictionary()/store_multi_word_verb(): '+phrase+' in '+verb+' is part of a multi-word verb and should contain a +; this was skipped')
 
     def make_verb_forms(loccode):
         """ Create the regular forms of a verb. """
         global verb, theverb
         vroot = verb[:-1]
         vscr = vroot + "S "
-        PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+        store_verb_form(vscr,[False, loccode, theverb])
         if vroot[-1] == 'E':  # root ends in 'E'
             vscr = vroot + "D "
-            PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+            store_verb_form(vscr,[False, loccode, theverb])
             vscr = vroot[:-1] + "ING "
         else:
             vscr = vroot + "ED "
-            PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+            store_verb_form(vscr,[False, loccode, theverb])
             vscr = vroot + "ING "
-        PETRglobals.VerbDict[vscr] = [False, loccode, theverb]
+        store_verb_form(vscr,[False, loccode, theverb])
 
     def make_plural(st):
         """ Create the plural of a synonym noun st """

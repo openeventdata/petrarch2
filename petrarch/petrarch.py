@@ -495,6 +495,8 @@ def open_validation_file(xml_root):
     verb_path = utilities._get_data('data/dictionaries',
                                     PETRglobals.VerbFileName)
     PETRreader.read_verb_dictionary(verb_path)
+#    PETRreader.show_verb_dictionary('Verbs_VALIDATE_output.txt')
+
 
     print('Actor dictionaries:', PETRglobals.ActorFileList[0])
     actor_path = utilities._get_data('data/dictionaries',
@@ -1472,7 +1474,7 @@ def make_multi_sequences(multilist, verbloc, endtag):
                 else:
                     return False
             kword -= 1
-        print ("MMS-2",verbloc, ParseList[verbloc], endtag)
+#       print ("MMS-2",verbloc, ParseList[verbloc], endtag)  # 15.04.30 pas: forgot to turn this off earlier so apparently we hit this code very rarely
         get_upper_seq(kword)
         get_lower_seq(verbloc + 1, endtag)
         return True
@@ -1730,9 +1732,10 @@ def check_verbs():
     def raise_CheckVerbs_error(kloc, call_location_string):
         """
         Handle problems found at some point internal to check_verbs: skip the verb that
-        caused the problem but do skip the sentence. Logs the error and information on the
+        caused the problem but do [not?] skip the sentence. Logs the error and information on the
         verb phrase and raises CheckVerbsError.
         This is currently only used for check_passive()
+        15.04.29: pas -- is that supposed to be "not"? 
         """
         global SentenceID, ParseList
         warningstr = call_location_string+'in check_verbs; verb sequence {} skipped: {}'.format(' '.join(ParseList[kloc:kloc+5]), SentenceID)
@@ -1796,8 +1799,8 @@ def check_verbs():
                 if PETRglobals.VerbDict[targ][0]:
                     patternlist = PETRglobals.VerbDict[targ]
                     ka = 2
-                    # check for multi-word.
-                    while (ka < len(patternlist) and patternlist[ka][0]):
+                    # check for multi-word: this first checks for multi-word options, then if not found can go to a single word.
+                    while (ka < len(patternlist) and not isinstance(patternlist[ka][2], basestring)):
                         if ShowPattMatch: print("CV/mult-1: Checking",targ, patternlist[ka])
                         if make_multi_sequences(patternlist[ka][2], kitem+2, endtag):
                             if ShowPattMatch: print("CV/mult-1: Found",targ, patternlist[ka])
@@ -1807,8 +1810,14 @@ def check_verbs():
                         ka += 1
                     else:
                         make_check_sequences(kitem+2, endtag)
-                        verbcode = patternlist[1]
+                        if (ka > 2 and ka < len(patternlist) and isinstance(patternlist[ka][2], basestring)):  # use the single word option
+                            if ShowPattMatch: print("CV/mult-3: Redirect",targ, ka, patternlist[ka])
+                            verbcode = patternlist[ka][1]
+                            patternlist = PETRglobals.VerbDict[patternlist[ka][2]]
+                        else:
+                            verbcode = patternlist[1]
                 else:
+#                    print('Mk3:',targ,PETRglobals.VerbDict[targ])
                     patternlist = PETRglobals.VerbDict[PETRglobals.VerbDict[targ][2]]  # redirect from a synonym
                     make_check_sequences(kitem+2, endtag)
                     verbcode = PETRglobals.VerbDict[targ][1]
@@ -2985,6 +2994,7 @@ def read_dictionaries():
         verb_path = utilities._get_data('data/dictionaries',
                                         PETRglobals.VerbFileName)
         PETRreader.read_verb_dictionary(verb_path)
+        PETRreader.show_verb_dictionary('Verbs_output.txt')
 
         print('Actor dictionaries:', PETRglobals.ActorFileList)
         for actdict in PETRglobals.ActorFileList:

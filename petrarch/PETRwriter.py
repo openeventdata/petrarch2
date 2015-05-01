@@ -82,7 +82,10 @@ def write_events(event_dict, output_file):
                                                          target, code, ids,
                                                          StorySource))
 #            event_str = '{}\t{}\t{}\t{}'.format(story_date,source,target,code)
-            event_str = '\t'.join(event)
+            if not isinstance(event[3],basestring):  # 15.04.30: a very crude hack around an error involving multi-word verbs
+                event_str = '\t'.join(event[:3]) + '\t010\t' + '\t'.join(event[4:])
+            else:
+                event_str = '\t'.join(event)
             print(event_str)
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)

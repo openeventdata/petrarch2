@@ -3,10 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+
 Introduction
 ============
 
 A Python Engine for Text Resolution And Related Coding Hierarchy.
+
+
+    One of my students put it this way: "Francesco Petrarch was Kayne West. He jumps up on stage, says 
+    'Yo, welcome to the Renaissance, bitches!' And then drops the mike." <br\>
+    Dorsey Armstrong <br\>
+    *Great Minds of the Medieval World* (Great Courses Series), lecture 20
 
 PETRARCH is a natural language processing tool for machine-coding events data.
 It is designed to process fully-parsed news summaries in Penn Treebank format,
@@ -30,7 +37,7 @@ component parts:
 
  1. First, is the collection of raw unstructured text including information about relevant events. For this step we have developed a web scraper that automatically pulls news stories form a white list of RSS feeds. Scraped stories are then stored in a MongoDB instance for easy future retrieval.
 
- 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system. This was traditionally done using the TABARI system, but will soon be replaced with PETRARCH which works with fully-parsed inputs.**
+ 2. **Second in this process is the extraction of structured data from scraped unstructured texts using an event data coding system. In earlier work this was  done using the TABARI system, but in this system has  PETRARCH which works with fully-parsed inputs in the Penn TreeBank format, which we generate using the Stanford CoreNLP parser.**
 
 The output of this process, event observations identified and extracted in a
 'who-did-what-to-whom' format, is what we refer to as event data. At this most

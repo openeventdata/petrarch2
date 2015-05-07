@@ -87,18 +87,31 @@ follow the same syntax as TABARI patterns (see Chapter 5 of the TABARI manual). 
 
 **Multiple-word verbs**
 
-Multiple-word "verbs" such as ``CONDON OFF``, ``WIRE TAP`` and ``BEEF UP`` are entered by 
-connecting the word with an underscore (these must be consecutive) and putting a '+' 
-in front of the verb. Alternative forms must be specified: they are not constructed 
-automatically. These are treated in patterns just as single-word verbs are treated.
+Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
+connecting the words with an underscore (these must be consecutive) and putting a '+'
+in front of the word in the 
+phrase that TreeBank is going to designate as the verb; only the first and last words are currently allowed.
+If there is no {...}, regular 
+forms are constructed for the word designated by '+'; otherwise all of the irregular 
+forms are given in {...}. If you can't figure out which part of the phrase is the 
+verb, the phrase you are looking at is probably a noun, not a verb. Multi-word verbs 
+are treated in patterns just as single-word verbs are treated.
+
+Due to sub-optimized code, words that are the verb in a multi-word verb 
+cannot be the first word in a block of verbs. The current dictionary has removed 
+all of these. 
 
 Example:
 
 ::
 
-    +BEEF_UP {+BEEFS_UP +BEEFED_UP +BEEFING_UP}
-    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
-    WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
+    +BEEF_UP
+    RE_+ARREST
+    +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF}
+    +COME_UPON {+COMES_UPON +CAME_UPON +COMING_UPON}
+    WIRE_+TAP {WIRE_+TAPS WIRE_+TAPPED  WIRE_+TAPPING }
+
+
 
 
 **Synsets:**

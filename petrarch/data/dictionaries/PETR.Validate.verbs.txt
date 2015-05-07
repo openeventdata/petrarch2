@@ -261,9 +261,6 @@ BRIEF
 --- BROADCAST  [034]  ---
 BROADCAST    # jw 9/29/91
 
---- BRUSH ASIDE REPORTS  [142]  ---
-BRUSH_ASIDE REPORTS    # tony  4/28/91 #  also MARK-06 to 12
-
 --- BURN [---] ---
 BURN 
 - * DOWN  [222]
@@ -289,11 +286,6 @@ CAPTURE
 +EXERCISES
 +MANUVERS
 
-
---- CARRIED_OUT  [181] ---
-CARRIED_OUT  
-- * &EXERSYN  [182]
-- * RAID  [211]
 
 --- CAST [---] ---
 CAST 
@@ -543,7 +535,7 @@ EXCHANG
 
 --- EXCLUDE  [1721] ---
 EXCLUDE  
-+CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF} 
++CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF } 
 - * FOR CONSTRUCTION [071]
 
 --- EXPAND [---] ---
@@ -766,9 +758,6 @@ MEET    # -PAS 2/9/96
 - * DEMANDS  [012]
 - HOLD *  [031]  # jw 9/24/91
 - NO *  [112]
-
---- MEND RELATIONS  [065]  ---
-MEND_RELATIONS    # tony  3/11/91
 
 --- MET  [031:032]  ---
 MET    # pas   9/24/91
@@ -1144,9 +1133,6 @@ SIGN
 --- SIGNAL  [---] ---
 SIGNAL  
 - * DESIRE TO SETTLE  [024]  # tony  4/29/91
-
---- SOLD_ [081]  ---
-SOLD_   # PAS   9/27/91
 
 --- SOUGHT  [102] ---
 SOUGHT  

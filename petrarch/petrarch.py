@@ -2482,10 +2482,17 @@ def make_event_strings():
 
     logger = logging.getLogger('petr_log')
 #    print('MES1: ',SourceLoc, TargetLoc)
-    srccodes = get_loccodes(SourceLoc)
-    expand_compound_codes(srccodes)
-    tarcodes = get_loccodes(TargetLoc)
-    expand_compound_codes(tarcodes)
+# p.a.s. 15.05.25: For reasons that were far from obvious, this was generating some errors that supposedly involved UniCode problems
+# on some records that had been converted from the Levant Reuters series. Maybe the actual issues are in the dictionaries?
+# Anyway, just trap and log it for now.
+    try:
+        srccodes = get_loccodes(SourceLoc)
+        expand_compound_codes(srccodes)
+        tarcodes = get_loccodes(TargetLoc)
+        expand_compound_codes(tarcodes)
+    except:
+        logger.warning('Error when attempting to extract src and tar codes in make_event_strings(): {}'.format(SentenceID))
+        return
 
 #TODO: This needs to be fixed: this is the placeholder code for having a general country-
 #      level location for the sentence or story

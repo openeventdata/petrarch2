@@ -1312,7 +1312,10 @@ def find_target():
     """
 
     global UpperSeq, LowerSeq, SourceLoc, TargetLoc
-    srccodelist = get_loccodes(SourceLoc)
+    try:
+        srccodelist = get_loccodes(SourceLoc)
+    except:
+        raise_ParseList_error('tuple error in get_loccodes(SourceLoc) called from find_target()')
     if len(srccodelist) == 1:
         srccode = '>' + srccodelist[0]
     else:
@@ -2482,16 +2485,16 @@ def make_event_strings():
 
     logger = logging.getLogger('petr_log')
 #    print('MES1: ',SourceLoc, TargetLoc)
-# p.a.s. 15.05.25: For reasons that were far from obvious, this was generating some errors that supposedly involved UniCode problems
-# on some records that had been converted from the Levant Reuters series. Maybe the actual issues are in the dictionaries?
-# Anyway, just trap and log it for now.
+# p.a.s. 15.05.25: get_loccodes was generating the error "need string or buffer, tuple found" on some records that had been 
+# converted from the Levant Reuters series; which also occurred around line 1315 on a different record. For the time being,
+# just trap and log it.
     try:
         srccodes = get_loccodes(SourceLoc)
         expand_compound_codes(srccodes)
         tarcodes = get_loccodes(TargetLoc)
         expand_compound_codes(tarcodes)
     except:
-        logger.warning('Error when attempting to extract src and tar codes in make_event_strings(): {}'.format(SentenceID))
+        logger.warning('tuple error when attempting to extract src and tar codes in make_event_strings(): {}'.format(SentenceID))
         return
 
 #TODO: This needs to be fixed: this is the placeholder code for having a general country-

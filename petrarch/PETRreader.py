@@ -460,8 +460,7 @@ def read_discard_list(discard_path):
     BASKETBALL
     BATSMAN  # MleH 14 Jul 2009
     BATSMEN  # MleH 12 Jul 2009
-    """
-
+    
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.DiscardFileName)
     open_FIN(discard_path, "discard")
@@ -478,7 +477,45 @@ def read_discard_list(discard_path):
         PETRglobals.DiscardList.append(targ.upper())  # case insensitive match
         line = read_FIN_line()
     close_FIN()
-# 	print PETRglobals.DiscardList[:8]
+
+
+    """
+    
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.DiscardFileName)
+    open_FIN(discard_path, "discard")
+
+    line = read_FIN_line()
+    while len(line) > 0:  # loop through the file
+        if '#' in line:
+            line = line[:line.find('#')]
+        targ = line.strip()
+        if targ.startswith('+'):
+            targ =  targ[1:].upper() + ' +'
+        else:
+            targ =  targ.upper() + ' $'
+
+        targ = targ.split()
+        prev = targ[0]
+        targ = targ[1:]
+        list = PETRglobals.DiscardList.setdefault(prev,{})
+        while targ != []:
+            #print(PETRglobals.DiscardList,targ,list)
+            list = list.setdefault(targ[0],{})
+            targ = targ[1:]
+
+        #PETRglobals.DiscardList.append(targ.upper()) # case insensitive match
+        line = read_FIN_line()
+    close_FIN()
+
+
+
+
+
+
+
+
+
 
 
 def read_issue_list(issue_path):
@@ -1790,6 +1827,7 @@ def read_xml_input(filepaths, parsed=False):
                 else:
                     parsed_content = ''
 
+                
                 # Get the sentence information
                 if story.attrib['sentence'] == 'True':
                     entry_id, sent_id = story.attrib['id'].split('_')

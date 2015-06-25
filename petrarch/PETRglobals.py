@@ -35,7 +35,7 @@ VerbDict = {}  # verb dictionary
 ActorDict = {}  # actor dictionary
 ActorCodes = []  # actor code list
 AgentDict = {}  # agent dictionary
-DiscardList = []  # discard list
+DiscardList = {}  # discard list
 IssueList = []
 IssueCodes = []
 

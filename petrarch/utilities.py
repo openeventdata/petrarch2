@@ -41,6 +41,22 @@ import dateutil.parser
 import PETRglobals
 from collections import defaultdict, Counter
 
+# ================== EVENT OBJECT ================ #
+class Event():
+    
+    def __init__(str):
+        self.tree = str
+        self.parse = ""
+        self.agent = ""
+        self.ID = -1
+        self.actor = ""
+        self.date = ""
+        self.longlat = (-1,-1)
+
+
+# ================================================= #
+
+
 
 def stanford_parse(event_dict):
     logger = logging.getLogger('petr_log')
@@ -117,10 +133,7 @@ def story_filter(story_dict, story_id):
                 try:
                     if event[0][0] != '-' and event[1][0] != '-':
                         alist = [story_date]
-    #                    print('@@@',alist.extend(event))
-                        print('@@@',alist,event)
                         alist.extend(event)
-                        print('@@@',alist)
                         event_tuple = tuple(alist)
                         filtered[event_tuple]
                         if 'issues' in sent_dict:

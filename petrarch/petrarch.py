@@ -113,7 +113,6 @@ ShowNEParsing = False
 ShowMarkCompd = True
 ShowMarkCompd = False
 
-
 # ================== EXCEPTIONS ================== #
 
 class DupError(Exception):  # template
@@ -1540,6 +1539,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                             if ShowPattMatch:
                                 print("CV-3 tar", TargetLoc)
                             CodedEvents = make_event_strings(CodedEvents,upper,lower,SourceLoc,TargetLoc,IsPassive,EventCode)
+                            
 
                 if hasmatch:
                     while (endtag not in ParseList[kitem]):
@@ -1611,7 +1611,7 @@ def actor_phrase_match(patphrase, phrasefrag):
     Determines whether the actor pattern patphrase occurs in phrasefrag. Returns True if
     match is successful. Insha'Allah...
     """
-
+    ret = False
     APMprint = False
     connector = patphrase[1]
     kfrag = 1   # already know first word matched
@@ -1622,16 +1622,16 @@ def actor_phrase_match(patphrase, phrasefrag):
     if len(patphrase) == 2:
         if APMprint:
             print("APM-2.1: singleton match")   # debug
-        return True  # root word is a sufficient match
+        return True,1  # root word is a sufficient match
     # <14.02.28>: these both do the same thing, except one handles a string of
     # the form XXX and the other XXX_. This is probably unnecessary. though it
     # might be...I suppose those are two distinct cases.
     if len(patphrase) == 3 and patphrase[2][0] == "":
         if APMprint:
             print("APM-2.2: singleton match")   # debug
-        return True  # root word is a sufficient match
+        return True,1  # root word is a sufficient match
     if kfrag >= len(phrasefrag):
-        return False     # end of phrase with more to match
+        return False,0     # end of phrase with more to match
     while kpatword < len(patphrase):  # iterate over the words in the pattern
         if APMprint:
             # debug
@@ -1643,18 +1643,20 @@ def actor_phrase_match(patphrase, phrasefrag):
             kfrag += 1
             kpatword += 1
             if kpatword >= len(patphrase)-1:  # final element is just the terminator
-                return True  # complete pattern matched
+                return True,kfrag  # complete pattern matched
         else:
             if APMprint:
                 print("  APM fail")  # debug
             if connector == '_':
-                return False  # consecutive match required, so fail
+                return False,0  # consecutive match required, so fail
             else:
                 kfrag += 1  # intervening words are allowed
         if kfrag >= len(phrasefrag):
-            return False     # end of phrase with more to match
+            return False,0     # end of phrase with more to match
+    
     return (
-        True  # complete pattern matched (I don't think we can ever hit this)
+        
+        True,len(phrasefrag)  # complete pattern matched (I don't think we can ever hit this)
     )
 
 
@@ -1682,6 +1684,7 @@ def check_NEphrase(nephrase,date):
 
     kword = 0
     actorcode = ""
+    actor_index = [-1,-1]
     if ShowNEParsing:
         print("CNEPh initial phrase", nephrase)  # debug
     # iterate through the phrase looking for actors
@@ -1694,13 +1697,16 @@ def check_NEphrase(nephrase,date):
             if ShowNEParsing:
                 print("                Found", phrasefrag[0])  # debug
             patlist = PETRglobals.ActorDict[nephrase[kword]]
-            if ShowNEParsing:
-                print("CNEPh Mk1:", patlist)
+            #if ShowNEParsing:
+               # print("CNEPh Mk1:", patlist)
             # iterate over the patterns beginning with this word
-
+            actor_index = (kword,kword)
             for index in range(len(patlist)):
-                if actor_phrase_match(patlist[index], phrasefrag):
+                
+                val, phraselen = actor_phrase_match(patlist[index], phrasefrag)
+                if val:
                     # found a coded actor
+                    actor_index = (kword,kword+phraselen)
                     actorcode = get_actor_code(patlist[index][0],date)
                     if ShowNEParsing:
                         print("CNEPh Mk2:", actorcode)
@@ -1709,10 +1715,14 @@ def check_NEphrase(nephrase,date):
             break   # stop after finding first actor
         else:
             kword += 1
-            
+
     kword = 0
     agentlist = []
     while kword < len(nephrase):  # now look for agents
+    
+        if kword >= actor_index[0] and kword < actor_index[1]:
+            kword +=1  # Don't look for agents in the actor phrase
+            continue
         phrasefrag = nephrase[kword:]
         if ShowNEParsing:
             print("CNEPh Agent Check", phrasefrag[0])  # debug
@@ -1724,13 +1734,11 @@ def check_NEphrase(nephrase,date):
             patlist = PETRglobals.AgentDict[nephrase[kword]]
             # iterate over the patterns beginning with this word
             for index in range(len(patlist)):
-                if actor_phrase_match(patlist[index], phrasefrag):
-                    
+                if actor_phrase_match(patlist[index], phrasefrag)[0]:
                     agentlist.append(patlist[index][0])   # found a coded actor
-                    
+                    print(agentlist)
                     break
         kword += 1   # continue looking for more agents
-
     if len(agentlist) == 0:
         if len(actorcode) == 0:
             return [False]  # no actor or agent
@@ -1744,8 +1752,9 @@ def check_NEphrase(nephrase,date):
         part = actorcode.partition(PETRglobals.RootPrimer)
         actorcode = part[0]
         actorroot = part[2]
-
+    print("$$$$$$$$$$$$$$$$$$$$$$$")
     for agentcode in agentlist:  # assemble the composite code
+        print(actorcode)
         if agentcode[0] == '~':
             agc = agentcode[1:]  # extract the code
         else:
@@ -1753,8 +1762,10 @@ def check_NEphrase(nephrase,date):
         aglen = len(agc)  # set increment to the length of the agent code
         ka = 0  # check if the agent code is already present
         while ka <= len(actorcode) - aglen:
+            print("DUPLICATE",actorcode)
             if agc == actorcode[ka:ka + aglen]:
                 ka = -1  # signal duplicate
+                
                 break
             ka += 3
         if ka < 0:
@@ -2116,10 +2127,12 @@ def assign_NEcodes(plist,ParseStart,date):
                 kitem = kstart - 1  # process the (NEs following the expansion
             else:
                 result = check_NEphrase(nephrase,date)
+                print(result)
                 if result[0]:
                     ParseList[kcode] = result[1]
                     if ShowNEParsing:
                         print("Assigned", result[1])   # debug
+    
             
         kitem += 1
     return ParseList
@@ -2316,7 +2329,6 @@ def check_discards(SentenceText):
         elif '$' in level:
             return [1,' ' + discardPhrase]
         elif sent[i] in level:
-            #print(sent[i],SentenceText.upper(),level[sent[i]])
             depart_index.append(i)
             level = level[sent[i]]
             discardPhrase += " " +sent[i]
@@ -2324,6 +2336,7 @@ def check_discards(SentenceText):
             if len(depart_index) == 0:
                 continue
             i = depart_index[0]
+            depart_index = []
             level = PETRglobals.DiscardList
     return [0,'']
     
@@ -2475,11 +2488,10 @@ def do_validation(filepath):
             # Get the sentence information
             
             if story.attrib['valid'] == 'true':
-                #if  not "COMPOUND-1" in story.attrib['id'] :
-                #    continue
+            
                 entry_id, sent_id = story.attrib['id'].split('-')
-                #if not entry_id == "DISCARD":
-                #    continue
+                if  (not (entry_id,sent_id) == ("ABOUT","01") and not entry_id == "ABOUT"):
+                    continue
                 parsed  = story.findall('EventCoding')
                 entry_id = entry_id + "" + sent_id
                 if not parsed == None:
@@ -2492,23 +2504,21 @@ def do_validation(filepath):
                 sent_dict = {'content': text, 'parsed': parsed_content,'config':config.copy(),'date':story.attrib['date']}
                 meta_content = {'date': story.attrib['date'],
                                 'source': entry_id}
-                #print(story.attrib['id'],PETRreader.dstr_to_ordate(story.attrib['date']))
                 content_dict = {'sents': {sent_id: sent_dict},
                                 'meta': meta_content}
-                
                 if entry_id not in holding:
                     holding[entry_id] = content_dict
                 else:
                     holding[entry_id]['sents'][sent_id] = sent_dict
 
-
     updated = do_coding(holding,'VALIDATE')
+    
     correct = 0
     count = 0
     for id,entry in sorted(updated.items()):
         count +=1
         if entry['sents'] is None:
-            print( "NONE TYPE: " , id)
+            print("Correct:",id,"discarded\n")
             correct +=1
             continue
         for sid, sent in sorted(entry['sents'].items()):
@@ -2521,6 +2531,7 @@ def do_validation(filepath):
                 for event in sorted(sent['events']):
                     calc += [(event[0],event[1],event[2])]
             if not (id,sid) in answers:
+                print(calc)
                 correct += 1
                 continue
             for event in sorted(answers[(id,sid)]):
@@ -2532,8 +2543,10 @@ def do_validation(filepath):
                     
                     continue
                 given += [(event["sourcecode"],event["targetcode"],event["eventcode"])]
+            print(sorted(calc))
             if sorted(given) == sorted(calc):
                 correct+=1
+                print("Correct:",id,sorted(given),sorted(calc)," \n",sent['content'],"\n\n")
             else:
                 print("MISMATCH",id,sid,"\nExpected:",given,"\nActual",calc,"\n")
             
@@ -2579,7 +2592,7 @@ def do_coding(event_dict, out_file):
     
         SkipStory = False
         logger.info('Processing {}'.format(key))
-        #print('Processing {}'.format(key))
+        print('Processing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in val['sents']:
@@ -2592,7 +2605,7 @@ def do_coding(event_dict, out_file):
             
                 SentenceID = '{}_{}'.format(key, sent)
                 
-                #print('\tProcessing {}'.format(SentenceID))
+                print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent]['date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
@@ -2605,6 +2618,7 @@ def do_coding(event_dict, out_file):
                 
                 #print(time.time())
                 disc = check_discards(SentenceText)
+                
                 #print(time.time())
                 if disc[0] > 0:
                     if disc[0] == 1:
@@ -2619,10 +2633,7 @@ def do_coding(event_dict, out_file):
                         NDiscardStory += 1
                         break
 
-                try:
-                    ParseList,ParseStart = read_TreeBank(treestr)
-                except IrregularPattern:
-                    continue
+
                 
                 
                 
@@ -2648,6 +2659,10 @@ def do_coding(event_dict, out_file):
                                       # <14.09.16> Probably isn't needed now that discards trigger either a continue or break
 
                 else:
+                    try:
+                        ParseList,ParseStart = read_TreeBank(treestr)
+                    except IrregularPattern:
+                        continue
                     try:
                         coded_events, ParseList, emptyCount = code_record(ParseList,ParseStart,Date)
                         NEmpty += emptyCount

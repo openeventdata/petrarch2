@@ -1715,7 +1715,7 @@ def check_NEphrase(nephrase,date):
             break   # stop after finding first actor
         else:
             kword += 1
-
+    
     kword = 0
     agentlist = []
     while kword < len(nephrase):  # now look for agents
@@ -1734,11 +1734,15 @@ def check_NEphrase(nephrase,date):
             patlist = PETRglobals.AgentDict[nephrase[kword]]
             # iterate over the patterns beginning with this word
             for index in range(len(patlist)):
-                if actor_phrase_match(patlist[index], phrasefrag)[0]:
+                
+                val = actor_phrase_match(patlist[index], phrasefrag)
+                
+                if val[0]:
                     agentlist.append(patlist[index][0])   # found a coded actor
-                    print(agentlist)
+                    kword += val[1] -1
                     break
         kword += 1   # continue looking for more agents
+
     if len(agentlist) == 0:
         if len(actorcode) == 0:
             return [False]  # no actor or agent
@@ -1752,9 +1756,8 @@ def check_NEphrase(nephrase,date):
         part = actorcode.partition(PETRglobals.RootPrimer)
         actorcode = part[0]
         actorroot = part[2]
-    print("$$$$$$$$$$$$$$$$$$$$$$$")
+
     for agentcode in agentlist:  # assemble the composite code
-        print(actorcode)
         if agentcode[0] == '~':
             agc = agentcode[1:]  # extract the code
         else:
@@ -1762,10 +1765,8 @@ def check_NEphrase(nephrase,date):
         aglen = len(agc)  # set increment to the length of the agent code
         ka = 0  # check if the agent code is already present
         while ka <= len(actorcode) - aglen:
-            print("DUPLICATE",actorcode)
             if agc == actorcode[ka:ka + aglen]:
                 ka = -1  # signal duplicate
-                
                 break
             ka += 3
         if ka < 0:
@@ -2127,12 +2128,10 @@ def assign_NEcodes(plist,ParseStart,date):
                 kitem = kstart - 1  # process the (NEs following the expansion
             else:
                 result = check_NEphrase(nephrase,date)
-                print(result)
                 if result[0]:
                     ParseList[kcode] = result[1]
                     if ShowNEParsing:
                         print("Assigned", result[1])   # debug
-    
             
         kitem += 1
     return ParseList
@@ -2329,6 +2328,7 @@ def check_discards(SentenceText):
         elif '$' in level:
             return [1,' ' + discardPhrase]
         elif sent[i] in level:
+            #print(sent[i],SentenceText.upper(),level[sent[i]])
             depart_index.append(i)
             level = level[sent[i]]
             discardPhrase += " " +sent[i]
@@ -2336,7 +2336,6 @@ def check_discards(SentenceText):
             if len(depart_index) == 0:
                 continue
             i = depart_index[0]
-            depart_index = []
             level = PETRglobals.DiscardList
     return [0,'']
     
@@ -2487,11 +2486,9 @@ def do_validation(filepath):
             
             # Get the sentence information
             
-            if story.attrib['valid'] == 'true':
+            if story.attrib['sentence'] == 'true':
             
                 entry_id, sent_id = story.attrib['id'].split('-')
-                #if  (not (entry_id,sent_id) == ("ABOUT","01") and not entry_id == "ABOUT"):
-                #    continue
                 parsed  = story.findall('EventCoding')
                 entry_id = entry_id + "" + sent_id
                 if not parsed == None:
@@ -2531,7 +2528,6 @@ def do_validation(filepath):
                 for event in sorted(sent['events']):
                     calc += [(event[0],event[1],event[2])]
             if not (id,sid) in answers:
-                print(calc)
                 correct += 1
                 continue
             for event in sorted(answers[(id,sid)]):
@@ -2543,10 +2539,8 @@ def do_validation(filepath):
                     
                     continue
                 given += [(event["sourcecode"],event["targetcode"],event["eventcode"])]
-            print(sorted(calc))
             if sorted(given) == sorted(calc):
                 correct+=1
-                print("Correct:",id,sorted(given),sorted(calc)," \n",sent['content'],"\n\n")
             else:
                 print("MISMATCH",id,sid,"\nExpected:",given,"\nActual",calc,"\n")
             
@@ -2564,16 +2558,6 @@ def do_coding(event_dict, out_file):
     <14.02.28>: Bug: PETRglobals.PauseByStory actually pauses after the first
                 sentence of the *next* story
     """
-    #global StoryDate, StorySource, SentenceID, SentenceCat, SentenceText
-    #global CurStoryID
-    #global fevt
-    #global StoryIssues
-    #global CodedEvents
-
-    #These are pulled from read_record()
-    #global SentenceDate, SentenceSource
-    #Things to make local and global namespaces not conflict
-    #TODO: Change this
     
     treestr = ""
     
@@ -2592,7 +2576,6 @@ def do_coding(event_dict, out_file):
     
         SkipStory = False
         logger.info('Processing {}'.format(key))
-        print('Processing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in val['sents']:
@@ -2605,7 +2588,7 @@ def do_coding(event_dict, out_file):
             
                 SentenceID = '{}_{}'.format(key, sent)
                 
-                print('\tProcessing {}'.format(SentenceID))
+                logger.info('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent]['date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
@@ -2616,10 +2599,8 @@ def do_coding(event_dict, out_file):
                 
                 
                 
-                #print(time.time())
                 disc = check_discards(SentenceText)
                 
-                #print(time.time())
                 if disc[0] > 0:
                     if disc[0] == 1:
                         print("Discard sentence:", disc[1])
@@ -2656,7 +2637,6 @@ def do_coding(event_dict, out_file):
     #            else:
     #                reset_event_list()
     
-                                      # <14.09.16> Probably isn't needed now that discards trigger either a continue or break
 
                 else:
                     try:

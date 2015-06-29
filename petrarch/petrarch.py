@@ -2490,8 +2490,8 @@ def do_validation(filepath):
             if story.attrib['valid'] == 'true':
             
                 entry_id, sent_id = story.attrib['id'].split('-')
-                if  (not (entry_id,sent_id) == ("ABOUT","01") and not entry_id == "ABOUT"):
-                    continue
+                #if  (not (entry_id,sent_id) == ("ABOUT","01") and not entry_id == "ABOUT"):
+                #    continue
                 parsed  = story.findall('EventCoding')
                 entry_id = entry_id + "" + sent_id
                 if not parsed == None:

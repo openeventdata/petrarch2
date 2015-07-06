@@ -105,7 +105,7 @@ ShowCodingSeq = True
 ShowCodingSeq = False
 
 ShowPattMatch = True
-#ShowPattMatch = False
+ShowPattMatch = False
 
 ShowNEParsing = True
 ShowNEParsing = False
@@ -1273,12 +1273,13 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                 kitem = pv - 2  # kitem + 2 is now at the passive verb
             targ = ParseList[kitem + 2]
             if ShowPattMatch:
-                print("CV-0", "'"+targ+"'", targ in PETRglobals.VerbDict)
+                print("CV-0", "'"+targ+"'", targ in PETRglobals.VerbDict['verbs'])
             if targ in PETRglobals.VerbDict['verbs']:
                 SourceLoc = ""
                 TargetLoc = ""
                 if ShowPattMatch:
                     print("CV-1 Found", targ)
+                
                 
                 endtag = '~' + ParseList[vpstart][1:]
                 hasmatch = False
@@ -1306,12 +1307,12 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                 
                 
                 meaning  = ''
-                print(targ)
-
+                #print(targ)
+                verbdata = {}
                 hasmatch = False
                 if not patternlist.keys() == ['#']:
                     #compound verb, look ahead
-                    print("LOOKING AHEAD",patternlist,ParseList,targ)
+                    #print("LOOKING AHEAD",patternlist,ParseList,targ)
                     
                     i = kitem + 3
                     found_flag = True
@@ -1329,27 +1330,30 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                                 if not '#' in upper_compound:
                                     #this verb is compounded in both directions, again don't know how SNLP will parse this
                                     print("DOUBLE COMPOUND VERB")
-                                    print(targ,upper_compound,patternlist,"\n\n",ParseList)
+                                    #print(targ,upper_compound,patternlist,"\n\n",ParseList)
                                     exit()
-                                meaning = upper_compound['#']['meaning']
-                                verbcode = upper_compound['#']['code']
+                                verbdata = upper_compound['#']
                             else:
                                 i += 1  # Does this actually work?
-                                if ParseList[i] == "REALLY":
-                                    print(ParseList,patternlist,i)
-                                    exit()
+                                #if ParseList[i] == "REALLY":
+                                    #print(ParseList,patternlist,i)
+                                #    exit()
                         else:
                             print(verb_start,verb_end,patternlist,ParseList[i])
+                            
+                            if '#' in patternlist:
+                                verbdata = patternlist['#']['#']
                             print("Incomplete match on compound verb")
                             break
-
+            
+            
                 if not hasmatch:
                     if not patternlist['#'].keys() == ['#']:
                         # Compound verb, look behind
                         i = kitem-1
                         found_flag = True
                         while found_flag and i >= 0:
-                            print(ParseList[i])
+                            #print(ParseList[i])
                             skipcheck = skip_item(ParseList[i])
                             if skipcheck:
                                 i -= 1
@@ -1358,8 +1362,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                                 if '#' in patternlist['#'][ParseList[i]]:
                                     found_flag = False
                                     verb_start = i
-                                    verbcode =patternlist['#'][ParseList[i]]['#']['code']
-                                    meaning =patternlist['#'][ParseList[i]]['#']['meaning']
+                                    verbdata = patternlist['#'][ParseList[i]]['#']
                                     hasmatch = True
                                 else:
                                     i -= 1
@@ -1367,17 +1370,23 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                         
                                 print(verb_start,verb_end,patternlist,ParseList[i])
                                 print("Incomplete match on compound verb")
+                                if '#' in patternlist:
+                                    verbdata =patternlist['#']['#']
                                 break
                         if i < 0:
                             print("NO MATCH")
                     if not hasmatch:
                         # Simple verb
                         if '#' in patternlist['#']:
-                            verbcode = patternlist['#']['#']['code']
-                            meaning = patternlist['#']['#']['meaning']
+                            verbdata =patternlist['#']['#']
                             hasmatch = True
                 
-                print(verb_start,verb_end,verbcode,meaning)
+                if not verbdata == {}:
+                    meaning = verbdata['meaning']
+                    code = verbdata['code']
+                    line = verbdata['line']
+                
+                
                 upper = get_upper_seq(verb_start-1,ParseList,ParseStart)
                 lower = get_lower_seq(verb_end+1,endtag,ParseList)
                 if not meaning == '':
@@ -1385,24 +1394,25 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                 if ShowPattMatch: print("CV-2 patlist", patternlist)
                 
                 vpm,lowsrc,lowtar = verb_pattern_match(patternlist,upper,lower)
-
                 hasmatch =False
                 if not vpm == {}:
                     hasmatch = True
                     EventCode = vpm[0]['code']
+                    line = vpm[0]['line']
                     SourceLoc = lowsrc if not lowsrc == "" else vpm[2]
                     TargetLoc = lowtar if not lowtar == "" else vpm[1]
-                
+
                 if hasmatch and EventCode == '---':
                     hasmatch = False
                 if not hasmatch and verbcode != '---':
                     if ShowPattMatch:
-                        print("Matched on the primary verb")   # debug
+                        print("Matched on the primary verb", targ,meaning,line)   # debug
+                        exit()
 #                       EventCode = PETRglobals.VerbDict[targ][1]
                     EventCode = verbcode
                     hasmatch = True
                 if hasmatch:
-                    print("##########",SourceLoc)
+                    #print("##########",SourceLoc)
                     if SourceLoc == "" :
                         SourceLoc = find_source(upper,SourceLoc)
                     if ShowPattMatch:
@@ -1438,7 +1448,7 @@ def verb_pattern_match(patlist,upper,lower):
     ##########################################
     """
     
-    
+    VPMPrint =False
     def find_actor(phrase,i):
         for j in range(i,len(phrase)):
             if phrase[j][0] == "(":
@@ -1460,28 +1470,32 @@ def verb_pattern_match(patlist,upper,lower):
         pathleft = [(pathdict,0,0)]
         source = ""
         target = ""
-        print("\nChecking upper",upper)
+        if VPMPrint:
+            print("\nChecking upper",upper)
         i = 0
         while i < len(phrase) :
-            print("checking","'"+upper[i]+"'",option,in_NEC,in_NE,'%' in path)
+            #print("checking","'"+upper[i]+"'",option,in_NEC,in_NE,'%' in path)
         
             skipcheck = skip_item(upper[i])
             
             
             
             if phrase[i] in path and not option > 0:                # check direct word match
-                print("upper matched a word",phrase[i])
+                if VPMPrint:
+                    print("upper matched a word",phrase[i])
                 matchlist.append(phrase[i])
                 pathleft.append((path,i,1))
                 path = path[phrase[i]]
         
             elif 'synsets' in path and not option > 1:              # maybe a synset match
-                print("could be a synset")
+                if VPMPrint:
+                    print("could be a synset")
                 matchflag = False
                 for set in path['synsets'].keys():
-                    print("SUP", set,PETRglobals.VerbDict['verbs'][set])
+                 #   print("SUP", set,PETRglobals.VerbDict['verbs'][set])
                     if upper[i] in PETRglobals.VerbDict['verbs'][set]:
-                       print("We found a synset match")
+                       if VPMPrint:
+                           print("We found a synset match")
                        pathleft.append((path,i,2))
                        path = path['synsets'][set]
                        matchlist.append(set)
@@ -1496,7 +1510,8 @@ def verb_pattern_match(patlist,upper,lower):
                 target = [i ,True]
                 path = path['+']
                 matchlist += ['+']
-                print("Matching phrase target",target)
+                if VPMPrint:
+                    print("Matching phrase target",target)
                 continue
             
             elif in_NE and (not option > 3) and '$' in path:
@@ -1505,12 +1520,14 @@ def verb_pattern_match(patlist,upper,lower):
                 source = [i,True]
                 path = path['$']
                 matchlist.append(source)
-                print("Matching phrase source")                    # check for source match
+                if VPMPrint:
+                    print("Matching phrase source")                    # check for source match
                 continue
             
             elif in_NE and (not option > 4) and '^' in path:
                 j = i
-                print("Matching phrase skip")
+                if VPMPrint:
+                    print("Matching phrase skip")
                 matchlist.append('^')
                 while j >= 0:
                     if "~NE" == upper[j]:
@@ -1523,10 +1540,11 @@ def verb_pattern_match(patlist,upper,lower):
                     continue
             
             elif (not in_NE) and in_NEC and (not option > 5) and '%' in path:
-                print("Matching compound",upper,i)
+                if VPMPrint:
+                    print("Matching compound",upper,i)
                 ka = i
                 while '(NEC' not in upper[ka]:
-                    print(upper[ka])
+                    #print(upper[ka])
                     ka +=1
                     if ka >= len(upper):
                         option = 6
@@ -1542,7 +1560,8 @@ def verb_pattern_match(patlist,upper,lower):
                 continue
 
             elif skipcheck > 0:
-                print("skipping")
+                #if VPMPrint:
+                #    print("skipping")
                 if "~NEC" in upper[i]:
                     in_NEC = not in_NEC
                 elif "~NE" in upper[i]:
@@ -1553,31 +1572,36 @@ def verb_pattern_match(patlist,upper,lower):
             elif (not i >= len(upper)) and not option > 6:
                 i += 1
                 pathleft.append((path,i,7))
-                print("skipping")
+                if VPMPrint:
+                    print("skipping")
                 option = 0
+                matchlist.append("*")
                 continue
 
             elif "#" in path:
-                print("Upper pattern matched",matchlist)
+                if VPMPrint:
+                    print("Upper pattern matched",matchlist)
                 return True, (path['#'],target,source)
             
             
             elif not pathleft[-1][2] == 0:                          # return to last point of departure
-                print("retracing",upper[i],path,upper[i] in path)
+                if VPMPrint:
+                      print("retracing",upper[i],path,upper[i] in path)
                 p = pathleft.pop()
                 path = p[0]
                 i = p[1]+1
                 option = p[2]
-                #matchlist.pop()
+                matchlist.pop()
                 continue
             
             else:
-                print("no match in upper",pathleft[-1][0].keys())
+                if VPMPrint:
+                    print("no match in upper",pathleft[-1][0].keys())
                 return False,{}
 
             i += 1
             option = 0
-            print("MATCHED",matchlist)
+            #print("MATCHED",matchlist)
     
     
         if "#" in path:
@@ -1604,22 +1628,25 @@ def verb_pattern_match(patlist,upper,lower):
     source = ""
     in_NEC = False
     in_NE = False
-    print("\nChecking phrase",lower)
-    print("\t\t\t\tpatlist:",patlist)
+    if VPMPrint:
+        print("\nChecking phrase",lower)
+    #print("\t\t\t\tpatlist:",patlist)
     phrase_actor = ""
     while i < len(lower):
         if pathleft == []:
             pathleft = [(path,i,0)]
-        print("checking","'"+lower[i]+"'",option,path,phrase_actor,in_NE)
+        if VPMPrint:
+            print("checking","'"+lower[i]+"'",option,phrase_actor,in_NE)
         skipcheck = skip_item(lower[i])
 
         if i == len(lower)-1 and not pathleft[-1][2] == 0:                         # return to last point of departure
-            print("retracing",len(pathleft))
+            if VPMPrint:
+                 print("retracing",len(pathleft))
             p = pathleft.pop()
             path = p[0]
             i = p[1] + 1
             option = p[2]
-            #matchlist.pop()
+            matchlist.pop()
             continue
 
         if skipcheck > 0:
@@ -1633,18 +1660,21 @@ def verb_pattern_match(patlist,upper,lower):
             continue
 
         if lower[i] in path and not option > 0:                # check direct word match
-            print("matched a word",lower[i])
+            if VPMPrint:
+                  print("matched a word",lower[i])
             matchlist.append(lower[i])
             pathleft.append((path,i,1))
             path = path[lower[i]]
         
         elif 'synsets' in path and not option > 1:             # maybe a synset match
-            print("could be a synset")
+            #print("could be a synset")
             matchflag = False
             for set in path['synsets'].keys():
-                print("SUP", set,PETRglobals.VerbDict['verbs'][set])
+                #if VPMPrint:
+                    #print("SUP", set,PETRglobals.VerbDict['verbs'][set])
                 if lower[i] in PETRglobals.VerbDict['verbs'][set]:
-                   print("We found a synset match")
+                   if VPMPrint:
+                        print("We found a synset match")
                    pathleft.append((path,i,2))
                    path = path['synsets'][set]
                    matchlist.append(set)
@@ -1659,7 +1689,8 @@ def verb_pattern_match(patlist,upper,lower):
             pathleft.append((path,i,3))
             path = path['+']
             matchlist += [target]
-            print("Matching phrase target")
+            if VPMPrint:
+                print("Matching phrase target")
             continue
 
         elif in_NE and (not option > 3) and '$' in path:
@@ -1668,12 +1699,14 @@ def verb_pattern_match(patlist,upper,lower):
             pathleft.append((path,i,4))
             path = path['$']
             matchlist.append(source)
-            print("Matching phrase source")                    # check for source match
+            if VPMPrint:
+                print("Matching phrase source")                    # check for source match
             continue
 
         elif in_NE and (not option > 4) and '^' in path:
             j = i
-            print("Matching phrase skip")
+            if VPMPrint:
+                print("Matching phrase skip")
             matchlist.append('^')
             while j < len(lower):
                 if "~NE" == lower[j]:
@@ -1689,9 +1722,10 @@ def verb_pattern_match(patlist,upper,lower):
             continue
 
         elif not in_NE and in_NEC and (not option > 5) and '%' in path:
-            print("Matching compound",upper,i)
+            if VPMPrint:
+                 print("Matching compound",upper,i)
             ka = i
-            print(ka)
+            #print(ka)
             while '(NEC' not in upper[ka]:
                 print(upper[ka])
                 ka +=1
@@ -1709,21 +1743,25 @@ def verb_pattern_match(patlist,upper,lower):
     
     
         elif i + 1 < len(lower) and not option > 6:
-            
-            print("skipping")
+            #if VPMPrint:
+            #    print("skipping")
             option = 0
             pathleft.append((path,i,7))
             i += 1
+            matchlist.append("*")
             #print(pathleft)
             continue
         
         elif "#" in path:
-            print("Lower pattern matched",matchlist)           # now check upper
+            if VPMPrint:
+                print("Lower pattern matched",matchlist)           # now check upper
             result, data = upper_match(path['#'])
             if result:
-                print("##########FULL MATCH", data)
+                if VPMPrint:
+                   print("##########FULL MATCH", data)
                 return data,source,target
-            print("retracing",len(pathleft))
+            if VPMPrint:
+                print("retracing",len(pathleft))
             p = pathleft.pop()
             path = p[0]
             i = p[1] + 1
@@ -1733,25 +1771,27 @@ def verb_pattern_match(patlist,upper,lower):
             continue
         
         elif not pathleft[-1][2] == 0:                         # return to last point of departure
-            print("retracing",len(pathleft))
+            if VPMPrint:
+                print("retracing",len(pathleft))
             p = pathleft.pop()
             path = p[0]
             i = p[1] + 1
             option = p[2]
-            #matchlist.pop()
+            matchlist.pop()
             continue
 
         else:
-            print("no match in lower",pathleft.keys())
+            if VPMPrint:
+                print("no match in lower",pathleft.keys())
             phrase_return = False
             break
 
         i += 1
         option = 0
-        print("MATCHED",matchlist)
+        #print("MATCHED",matchlist)
     
-    print("GoDDAMNIT")
-    print(pathleft)
+    #print("GoDDAMNIT")
+    #print(pathleft)
     return {},"",""
 
 
@@ -1821,7 +1861,7 @@ def actor_phrase_match(patphrase, phrasefrag):
     match is successful. Insha'Allah...
     """
     ret = False
-    APMprint = True
+    APMprint = False
     connector = patphrase[1]
     kfrag = 1   # already know first word matched
     kpatword = 2  # skip code and connector
@@ -1905,7 +1945,7 @@ def check_NEphrase(nephrase,date):
             if ShowNEParsing:
                 print("                Found", phrasefrag[0])  # debug
             patlist = PETRglobals.ActorDict[nephrase[kword]]
-            print(patlist)
+            #print(patlist)
             #if ShowNEParsing:
                # print("CNEPh Mk1:", patlist)
             # iterate over the patterns beginning with this word
@@ -2752,7 +2792,7 @@ def do_coding(event_dict, out_file):
         prev_code = []
     
         SkipStory = False
-        print('Processing {}'.format(key))
+        print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in val['sents']:
@@ -2768,6 +2808,8 @@ def do_coding(event_dict, out_file):
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 print(SentenceText,"R")
+                #if not "Washington" in SentenceText:
+                #    continue
                 SentenceDate = event_dict[key]['sents'][sent]['date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
@@ -2926,7 +2968,7 @@ def main():
             do_validation(cli_args.inputs)
 
     if cli_args.command_name == 'parse' or cli_args.command_name == 'batch':
-        start_time = time.time()
+        
 
         if cli_args.config:
             print('Using user-specified config: {}'.format(cli_args.config))
@@ -2938,7 +2980,7 @@ def main():
                                                         'PETR_config.ini'))
 
         read_dictionaries()
-
+        start_time = time.time()
         print('\n\n')
 
         if cli_args.command_name == 'parse':

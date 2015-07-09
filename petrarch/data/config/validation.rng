@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- validation.rng -->
+<element name="Validation" xmlns="http://relaxng.org/ns/structure/1.0">
+    <element name="Environment">
+        <element name="Verbfile">
+            <text/>
+        </element>
+        <element name="Actorfile">
+            <text/>
+        </element>
+        <element name="Agentfile">
+            <text/>
+        </element>
+        <element name="Discardfile">
+            <text/>
+        </element>
+        <element name="Errorfile">
+            <text/>
+        </element>
+        <element name="Include">
+            <text/>
+        </element>
+        <element name="Pause">
+            <text/>
+        </element>
+        <zeroOrMore>
+            <element name="Config">
+                <attribute name="option">
+                    <text/>
+                </attribute>
+                <attribute name="value">
+                    <text/>
+                </attribute>
+            </element>
+        </zeroOrMore>
+    </element>
+    <zeroOrMore>
+        <element name="Config">
+            <attribute name="option">
+                <text/>
+            </attribute>
+            <attribute name="value">
+                <text/>
+            </attribute>
+        </element>
+    </zeroOrMore>
+
+    <element name="Sentences">
+        <oneOrMore>
+            <zeroOrMore>
+                <element name="Config">
+                    <attribute name="option">
+                        <text/>
+                    </attribute>
+                    <attribute name="value">
+                        <text/>
+                    </attribute>
+                </element>
+            </zeroOrMore>
+            <element name="Sentence">
+                <attribute name="date">
+                    <text/>
+                </attribute>
+                <attribute name="id">
+                    <text/>
+                </attribute>
+                <attribute name="category">
+                    <text/>
+                </attribute>
+                <attribute name="valid">
+                    <text/>
+                </attribute>
+                <choice>
+                    <zeroOrMore>
+                        <element name="EventCoding">
+                            <attribute name="sourcecode">
+                                <text/>
+                            </attribute>
+                            <attribute name="targetcode">
+                                <text/>
+                            </attribute>
+                            <attribute name="eventcode">
+                                <text/>
+                            </attribute>
+                        </element>
+                    </zeroOrMore>
+                    <element name="EventCoding">
+                        <choice>
+                            <attribute name="error">
+                                <text/>
+                            </attribute>
+                            <attribute name="noevents">
+                                <text/>
+                            </attribute>
+                        </choice>
+                    </element>
+                </choice>
+                <element name="Text">
+                    <text/>
+                </element>
+                <element name="Parse">
+                    <text/>
+                </element>
+            </element>
+        </oneOrMore>
+    </element>
+</element>

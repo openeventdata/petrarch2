@@ -12,6 +12,13 @@
 <!-- just that ad hoc KEDS-based dictionary.  Sorry.                                   -->
 
 <!-- SYNSETS -->
+&PREPOSIT1_
++AGAINST
++IN
++ON
++BY
++NEAR
++AT
 
 &CURRENCY 
 +DOLLARS
@@ -85,8 +92,8 @@ ACKNOWLEDGE
 ACT 
 - INDICATED WOULD * NOW  [1010]
 - INDICATED SHOULD *   [1011]
-- * RESOLUTION  [102]  # tony  4/22/91
-- * PROGRAMS  [103]  # tony  3/9/91
+- * &PREPOSIT1 RESOLUTION  [102]  # tony  4/22/91
+- * &PREPOSIT1 PROGRAMS  [103]  # tony  3/9/91
 
 --- ADD  [---] ---
 ADD  
@@ -122,7 +129,7 @@ AGREE
 --- ALLEGE  [022] ---
 ALLEGE  
 
---- ALLOW  [060] ---
+--- ALLOW  [080] ---
 ALLOW  
 - * THE_NEATEST_PLACE  [027]  # CONNECT-26, 27 #  pas 8-May-05
 - * REALLY_PLEASANT  [024]  # CONNECT-08 to 10 #  pas 8-May-05
@@ -248,6 +255,7 @@ BRAND
 
 --- BREAK [1717] ---
 BREAK { BROKE BROKEN  }
++BREAK_DOWN {+BREAKS_DOWN +BREAKING_DOWN +BROKE_DOWN +BROKEN_DOWN }
 - + KNOWN_ * IN_ $  [076]  #  pattern CONNECT-15D to 15H  7/14/03
 - * DEADLOCK  [102]
 - * TREATY  [161]
@@ -360,7 +368,7 @@ CONFINE
 CONFIRM    # tony  3/13/91
 - * WOULD VISIT  [082]  # tony  4/29/91
 
---- CONFISCATE  [171] ---
+--- CONFISCATE  [1711] ---
 CONFISCATE  
 WIRE_+TAP {WIRE_+TAPPED  WIRE_+TAPPING }
 - WILL NOT * [081]
@@ -403,7 +411,7 @@ CRITICIZE    # pas  3/1/91
 - HEAVILY *   [122]  # tony  4/22/91
 - DESPITE $ *  [123]  # tony  4/22/91
 
---- CURSE  [122]  ---
+--- CURSE  [110]  ---
 CURSE    # tony  4/22/91
 
 --- CUT  [190] ---
@@ -436,7 +444,7 @@ DEFY
 - * CRITICISM  [141]  # tony  4/26/91
 - HAVE * BAN  [112]  # tony  3/12/91
 
---- DELAY [191]  [031:031]  ---
+--- DELAY [120]  [031:031]  ---
 DELAY
 DOWNPLAY [014]
 POSTPONE    # -PAS 2/9/96
@@ -448,7 +456,7 @@ DELIVER    # tony  3/13/91
 - * PROTEST  [132]
 - * REBUFF  [111]
 
---- DEMAND  [150] ---
+--- DEMAND  [100] ---
 DEMAND  
 
 --- DEMOLISH  [223] ---
@@ -1124,7 +1132,7 @@ SHUT
 SIGN  
 - * NEW_PROTOCOL  [084]
 - * AGREEMENT  [081]
-- * PROTOCOL  [085]
+- * TRADE PROTOCOL  [085]
 - SHOW_NO_*  [082]  # tony  4/22/91
 - CLOSE TO *  [031]  # tony  4/19/91
 - SHOW NO *  [083]  # tony  4/22/91
@@ -1287,7 +1295,7 @@ WANT    # pas   9/26/91
 WARN  
 - NOW + HAVE BEEN * $ RECENT  [165]  #  PAS 6/2/08
 - $ ^ FOR *  [164]  #  pattern 31b
-- * THEIR ^ +  [162]
+- * THEIR ^ ABOUT +  [162]
 - * AT ^ +  [162]
 - $ IN ^ *  [163]
 

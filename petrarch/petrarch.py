@@ -54,7 +54,7 @@ import PETRglobals  # global variables
 import PETRreader  # input routines
 import PETRwriter
 import utilities
-
+import PETRtree
 
 # ================================  PARSER/CODER GLOBALS  ================== #
 
@@ -105,7 +105,7 @@ ShowCodingSeq = True
 ShowCodingSeq = False
 
 ShowPattMatch = True
-ShowPattMatch = False
+#ShowPattMatch = False
 
 ShowNEParsing = True
 ShowNEParsing = False
@@ -189,7 +189,6 @@ def show_tree_string(sent):
             if level != prevlevel or 'VP' == sent[ka + 1:ka + 3] or 'SB' == sent[ka + 1:ka + 3]:
                 # new line only with change in level, also with (VP, (SB
                 sout += '\n' + level * '  '
-# sout += '\n' + level*'  '                         # new line for every (
             sout += '(-' + str(level) + ' '
         elif sent[ka] == ')' or sent[ka] == '~':
             nclose += 1
@@ -543,7 +542,6 @@ def read_TreeBank(tree_string):
 
     def resolve_compounds(ka,fline):
         
-        #### FULL LINE  NEEDS RESOLVING ###
         
         
         """
@@ -1261,6 +1259,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
         
         upper = []
         lower = []
+        #print(kitem,ParseList[kitem],ParseList[kitem+1])
         if ('(VP' in ParseList[kitem]) and ('(VB' in ParseList[kitem + 1]):
             vpstart = kitem   # check_passive could change this
             try:
@@ -1391,7 +1390,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                 lower = get_lower_seq(verb_end+1,endtag,ParseList)
                 if not meaning == '':
                     patternlist = PETRglobals.VerbDict['phrases'][meaning]
-                if ShowPattMatch: print("CV-2 patlist", patternlist)
+                if ShowPattMatch: print("CV-2 patlist")
                 
                 vpm,lowsrc,lowtar = verb_pattern_match(patternlist,upper,lower)
                 hasmatch =False
@@ -1401,18 +1400,16 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                     line = vpm[0]['line']
                     SourceLoc = lowsrc if not lowsrc == "" else vpm[2]
                     TargetLoc = lowtar if not lowtar == "" else vpm[1]
-
+                
                 if hasmatch and EventCode == '---':
                     hasmatch = False
                 if not hasmatch and verbcode != '---':
                     if ShowPattMatch:
-                        print("Matched on the primary verb", targ,meaning,line)   # debug
-                        exit()
-#                       EventCode = PETRglobals.VerbDict[targ][1]
+                        print("Matched on the primary verb", targ,meaning,line)
                     EventCode = verbcode
                     hasmatch = True
                 if hasmatch:
-                    #print("##########",SourceLoc)
+                    print("##########",SourceLoc)
                     if SourceLoc == "" :
                         SourceLoc = find_source(upper,SourceLoc)
                     if ShowPattMatch:
@@ -1424,9 +1421,10 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                             if ShowPattMatch:
                                 print("CV-3 tar", TargetLoc)
                             CodedEvents = make_event_strings(CodedEvents,upper,lower,SourceLoc,TargetLoc,IsPassive,EventCode)
-                            
-
+                            print(CodedEvents)
+                print(hasmatch,kitem,len(ParseList),ParseList[kitem])
                 if hasmatch:
+                
                     while (endtag not in ParseList[kitem]):
                         kitem += 1  # resume search past the end of VP
         kitem += 1
@@ -1448,7 +1446,7 @@ def verb_pattern_match(patlist,upper,lower):
     ##########################################
     """
     
-    VPMPrint =False
+    VPMPrint = False
     def find_actor(phrase,i):
         for j in range(i,len(phrase)):
             if phrase[j][0] == "(":
@@ -1505,7 +1503,7 @@ def verb_pattern_match(patlist,upper,lower):
                 option = 0 if matchflag else 2
                 continue
             elif in_NE and (not option > 2) and '+' in path:        # check for target match
-                pathleft.append((path,i,3))
+                pathleft.append((path,i,3,target))
                 i = find_actor(upper,i)
                 target = [i ,True]
                 path = path['+']
@@ -1515,7 +1513,7 @@ def verb_pattern_match(patlist,upper,lower):
                 continue
             
             elif in_NE and (not option > 3) and '$' in path:
-                pathleft.append((path,i,4))
+                pathleft.append((path,i,4,source))
                 i = find_actor(upper,i)
                 source = [i,True]
                 path = path['$']
@@ -1591,6 +1589,10 @@ def verb_pattern_match(patlist,upper,lower):
                 path = p[0]
                 i = p[1]+1
                 option = p[2]
+                if option == 3:
+                    target = p[3]
+                elif option == 4:
+                    source = p[3]
                 matchlist.pop()
                 continue
             
@@ -1685,8 +1687,9 @@ def verb_pattern_match(patlist,upper,lower):
             continue
         
         elif in_NE and (not option > 2) and '+' in path:                            # check for target match
+            
+            pathleft.append((path,i,3,target))
             target = [phrase_actor,False]
-            pathleft.append((path,i,3))
             path = path['+']
             matchlist += [target]
             if VPMPrint:
@@ -1694,9 +1697,9 @@ def verb_pattern_match(patlist,upper,lower):
             continue
 
         elif in_NE and (not option > 3) and '$' in path:
+            
+            pathleft.append((path,i,4,source))
             source = [phrase_actor,False]
-
-            pathleft.append((path,i,4))
             path = path['$']
             matchlist.append(source)
             if VPMPrint:
@@ -1727,7 +1730,7 @@ def verb_pattern_match(patlist,upper,lower):
             ka = i
             #print(ka)
             while '(NEC' not in upper[ka]:
-                print(upper[ka])
+                #print(upper[ka])
                 ka +=1
                 if ka >= len(upper):
                     option = 6
@@ -1743,13 +1746,10 @@ def verb_pattern_match(patlist,upper,lower):
     
     
         elif i + 1 < len(lower) and not option > 6:
-            #if VPMPrint:
-            #    print("skipping")
             option = 0
             pathleft.append((path,i,7))
             i += 1
             matchlist.append("*")
-            #print(pathleft)
             continue
         
         elif "#" in path:
@@ -1757,8 +1757,8 @@ def verb_pattern_match(patlist,upper,lower):
                 print("Lower pattern matched",matchlist)           # now check upper
             result, data = upper_match(path['#'])
             if result:
-                if VPMPrint:
-                   print("##########FULL MATCH", data)
+               # if VPMPrint:
+                print("##########FULL MATCH", data,source,target)
                 return data,source,target
             if VPMPrint:
                 print("retracing",len(pathleft))
@@ -1766,8 +1766,14 @@ def verb_pattern_match(patlist,upper,lower):
             path = p[0]
             i = p[1] + 1
             option = p[2]
+            if option == 3:
+                target = p[3]
+            elif option == 4:
+                source = p[3]
             if not matchlist == []:
                 m = matchlist.pop()
+                if m == '$':
+                    source = ""
             continue
         
         elif not pathleft[-1][2] == 0:                         # return to last point of departure
@@ -1777,6 +1783,10 @@ def verb_pattern_match(patlist,upper,lower):
             path = p[0]
             i = p[1] + 1
             option = p[2]
+            if option == 3:
+                target = p[3]
+            elif option == 4:
+                source = p[3]
             matchlist.pop()
             continue
 
@@ -1788,10 +1798,7 @@ def verb_pattern_match(patlist,upper,lower):
 
         i += 1
         option = 0
-        #print("MATCHED",matchlist)
-    
-    #print("GoDDAMNIT")
-    #print(pathleft)
+
     return {},"",""
 
 
@@ -1907,6 +1914,9 @@ def actor_phrase_match(patphrase, phrasefrag):
         
         True,len(phrasefrag)  # complete pattern matched (I don't think we can ever hit this)
     )
+
+
+
 
 def check_NEphrase(nephrase,date):
     """
@@ -2484,7 +2494,7 @@ def make_event_strings(CodedEv,UpperSeq,LowerSeq,SourceLoc,TargetLoc,IsPassive,E
         logger.warning('tuple error when attempting to extract src and tar codes in make_event_strings(): {}'.format(SentenceID))
         return CodedEvents
     
-    
+    #print(srccodes,tarcodes)
 #TODO: This needs to be fixed: this is the placeholder code for having a general country-
 #      level location for the sentence or story
     SentenceLoc = ''
@@ -2729,6 +2739,7 @@ def do_validation(filepath):
     
     correct = 0
     count = 0
+    return
     for id,entry in sorted(updated.items()):
         count +=1
         if entry['sents'] is None:
@@ -2785,8 +2796,37 @@ def do_coding(event_dict, out_file):
     NDiscardSent = 0
     NDiscardStory = 0
 
+    file = open("output.tex",'w')
+    print("""\\documentclass[11pt]{article}
+\\usepackage{tikz-qtree}
+\\usepackage{ifpdf}
+\\usepackage{fullpage}
+\\usepackage[landscape]{geometry}
+\\ifpdf
+    \\pdfcompresslevel=9
+    \\usepackage[pdftex,     % sets up hyperref to use pdftex driver
+            plainpages=false,   % allows page i and 1 to exist in the same document
+            breaklinks=true,    % link texts can be broken at the end of line
+            colorlinks=true,
+            pdftitle=My Document
+            pdfauthor=My Good Self
+           ]{hyperref} 
+    \\usepackage{thumbpdf}
+\\else
+    \\usepackage{graphicx}       % to include graphics
+    \\usepackage{hyperref}       % to simplify the use of \href
+\\fi
+
+\\title{Petrarch Output}
+\\date{}
+
+\\begin{document}
+
+                            """,file=file)
 
     logger = logging.getLogger('petr_log')
+    times = 0
+    sents = 0
     for key,val in event_dict.items():
     
         prev_code = []
@@ -2795,6 +2835,7 @@ def do_coding(event_dict, out_file):
         print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
+        
         for sent in val['sents']:
             if 'parsed' in event_dict[key]['sents'][sent]:
                 if 'config' in val['sents'][sent]:
@@ -2807,15 +2848,28 @@ def do_coding(event_dict, out_file):
                 
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
-                print(SentenceText,"R")
-                #if not "Washington" in SentenceText:
-                #    continue
+                print(SentenceText)
                 SentenceDate = event_dict[key]['sents'][sent]['date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
+                
+                #if not "she" in SentenceText:
+                #    continue
+                
+                
+                t1 = time.time()
+                test_obj = PETRtree.Event(treestr,SentenceText,Date)
+                test_obj.print_to_file(test_obj.tree,file = file)
+                code_time = time.time()-t1
+                times+=code_time
+                sents += 1
+                print(code_time)
+                
+                continue
+                
                 
                 
                 
@@ -2893,6 +2947,8 @@ def do_coding(event_dict, out_file):
     print("Summary:")
     print("Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents)
     print("Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty)
+    print("Average Coding time = ", times/sents)
+    print("\n\\end{document})",file=file)
 
     return event_dict
 

@@ -105,7 +105,7 @@ ShowCodingSeq = True
 ShowCodingSeq = False
 
 ShowPattMatch = True
-#ShowPattMatch = False
+ShowPattMatch = False
 
 ShowNEParsing = True
 ShowNEParsing = False
@@ -1328,9 +1328,9 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                                 hasmatch = True
                                 if not '#' in upper_compound:
                                     #this verb is compounded in both directions, again don't know how SNLP will parse this
-                                    print("DOUBLE COMPOUND VERB")
+                                    #print("DOUBLE COMPOUND VERB")
                                     #print(targ,upper_compound,patternlist,"\n\n",ParseList)
-                                    exit()
+                                    raise_CheckVerbs_error()
                                 verbdata = upper_compound['#']
                             else:
                                 i += 1  # Does this actually work?
@@ -1338,11 +1338,11 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                                     #print(ParseList,patternlist,i)
                                 #    exit()
                         else:
-                            print(verb_start,verb_end,patternlist,ParseList[i])
+                            #print(verb_start,verb_end,patternlist,ParseList[i])
                             
                             if '#' in patternlist:
                                 verbdata = patternlist['#']['#']
-                            print("Incomplete match on compound verb")
+                            #print("Incomplete match on compound verb")
                             break
             
             
@@ -1367,13 +1367,11 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                                     i -= 1
                             else:
                         
-                                print(verb_start,verb_end,patternlist,ParseList[i])
-                                print("Incomplete match on compound verb")
+                                #print(verb_start,verb_end,patternlist,ParseList[i])
+                                #print("Incomplete match on compound verb")
                                 if '#' in patternlist:
                                     verbdata =patternlist['#']['#']
                                 break
-                        if i < 0:
-                            print("NO MATCH")
                     if not hasmatch:
                         # Simple verb
                         if '#' in patternlist['#']:
@@ -1409,7 +1407,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                     EventCode = verbcode
                     hasmatch = True
                 if hasmatch:
-                    print("##########",SourceLoc)
+                    #print("##########",SourceLoc)
                     if SourceLoc == "" :
                         SourceLoc = find_source(upper,SourceLoc)
                     if ShowPattMatch:
@@ -1421,8 +1419,7 @@ def check_verbs(ParseList,ParseStart,CodedEv):
                             if ShowPattMatch:
                                 print("CV-3 tar", TargetLoc)
                             CodedEvents = make_event_strings(CodedEvents,upper,lower,SourceLoc,TargetLoc,IsPassive,EventCode)
-                            print(CodedEvents)
-                print(hasmatch,kitem,len(ParseList),ParseList[kitem])
+                            #print(CodedEvents)
                 if hasmatch:
                 
                     while (endtag not in ParseList[kitem]):
@@ -1607,7 +1604,6 @@ def verb_pattern_match(patlist,upper,lower):
     
     
         if "#" in path:
-            print("Upper pattern matched",matchlist)
             return True, (path['#'],target,source)
         return False, {}
     
@@ -1757,8 +1753,6 @@ def verb_pattern_match(patlist,upper,lower):
                 print("Lower pattern matched",matchlist)           # now check upper
             result, data = upper_match(path['#'])
             if result:
-               # if VPMPrint:
-                print("##########FULL MATCH", data,source,target)
                 return data,source,target
             if VPMPrint:
                 print("retracing",len(pathleft))
@@ -2735,6 +2729,8 @@ def do_validation(filepath):
                 else:
                     holding[entry_id]['sents'][sent_id] = sent_dict
 
+
+
     updated = do_coding(holding,'VALIDATE')
     
     correct = 0
@@ -2797,33 +2793,7 @@ def do_coding(event_dict, out_file):
     NDiscardStory = 0
 
     file = open("output.tex",'w')
-    print("""\\documentclass[11pt]{article}
-\\usepackage{tikz-qtree}
-\\usepackage{ifpdf}
-\\usepackage{fullpage}
-\\usepackage[landscape]{geometry}
-\\ifpdf
-    \\pdfcompresslevel=9
-    \\usepackage[pdftex,     % sets up hyperref to use pdftex driver
-            plainpages=false,   % allows page i and 1 to exist in the same document
-            breaklinks=true,    % link texts can be broken at the end of line
-            colorlinks=true,
-            pdftitle=My Document
-            pdfauthor=My Good Self
-           ]{hyperref} 
-    \\usepackage{thumbpdf}
-\\else
-    \\usepackage{graphicx}       % to include graphics
-    \\usepackage{hyperref}       % to simplify the use of \href
-\\fi
-
-\\title{Petrarch Output}
-\\date{}
-
-\\begin{document}
-
-                            """,file=file)
-
+    
     logger = logging.getLogger('petr_log')
     times = 0
     sents = 0
@@ -2848,7 +2818,7 @@ def do_coding(event_dict, out_file):
                 
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
-                print(SentenceText)
+                #print(SentenceText)
                 SentenceDate = event_dict[key]['sents'][sent]['date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
@@ -2856,10 +2826,9 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "she" in SentenceText:
-                #    continue
                 
                 
+                """
                 t1 = time.time()
                 test_obj = PETRtree.Event(treestr,SentenceText,Date)
                 test_obj.print_to_file(test_obj.tree,file = file)
@@ -2869,7 +2838,7 @@ def do_coding(event_dict, out_file):
                 print(code_time)
                 
                 continue
-                
+                """
                 
                 
                 
@@ -2947,8 +2916,8 @@ def do_coding(event_dict, out_file):
     print("Summary:")
     print("Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents)
     print("Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty)
-    print("Average Coding time = ", times/sents)
-    print("\n\\end{document})",file=file)
+    #print("Average Coding time = ", times/sents)
+    #print("\n\\end{document})",file=file)
 
     return event_dict
 

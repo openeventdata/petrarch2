@@ -1327,7 +1327,7 @@ def dstr_to_ordate(datestring):
 
 
 
-def read_actor_dictionary(actorfile):
+def _read_actor_dictionary(actorfile):
 
     open_FIN(actorfile, "actor")
 
@@ -1388,7 +1388,7 @@ def read_actor_dictionary(actorfile):
 
 
 
-def _read_actor_dictionary(actorfile):
+def read_actor_dictionary(actorfile):
     """ Reads a TABARI-style actor dictionary. """
     """
 	Actor dictionary list elements:
@@ -1736,7 +1736,7 @@ def read_agent_dictionary(agent_path):
 
     def store_agent(nounst, code):
     # parses nounstring and stores the result with code
-    
+        """
         list = PETRglobals.AgentDict
         targ = nounst.replace("_",' ').split()
         while targ != []:
@@ -1748,12 +1748,11 @@ def read_agent_dictionary(agent_path):
         list["#"] = code
         
         return
+        """
     
     
     
     
-    
-        print(nounst,code)
         nounlist = make_noun_list(nounst)
         keyword = nounlist[0][0]
         phlist = [code, nounlist[0][1]] + nounlist[1:]

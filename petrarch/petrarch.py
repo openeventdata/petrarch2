@@ -2794,6 +2794,34 @@ def do_coding(event_dict, out_file):
 
     file = open("output.tex",'w')
     
+    print("""
+\\documentclass[11pt]{article}
+\\usepackage{tikz-qtree}
+\\usepackage{ifpdf}
+\\usepackage{fullpage}
+\\usepackage[landscape]{geometry}
+\\ifpdf
+    \\pdfcompresslevel=9
+    \\usepackage[pdftex,     % sets up hyperref to use pdftex driver
+            plainpages=false,   % allows page i and 1 to exist in the same document
+            breaklinks=true,    % link texts can be broken at the end of line
+            colorlinks=true,
+            pdftitle=My Document
+            pdfauthor=My Good Self
+           ]{hyperref} 
+    \\usepackage{thumbpdf}
+\\else
+    \\usepackage{graphicx}       % to include graphics
+    \\usepackage{hyperref}       % to simplify the use of \href
+\\fi
+
+\\title{Petrarch Output}
+\\date{}
+
+\\begin{document}
+)""", file = file)
+
+
     logger = logging.getLogger('petr_log')
     times = 0
     sents = 0
@@ -2827,17 +2855,37 @@ def do_coding(event_dict, out_file):
                 treestr = parsed
                 
                 
+                disc = check_discards(SentenceText)
                 
-                """
+                if disc[0] > 0:
+                    if disc[0] == 1:
+                        print("Discard sentence:", disc[1])
+                        logger.info('\tSentence discard. {}'.format(disc[1]))
+                        NDiscardSent += 1
+                        continue
+                    else:
+                        print("Discard story:", disc[1])
+                        logger.info('\tStory discard. {}'.format(disc[1]))
+                        SkipStory = True
+                        NDiscardStory += 1
+                        break
+                
+                
+                
                 t1 = time.time()
                 test_obj = PETRtree.Event(treestr,SentenceText,Date)
+                
+                coded_events = test_obj.get_events()
+                
                 test_obj.print_to_file(test_obj.tree,file = file)
+                
                 code_time = time.time()-t1
                 times+=code_time
                 sents += 1
                 print(code_time)
                 
-                continue
+                
+                
                 """
                 
                 
@@ -2891,6 +2939,7 @@ def do_coding(event_dict, out_file):
                         NEmpty += emptyCount
                     except HasParseError:
                         coded_events = None
+                """
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":
@@ -2903,7 +2952,7 @@ def do_coding(event_dict, out_file):
                         sys.exit()
 
                 prev_code = coded_events
-                
+                print(coded_events)
                 
                 
             else:
@@ -2912,6 +2961,7 @@ def do_coding(event_dict, out_file):
 
         if SkipStory:
             event_dict[key]['sents'] = None
+
 
     print("Summary:")
     print("Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents)

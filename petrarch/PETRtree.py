@@ -18,6 +18,7 @@ class Phrase:
         self.parent = None
         self.meaning = ""
         self.date = date
+        self.index = -1
     
     def get_meaning(self):
         return self.meaning
@@ -25,7 +26,6 @@ class Phrase:
     
 
 class NounPhrase(Phrase):
-
 
     def __init__(self,label,date):
         Phrase.__init__(self,label,date)
@@ -36,33 +36,32 @@ class NounPhrase(Phrase):
     def check_date(self,match):
 
         code = None
-    
-        for j in match:
-            dates = j[1]
-            date = []
-            for d in dates:
-                if d[0] in '<>':
-                    date.append(d[0]+str(PETRreader.dstr_to_ordate(d[1:])))
+        try:
+            for j in match:
+                dates = j[1]
+                date = []
+                for d in dates:
+                    if d[0] in '<>':
+                        date.append(d[0]+str(PETRreader.dstr_to_ordate(d[1:])))
+                    else:
+                        date.append(PETRreader.dstr_to_ordate(d))
+                curdate= self.date
+                if len(date) ==0:
+                    code = j[0]
+                elif len(date) == 1:
+                    if date[0][0] == '<':
+                        if curdate < int(date[0][1:]):
+                            code = j[0]
+                    else:
+                        if curdate >= int(date[0][1:]):
+                            code = j[0]
                 else:
-                    date.append(PETRreader.dstr_to_ordate(d))
-            curdate= self.date
-            print("Checking date:",curdate,date)
-            if len(date) ==0:
-                code = j[0]
-            elif len(date) == 1:
-                if date[0][0] == '<':
-                    if curdate < int(date[0][1:]):
-                        code = j[0]
-                else:
-                    if curdate >= int(date[0][1:]):
-                        code = j[0]
-            else:
-                if curdate < int(date[1]):
-                    if curdate >= int(date[0]):
-                        code = j[0]
+                    if curdate < int(date[1]):
+                        if curdate >= int(date[0]):
+                            code = j[0]
+        except:
+            return code
         return code
-    
-
 
     def get_meaning(self):
         dict_entry = ("",-1)
@@ -73,8 +72,8 @@ class NounPhrase(Phrase):
         PPcodes = []
         VPcodes = []
         i = 0
-        option = 0
-        pathleft = [({},i,0)]
+        option = -1
+        pathleft = [({},i,-1)]
      
         ##
         #
@@ -83,13 +82,13 @@ class NounPhrase(Phrase):
         #          1-regular in-degree graphs,but who knows.
         ##
         
-        
+        APMprint = True
         while i < len(self.children):
             child = self.children[i]
             if match_in_progress != {} :
-                if child.text in match_in_progress:
+                if child.text in match_in_progress and not option == 2:
+                    pathleft.append((match_in_progress,i,2))
                     match_in_progress = match_in_progress[child.text]
-                    pathleft.append((match_in_progress,i,0))
                 elif "#" in match_in_progress:
                     match = match_in_progress['#']
                     if isinstance(match,type([])): # We've matched from the actor dictionary
@@ -99,24 +98,28 @@ class NounPhrase(Phrase):
                     else:                           # We've matchd from the agent dictionary
                         codes.append(match_in_progress['#'])
                     match_in_progress = {}
+                    option = -1
                     continue
                 else:
                     p = pathleft.pop()
-                    i = p[1]+1
+                    if option == 1:
+                        i = p[1] + 1
+                    else:
+                        i = p[1]
                     match_in_progress = p[0]
-                    option = p[2]-1
+                    option = p[2]
                     continue
                 
             else:
                 if child.label[:2] in ["NN","JJ","DT"]:
                     text = child.text
-                    if option == 0 and text in PETRglobals.ActorDict:
+                    if (not option >= 0) and text in PETRglobals.ActorDict:
                         dict_entry = (text,0)
-                    elif text in PETRglobals.AgentDict:
+                    elif text in PETRglobals.AgentDict and not option == 1:
                         dict_entry = (text,1)
                     try:
                         match_in_progress = dicts[dict_entry[1]][dict_entry[0]]
-                        pathleft.append(({},i,dict_entry[1]+1))
+                        pathleft.append(({},i,dict_entry[1]))
                         dict_entry = None
                     except:
                         if False:
@@ -131,7 +134,6 @@ class NounPhrase(Phrase):
                         PPcodes += m
                 elif child.label == "PRP":
                     # Naively find antecedent ?
-                    print("SEARCHING FOR ANTECEDENT")
                     not_found = True
                     level = self.parent
                     while not_found and not level.parent is None:
@@ -141,7 +143,6 @@ class NounPhrase(Phrase):
                         #if level.label == "VP":
                         #    codes += level.get_upper()
                         for child in level.parent.children:
-                            print("COMPARING",child.text)
                             if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
                                 not_found = False
                                 codes += child.get_meaning()
@@ -151,13 +152,11 @@ class NounPhrase(Phrase):
                     if not m == "":
                         VPcodes+= m
  
-
             i += 1
+            option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
                 if "#" in match_in_progress:
-                    print(text)
                     match = match_in_progress['#']
-                    print("MATCH",match)
                     if isinstance(match,list):
                         code = self.check_date(match)
                         if not code is None:
@@ -165,16 +164,19 @@ class NounPhrase(Phrase):
                     else:
                         codes.append(match)
                 else:
+                    
+                
                     p = pathleft.pop()
                     match_in_progress = p[0]
                     option = p[2]
-                    if option == 2:
+                    if option == 1:
                         i = p[1] + 1
-                        option = 0
                     else:
                         i= p[1]
+                    #print("retracing",i)
                     
-        
+                        
+                    
         actorcodes = []
         codes += NPcodes
         agentcodes = ""
@@ -186,6 +188,7 @@ class NounPhrase(Phrase):
                     actorcodes.append(code)
             except:
                 print("Weird coding thing")
+                
         if actorcodes == []:
             for code in PPcodes:
                 try:
@@ -197,7 +200,6 @@ class NounPhrase(Phrase):
                     print("Weird coding thing in PP")
 
         if actorcodes == []:
-            print("###########",VPcodes)
             actorcodes = VPcodes
 
         try:
@@ -211,10 +213,6 @@ class NounPhrase(Phrase):
             self.meaning = NPcodes
 
         return self.meaning
-
-
-
-
 
 
 
@@ -237,35 +235,73 @@ class VerbPhrase(Phrase):
         self.meaning = "---" # code for this particular verb
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
-
+        self.passive = False
+        self.code = ""
+    
+    
     def get_meaning(self):
-
         return self.get_upper(),self.get_lower()
     
     def return_upper(self):
         return self.upper
     
+    def return_passive(self):
+        return self.passive
     
+    def check_passive(self):
+        self.check_passive = self.return_passive
+        
+        try:
+            if self.children[0].label in ["VBD","VBN"]:
+                level= self.parent
+                if level.label == "NP":
+                    self.passive = True
+                    return True
+                for i in range(2):
+                    if isinstance(level,VerbPhrase):
+                        if level.children[0].text in ["AM","IS","ARE","WAS","WERE","BE","BEEN","BEING"]:
+                            self.passive = True
+                            return True
+                    level = level.parent
+        
+
+        except:
+            print("Error in passive check")
+        self.passive = False
+        return False
+        
+
+
     def get_upper(self):
+        self.get_upper = self.return_upper
         not_found = True
         level = self
         while not_found and not level.parent is None:
+            if isinstance(level.parent,VerbPhrase):
+                self.upper = level.parent.upper
+                return self.upper
             for child in level.parent.children:
-                if isinstance(child,NounPhrase) and not child.get_meaning() == "" : # Do we just want to pick the first?
+                if isinstance(child,NounPhrase) and not child.get_meaning() is None : # Do we just want to pick the first?
                     self.upper = child.get_meaning()
                     not_found = False
-                    self.get_upper = self.return_upper
                     return self.upper
             level = level.parent
 
-    def get_lower(self):
+
+
+    def return_lower(self):
+        return self.lower
     
+    def get_lower(self):
+        self.get_lower = self.return_lower
         # this is WAY harder than finding upper
  
         #### SUPER NAIVE ######
         #
         #   This probably only works with very basic sentences, will do some more tests and research
         #
+        
+        #   edit: Maybe it actually works fine. Who knows
         
         NPcodes = []
         PPcodes = []
@@ -292,12 +328,39 @@ class VerbPhrase(Phrase):
         if NPcodes == []:
             if PPcodes == []:
                 try:
+                    
                     return VPcodes
                 except:
                     return ""
+            self.lower = PPcodes
             return PPcodes
+        self.lower = NPcodes
         return NPcodes
 
+    def return_code(self):
+        return str(self.code)
+    
+    def get_code(self):
+        self.get_code = self.return_code
+        
+        dict = PETRglobals.VerbDict['verbs']
+        patterns = PETRglobals.VerbDict['phrases']
+        verb = self.children[0].text
+
+        if verb in dict:
+            code = '---'
+            if '#' in dict[verb]:
+                try:
+                    code = dict[verb]['#']['#']['code']
+                    
+                    if not code == '':
+                        self.code = code
+                        return code
+                    self.code =patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code']
+                    return self.code
+                except:
+                    return "---"
+        return "---"
 
 
 class Event:
@@ -309,8 +372,10 @@ class Event:
         self.actor = ""
         self.date = date
         self.longlat = (-1,-1)
+        self.verbs = []
         self.tree = self.str_to_tree(str[1:-1].strip())
         self.txt = text
+    
     
     def str_to_tree(self,str):
         root = Phrase(str[1],self.date)
@@ -322,11 +387,13 @@ class Event:
                     new = NounPhrase(lab,self.date)
                 elif lab == "VP":
                     new = VerbPhrase(lab,self.date)
+                    self.verbs.append(new)
                 elif lab == "PP":
                     new = PrepPhrase(lab,self.date)
                 else:
                     new = Phrase(lab,self.date)
                 new.parent = level_stack[-1]
+                new.index = len(level_stack[-1].children)
                 level_stack[-1].children.append(new)
                 level_stack.append(new)
             elif ')' in element:
@@ -338,7 +405,28 @@ class Event:
                 level_stack[-1].text = element
         return root
 
+
+    def get_events(self):
+        events = []
+        for v in self.verbs:
+            scopes = v.get_meaning()
+            code = v.get_code()
+        
+            if not code == "---" and not [] in scopes and not "" in scopes:
+                print("SRC: ",scopes[0],"TARG ",scopes[1],"CODE ",code)
+                srcs = scopes[0]
+                targs = scopes[1]
+                for src in srcs:
+                    for targ in targs:
+                        if not (src == targ and code == '010'): # ... said it ...
+                            events.append([src,targ,code] )
+                
+
+        return events
+    
+    
     def print_to_file(self,root,file = ""):
+    
         print("""
                     \\begin{tikzpicture}[scale= .25]
                     \\Tree""",file=file,end=" ")
@@ -367,13 +455,12 @@ class Event:
                 for i in m[0]:
                     k += "+"+i
             j =""
-            print(m)
             if m[1] == None:
                 j == ""
             else:
                 for g in m[1]:
                     j += "+"+g
-            print("[.{\it Upper "+k+", Lower "+j+"}",file = f,end = " ")
+            print("[.{\it Upper "+k+", Lower "+j+", Code: "+root.get_code()+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)
         if root.label in ["NP","VP"]:

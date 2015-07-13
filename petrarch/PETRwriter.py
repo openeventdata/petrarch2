@@ -12,7 +12,7 @@
 #
 # Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
 #
-# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# This project is part of the Open Event Data Alliance tool set; earlier developments
 # were funded in part by National Science Foundation grant SES-1259190
 #
 # This code is covered under the MIT license
@@ -82,8 +82,11 @@ def write_events(event_dict, output_file):
                                                          target, code, ids,
                                                          StorySource))
 #            event_str = '{}\t{}\t{}\t{}'.format(story_date,source,target,code)
-            if not isinstance(event[3],basestring):  # 15.04.30: a very crude hack around an error involving multi-word verbs
-                event_str = '\t'.join(event[:3]) + '\t010\t' + '\t'.join(event[4:])
+            # 15.04.30: a very crude hack around an error involving multi-word
+            # verbs
+            if not isinstance(event[3], basestring):
+                event_str = '\t'.join(
+                    event[:3]) + '\t010\t' + '\t'.join(event[4:])
             else:
                 event_str = '\t'.join(event)
             print(event_str)
@@ -102,7 +105,7 @@ def write_events(event_dict, output_file):
         story_events = '\n'.join(story_output)
         event_output.append(story_events)
 
-    #Filter out blank lines
+    # Filter out blank lines
     event_output = [event for event in event_output if event]
     final_event_str = '\n'.join(event_output)
     with open(output_file, 'w') as f:

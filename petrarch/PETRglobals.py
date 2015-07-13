@@ -16,7 +16,7 @@
 #
 # Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
 #
-# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# This project is part of the Open Event Data Alliance tool set; earlier developments
 # were funded in part by National Science Foundation grant SES-1259190
 #
 # This code is covered under the MIT license
@@ -24,7 +24,7 @@
 # REVISION HISTORY:
 # 22-Nov-13:	Initial version -- ptab.verbsonly.py
 # 28-Apr-14:	Latest version
-# 20-Nov-14:	WriteActorRoot/Text added  
+# 20-Nov-14:	WriteActorRoot/Text added
 # ------------------------------------------------------------------------
 
 # Global variables are listed below: additional details on their structure can
@@ -88,8 +88,8 @@ CommaEMax = 8
 stanfordnlp = ''
 
 # TEMPORARY VARIABLES
-# <14.11.20> Temporary in the sense that these won't be needed when we eventually 
+# <14.11.20> Temporary in the sense that these won't be needed when we eventually
 # refactor so that codes are some sort of structure other than a string
-CodePrimer = '=#='   # separates actor code from root and text strings  
-RootPrimer = CodePrimer + ':' # start of root string
-TextPrimer = CodePrimer + '+' # start of text string
+CodePrimer = '=#='   # separates actor code from root and text strings
+RootPrimer = CodePrimer + ':'  # start of root string
+TextPrimer = CodePrimer + '+'  # start of text string

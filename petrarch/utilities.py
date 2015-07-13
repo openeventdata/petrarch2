@@ -42,8 +42,10 @@ import PETRglobals
 from collections import defaultdict, Counter
 
 # ================== EVENT OBJECT ================ #
+
+
 class Event():
-    
+
     def __init__(str):
         self.tree = str
         self.parse = ""
@@ -51,16 +53,15 @@ class Event():
         self.ID = -1
         self.actor = ""
         self.date = ""
-        self.longlat = (-1,-1)
+        self.longlat = (-1, -1)
 
 
 # ================================================= #
 
 
-
 def stanford_parse(event_dict):
     logger = logging.getLogger('petr_log')
-    #What is dead can never die...
+    # What is dead can never die...
     print("\nSetting up StanfordNLP. The program isn't dead. Promise.")
     logger.info('Setting up StanfordNLP')
     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
@@ -68,8 +69,10 @@ def stanford_parse(event_dict):
                                                         'petrarch.properties'),
                                    memory='2g')
     total = len(list(event_dict.keys()))
-    print("Stanford setup complete. Starting parse of {} stories...".format(total))
-    logger.info('Stanford setup complete. Starting parse of {} stories.'.format(total))
+    print(
+        "Stanford setup complete. Starting parse of {} stories...".format(total))
+    logger.info(
+        'Stanford setup complete. Starting parse of {} stories.'.format(total))
     for i, key in enumerate(event_dict.keys()):
         if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
             print('Parse is {}% complete...'.format((i / float(total)) * 100))
@@ -77,8 +80,10 @@ def stanford_parse(event_dict):
             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
             sent_dict = event_dict[key]['sents'][sent]
 
-            if len(sent_dict['content']) > 512 or len(sent_dict['content']) < 64:
-                logger.warning('\tText length wrong. Either too long or too short.')
+            if len(sent_dict['content']) > 512 or len(
+                    sent_dict['content']) < 64:
+                logger.warning(
+                    '\tText length wrong. Either too long or too short.')
                 pass
             else:
                 try:
@@ -87,11 +92,12 @@ def stanford_parse(event_dict):
                     if 'coref' in stanford_result:
                         sent_dict['coref'] = stanford_result['coref']
 
-                    #TODO: To go backwards you'd do str.replace(' ) ', ')')
+                    # TODO: To go backwards you'd do str.replace(' ) ', ')')
                     sent_dict['parsed'] = _format_parsed_str(s_parsetree)
                 except Exception as e:
                     print('Something went wrong. ¯\_(ツ)_/¯. See log file.')
-                    logger.warning('Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
+                    logger.warning(
+                        'Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
     print('Done with StanfordNLP parse...\n\n')
     logger.info('Done with StanfordNLP parse.')
 
@@ -140,10 +146,11 @@ def story_filter(story_dict, story_id):
                             filtered[event_tuple]['issues'] = Counter()
                             issues = sent_dict['issues']
                             for issue in issues:
-                                filtered[event_tuple]['issues'][issue[0]] += issue[1]
+                                filtered[event_tuple]['issues'][
+                                    issue[0]] += issue[1]
 
-                        #Will keep track of this info, but not necessarily write it
-                        #out
+                        # Will keep track of this info, but not necessarily write it
+                        # out
                         filtered[event_tuple]['ids'] = []
                         filtered[event_tuple]['ids'].append(sent_id)
                 except IndexError:

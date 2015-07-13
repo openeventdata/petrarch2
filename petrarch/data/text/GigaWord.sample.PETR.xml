@@ -137,7 +137,7 @@ Beijing for the Friday opening of the Olympic Games, seeking to mend ties with
 China frayed by an initial threat to boycott the ceremony. 
 </Text>
 <Parse>
-( (S 
+((S
 (NP (NP (DT The) (NN statement)) 
 (PP (IN by) 
 (NP (DT the) (JJ French) (NN presidency)))) 
@@ -175,7 +175,7 @@ join an armed Islamic group in Lebanon, his lawyer said Wednesday.
 (NP (DT A) (NNP Tunisian) (NN court)) 
 (VP (AUXZ has) 
 (VP (VBN jailed) 
-(NP (DT a) (NN man)) 
+(NP (DT a) (JJ Nigerian) (NN student))
 (PP (IN for) 
 (NP (CD two) (NNS years))) 
 (PP (IN for) (S 
@@ -322,7 +322,7 @@ a goodwill gesture to Palestinian president Mahmud Abbas.
 <Sentence date = "20080806" id ="AFP0808020905_1" source = "AFP" sentence = "True">
 <Text>
 The US commander in Iraq, General David Petraeus, held talks with President 
-Michel Sleiman during a surprise visit to Beirut on Wednesday, offering 
+Michel Suleiman during a surprise visit to Beirut on Wednesday, offering
 further military support to Lebanon. 
 </Text>
 <Parse>
@@ -335,7 +335,7 @@ further military support to Lebanon.
 (VP (VBD held) 
 (NP (NP (NNS talks)) 
 (PP (IN with) 
-(NP (NNP President) (NNP Michel) (NNP Sleiman)))) 
+(NP (NNP President) (NNP Michel) (NNP Suleiman))))
 (PP (IN during) 
 (NP (DT a) (NN surprise) (NN visit))) 
 (PP (TO to) 
@@ -497,7 +497,7 @@ military-ruled Myanmar.
 (NP (NNP Beijing))) 
 (PP (IN on) 
 (NP (NNP Thursday)))))) (, ,) 
-(NP (NNP Bush)) 
+(NP (NNP President) (NNP Bush) )
 (VP (AUXD was) 
 (VP (VBN scheduled) (S 
 (VP (TO to) 
@@ -515,4 +515,57 @@ military-ruled Myanmar.
 (NP (JJ military-ruled) (NNP Myanmar))))))))) (. .)))
 </Parse>
 </Sentence>
+
+
+
+<Sentence date = "20150609" id ="GOLD_0" source = "AFP" sentence = "True">
+<Text>
+The United States launched an air strike against an Islamic State target southwest of Baghdad, the U.S. Central Command said on Monday night, expanding its campaign against the militant group that has seized parts of Iraq and Syria.
+</Text>
+<Parse>
+(ROOT (S (S (NP (DT The) (NNP United) (NNPS States)) (VP (VBD launched) (NP (DT an) (NN air) (NN strike)) (PP (IN against) (NP (NP (DT an) (JJ Islamic) (NN State) (NN target) (NN southwest)) (PP (IN of) (NP (NNP Baghdad))))))) (, ,) (NP (DT the) (NNP U.S.) (NNP Central) (NN Command)) (VP (VBD said) (PP (IN on) (NP (NNP Monday))) (NP-TMP (NN night)) (, ,) (S (VP (VBG expanding) (NP (PRP$ its) (NN campaign)) (PP (IN against) (NP (NP (DT the) (JJ militant) (NN group)) (SBAR (WHNP (WDT that)) (S (VP (VBZ has) (VP (VBN seized) (NP (NP (NNS parts)) (PP (IN of) (NP (NNP Iraq) (CC and) (NNP Syria))))))))))))) (. .)))</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="GOLD_4" source = "AFP" sentence = "True">
+<Text>
+Ukraine ratified a sweeping agreement with the European Union on Tuesday.
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Ukraine)) (VP (VBD ratified) (NP (DT a) (JJ sweeping) (NN agreement)) (PP (IN with) (NP (DT the) (NNP European) (NNP Union))) (PP (IN on) (NP (NNP Tuesday)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="GOLD_1" source = "AFP" sentence = "True">
+<Text>
+Israel said a mortar bomb was fired at it from the Gaza Strip on Tuesday in the first such attack since a seven-week war in the enclave ended on Aug 26.
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Israel)) (VP (VBD said) (SBAR (S (NP (DT a) (JJ mortar) (NN bomb)) (VP (VBD was) (VP (VBN fired) (PP (IN at) (NP (PRP it))) (PP (IN from) (NP (NP (DT the) (NNP Gaza) (NNP Strip)) (PP (IN on) (NP (NP (NNP Tuesday)) (PP (IN in) (NP (NP (DT the) (JJ first) (JJ such) (NN attack)) (PP (IN since) (NP (NP (DT a) (JJ seven-week) (NN war)) (PP (IN in) (NP (NP (DT the) (NN enclave)) (VP (VBN ended) (PP (IN on) (NP (NN Aug) (CD 26))))))))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="GOLD_2" source = "AFP" sentence = "True">
+<Text>
+Iraq’s national security advisor met with Syrian President Bashar Assad Tuesday to discuss efforts to counter Islamic State militants, Reuters reports.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NNP Iraq) (POS 's)) (JJ national) (NN security) (NN advisor)) (VP (VBD met) (PP (IN with) (NP (JJ Syrian) (NNP President) (NNP Bashar) (NNP Assad) (NNP Tuesday))) (S (VP (TO to) (VP (VB discuss) (S (NP (NNS efforts)) (VP (TO to) (VP (VB counter) (NP (NP (JJ Islamic) (NN State) (NNS militants)) (, ,) (NP (NNP Reuters) (NNS reports)))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="GOLD_3" source = "AFP" sentence = "True">
+<Text>
+Ukrainian lawmakers Tuesday endorsed an association agreement with the European Union, making a decisive turn in favor of closer relations with Western neighbors in spite of the 10-month-old conflict that possibility has ignited with Russia.
+</Text>
+<Parse>
+(ROOT (S (NP (JJ Ukrainian) (NNS lawmakers)) (NP-TMP (NNP Tuesday)) (VP (VBD endorsed) (NP (DT an) (NN association) (NN agreement)) (PP (IN with) (NP (DT the) (NNP European) (NNP Union))) (, ,) (S (VP (VBG making) (NP (NP (DT a) (JJ decisive) (NN turn)) (PP (IN in) (NP (NP (NN favor)) (PP (IN of) (NP (NP (JJR closer) (NNS relations)) (PP (IN with) (NP (JJ Western) (NNS neighbors)))))))) (PP (IN in) (NP (NP (NN spite)) (PP (IN of) (NP (NP (DT the) (JJ 10-month-old) (NN conflict)) (SBAR (WHNP (WDT that)) (S (NP (NN possibility)) (VP (VBZ has) (VP (VBN ignited) (PP (IN with) (NP (NNP Russia)))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+
+
+
+
 </Sentences>

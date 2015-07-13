@@ -58,7 +58,7 @@
 
 <!--Stop></Stop-->
 
-<Sentence date="19950101" id="DEMO-00" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-00" category="DEMO" sentence="true">
 <!-- Simple coding: this is the `first light'/"Hello World!" record -->
 <!-- minus the final subordinate clause -->
 <!-- Last update: 29 July 2013 -->
@@ -104,7 +104,7 @@ five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="DEMO-01" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-01" category="DEMO" sentence="true">
 <!-- Simple coding: this is the original `first light'/"Hello World!" record -->
 <!-- The final subordinate clause will generate a null-coded target, which will not be -->
 <!-- coded unless require_dyad = false, which is checked in COMPOUND-03 -->
@@ -157,7 +157,7 @@ said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950103" id="DEMO-02" category="DEMO" valid="true">
+<Sentence date="19950103" id="DEMO-02" category="DEMO" sentence="true">
 <!-- Single word possessive and paired events: -->
 <!--      LEFT [032:033] generates a "visit" and "receive visit" -->
 <!-- Last update: TABARI validation -->
@@ -205,7 +205,7 @@ committee with Arnor, the Dagolathi news agency reported.
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="DEMO-03" category="DEMO" valid="true">
+<Sentence date="19950103" id="DEMO-03" category="DEMO" sentence="true">
 <!-- Multi-word possessive and a paired event -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ELF" targetcode="GON" eventcode="032"></EventCoding>
@@ -242,7 +242,7 @@ the joint transport committee with Arnor.
 </Sentence>
 
 
-<Sentence date="19950101" id="DEMO-04" category="DEMO" valid="false">
+<Sentence date="19950101" id="DEMO-04" category="DEMO" sentence="false">
 <!-- [Complex coding from a phrase; may require setting COMPLEX=1] -->
 <!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
@@ -296,7 +296,7 @@ official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="DEMO-05" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-05" category="DEMO" sentence="true">
 <!-- matches -->
 <!--  SHOT  [223] \n - + WAS * DEAD IN $ [224] ] -->
 <!-- Last update: TABARI validation -->
@@ -328,10 +328,10 @@ An Eriadorian was shot dead in Osgiliath, the state's fiercest foe.
 
 
 
-<Sentence date="19950106" id="DEMO-06" category="DEMO" valid="true">
+<Sentence date="19950106" id="DEMO-06" category="DEMO" sentence="true">
 <!-- [Coding two events from a compound sentence] -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="050"></EventCoding>
 <Text>
 The Calenardhon government condemned an attack by Osgiliath soldiers 
@@ -366,7 +366,7 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
 </Parse>
 </Sentence>
 
-<Sentence date="19950107" id="DEMO-07" category="DEMO" valid="true">
+<Sentence date="19950107" id="DEMO-07" category="DEMO" sentence="true">
 <!-- [Compound target] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="DAG" eventcode="023"></EventCoding>
@@ -420,13 +420,13 @@ month.
 </Parse>
 </Sentence>
 
-<Sentence date="19950108" id="DEMO-08" category="DEMO" valid="true">
+<Sentence date="19950108" id="DEMO-08" category="DEMO" sentence="true">
 <!-- Compound actor list: unlike TABARI, the agent AMBASSADORS is -->
 <!-- now carried through to the other actors. -->
 <!-- Last update: 23 April 2014 -->
-<EventCoding sourcecode="ARNGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
-<EventCoding sourcecode="OSGGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
-<EventCoding sourcecode="GONGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
+<EventCoding sourcecode="ARNGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
+<EventCoding sourcecode="OSGGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
+<EventCoding sourcecode="GONGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
 <Text>
 The ambassadors of Arnor, Osgiliath and Gondor presented 
 credentials to Ithilen's president on Wednesday in a further 
@@ -475,7 +475,7 @@ show of support to his government by their countries.
 </Sentence>
 
 
-<Sentence date="19950110" id="DEMO-10" category="DEMO" valid="true">
+<Sentence date="19950110" id="DEMO-10" category="DEMO" sentence="true">
 <!-- Modification of the DEMO-09 to check for a target in a lower match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="GONGOV" targetcode="MORMIL" eventcode="115"></EventCoding>
@@ -514,7 +514,7 @@ refusal to talk to Calenardhon leader Calimehtar.
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="DEMO-11" category="DEMO"  valid="true">
+<Sentence date="19950111" id="DEMO-11" category="DEMO"  sentence="true">
 <!-- [Paired events with a compound target] -->
 <!-- 14.04.23: this should be working -->
 <!-- Last update: TABARI validation -->
@@ -554,7 +554,7 @@ leaders during a brief private visit to Eriador starting on Sunday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="DEMO-12" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-12" category="DEMO" sentence="true">
 <!-- [Next few DEMO- events demonstrate some additional vocabulary and  -->
 <!-- sentence structure ] -->
 <!-- Last update: TABARI validation -->
@@ -612,7 +612,7 @@ of diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950113" id="DEMO-13" category="DEMO"  valid="true">
+<Sentence date="19950113" id="DEMO-13" category="DEMO"  sentence="true">
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="DAG" eventcode="085"></EventCoding>
 <Text>
@@ -658,7 +658,7 @@ Coreference set:
 -->
 </Sentence>
 
-<Sentence date="19950114" id="DEMO-14" category="DEMO" valid="true">
+<Sentence date="19950114" id="DEMO-14" category="DEMO" sentence="true">
 <!-- Should be working -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ITH" targetcode="ROH" eventcode="173"></EventCoding>
@@ -712,7 +712,7 @@ group yielded ground seized in six days of fighting.
 </Parse>
 </Sentence>
 
-<Sentence date="19950115" id="DEMO-15" category="DEMO" valid="true">
+<Sentence date="19950115" id="DEMO-15" category="DEMO" sentence="true">
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="081"></EventCoding>
 <Text>
@@ -758,9 +758,9 @@ embassy spokesman said.
 </Parse>
 </Sentence>
 
-<Sentence date="19950116" id="DEMO-16" category="DEMO" valid="true">
+<Sentence date="19950116" id="DEMO-16" category="DEMO" sentence="true">
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="FORGOVPRS" targetcode="ITH" eventcode="095"></EventCoding>
+<EventCoding sourcecode="FORGOV" targetcode="ITH" eventcode="095"></EventCoding>
 <Text>
 Fornost President Umbardacil has again appealed for peace in Ithilen in 
 a message to the spiritial leader of the war-torn nation's influential 
@@ -799,10 +799,10 @@ Douzu community.
 </Parse>
 </Sentence>
 
-<Sentence date="19950117" id="DEMO-17" category="DEMO" valid="true">
+<Sentence date="19950117" id="DEMO-17" category="DEMO" sentence="true">
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="BREGOVPRS" targetcode="GON" eventcode="032"></EventCoding>
-<EventCoding sourcecode="GON" targetcode="BREGOVPRS" eventcode="033"></EventCoding>
+<EventCoding sourcecode="BREGOV" targetcode="GON" eventcode="032"></EventCoding>
+<EventCoding sourcecode="GON" targetcode="BREGOV" eventcode="033"></EventCoding>
 <Text>
 Bree President Romendacil arrived in Gondor on Monday on his first 
 official foreign visit since pro-restoration demonstrators 
@@ -844,7 +844,7 @@ in Eymn Muil were crushed last June.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="DEMO-18" category="DEMO" valid="true">
+<Sentence date="19950118" id="DEMO-18" category="DEMO" sentence="true">
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="102"></EventCoding>
 <Text>
@@ -883,7 +883,7 @@ it in forthcoming peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950119" id="DEMO-19" category="DEMO" valid="true">
+<Sentence date="19950119" id="DEMO-19" category="DEMO" sentence="true">
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARNGOVFRM" targetcode="ERI" eventcode="102"></EventCoding>
 <Text>
@@ -929,7 +929,7 @@ Eriador to respond to Gondor's proposals on elections.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="DEMO-20" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-20" category="DEMO" sentence="true">
 <!-- Check on correct matching of multi-word verb phrase -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ERI" targetcode="OSG" eventcode="223"></EventCoding>
@@ -964,7 +964,7 @@ fiercest foe.
 </Sentence>
 
 
-<Sentence date="19950112" id="DEMO-21" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-21" category="DEMO" sentence="true">
 <!-- Check on correct matching of multi-word open verb phrase -->
 <!-- Null-coded source in second event is "injury toll" -->
 <!-- Last update: TABARI validation -->
@@ -1006,7 +1006,7 @@ fiercest foe.
 
 <Config option="new_actor_length" value="4"></Config>
 
-<Sentence date="19950112" id="DEMO-22" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-22" category="DEMO" sentence="true">
 <!-- Check on correct matching of multi-word open verb phrase -->
 <!-- Check that we pick up that additional new actor if allowed -->
 <!-- Last update: TABARI validation -->
@@ -1050,7 +1050,7 @@ fiercest foe.
 <Config option="new_actor_length" value="0"></Config>
 
 
-<Sentence date="19950112" id="DEMO-23" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-23" category="DEMO" sentence="true">
 <!-- Check on correct matching of multi-word closed verb phrase -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ERI" targetcode="OSG" eventcode="224"></EventCoding>
@@ -1085,7 +1085,7 @@ fiercest foe.
 </Sentence>
 
 
-<Sentence date="19950112" id="DEMO-24" category="DEMO" valid="true">
+<Sentence date="19950112" id="DEMO-24" category="DEMO" sentence="true">
 <!-- Check on failed match of multi-word closed verb phrase -->
 <!-- Null-coded source in second event is "injury toll" -->
 <!-- Last update: TABARI validation -->
@@ -1124,7 +1124,7 @@ fiercest foe.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="DEMO-25" category="DEMO" valid="true">
+<Sentence date="19950102" id="DEMO-25" category="DEMO" sentence="true">
 <!-- Test of % (compounds) in a pattern.  Should match -->
 <!-- POSTPONE \n- % HAVE *  [191] -->
 <!-- This also provides a check of POSTPONE as a synonym with the default code -->
@@ -1146,11 +1146,11 @@ hafling was reported on the pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="DEMO-26" category="DEMO" valid="true">
+<Sentence date="19950102" id="DEMO-26" category="DEMO" sentence="true">
 <!-- Test of % (compounds) in a pattern.  Should match -->
 <!-- POSTPONE \n- % HAVE *  [191] -->
-<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
-<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="GON" targetcode="OSG" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="GON" eventcode="191"></EventCoding>
 <Text>
 Gondor and Osgiliath have delayed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -1167,12 +1167,12 @@ hafling was reported on the pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="DEMO-27" category="DEMO" valid="true">
+<Sentence date="19950102" id="DEMO-27" category="DEMO" sentence="true">
 <!-- Test of % (compounds) in a pattern.  Should match -->
-<!-- DOWNPLAY \n- % HAVE *  [191] -->
+<!-- DOWNPLAY \n- % HAVE *  [191]    -->
 <!-- This also provides a check of DOWNPLAY [014] as a synonym without a default code -->
-<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
-<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="GON" targetcode="OSG" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="GON" eventcode="191"></EventCoding>
 <Text>
 Gondor and Osgiliath have downplayed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -1189,14 +1189,15 @@ hafling was reported on the pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="DEMO-28" category="DEMO" valid="true">
+<Sentence date="19950102" id="DEMO-28" category="DEMO" sentence="true">
 <!-- Test of % (compounds) in a pattern; match is not at the beginning of the sentence  -->
 <!-- Should match -->
 <!-- DELAY \n- % HAVE *  [191] -->
-<EventCoding sourcecode="GON" targetcode="MORMIL" eventcode="191"></EventCoding>
-<EventCoding sourcecode="OSG" targetcode="MORMIL" eventcode="191"></EventCoding>
+<EventCoding sourcecode="GON" targetcode="OSG" eventcode="191"></EventCoding>
+<EventCoding sourcecode="OSG" targetcode="GON" eventcode="191"></EventCoding>
 <Text>
-It has been reported that </Text>
+It has been noted that Gondor and Osgiliath have delayed their meeting after a hafling was reported on the pass
+of Cirith Ungol </Text>
 <Parse>
 (ROOT (S 
 	(NP (PRP It)) 
@@ -1212,10 +1213,10 @@ It has been reported that </Text>
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DEMO-29" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-29" category="DEMO" sentence="true">
 <!-- Coding the simple multiword verb +CORDONED_OFF -->
 <!-- Last update: 13-June-2014 -->
-<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="1721"></EventCoding>
+<EventCoding sourcecode="GONMIL" targetcode="MOR" eventcode="1721"></EventCoding>
 <Text>
 Soldiers from Gondor have cordoned off the roads leading into Mordor along the pass 
 of Cirith Ungol.
@@ -1232,10 +1233,10 @@ of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DEMO-30" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-30" category="DEMO" sentence="true">
 <!-- Coding the simple multiword verb WIRE_+TAPPED -->
 <!-- Last update: 13-June-2014 -->
-<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="171"></EventCoding>
+<EventCoding sourcecode="GONMIL" targetcode="MOR" eventcode="1711"></EventCoding>
 <Text>
 Soldiers from Gondor wire tapped all communication links leading into Mordor along the 
 pass of Cirith Ungol.
@@ -1254,10 +1255,10 @@ pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DEMO-31" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-31" category="DEMO" sentence="true">
 <!-- Coding the multiword verb WIRE_+TAPPED with a pattern -->
 <!-- Last update: 14-June-2014 -->
-<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="081"></EventCoding>
+<EventCoding sourcecode="GONMIL" targetcode="MOR" eventcode="081"></EventCoding>
 <Text>
 Soldiers from Gondor will not wire tap the communication links leading into Mordor along  
 the pass of Cirith Ungol.
@@ -1276,10 +1277,10 @@ the pass of Cirith Ungol.
 </Sentence>
 
 
-<Sentence date="19950101" id="DEMO-32" category="DEMO" valid="true">
+<Sentence date="19950101" id="DEMO-32" category="DEMO" sentence="true">
 <!-- Coding the multiword verb +CORDONED_OFF with a pattern -->
 <!-- Last update: 14-June-2014 -->
-<EventCoding sourcecode="GONMILARM" targetcode="MOR" eventcode="071"></EventCoding>
+<EventCoding sourcecode="GONMIL" targetcode="MOR" eventcode="071"></EventCoding>
 <Text>
 Soldiers from Gondor have cordoned off for construction the roads leading into Mordor 
 along the pass of Cirith Ungol.
@@ -1308,10 +1309,10 @@ along the pass of Cirith Ungol.
 -->
 
 
-<Sentence date="19950101" id="AGENT-01" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-01" category="AGENT" sentence="true">
 <!-- One-word suffixed agent following [source] actor  -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="ARNMOS" targetcode="GON" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARNREL" targetcode="GON" eventcode="064"></EventCoding>
 <Text>
 Arnor cleric is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1352,7 +1353,7 @@ five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-02" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-02" category="AGENT" sentence="true">
 <!-- One-word prefixed agent prior to [source] actor -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="NGOARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -1395,7 +1396,7 @@ five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-03" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-03" category="AGENT" sentence="true">
 <!-- One-word agents before and after [target] actor -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="NGOARNGOV" targetcode="GON" eventcode="064"></EventCoding>
@@ -1438,13 +1439,13 @@ five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-04" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-04" category="AGENT" sentence="true">
 <!-- Multi-word agent following [target] actor; this also uses the elimination  -->
 <!-- of the possessive 'S  -->
 <!-- This entry, AGENT-06 and AGENT-007 currently generate a multiple code: this is -->
 <!-- likely to remain a feature, not a bug  -->
 <!-- Last update: 25 November 2013 -->
-<EventCoding sourcecode="ARN" targetcode="GONMOPOPP" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARN" targetcode="GONMOP" eventcode="064"></EventCoding>
 <Text>
 Arnor is about to restore full diplomatic ties with the Gondor main opposition group 
 almost five years after crowds trashed its embassy.
@@ -1484,11 +1485,10 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-05" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-05" category="AGENT" sentence="true">
 <!-- Single-word agent following a possessive [target] actor -->
 <!-- Last update: TABARI validation -->
-<Skip></Skip>
-    <EventCoding sourcecode="ARN" targetcode="GONGOV" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARN" targetcode="GONGOV" eventcode="064"></EventCoding>
 <Text>
 Arnor is about to restore full diplomatic ties with Gondor's government 
 almost five years after crowds trashed its embassy.
@@ -1530,11 +1530,10 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-06" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-06" category="AGENT" sentence="true">
 <!-- Multi-word agent following a possessive [target] actor -->
 <!-- Last update: TABARI validation -->
-<Skip></Skip>
-    <EventCoding sourcecode="ARN" targetcode="GONMOPOPP" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARN" targetcode="GONMOP" eventcode="064"></EventCoding>
 <Text>
 Arnor is about to restore full diplomatic ties with Gondor's main opposition group 
 almost five years after crowds trashed its embassy.
@@ -1576,12 +1575,12 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-007" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-007" category="AGENT" sentence="true">
 <!-- Multi-word prefixed agent in prepositional phrase before source actor -->
 <!-- "SGMHGMARN" indicates is due to the additional match to "RIGHTS ACTIVISTS"  -->
 <!-- which may not be what we want  -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="SGMHGMARN" targetcode="GON" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARNOPP" targetcode="GON" eventcode="064"></EventCoding>
 <Text>
 Human rights activists in Arnor are about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1628,7 +1627,7 @@ five years after crowds trashed its embassy.
 <!--Stop-->
  
  
-<Sentence date="19950101" id="AGENT-08" category="AGENT" place="XYZ"  valid="false">
+<Sentence date="19950101" id="AGENT-08" category="AGENT" sentence="false">
 <!-- Anonymous agent appended to place code -->
 <!-- 14.04.26: currently not implemented -->
 <!-- Last update: TABARI validation -->
@@ -1681,10 +1680,10 @@ said on Saturday.
 </Parse>
 </Sentence> 
 
-<Sentence date="19950106" id="AGENT-09" category="AGENT"  valid="true">
+<Sentence date="19950106" id="AGENT-09" category="AGENT"  sentence="true">
 <!-- Just another simple agent assignment -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <Text>
 The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1711,7 +1710,7 @@ in south Ithilen on Thursday
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-10" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-10" category="AGENT" sentence="true">
 <!-- Suffixed agent coding with an automatically generated plural -->
 <!-- This also requires eliminating a duplicate agent code -->
 <!-- Last update: 23 November 2013 -->
@@ -1743,7 +1742,7 @@ ties with Gondor police.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-11" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-11" category="AGENT" sentence="true">
 <!-- Multi-word suffixed agents and an automatically generated plural-->
 <!-- Last update: 23 November 2013 -->
 <EventCoding sourcecode="USAGOV" targetcode="GONCOP" eventcode="064"></EventCoding>
@@ -1775,10 +1774,10 @@ ties with Minas Tirith border police.
 </Sentence>
 
 
-<Sentence date="19950106" id="AGENT-12" category="AGENT"  valid="true">
+<Sentence date="19950106" id="AGENT-12" category="AGENT"  sentence="true">
 <!-- Just another simple agent assignment with an automatically generated plural -->
 <!-- Last update: 23 Nov 2013 -->
-<EventCoding sourcecode="CALLEG" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALLEG" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <Text>
 The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1806,10 +1805,10 @@ in south Ithilen on Thursday
 </Sentence>
 
 
-<Sentence date="19950106" id="AGENT-13" category="AGENT"  valid="true">
+<Sentence date="19950106" id="AGENT-13" category="AGENT"  sentence="true">
 <!-- Simple agent assignment with an agent generated from a substitution set -->
 <!-- Last update: 22 April 2014 -->
-<EventCoding sourcecode="CALLEG" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALLEG" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <Text>
 The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1837,10 +1836,10 @@ in south Ithilen on Thursday
 </Sentence>
 
 
-<Sentence date="19950106" id="AGENT-14" category="AGENT"  valid="true">
+<Sentence date="19950106" id="AGENT-14" category="AGENT"  sentence="true">
 <!-- Simple agent assignment with an agent generated from a substitution set -->
 <!-- Last update: 23 April 2014 -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <Text>
 The Calenardhon Ministry of Silly Walks condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1871,10 +1870,10 @@ in south Ithilen on Thursday
 </Sentence>
 
 
-<Sentence date="19950106" id="AGENT-15" category="AGENT"  valid="true">
+<Sentence date="19950106" id="AGENT-15" category="AGENT"  sentence="true">
 <!-- Simple agent assignment with an agent generated from a substitution set -->
 <!-- Last update: 23 April 2014 -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <Text>
 The Calenardhon Minister of Silly Walks condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1905,12 +1904,12 @@ in south Ithilen on Thursday
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENTS-16" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-16" category="AGENT" sentence="true">
 <!-- Redundant prefixed agent should not be prefixed to the code -->
 <!-- <14.04.24> This is another of those screwy double-codes due to an of 'RIGHTS ACTIVISTS' -->
 <!-- in the agent dictionary, but leave this is, in fact, how this is supposed to code -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="SGMHGMNGM" targetcode="GON" eventcode="064"></EventCoding>
+<EventCoding sourcecode="NGMOPP" targetcode="GON" eventcode="064"></EventCoding>
 <Text>
 The human rights activists of Amnesty International are about to restore 
 full diplomatic ties with Gondor. 
@@ -1943,7 +1942,7 @@ full diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-17" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-17" category="AGENT" sentence="true">
 <!-- Redundant agent should not be suffixed to the code -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="USAGOV" targetcode="GON" eventcode="064"></EventCoding>
@@ -1974,7 +1973,7 @@ ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-18" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-18" category="AGENT" sentence="true">
 <!-- Redundant agent should not be suffixed to the code -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="USAGOV" targetcode="GON" eventcode="064"></EventCoding>
@@ -2005,7 +2004,7 @@ ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-19" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-19" category="AGENT" sentence="true">
 <!-- Redundant 6-char agent should not be suffixed to the code -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HGWGOVMED" targetcode="GON" eventcode="064"></EventCoding>
@@ -2039,11 +2038,11 @@ ties with Gondor now.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-20" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-20" category="AGENT" sentence="true">
 <!-- Multi-word automatically-generated plural agent following [target] actor;  -->
 <!-- Currently generates a multiple code  -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="ARN" targetcode="GONMOPOPP" eventcode="064"></EventCoding>
+<EventCoding sourcecode="ARN" targetcode="GONMOP" eventcode="064"></EventCoding>
 <Text>
 Arnor is about to restore full diplomatic ties with Gondor's main opposition groups 
 almost five years after crowds trashed its embassy.
@@ -2086,7 +2085,7 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-21" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-21" category="AGENT" sentence="true">
 <!-- Multi-word specified plural agent following [target] actor;  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GONGGS" eventcode="064"></EventCoding>
@@ -2132,7 +2131,7 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENT-22" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENT-22" category="AGENT" sentence="true">
 <!-- Should not pick up the agent as regular form should not be generated -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -2178,10 +2177,10 @@ almost five years after crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="AGENTS-23" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-23" category="AGENT" sentence="true">
 <!-- Check that the internal 'WGO', NGM is not removed -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="GMWGOVWGO" targetcode="SGMHGMGONGMO" eventcode="064"></EventCoding>
+<EventCoding sourcecode="GMWGOVWGO" targetcode="GONGMOOPP" eventcode="064"></EventCoding>
 <Text>
 West German world government activists are about to restore 
 full diplomatic ties with human rights activists of Gonzo GMO. 
@@ -2214,7 +2213,7 @@ full diplomatic ties with human rights activists of Gonzo GMO.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-24" category="AGENT" valid="true">
+<Sentence date="19950101" id="AGENTS-24" category="AGENT" sentence="true">
 <!-- Checks for a bug discovered by VanB when an actor-agent is followed -->
 <!--  by a compound -->
 <!-- Last update: TABARI validation -->
@@ -2247,7 +2246,7 @@ ties with Gondor and Arnor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-18" category="AGENTS" valid="false">
+<Sentence date="19950101" id="AGENTS-18" category="AGENTS" sentence="false">
 <!-- [FORMER conversion agent coding] -->
 <!-- This is a TABARI feature that may or may not get implemented in PETRARCH -->
 <!-- 14.04.26: currently not implemented -->
@@ -2281,7 +2280,7 @@ ties with former Gondor prosecutors.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="AGENTS-19" category="AGENTS" valid="false">
+<Sentence date="19950101" id="AGENTS-19" category="AGENTS" sentence="false">
 <!-- [FORMER prior to prefixed agent ] -->
 <!-- This is a TABARI feature that may or may not get implemented in PETRARCH -->
 <!-- 14.04.26: currently not implemented -->
@@ -2328,7 +2327,7 @@ diplomatic ties with former Minas Tirith border police.
 ##################################################################
 -->
 
-<Sentence date="19950102" id="COMPOUND-01" category="COMPOUND" valid="true">
+<Sentence date="19950102" id="COMPOUND-01" category="COMPOUND" sentence="true">
 <!-- Symmetric event: same code with source/target reversed  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="GON" targetcode="OSG" eventcode="064"></EventCoding>
@@ -2377,7 +2376,7 @@ powers.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-02" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-02" category="COMPOUND" sentence="true">
 <!-- Codes a compound comma delimited source -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="MOR" targetcode="OSG" eventcode="041"></EventCoding>
@@ -2413,7 +2412,7 @@ diplomatic ties with Osgiliath after a 12-year rift.
 
 <Config option="require_dyad" value="false"></Config>
 
-<Sentence date="19950104" id="COMPOUND-03" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-03" category="COMPOUND" sentence="true">
 <!-- Codes a compound source, and also make sure that Config option="require_dyad" is working, -->
 <!-- which also checks the generation of the anonymous agent "\-\-\-GOV"                          -->
 <!-- Last update: 25-April-2014 -->
@@ -2455,7 +2454,7 @@ on Thursday.
 </Sentence>
 
 
-<Sentence date="19950104" id="COMPOUND-04" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-04" category="COMPOUND" sentence="true">
 <!-- Codes a compound target which inadvertently happens to also be embedded  -->
 <!-- deep inside several (NP/(PP segments, presenting additional challenges... -->
 <!-- Last update: 9 Dec 2013 -->
@@ -2501,7 +2500,7 @@ on Thursday.
 
 <Config option="require_dyad" value="true"></Config>
 
-<Sentence date="19950104" id="COMPOUND-05" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-05" category="COMPOUND" sentence="true">
 <!-- Codes a compound comma delimited target -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="OSG" targetcode="MOR" eventcode="041"></EventCoding>
@@ -2536,7 +2535,7 @@ Mordor, Rohan, Fornost and Bree after a 12-year rift.
 </Sentence>
 
 
-<Sentence date="19950104" id="COMPOUND-06" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-06" category="COMPOUND" sentence="true">
 <!-- [Codes a compound source and target] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="FOR" targetcode="ERI" eventcode="041"></EventCoding>
@@ -2573,7 +2572,7 @@ agency WFNA said on Thursday .
 </Sentence>
 
 
-<Sentence date="19950104" id="COMPOUND-07" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-07" category="COMPOUND" sentence="true">
 <!-- [Codes a compound comma delimited source and target] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="MOR" targetcode="GON" eventcode="041"></EventCoding>
@@ -2619,7 +2618,7 @@ official news agency WFNA said on Thursday .
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-07B" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-07B" category="COMPOUND" sentence="true">
 <!-- [Codes a compound comma delimited source and target with multi-word root -->
 <!-- 14.01.13:  'Minas Tirith' was manually marked as (NP (NN...) (NN...)) since the -->
 <!--           CoreNLP parser does not catch this for some reason: see notes in the code -->
@@ -2679,7 +2678,7 @@ the official news agency WFNA said on Thursday.
 </Sentence>
 
 
-<Sentence date="19950104" id="COMPOUND-08" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-08" category="COMPOUND" sentence="true">
 <!-- Expand a agent across a compound source -->
 <!-- And with this, I think we just pushed past what TABARI could do... -->
 <!-- Last update: 8 Dec 2013 -->
@@ -2713,7 +2712,7 @@ with Eriador.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-09" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-09" category="COMPOUND" sentence="true">
 <!-- Expand a compound agent across a compound source -->
 <!-- We've now pushed well beyond what TABARI could do, though this sort of -->
 <!-- grammatical construction is actually quite rare -->
@@ -2751,7 +2750,7 @@ with Eriador.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMPOUND-10" category="COMPOUND" valid="true">
+<Sentence date="19950101" id="COMPOUND-10" category="COMPOUND" sentence="true">
 <!-- [Tests coded compounds] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="FRO" targetcode="ELR" eventcode="064"></EventCoding>
@@ -2800,7 +2799,7 @@ five years after crowds burned down its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-11" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-11" category="COMPOUND" sentence="true">
 <!-- [Codes a simple compound source with adjectives] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="FOR" targetcode="OSG" eventcode="041"></EventCoding>
@@ -2842,7 +2841,7 @@ on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-12" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-12" category="COMPOUND" sentence="true">
 <!-- [Codes a multiple compound source with determiner and adjectives] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="MOR" targetcode="OSG" eventcode="041"></EventCoding>
@@ -2887,7 +2886,7 @@ on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-13" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-13" category="COMPOUND" sentence="true">
 <!-- [Multiple actors in initial phrase] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="OSG" eventcode="041"></EventCoding>
@@ -2931,7 +2930,7 @@ on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-14" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-14" category="COMPOUND" sentence="true">
 <!-- [Multiple actors in second phrase: TABARI would also get the GON/OSG combination [below],  -->
 <!-- but that was probably more of a bug than a feature. And this is a thoroughly artificial -->
 <!-- example... -->
@@ -2978,7 +2977,7 @@ on Thursday.
 
 <Config option="require_dyad" value="FALSE"></Config>
 
-<Sentence date="19950104" id="COMPOUND-15" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-15" category="COMPOUND" sentence="true">
 <!-- TABARI: Should not detect compound -->
 <!-- PETRARCH: 'Lions' generates a null coded actor and then we also pick up another -->
 <!-- from the final phrase -->
@@ -3022,7 +3021,7 @@ on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-16" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-16" category="COMPOUND" sentence="true">
 <!-- TABARI: Should not detect compound -->
 <!-- PETRARCH: 'Lions and tigers' generates a null coded actor (two events, both with  -->
 <!--           same code, so the duplicate event is eliminated  -->
@@ -3069,7 +3068,7 @@ on Thursday.
 
 <Config option="require_dyad" value="TRUE"></Config>
 
-<Sentence date="19990809" id="COMPOUND-17" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-17" category="COMPOUND" sentence="true">
 <!-- Test <adjctv><conj><adjctv> construction; ; shouldn't generate a -->
 <!-- compound phrase -->
 <!-- Last update: TABARI validation -->
@@ -3098,7 +3097,7 @@ Dol Amroth.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="COMPOUND-18" category="COMPOUND" valid="true">
+<Sentence date="19950104" id="COMPOUND-18" category="COMPOUND" sentence="true">
 <!-- [Codes a compound source] -->
 <EventCoding sourcecode="FOR" targetcode="OSG" eventcode="041"></EventCoding>
 <EventCoding sourcecode="GON" targetcode="OSG" eventcode="041"></EventCoding>
@@ -3136,7 +3135,7 @@ on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-19" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-19" category="COMPOUND" sentence="true">
 <!-- Test <adjctv><conj><adjctv> construction; coded as CALGOV in TAB and as ITHGOV -->
 <!-- in PETR, which given the weirdness of the sentence will do. It remains here for  -->
 <!-- robustness checking -->
@@ -3165,7 +3164,7 @@ Dol Amroth.
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-20" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-20" category="COMPOUND" sentence="true">
 <!-- Test of <actor><noun><conj><noun> construction; TAB would not generate a compound -->
 <!-- phrase but PETR does: again,given the weirdness of the sentence will do. It remains -->
 <!-- here for robustness checking -->
@@ -3197,7 +3196,7 @@ Ithilen's sheep and goats of Gondor warned of the Prince of Dol_Amroth.
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-21" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-21" category="COMPOUND" sentence="true">
 <!-- Test <actor><conj><detr><actor> construction. This also checks a skip on a  -->
 <!-- null-coded (NE  -->
 <!-- Last update: TABARI validation with modifications -->
@@ -3220,7 +3219,7 @@ Ithilen and the government of Gondor warned their populations about the Prince o
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-22" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-22" category="COMPOUND" sentence="true">
 <!-- Test <actor><conj><detr><actor> construction with a check on a skip of a coded (NE-->
 <!-- Last update: TABARI validation with modifications -->
 <EventCoding sourcecode="ITH" targetcode="DOL" eventcode="162"></EventCoding>
@@ -3244,7 +3243,7 @@ Ithilen and the government of Gondor warned their Ent populations about the Prin
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="COMPOUND-23" category="COMPOUND" valid="true">
+<Sentence date="19920102" id="COMPOUND-23" category="COMPOUND" sentence="true">
 <!-- Test of NOR conjunction and the NEITHER pattern match-->
 <!-- Last update: TABARI validation with modifications-->
 <EventCoding sourcecode="ELF" targetcode="GON" eventcode="081"></EventCoding>
@@ -3268,10 +3267,10 @@ on Saturday.
 )))) (. .)))
 </Parse>
 </Sentence>
-<Sentence date="19950106" id="COMPOUND-24" category="COMPOUND"  valid="true">
+<Sentence date="19950106" id="COMPOUND-24" category="COMPOUND"  sentence="true">
 <!-- [Coding two events from a compound sentence] -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="122"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="122"></EventCoding>
 <EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="050"></EventCoding>
 <Text>
 The Calenardhon government condemned an attack by Osgiliath soldiers 
@@ -3300,7 +3299,7 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-25" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-25" category="COMPOUND" sentence="true">
 <!-- Test <noun><conj><noun> construction when first noun is part of an -->
 <!-- actor phrase. Also tests the forwarding of an adjective  -->
 <!-- Last update: TABARI validation with modifications -->
@@ -3328,7 +3327,7 @@ Danish media and government warned at the Gondor of the Prince of Dol Amroth.
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-26" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-26" category="COMPOUND" sentence="true">
 <!-- Test <noun><conj><noun> construction when first noun is part of an -->
 <!-- actor phrase. This is more plausibly grammatical, which shifts the target. -->
 <!-- Last update: 14.05.09 -->
@@ -3365,12 +3364,12 @@ The Danish media and government warned the population of Gondor of the Prince of
 </Parse>
 </Sentence>
 
-<Sentence date="19990809" id="COMPOUND-27" category="COMPOUND" valid="true">
+<Sentence date="19990809" id="COMPOUND-27" category="COMPOUND" sentence="true">
 <!-- Check the duplication of multiple adjectives in a compound phrase -->
 <!-- Markup of the (CC phrase was manipulated to produce a tree that would code this way -->
 <!-- Last update: 14.05.09 -->
-<EventCoding sourcecode="DNKMOSMED" targetcode="GON" eventcode="160"></EventCoding>
-<EventCoding sourcecode="DNKMOSGOV" targetcode="GON" eventcode="160"></EventCoding>
+<EventCoding sourcecode="DNKMUSMED" targetcode="GON" eventcode="160"></EventCoding>
+<EventCoding sourcecode="DNKMUSGOV" targetcode="GON" eventcode="160"></EventCoding>
 <Text>
 The Danish Islamist media and government warned at the Gondor of the Prince of Dol Amroth. 
 </Text>
@@ -3401,13 +3400,13 @@ The Danish Islamist media and government warned at the Gondor of the Prince of D
 </Parse>
 </Sentence>
 
-<Sentence date="20000423" id="COMPOUND-28" category="COMPOUND" valid="false">
+<Sentence date="20000423" id="COMPOUND-28" category="COMPOUND" sentence="false">
 <!--  Involves an overlap of compound and subordinate phrases that caused  -->
 <!-- an infinite loop in earlier versions -->
 <!-- <14.05.12: Elimination of coding of embedded compounds now causes issues here -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="GON" eventcode="023"></EventCoding>
-#<EventCoding sourcecode="HOB" targetcode="ARN" eventcode="023"></EventCoding>
+<EventCoding sourcecode="HOB" targetcode="ARN" eventcode="023"></EventCoding>
 <Text>
 Frodo said he has deep satisfaction toward Gondor and Arnor's Elrond, 
 and Gondor's dramatic cooperation and its eye-catching development are of 
@@ -3470,10 +3469,10 @@ great significance to the region and even the entire world, he noted.
 </Parse>
 </Sentence>
 
-<Sentence date="19950106" id="COMPOUND-29" category="COMPOUND" valid="true">
+<Sentence date="19950106" id="COMPOUND-29" category="COMPOUND" sentence="true">
 <!-- [Minor variants on DEMO-06 used to test pattern reporting] -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="132"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="132"></EventCoding>
 <EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="173"></EventCoding>
 <Text>
 The Calenardhon government issue condemned an attack by Osgiliath soldiers 
@@ -3509,10 +3508,10 @@ in south Ithilen on Thursday and promised raids to the affected Ithilen villages
 </Parse>
 </Sentence>
 
-<Sentence date="19950106" id="COMPOUND-30" category="COMPOUND" valid="true">
+<Sentence date="19950106" id="COMPOUND-30" category="COMPOUND" sentence="true">
 <!-- [Coding two events from a compound sentence] -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="CALGOV" targetcode="OSGMILARM" eventcode="131"></EventCoding>
+<EventCoding sourcecode="CALGOV" targetcode="OSGMIL" eventcode="131"></EventCoding>
 <EventCoding sourcecode="CALGOV" targetcode="ITH" eventcode="201"></EventCoding>
 <Text>
 The Calenardhon government chided an attack by Osgiliath soldiers 
@@ -3545,7 +3544,7 @@ in south Ithilen on Thursday and ousted the affected Ithilen villages.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="COMPOUND-31" category="COMPOUND" valid="true">
+<Sentence date="19950112" id="COMPOUND-31" category="COMPOUND" sentence="true">
 <!-- Conjunction at beginning of sentence -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ERI" targetcode="OSG" eventcode="096"></EventCoding>
@@ -3572,7 +3571,7 @@ And Eriador has called for a boycott against Osgiliath, the state's fiercest foe
 </Parse>
 </Sentence>
 
-<Sentence date="20000423" id="COMPOUND-32" category="COMPOUND" valid="true">
+<Sentence date="20000423" id="COMPOUND-32" category="COMPOUND" sentence="true">
 <!-- Involves an overlap of multiple compound phrases that caused   a crash/infinite -->
 <!-- loop in earlier versions of TAB. The complexity of the phrase is way beyond -->
 <!-- anything automated coding can handle, but leaving this here to check on the  -->
@@ -3627,11 +3626,11 @@ newspaper al-Raya said on Friday.
 </Sentence>
 
 
-<Sentence date="19950107" id="COMPOUND-33" category="COMPOUND" valid="true">
+<Sentence date="19950107" id="COMPOUND-33" category="COMPOUND" sentence="true">
 <!-- Compound source and target with unattached agents -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="---MOS" targetcode="DAG" eventcode="023"></EventCoding>
-<EventCoding sourcecode="---MOS" targetcode="OSG" eventcode="023"></EventCoding>
+<EventCoding sourcecode="---REL" targetcode="DAG" eventcode="023"></EventCoding>
+<EventCoding sourcecode="---REL" targetcode="OSG" eventcode="023"></EventCoding>
 <EventCoding sourcecode="---LEG" targetcode="DAG" eventcode="023"></EventCoding>
 <EventCoding sourcecode="---LEG" targetcode="OSG" eventcode="023"></EventCoding>
 <Text>
@@ -3671,7 +3670,7 @@ month.
 </Parse>
 </Sentence>
 
-<Sentence date="19950105" id="COMPOUND-34" category="COMPOUND" valid="true">
+<Sentence date="19950105" id="COMPOUND-34" category="COMPOUND" sentence="true">
 <!-- NASGUL has the TAB discard code ###, and PETR handles discards through a separate -->
 <!-- list, though this is useful to insure that ### isn't being confused with a comment -->
 <!-- delimiter -->
@@ -3719,7 +3718,7 @@ countries of the region.
 </Sentence>
 
 
-<Sentence date="19950105" id="COMPOUND-35" category="COMPOUND" valid="true">
+<Sentence date="19950105" id="COMPOUND-35" category="COMPOUND" sentence="true">
 <!-- Discard code in compound source: similar to the above -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="GON" targetcode="MORCOP" eventcode="023"></EventCoding>
@@ -3770,7 +3769,7 @@ the Bay of Belfalas would harm all countries of the region.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMPOUND-36" category="COMPOUNDx" valid="true">
+<Sentence date="19950101" id="COMPOUND-36" category="COMPOUNDx" sentence="true">
 <!-- [checks for a bug discovered by VanB when an actor-agent is followed -->
 <!--  by a compound] -->
 <!-- Last update: TABARI validation -->
@@ -3798,7 +3797,7 @@ ties with Gondor and Arnor.
 </Sentence>
 
 
-<Sentence date="19950108" id="COMPOUND-37" category="COMPOUND" valid="true">
+<Sentence date="19950108" id="COMPOUND-37" category="COMPOUND" sentence="true">
 <!-- From TAB:[10.01.08: This is more of a bug than a feature: what is happening here is -->
 <!-- that THEIR is dereferenced and creates a <cmp> <verb> <cmp> structure rather than -->
 <!-- getting ITHILEN as the target: the effect is as though we had a reflexive -->
@@ -3807,9 +3806,9 @@ ties with Gondor and Arnor.
 <!-- agent into the compound - see DEMO-08. -->
 <!-- PETR, on the other hand, codes this just the way we'd like! -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="ARNGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
-<EventCoding sourcecode="OSGGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
-<EventCoding sourcecode="GONGOV" targetcode="ITHGOVPRS" eventcode="032"></EventCoding>
+<EventCoding sourcecode="ARNGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
+<EventCoding sourcecode="OSGGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
+<EventCoding sourcecode="GONGOV" targetcode="ITHGOV" eventcode="032"></EventCoding>
 <Text>
 The ambassadors of Arnor, Osgiliath and Gondor presented their 
 credentials to Ithilen's president on Wednesday in a further 
@@ -3848,7 +3847,7 @@ show of support to his government by their countries.
 </Sentence>
 
 
-<Sentence date="19950103" id="COMPOUND-38" category="COMPOUND" valid="true">
+<Sentence date="19950103" id="COMPOUND-38" category="COMPOUND" sentence="true">
 <!-- % AGREE generates a paired event coded on a compound -->
 <!-- Corrects errors uncovered by Halterman               -->
 <!-- Last update: 17-Sept-2014 -->
@@ -3863,7 +3862,7 @@ The Philippines and the European Union (EU) agree that territorial disputes in t
 </Sentence>
 
 
-<Sentence date="19950103" id="COMPOUND-39" category="COMPOUND" valid="true">
+<Sentence date="19950103" id="COMPOUND-39" category="COMPOUND" sentence="true">
 <!-- % AGREE generates a paired event coded on a compound -->
 <!-- Corrects errors uncovered by Halterman               -->
 <!-- Last update: 17-Sept-2014 -->
@@ -3889,7 +3888,7 @@ The Philippines and France agree that territorial disputes should be resolved th
 </Sentence>
 
 
-<Sentence date="19950103" id="COMPOUND-40" category="COMPOUND" valid="true">
+<Sentence date="19950103" id="COMPOUND-40" category="COMPOUND" sentence="true">
 <!-- % AGREE generates a paired event coded on a compound -->
 <!-- Corrects errors uncovered by Halterman               -->
 <!-- Last update: 17-Sept-2014 -->
@@ -3904,7 +3903,7 @@ The Philippines and the Central African Republic agree that territorial disputes
 </Sentence>
 
 
-<Sentence date="19950103" id="COMPOUND-41" category="COMPOUND" valid="true">
+<Sentence date="19950103" id="COMPOUND-41" category="COMPOUND" sentence="true">
 <!-- % AGREE generates a paired event coded on a compound -->
 <!-- Corrects errors uncovered by Halterman               -->
 <!-- Last update: 17-Sept-2014 -->
@@ -3919,7 +3918,7 @@ The Philippines and France agree that territorial disputes in the South China Se
 </Sentence>
 
 
-<Sentence date="19950103" id="COMPOUND-42" category="COMPOUND" valid="true">
+<Sentence date="19950103" id="COMPOUND-42" category="COMPOUND" sentence="true">
 <!-- AGREE WITH % checks for % following a verb  -->
 <!-- Last update: 24-Sept-2014 -->
 <EventCoding sourcecode="ERI" targetcode="FRA" eventcode="031"></EventCoding>
@@ -3947,7 +3946,7 @@ Eriador agrees with the Philippines and France that territorial disputes should 
 ##########################################################################################
 -->
 
-<Sentence date="19950104" id="DATE-01" category="DATE" valid="true">
+<Sentence date="19950104" id="DATE-01" category="DATE" sentence="true">
 <!-- Beginning of a series of tests of the date restrictions;  simple < -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOBCIV" targetcode="SHRGOV" eventcode="031"></EventCoding>
@@ -3978,7 +3977,7 @@ Sam Gamgee will be renewing his gardener's license in Michel Delving.
 </Parse>
 </Sentence>
 
-<Sentence date="20080119" id="DATE-02" category="DATE" valid="true">
+<Sentence date="20080119" id="DATE-02" category="DATE" sentence="true">
 <!-- < at boundary -->
 <!-- Last update: 2-Dec-2013 -->
 <EventCoding sourcecode="HOBCIV" targetcode="SHRGOV" eventcode="031"></EventCoding>
@@ -4009,7 +4008,7 @@ Sam Gamgee will be renewing his gardener's license in Michel Delving.
 </Parse>
 </Sentence>
 
-<Sentence date="19950104" id="DATE-03" category="DATE" valid="true">
+<Sentence date="19950104" id="DATE-03" category="DATE" sentence="true">
 <!-- Default code prior to interval restriction -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOB" targetcode="SHR" eventcode="082"></EventCoding>
@@ -4035,7 +4034,7 @@ Hamfast Gamgee has rescheduled his annual mushroom hunting trip in the White Dow
 </Sentence>
 
 
-<Sentence date="20121109" id="DATE-04" category="DATE" valid="true">
+<Sentence date="20121109" id="DATE-04" category="DATE" sentence="true">
 <!-- Interval restriction at lower bound -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOBGOV" targetcode="BRE" eventcode="121"></EventCoding>
@@ -4064,7 +4063,7 @@ Hamfast Gamgee has criticized the recent closure of guest houses in Bree.
 </Sentence>
 
 
-<Sentence date="20121225" id="DATE-05" category="DATE" valid="true">
+<Sentence date="20121225" id="DATE-05" category="DATE" sentence="true">
 <!-- Middle of interval restriction -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOBGOV" targetcode="SHRGOV" eventcode="121"></EventCoding>
@@ -4094,7 +4093,7 @@ Hamfast Gamgee has criticized the recent closure of guest houses in Michel Delvi
 </Sentence>
 
 
-<Sentence date="20121109" id="DATE-06" category="DATE" valid="true">
+<Sentence date="20121109" id="DATE-06" category="DATE" sentence="true">
 <!-- Interval restriction at upper bound -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOBGOV" targetcode="BRE" eventcode="031"></EventCoding>
@@ -4127,7 +4126,7 @@ Hamfast Gamgee has arranged for the reopening of guest houses in Bree.
 </Sentence>
 
 
-<Sentence date="20140104" id="DATE-07" category="DATE" valid="true">
+<Sentence date="20140104" id="DATE-07" category="DATE" sentence="true">
 <!-- Default code following an interval restriction -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOB" targetcode="SHR" eventcode="082"></EventCoding>
@@ -4153,7 +4152,7 @@ Hamfast Gamgee has rescheduled his annual mushroom hunting trip in the White Dow
 </Sentence>
 
 
-<Sentence date="20100106" id="DATE-08" category="DATE" valid="true">
+<Sentence date="20100106" id="DATE-08" category="DATE" sentence="true">
 <!-- Middle of interval restriction but prior to embedded restriction -->
 <!-- Last update: 25-Apr-2014 -->
 <EventCoding sourcecode="HOBMIL" targetcode="MOR" eventcode="181"></EventCoding>
@@ -4185,7 +4184,7 @@ Sam Gamgee has marched very close to the border with Mordor.
 </Sentence>
 
 
-<Sentence date="20100109" id="DATE-09" category="DATE" valid="true">
+<Sentence date="20100109" id="DATE-09" category="DATE" sentence="true">
 <!-- Lower bound of embedded interval restriction  -->
 <!-- Last update: 25-Apr-2014 -->
 <EventCoding sourcecode="ORCHOB" targetcode="MRGORC" eventcode="031"></EventCoding>
@@ -4211,7 +4210,7 @@ Sam Gamgee met a bunch of Morgul Orcs.
 </Sentence>
 
 
-<Sentence date="20100110" id="DATE-10" category="DATE" valid="true">
+<Sentence date="20100110" id="DATE-10" category="DATE" sentence="true">
 <!-- Middle of embedded interval restriction  -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="ORCHOB" targetcode="MRGORC" eventcode="036"></EventCoding>
@@ -4246,7 +4245,7 @@ Sam Gamgee has overcome the animosity of the Morgul Orcs, which is no small feat
 </Sentence>
 
 
-<Sentence date="20100112" id="DATE-11" category="DATE" valid="true">
+<Sentence date="20100112" id="DATE-11" category="DATE" sentence="true">
 <!-- Upper bound of embedded interval restriction  -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="ORCHOB" targetcode="MRGORC" eventcode="212"></EventCoding>
@@ -4295,7 +4294,7 @@ Morgul Orcs.
 </Sentence>
 
 
-<Sentence date="20100113" id="DATE-12" category="DATE" valid="true">
+<Sentence date="20100113" id="DATE-12" category="DATE" sentence="true">
 <!-- Middle of interval restriction but just after embedded restriction -->
 <!-- Last update: 25-Apr-2014 -->
 <EventCoding sourcecode="HOBMIL" targetcode="MORMIL" eventcode="192"></EventCoding>
@@ -4327,7 +4326,7 @@ Sam Gamgee halted his march towards further adventures in the vicinity of Cirith
 </Sentence>
 
 
-<Sentence date="20121231" id="DATE-13" category="DATE" valid="true">
+<Sentence date="20121231" id="DATE-13" category="DATE" sentence="true">
 <!-- Middle of interval restriction but just after embedded restriction -->
 <!-- Last update: 20-Dec-2013 -->
 <EventCoding sourcecode="HOBGOV" targetcode="SHRGOV" eventcode="042"></EventCoding>
@@ -4365,7 +4364,7 @@ Sam Gamgee has reasserted friendship with the gardening license raj of Michel De
 ##################################################################
 -->
 
-<Sentence date="19951101" id="DATE-14" category="DATE" valid="true">
+<Sentence date="19951101" id="DATE-14" category="DATE" sentence="true">
 <!-- Test of actor synonyms and date restrictions-->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOBGOV" targetcode="GON" eventcode="064"></EventCoding>
@@ -4416,7 +4415,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19951101" id="DATE-15" category="DATE" valid="true">
+<Sentence date="19951101" id="DATE-15" category="DATE" sentence="true">
 <!-- [Test of actor synonyms] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="HOBGOV" eventcode="064"></EventCoding>
@@ -4471,7 +4470,7 @@ said on Saturday.
 <Config option="require_dyad" value="False"></Config>
 <Config option="comma_emax" value="0"></Config>
 
-<Sentence date="19950101" id="DATE-16" category="DATE" valid="true">
+<Sentence date="19950101" id="DATE-16" category="DATE" sentence="true">
 <!-- Test of actor synonyms, and flip "require_dyad" for this case just  -->
 <!-- for the heck of it...also turn off end comma clause deletion  -->
 <!-- Last update: TABARI validation -->
@@ -4527,7 +4526,7 @@ said on Saturday.
 <Config option="require_dyad" value="True"></Config>
 <Config option="comma_emax" value="8"></Config>
 
-<Sentence date="19980101" id="DATE-17" category="DATE" valid="true">
+<Sentence date="19980101" id="DATE-17" category="DATE" sentence="true">
 <!-- [Test of date restrictions in actor synonyms] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="HOBGOV" eventcode="064"></EventCoding>
@@ -4579,7 +4578,7 @@ said on Saturday.
 </Sentence>
 
 
-<Sentence date="19990101" id="DATE-18" category="DATE" valid="true">
+<Sentence date="19990101" id="DATE-18" category="DATE" sentence="true">
 <!-- [Test of date restrictions in actor synonyms] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOBGOV" targetcode="GON" eventcode="064"></EventCoding>
@@ -4630,7 +4629,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="20010101" id="DATE-19" category="DATE" valid="true">
+<Sentence date="20010101" id="DATE-19" category="DATE" sentence="true">
 <!-- [Test of date restrictions in actor synonyms] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="HOBREB" eventcode="064"></EventCoding>
@@ -4681,7 +4680,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19781223" id="DATE-20" category="DATE" valid="true">
+<Sentence date="19781223" id="DATE-20" category="DATE" sentence="true">
 <!-- [Test of date restrictions in actor synonyms in the final entry in the actor list] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="RHO" targetcode="HOB" eventcode="064"></EventCoding>
@@ -4732,7 +4731,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="20010101" id="DATE-21" category="DATE" valid="true">
+<Sentence date="20010101" id="DATE-21" category="DATE" sentence="true">
 <!-- Test of date restrictions in actor synonyms in the final entry in the actor list -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="ZBW" eventcode="064"></EventCoding>
@@ -4800,7 +4799,7 @@ said on Saturday.
 -->
 
 
-<Sentence date = "20080801" id ="AFP0808-01-M008-2" category="PARSING"  valid="true">
+<Sentence date = "20080801" id ="AFP080801M008-2" category="PARSING"  sentence="true">
 <!-- 140227: Causes a parsing error involving unbalanced (); it does not generate any -->
 <!-- but is a parse-from-hell and great for debugging -->
 <!-- Last update: 21 April 2014 -->
@@ -4883,7 +4882,7 @@ valve was less than half a microcurie, or less than what one would find in a
 </Parse>
 </Sentence>
 
-<Sentence date = "20080804" id ="AFP0808-02-0593-1a" category="PARSING" valid="true">
+<Sentence date = "20080804" id ="AFP0808020593-1a" category="PARSING" sentence="true">
 <!-- This is the original version with the parse provided by GigaWord. See next record: -->
 <!-- this is a different version than the output one gets from the web site, and gives -->
 <!-- better results -->
@@ -4962,7 +4961,7 @@ where she faces trial for her actions, a US attorney said.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080804" id ="AFP0808-02-0593-1b" category="PARSING" valid="true">
+<Sentence date = "20080804" id ="AFP0808020593-1b" category="PARSING" sentence="true">
 <!-- This is the same sentence but parsed on the web site, where the (SBARs are nested  -->
 <!-- more deeply and consequently the second event - which happens to be a legitimate -->
 <!-- one - is missed.  -->
@@ -5044,7 +5043,7 @@ where she faces trial for her actions, a US attorney said.
 </Parse>
 </Sentence>
 
-<Sentence date="19990101" id="TAB-DEBUG-19" category="PARSING" valid="true">
+<Sentence date="19990101" id="TABDEBUG-19" category="PARSING" sentence="true">
 <!--  Caused the writeParse routines to crash in earlier versions -->
 <!-- Last update: TABARI validation -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5117,7 +5116,7 @@ with priority being assigned to states with low health indices.
 </Sentence>
 
 
-<Sentence date = "20080804" id ="AFP0808-01-1903-3" category="PARSING" valid="true">
+<Sentence date = "20080804" id ="AFP0808011903-3" category="PARSING" sentence="true">
 <!--  "2000 and 2004" should not be marked as a compound -->
 <!-- Last update: 14.05.10 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5150,7 +5149,7 @@ triumphed in 2000 and 2004.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080801" id ="AFP0808-01-0343-2" category="PARSING" valid="true">
+<Sentence date = "20080801" id ="AFP0808010343-2" category="PARSING" sentence="true">
 <!--  Make sure ", one" is not mistaken for a (NE marker -->
 <!-- Last update: 14.05.10 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5184,7 +5183,7 @@ girls said.
 </Sentence>
 
 
-<Sentence date = "20080801" id ="AFP0808-01-0092-5" category="PARSING" valid="true">
+<Sentence date = "20080801" id ="AFP0808010092-5" category="PARSING" sentence="true">
 <!--  (POS ') construction (vs the usual (POS 's)) -->
 <!-- Last update: 14.05.10 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5222,7 +5221,7 @@ ideas were included in the design; it's very different.
 </Sentence>
 
 
-<Sentence date = "20080801" id ="AFP0808-01-0569-6" category="PARSING" valid="true">
+<Sentence date = "20080801" id ="AFP0808010569-6" category="PARSING" sentence="true">
 <!-- verb MANAGED is in an odd place; caused an earlier bounds error -->
 <!-- Last update: 14.05.12 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5252,7 +5251,7 @@ Wales.
 </Sentence>
 
 
-<Sentence date = "20080801" id ="AFP0808-01-0625-6" category="PARSING" valid="true">
+<Sentence date = "20080801" id ="AFP0808010625-6" category="PARSING" sentence="true">
 <!-- Just another quirky crash-causer: odd structure and punctuation -->
 <!-- Last update: 14.05.12 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5292,7 +5291,7 @@ for coal-- the source of about 70 percent of China's energy.
 </Sentence>
 
 
-<Sentence date = "20090101" category="PARSING" valid="true" id ="AFP0909-01-0096-4">
+<Sentence date = "20090101" category="PARSING" sentence="true" id ="AFP0909010096-4">
 <!-- Sentence from hell in terms of nesting compounds -->
 <!-- Last update: 14.05.12 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5324,7 +5323,7 @@ representation and voting rights on that and other Bretton Woods institutions.
 </Sentence>
 
 
-<Sentence date = "20080804" id ="TextCodes2" category="PARSING" valid="true">
+<Sentence date = "20080804" id ="TextCodes-2" category="PARSING" sentence="true">
 <!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier --> 
 <!-- versions, extracting non-code text for the source and target -->
 <!-- Last update: 24 Sept 2014 -->
@@ -5341,7 +5340,7 @@ a one-on-one meeting on June 14.
 </Parse>
 </Sentence>
 
-<Sentence date = "20080804" id ="TextCodes1" category="PARSING" valid="true">
+<Sentence date = "20080804" id ="TextCodes-1" category="PARSING" sentence="true">
 <!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier -->
 <!-- versions, extracting non-code text for the source and target -->
 <!-- Last update: 16 June 2014 -->
@@ -5377,7 +5376,7 @@ the polling units and collation centres in the state.
 
 <Config option="new_actor_length" value="4"></Config>
 
-<Sentence date="19950103" id="ACTOR-01" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-01" category="ACTOR" sentence="true">
 <!-- Source and target not in dictionary so extracted from noun phrases-->
 <EventCoding sourcecode='"GRYFFINDOR HEAD MINERVA MCGONAGALL"' targetcode='"THE MINISTRY OF MAGIC"' eventcode="032"></EventCoding>
 <EventCoding sourcecode='"THE MINISTRY OF MAGIC"' targetcode='"GRYFFINDOR HEAD MINERVA MCGONAGALL"' eventcode="033"></EventCoding>
@@ -5425,7 +5424,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="ACTOR-02" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-02" category="ACTOR" sentence="true">
 <!-- Source and target not in dictionary so extracted from noun phrases-->
 <EventCoding sourcecode='"GRYFFINDOR HEAD MINERVA MCGONAGALL"' targetcode="GON" eventcode="032"></EventCoding>
 <EventCoding sourcecode="GON" targetcode='"GRYFFINDOR HEAD MINERVA MCGONAGALL"' eventcode="033"></EventCoding>
@@ -5472,7 +5471,7 @@ the joint OWL standards committee with Albus Dumbledore, Luna Lovegood's news ag
 
 <Config option="new_actor_length" value="3"></Config>
 
-<Sentence date="19950103" id="ACTOR-03" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-03" category="ACTOR" sentence="true">
 <!-- Source and target not in dictionary so extracted from noun phrases-->
 <EventCoding noevents = "True"></EventCoding>
 <!-- Last update: 24 April 2014 -->
@@ -5521,7 +5520,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 
 <Config option="new_actor_length" value="0"></Config>
 
-<Sentence date="19950103" id="ACTOR-04" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-04" category="ACTOR" sentence="true">
 <!-- Source and target not in dictionary so extracted from noun phrases-->
 <!-- Last update: 24 April 2014 -->
 <EventCoding noevents = "True"></EventCoding>
@@ -5568,7 +5567,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-05" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-05" category="ACTOR" sentence="true">
 <!-- Should not match THE_KU_ [USAEDU]; this was used to check an apparent -->
 <!--  bug that was actually a dictionary problem due to stemming -->
 <!-- Last update: TABARI validation -->
@@ -5613,7 +5612,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-06" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-06" category="ACTOR" sentence="true">
 <!-- Should match THE_KU_ [USAEDU]  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="USAEDU" targetcode="LBY" eventcode="064"></EventCoding>
@@ -5657,7 +5656,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-07" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-07" category="ACTOR" sentence="true">
 <!-- Should match THE_KU_ [USAEDU] synonym -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="USAEDU" targetcode="LBY" eventcode="064"></EventCoding>
@@ -5696,7 +5695,7 @@ crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-08" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-08" category="ACTOR" sentence="true">
 <!-- Should not match THE_AU_ [IGOAFR]; this checked an earlier TABARI bug involving  -->
 <!-- not checking for terminal blank following regular endings -->
 <!-- Last update: TABARI validation -->
@@ -5741,7 +5740,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-09" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-09" category="ACTOR" sentence="true">
 <!-- Should match THE_AU_ [IGOAFR] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="IGOAFR" targetcode="LBY" eventcode="064"></EventCoding>
@@ -5785,7 +5784,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="ACTOR-10" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-10" category="ACTOR" sentence="true">
 <!-- Check for two word match of NEW ZEALAND rather than ZEALAND -->
 <!-- Last update: 23 Sept 2014 -->
 <EventCoding sourcecode="PRK" targetcode="NZE" eventcode="194"></EventCoding>
@@ -5803,7 +5802,7 @@ The Hermit Kingdom fired two artillery shells at New Zealand on Thursday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="ACTOR-11" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-11" category="ACTOR" sentence="true">
 <!-- Check for single word synonym match of ZEALAND rather than ZEALAND -->
 <!-- Last update: 23 Sept 2014 -->
 <EventCoding sourcecode="PRK" targetcode="DNK" eventcode="194"></EventCoding>
@@ -5816,7 +5815,7 @@ The Hermit Kingdom fired two artillery shells at Zealand on Thursday.
 </Sentence>
 
 
-<Sentence date="19950101" id="ACTOR-12" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-12" category="ACTOR" sentence="true">
 <!-- Multi-word actor matching: some of these sentences were causing errors in early -->
 <!-- Sept-14 due to problems in the matching -->
 <!-- Last update: 17-Sept-2014 -->
@@ -5833,7 +5832,7 @@ The United States on Thursday fired two artillery shells at Seoul.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ACTOR-13" category="ACTOR" valid="true">
+<Sentence date="19950101" id="ACTOR-13" category="ACTOR" sentence="true">
 <!-- Multi-word actor matching: some of these sentences were causing errors in early -->
 <!-- Sept-14 due to problems in the matching -->
 <!-- Last update: 17-Sept-2014 -->
@@ -5852,7 +5851,7 @@ on a routine patrol of an area south of the two nations’ disputed maritime bou
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="ACTOR-14" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-14" category="ACTOR" sentence="true">
 <!-- Multi-word actor matching: some of these sentences were causing errors in early -->
 <!-- Sept-14 due to problems in the matching -->
 <!-- Last update: 17-Sept-2014 -->
@@ -5867,7 +5866,7 @@ Pyongyang on Thursday fired two artillery shells at Seoul.
 </Parse>
 </Sentence>
 
-<Sentence date="19950103" id="ACTOR-15" category="ACTOR" valid="true">
+<Sentence date="19950103" id="ACTOR-15" category="ACTOR" sentence="true">
 <!-- Multi-word actor matching: some of these sentences were causing errors in early -->
 <!-- Sept-14 due to problems in the matching -->
 <!-- Last update: 17-Sept-2014 -->
@@ -5888,7 +5887,7 @@ The Hermit Kingdom fired two artillery shells at Seoul on Thursday.
 ##################################################################
 -->
 
-<Sentence date="19950101" id="VERB-01" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-01" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
@@ -5927,7 +5926,7 @@ trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-02" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-02" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
@@ -5975,7 +5974,7 @@ trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-03" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-03" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
@@ -6011,7 +6010,7 @@ trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-04" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-04" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form with pattern] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="161"></EventCoding>
@@ -6054,7 +6053,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-05a" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-05a" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form with pattern] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="161"></EventCoding>
@@ -6097,7 +6096,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-06" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-06" category="VERB" sentence="true">
 <!-- Check that ACTING verb form is working -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="100"></EventCoding>
@@ -6135,7 +6134,7 @@ crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-07" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-07" category="VERB" sentence="true">
 <!-- Check that ACTED verb form is working -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="100"></EventCoding>
@@ -6178,7 +6177,7 @@ crowds trashed its embassy
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-08" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-08" category="VERB" sentence="true">
 <!-- Check that first pattern is working with main verb -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1010"></EventCoding>
@@ -6231,7 +6230,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-09" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-09" category="VERB" sentence="true">
 <!-- Check that first pattern is working with regular verb form -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1010"></EventCoding>
@@ -6285,7 +6284,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-10" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-10" category="VERB" sentence="true">
 <!-- [Check that second pattern is working with regular verb form] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1011"></EventCoding>
@@ -6334,7 +6333,7 @@ crowds trashed its embassy.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-11" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-11" category="VERB" sentence="true">
 <!-- Check that third pattern is working with main verb -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
@@ -6379,7 +6378,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-12" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-12" category="VERB" sentence="true">
 <!-- Check that third pattern is working with regular verb form -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
@@ -6427,7 +6426,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-13" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-13" category="VERB" sentence="true">
 <!-- Check that third pattern is working with regular verb form -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
@@ -6472,7 +6471,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-14" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-14" category="VERB" sentence="true">
 <!-- Check that fourth pattern is working with main verb -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="103"></EventCoding>
@@ -6512,7 +6511,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-15" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-15" category="VERB" sentence="true">
 <!-- Check that fourth pattern is working with regular verb form -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="103"></EventCoding>
@@ -6550,7 +6549,7 @@ crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-16" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-16" category="VERB" sentence="true">
 <!-- [Multi-word phrase in verb form] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
@@ -6593,7 +6592,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-17" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-17" category="VERB" sentence="true">
 <!-- [Check that DEPART_ verb is in dictionary; see later tests] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
@@ -6641,7 +6640,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-18" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-18" category="VERB" sentence="true">
 <!-- [Verb ending S] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
@@ -6681,7 +6680,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-19" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-19" category="VERB" sentence="true">
 <!-- [Verb ending ED] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
@@ -6721,7 +6720,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-20" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-20" category="VERB" sentence="true">
 <!-- Check that invalid verb ending does not match: should not code -->
 <EventCoding noevents = "True"> </EventCoding>
 <Text>
@@ -6758,7 +6757,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="VERB-21" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-21" category="VERB" sentence="true">
 <!-- Verb ending ES where not appropriate: should not code -->
 <!-- Last update: TABARI validation -->
 <EventCoding noevents = "True"> </EventCoding>
@@ -6799,7 +6798,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-22" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-22" category="VERB" sentence="true">
 <!-- [Verb ending ED on verb ending with E] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="122"></EventCoding>
@@ -6840,7 +6839,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="VERB-23" category="VERB" valid="true">
+<Sentence date="19950101" id="VERB-23" category="VERB" sentence="true">
 <!-- [Verb ending ED on verb ending with E in pattern] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ETH" targetcode="LBY" eventcode="123"></EventCoding>
@@ -6895,7 +6894,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 ##################################################################
 -->
 
-<Sentence date="19920102" id="PATTERN-01" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-01" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition of IN_ above verb; does not match on -->
 <!-- BREAK and matches instead on PARADE -->
 <!-- Last update: TABARI validation -->
@@ -6927,7 +6926,7 @@ Gollum was seen to break into an anti- Gondor parade on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-02" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-02" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition for first verb in dictionary -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="GON" eventcode="345"></EventCoding>
@@ -6948,7 +6947,7 @@ Gollum abandoned an anti- Gondor parade on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-03" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-03" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition for connected words in upper match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="GON" eventcode="174K"></EventCoding>
@@ -6980,7 +6979,7 @@ Gollum will bargain for asylum in Gondor, AFP reported.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-04" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-04" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition for connected words in upper match -->
 <!-- 14.04.28: Clever, but this is just pattern-based and not a grammatically correct -->
 <!-- sentence... -->
@@ -7012,7 +7011,7 @@ Gollum will bargain foreign asylum in Gondor, AFP reported.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-05" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-05" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition of IN_ - pattern word with length <= 2 - -->
 <!--  which wasn't working in vers. 0.4.6 -->
 <!-- Last update: TABARI validation -->
@@ -7044,7 +7043,7 @@ Gollum was known to break into an anti- Gondor parade on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-06" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-06" category="PATTERN" sentence="true">
 <!-- Match to verb ACCORD cancelled by determiner AN -->
 <!-- This was done using a pattern in TABARI but is now handled by the parse -->
 <!--  { HOB / GON / 111 } */ -->
@@ -7073,7 +7072,7 @@ Gollum was in an accord with an anti- Gondor parade on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950114" id="PATTERN-08" category="PATTERN" valid="true">
+<Sentence date="19950114" id="PATTERN-08" category="PATTERN" sentence="true">
 <!--  Test of source/target reversal in the first event due to pattern  -->
 <!-- 	 FREE                                                           -->
 <!-- 	 - + * FROM $  [066]                                            -->
@@ -7125,10 +7124,10 @@ group yielded ground seized in six days of fighting.
 </Sentence>
 
 
-<Sentence date="19950116" id="PATTERN-09" category="PATTERN" valid="true">
+<Sentence date="19950116" id="PATTERN-09" category="PATTERN" sentence="true">
 <!-- Testing for correct match on multi-word, disconnected actor phrase -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="FORGOVPRS" targetcode="ITHTV" eventcode="095"></EventCoding>
+<EventCoding sourcecode="FORGOV" targetcode="ITHTV" eventcode="095"></EventCoding>
 <Text>
 Fornost President Umbardacil has again appealed for peace in Ithilen state-run television in 
 a message to the spiritual leader of the war-torn nation's influential 
@@ -7159,7 +7158,7 @@ Douzu community
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-10" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-10" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition of IN_ above verb with + and $  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="GON" targetcode="HOB" eventcode="075"></EventCoding>
@@ -7185,7 +7184,7 @@ Gollum was seen to break in an anti- Gondor parade on Saturday.
 </Sentence>
 
 
-<Sentence date="19920102" id="PATTERN-11" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-11" category="PATTERN" sentence="true">
 <!-- Test of pattern recognition for phrase to first verb in dictionary -->
 <!-- 14.04.28: Highly unlikely this would be an issue in PETRARCH since it is using -->
 <!-- the automatic indexing of Python dictionaries -->
@@ -7210,7 +7209,7 @@ Gollum abandoned efforts to stop an anti- Gondor parade on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-12" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-12" category="PATTERN" sentence="true">
 <!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
 <!-- accordingly -->
 <!-- Last update: TABARI validation -->
@@ -7235,7 +7234,7 @@ Gollum allowed that Mordor isn't a really pleasant place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-13" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-13" category="PATTERN" sentence="true">
 <!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
 <!-- accordingly -->
 <!-- Last update: TABARI validation on stemming  -->
@@ -7260,10 +7259,10 @@ Gollum allowed that Mordor isn't a real pleasant place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-14" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-14" category="PATTERN" sentence="true">
 <!-- Test of _ connector in upper phrase; match on pattern should fail and use default code -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="060"></EventCoding>
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
 <Text>
 Gollum allowed that Mordor isn't a real easy or pleasant place to visit. 
 </Text>
@@ -7290,7 +7289,7 @@ Gollum allowed that Mordor isn't a real easy or pleasant place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-15" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-15" category="PATTERN" sentence="true">
 <!-- Test of ~_ connector in lower phrase -->
 <!-- The ~_ connector was a TABARI feature related to stemming, which PETARCH doesn't -->
 <!-- use, so these next few cases are just generic pattern matching. Leave them in here -->
@@ -7318,10 +7317,10 @@ Gollum recently allowed that Mordor isn't a such neat place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-16" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-16" category="PATTERN" sentence="true">
 <!-- Test of ~_ connector in upper phrase; match should fail and use default code -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="060"></EventCoding>
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
 <Text>
 Gollum recently did allow that Mordor isn't a such neat place to visit. 
 </Text>
@@ -7345,7 +7344,7 @@ Gollum recently did allow that Mordor isn't a such neat place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-17" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-17" category="PATTERN" sentence="true">
 <!-- Test of ~_ connector in upper phrase;  -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="HOB" targetcode="MOR" eventcode="027"></EventCoding>
@@ -7369,11 +7368,11 @@ Gollum allowed that Mordor isn't the neatest place to visit.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-18" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-18" category="PATTERN" sentence="true">
 <!-- Test of ~_ connector in upper and lower phrase; match should fail and  -->
 <!-- use default code -->
 <!-- Last update: TABARI validation -->
-<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="060"></EventCoding>
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
 <Text>
 Gollum in recent days did allow that Mordor isn't the neat or cool place to visit. 
 </Text>
@@ -7411,7 +7410,7 @@ Gollum in recent days did allow that Mordor isn't the neat or cool place to visi
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-19" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-19" category="PATTERN" sentence="true">
 <!-- Checked for first phrase as actor, as well as "CALLED/ *_ON  -->
 <!-- subordinate clause -->
 <!-- Last update: TABARI validation -->
@@ -7449,7 +7448,7 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
 </Parse>
 </Sentence>
 
-<Sentence date="19920102" id="PATTERN-20" category="PATTERN" valid="true">
+<Sentence date="19920102" id="PATTERN-20" category="PATTERN" sentence="true">
 <!-- Checked for first phrase as actor, as well as "CALLED/ * FOR  -->
 <!-- 14.04.28: Not exactly a sentence but close enough-->
 <!-- Last update: TABARI validation -->
@@ -7502,7 +7501,7 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
 </Sentence>
 
 
-<Sentence date="19950102" id="PATTERN-21" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-21" category="PATTERN" sentence="true">
 <!-- Test of ^ (actor skipping) in a pattern; skipped actor after verb CELEBRATE.   -->
 <!-- Last update: TABARI validation with modifications -->
 <EventCoding sourcecode="MORMIL" targetcode="MOR" eventcode="042"></EventCoding>
@@ -7532,7 +7531,7 @@ next week at Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="PATTERN-22" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-22" category="PATTERN" sentence="true">
 <!-- Same structure as above but without the skip   -->
 <!-- Last update: 8 May 2014 -->
 <EventCoding sourcecode="ERI" targetcode="MOR" eventcode="046"></EventCoding>
@@ -7563,7 +7562,7 @@ next week at Cirith Ungol.
 </Sentence>
 
 
-<Sentence date="19950102" id="PATTERN-23" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-23" category="PATTERN" sentence="true">
 <!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="043"></EventCoding>
@@ -7598,7 +7597,7 @@ hafling was reported on the pass of Cirith Ungol.
 </Sentence>
 
 
-<Sentence date="19950102" id="PATTERN-24" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-24" category="PATTERN" sentence="true">
 <!--  Just another of  ^ (actor skipping) in a pattern -->
 <!-- Last update: TABARI validation with modifications -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="045"></EventCoding>
@@ -7626,7 +7625,7 @@ when a hafling was reported on the pass of Cirith Ungol. </Text>
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="PATTERN-25" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-25" category="PATTERN" sentence="true">
 <!-- Test of multiple ^ (actor skipping) in a pattern: second skip is \-\-\-LEG (parliament) -->
 <!-- That "(NE GONDOR IN ERIDOR" isn't ideal but things seem to be working -->
 <!-- Last update: TABARI validation with modifications -->
@@ -7667,7 +7666,7 @@ after a hafling was reported on the pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19950102" id="PATTERN-27" category="PATTERN" valid="true">
+<Sentence date="19950102" id="PATTERN-27" category="PATTERN" sentence="true">
 <!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="043"></EventCoding>
@@ -7701,7 +7700,7 @@ hafling was reported on the pass of Cirith Ungol.
 </Parse>
 </Sentence>
 
-<Sentence date="19820727" id="PATTERN-28" category="PATTERN" valid="true">
+<Sentence date="19820727" id="PATTERN-28" category="PATTERN" sentence="true">
 <!-- Conjunction at next to last position in sentence; could cause clause marking issues  -->
 <!-- in TABARI, but just gets absorbed into a very long (NE here -->
 <!-- Last update: TABARI validation with dictionary modifications -->
@@ -7750,7 +7749,7 @@ Arnor spokesmen said 54 civilians were killed or injured.
 </Sentence>
 
 
-<Sentence date="19950103" id="PATTERN-29" category="PATTERN" valid="true">
+<Sentence date="19950103" id="PATTERN-29" category="PATTERN" sentence="true">
 <!-- Basic check on the priority of longer patterns -->
 <!-- Last update: 24-Sept-2014 -->
 <EventCoding sourcecode="PHL" targetcode="ERI" eventcode="121"></EventCoding>
@@ -7763,7 +7762,7 @@ The Philippines was criticized over its territorial dispute with Eriador.
 </Sentence>
 
 
-<Sentence date="19950103" id="PATTERN-30" category="PATTERN" valid="true">
+<Sentence date="19950103" id="PATTERN-30" category="PATTERN" sentence="true">
 <!-- Basic check on the priority of longer patterns -->
 <!-- Last update: 24-Sept-2014 -->
 <EventCoding sourcecode="PHL" targetcode="ERI" eventcode="123"></EventCoding>
@@ -7776,7 +7775,7 @@ The Philippines was heavily and unjustly criticized over its territorial dispute
 </Sentence>
 
 
-<Sentence date="19950103" id="PATTERN-31" category="PATTERN" valid="true">
+<Sentence date="19950103" id="PATTERN-31" category="PATTERN" sentence="true">
 <!-- Basic check on the priority of longer patterns -->
 <!-- Last update: 24-Sept-2014 -->
 <EventCoding sourcecode="PHL" targetcode="ERI" eventcode="122"></EventCoding>
@@ -7798,7 +7797,7 @@ The Philippines was heavily criticized over its territorial dispute with Eriador
 ##################################################################
 -->
 
-<Sentence date="19950112" id="PASSIVE-01" category="MODIFY" valid="true">
+<Sentence date="19950112" id="PASSIVE-01" category="MODIFY" sentence="true">
 <!-- Automatic detection of passive voice in a simple verb -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112"></EventCoding>
@@ -7838,7 +7837,7 @@ of diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="PASSIVE-02" category="MODIFY" valid="true">
+<Sentence date="19950112" id="PASSIVE-02" category="MODIFY" sentence="true">
 <!-- [Automatic detection of passive voice in a simple verb plus adverb] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112"></EventCoding>
@@ -7879,7 +7878,7 @@ of diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="PASSIVE-03" category="MODIFY" valid="true">
+<Sentence date="19950112" id="PASSIVE-03" category="MODIFY" sentence="true">
 <!-- Not passive voice but has actor switching by +/$ pattern fitting; -->
 <!-- (order is still OSG-ERI, but it is set by the pattern generating 071 -->
 <!-- Last update: TABARI validation -->
@@ -7934,7 +7933,7 @@ of diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="PASSIVE-04" category="MODIFY" valid="true">
+<Sentence date="19950112" id="PASSIVE-04" category="MODIFY" sentence="true">
 <!-- Automatic detection of passive voice in a verb followed by a  -->
 <!--  modifier, which failed in earlier versions -->
 <!-- Last update: TABARI validation -->
@@ -7976,7 +7975,7 @@ of diplomatic ties with Gondor.
 </Parse>
 </Sentence>
 
-<Sentence date="19950112" id="PASSIVE-05" category="MODIFY" valid="true">
+<Sentence date="19950112" id="PASSIVE-05" category="MODIFY" sentence="true">
 <!-- Generated an array bounds problem in earlier versions OF TAB; generates no events  -->
 <!-- since no actor before verb] -->
 <!-- Last update: TABARI validation -->
@@ -8017,7 +8016,7 @@ of diplomatic ties with Gondor.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMMA-01" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-01" category="MODIFY" sentence="true">
 <!--  Standard elimination of internal comma-delimited clause only -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -8074,7 +8073,7 @@ Bree official said on Saturday night.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMMA-02" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-02" category="MODIFY" sentence="true">
 <!--  Standard elimination of comma-delimited terminal clause only -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -8129,7 +8128,7 @@ Bree official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMMA-03" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-03" category="MODIFY" sentence="true">
 <!--  Standard elimination of both an internal and terminal comma-delimited clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -8186,7 +8185,7 @@ official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMMA-04" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-04" category="MODIFY" sentence="true">
 <!-- Initial comma-delimited clause should not be eliminated -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -8254,7 +8253,7 @@ Bree official said on Saturday.
 <!-- Turn off require_dyad to pick up some terminal clauses -->
 <Config option="require_dyad" value="false"></Config>
 
-<Sentence date="19950101" id="COMMA-05" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-05" category="MODIFY" sentence="true">
 <!--  Should match the internal clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="CAL" eventcode="064"></EventCoding>
@@ -8307,7 +8306,7 @@ official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-06" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-06" category="MODIFY" sentence="true">
 <!--  Under TABARI, this would match the terminal clause. However, the (NP-TMP markup -->
 <!--  not converted to an (NE, so there is no object for SAID, and hence nothing is   -->
 <!--  coded there even though the check_comma() leaves the phrase intact (which is    -->
@@ -8364,7 +8363,7 @@ Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official 
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-07" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-07" category="MODIFY" sentence="true">
 <!-- Initial comma-delimited clause should be eliminated since it is not part of a -->
 <!-- noun phrase. This removes the source actor from the primary phrase, but the   --> 
 <!-- phrase is coded because CoreNLP, for whatever reason, converts "on Saturday". -->
@@ -8430,7 +8429,7 @@ Bree official said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="COMMA-08" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-08" category="MODIFY" sentence="true">
 <!-- Initial clause is not eliminated because the first comma is absorbed the  -->
 <!-- the noun phrase, which is a distinction TABARI would not have made -->
 <!-- Last update: TABARI validation with modification of outcome -->
@@ -8485,7 +8484,7 @@ Bree official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-09" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-09" category="MODIFY" sentence="true">
 <!--  Initial comma-delimited clause should not be eliminated because of length -->
 <!--  This also shifts the code from RESTORE [064] to SAID [023] -->
 <!-- Last update: TABARI validation -->
@@ -8562,7 +8561,7 @@ official said on Saturday.
 <Config option="comma_emax" value="0"></Config>
 <Config option="comma_bmax" value="0"></Config>
 
-<Sentence date="19950101" id="COMMA-10" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-10" category="MODIFY" sentence="true">
 <!--  Should match the internal clause and terminal clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
@@ -8617,7 +8616,7 @@ official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-11" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-11" category="MODIFY" sentence="true">
 <!--  Should match BURNED DOWN (NE EMBASSY and the terminal clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="---" eventcode="222"></EventCoding>
@@ -8671,7 +8670,7 @@ clearly inebriated Bree official said today.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-12" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-12" category="MODIFY" sentence="true">
 <!-- TABARI would [incorrectly] match BREGOV the terminal clause after picking up GON -->
 <!-- as source.  PETR picks up only BURNED DOWN (NE EMBASSY due to the absence of an  -->
 <!-- (NE in the terminal clause -->
@@ -8739,7 +8738,7 @@ senior Bree official said today.
 <Config option="require_dyad" value="true"></Config>
 
 
-<Sentence date="19950113" id="COMMA-13" category="MODIFY"  valid="true">
+<Sentence date="19950113" id="COMMA-13" category="MODIFY"  sentence="true">
 <!-- Last update: TABARI validation: DEMO-13  -->
 <EventCoding sourcecode="ARN" targetcode="DAG" eventcode="085"></EventCoding>
 <Text>
@@ -8785,7 +8784,7 @@ Coreference set:
 -->
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-15" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-15" category="MODIFY" sentence="true">
 <!--  Standard elimination of internal comma-delimited clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding noevents = "True"></EventCoding>
@@ -8839,7 +8838,7 @@ official said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="COMMA-16" category="MODIFY" valid="true">
+<Sentence date="19950101" id="COMMA-16" category="MODIFY" sentence="true">
 <!--  Standard elimination of comma-delimited terminal clause -->
 <!-- Last update: TABARI validation -->
 <EventCoding noevents = "True"></EventCoding>
@@ -8905,7 +8904,7 @@ Bree official said on Saturday.
 ##################################################################
 -->
 
-<Sentence date="19950101" id="SYNSET-01" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-01" category="SYNSET" sentence="true">
 <!-- Simple coding for potential synset match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="901"></EventCoding>
@@ -8951,7 +8950,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-02" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-02" category="SYNSET" sentence="true">
 <!-- [Just to make sure we aren't hitting a synset directly, or getting any -->
 <!--  crashes when doing this. -->
 <!-- Last update: TABARI validation -->
@@ -9001,7 +9000,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-03" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-03" category="SYNSET" sentence="true">
 <!-- Synset element in upper match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
@@ -9047,7 +9046,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-04" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-04" category="SYNSET" sentence="true">
 <!-- [Synset element in upper match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
@@ -9093,7 +9092,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-05" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-05" category="SYNSET" sentence="true">
 <!-- [Synset element in upper match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
@@ -9139,7 +9138,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-06a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-06a" category="SYNSET" sentence="true">
 <!-- [Synset element in upper match: should not match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
@@ -9185,7 +9184,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-06c" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-06c" category="SYNSET" sentence="true">
 <!-- Not in the synset: should not code -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
@@ -9231,7 +9230,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-07a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-07a" category="SYNSET" sentence="true">
 <!-- Synset element in lower pattern: this matches a simple pattern -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="071"></EventCoding>
@@ -9281,7 +9280,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-07b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-07b" category="SYNSET" sentence="true">
 <!-- Synset element in lower match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -9331,7 +9330,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-08a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-08a" category="SYNSET" sentence="true">
 <!-- [Synset element as last element of phrase in upper match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -9381,7 +9380,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-08b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-08b" category="SYNSET" sentence="true">
 <!-- [Synset element as last element of phrase in upper match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -9427,7 +9426,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-09" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-09" category="SYNSET" sentence="true">
 <!-- Multi-word synset element in upper match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -9477,7 +9476,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-10" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-10" category="SYNSET" sentence="true">
 <!-- [Multi-word synset element in upper match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -9523,7 +9522,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-11a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-11a" category="SYNSET" sentence="true">
 <!-- [Partial Multi-word synset element in upper match; should not match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="070"></EventCoding>
@@ -9569,7 +9568,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-11b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-11b" category="SYNSET" sentence="true">
 <!-- [Partial Multi-word synset element in upper match; should not match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="070"></EventCoding>
@@ -9619,7 +9618,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-12" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-12" category="SYNSET" sentence="true">
 <!-- [Verb containing lower synset but no match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="121"></EventCoding>
@@ -9664,7 +9663,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-13" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-13" category="SYNSET" sentence="true">
 <!-- Synset element in lower match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
@@ -9712,7 +9711,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-14" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-14" category="SYNSET" sentence="true">
 <!-- Synset element in lower match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
@@ -9760,7 +9759,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-15a" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-15a" category="SYNSET" sentence="true">
 <!-- Synset element in lower match -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
@@ -9810,7 +9809,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-15b" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-15b" category="SYNSET" sentence="true">
 <!-- [Synset element in lower match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
@@ -9860,7 +9859,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-16" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-16" category="SYNSET" sentence="true">
 <!-- [Synset element in lower match, &syn is second element in pattern] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="906"></EventCoding>
@@ -9910,7 +9909,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-17" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-17" category="SYNSET" sentence="true">
 <!-- [Complex synset pattern in lower match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
@@ -9962,7 +9961,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-18" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-18" category="SYNSET" sentence="true">
 <!-- [Verb containing lower synset ] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
@@ -10010,7 +10009,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-19a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-19a" category="SYNSET" sentence="true">
 <!-- [Should allow ending on an open match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -10057,7 +10056,7 @@ said on Saturday.
 </Sentence>
 
 
-<Sentence date="19950101" id="SYNSET-20a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-20a" category="SYNSET" sentence="true">
 <!-- [Pre-check on open match within a phrase] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -10106,7 +10105,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-20b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-20b" category="SYNSET" sentence="true">
 <!-- [Should allow open match within a phrase] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
@@ -10156,7 +10155,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-21a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-21a" category="SYNSET" sentence="true">
 <!-- Synset development: closed match in conventional pattern -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="102"></EventCoding>
@@ -10201,7 +10200,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-21b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-21b" category="SYNSET" sentence="true">
 <!-- [Synset development: failed closed match in conventional pattern ] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="081"></EventCoding>
@@ -10250,7 +10249,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-21c" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-21c" category="SYNSET" sentence="true">
 <!-- Synset development: open [TABARI] match in conventional pattern -->
 <!-- Last update: TABARI validation with addition of &REVOLT synset which is a  -->
 <!-- for the stemmed matching of TABARI -->
@@ -10296,7 +10295,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-21d" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-21d" category="SYNSET" sentence="true">
 <!-- [Synset development: open match in conventional pattern ] -->
 <!-- Last update: TABARI validation with addition of &REVOLT synset  -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="802"></EventCoding>
@@ -10341,7 +10340,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-22a" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-22a" category="SYNSET" sentence="true">
 <!-- [synset upper match: internal consecutive] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
@@ -10387,7 +10386,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-22b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-22b" category="SYNSET" sentence="true">
 <!-- [synset upper match: internal consecutive; fails] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
@@ -10433,7 +10432,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-22bb" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-22bb" category="SYNSET" sentence="true">
 <!-- [synset upper match: internal consecutive; fails] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
@@ -10479,7 +10478,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-22c" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-22c" category="SYNSET" sentence="true">
 <!-- [synset upper match: internal open] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
@@ -10525,7 +10524,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-22d" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-22d" category="SYNSET" sentence="true">
 <!-- [synset match: internal consecutive] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
@@ -10571,7 +10570,7 @@ said on Saturday.
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-22e" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-22e" category="SYNSET" sentence="true">
 <!-- Synset element in lower match, open connector -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="906"></EventCoding>
@@ -10628,7 +10627,7 @@ with an orc infestation during a brief private trip to Eriador starting on Sunda
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-22f" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-22f" category="SYNSET" sentence="true">
 <!-- [Complex synset pattern in lower match, closed connector] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="907"></EventCoding>
@@ -10680,7 +10679,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-22g" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-22g" category="SYNSET" sentence="true">
 <!-- [Complex synset pattern in lower match, closed connector] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="907"></EventCoding>
@@ -10734,7 +10733,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-22h" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-22h" category="SYNSET" sentence="true">
 <!-- [Complex synset pattern in lower match, closed connector, fails] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
@@ -10788,7 +10787,7 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
 </Parse>
 </Sentence>
 
-<Sentence date="19950111" id="SYNSET-22i" category="SYNSET" valid="true">
+<Sentence date="19950111" id="SYNSET-22i" category="SYNSET" sentence="true">
 <!-- [Complex synset pattern in lower match, closed connector, fails on 907] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
@@ -10842,7 +10841,7 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23a" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23a" category="SYNSET" sentence="true">
 <!-- [Recursive synset match: no match] -->
 <!-- TABARI allowed synsets inside multi-word patterns in synsets; this has not been -->
 <!-- implemented in PETRARCH; the "SYNSET-23*" cases use the somewhat redundant patterns -->
@@ -10876,7 +10875,7 @@ Calenardhon welcomed memos from Bree on its role for in forthcoming peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23b" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23b" category="SYNSET" sentence="true">
 <!-- [Recursive synset match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="911"></EventCoding>
@@ -10908,7 +10907,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23c" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23c" category="SYNSET" sentence="true">
 <!-- [Recursive synset match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="915"></EventCoding>
@@ -10940,7 +10939,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23d" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23d" category="SYNSET" sentence="true">
 <!-- [Recursive synset match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="915"></EventCoding>
@@ -10973,7 +10972,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23e" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23e" category="SYNSET" sentence="true">
 <!-- [Recursive synset match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="912"></EventCoding>
@@ -11009,7 +11008,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23ee" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23ee" category="SYNSET" sentence="true">
 <!-- [Recursive synset match; fails on a closed connector] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="041"></EventCoding>
@@ -11045,7 +11044,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23f" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23f" category="SYNSET" sentence="true">
 <!-- [Recursive synset match] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="911"></EventCoding>
@@ -11080,7 +11079,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23g" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23g" category="SYNSET" sentence="true">
 <!-- [Recursive synset match: fails on closed] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="041"></EventCoding>
@@ -11112,7 +11111,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23h" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23h" category="SYNSET" sentence="true">
 <!-- [Recursive synset match: matches open] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="914"></EventCoding>
@@ -11148,7 +11147,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23i" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23i" category="SYNSET" sentence="true">
 <!-- [Recursive synset match: matches open] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="913"></EventCoding>
@@ -11183,7 +11182,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950118" id="SYNSET-23j" category="SYNSET" valid="true">
+<Sentence date="19950118" id="SYNSET-23j" category="SYNSET" sentence="true">
 <!-- [Recursive synset match: matches open] -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="CAL" targetcode="BRE" eventcode="913"></EventCoding>
@@ -11222,7 +11221,7 @@ peace talks.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="SYNSET-24b" category="SYNSET" valid="true">
+<Sentence date="19950101" id="SYNSET-24b" category="SYNSET" sentence="true">
 <!-- Test with basic conditional containing synsets -->
 <!-- Last update: TABARI validation -->
 <EventCoding sourcecode="ARN" targetcode="GON" eventcode="083"></EventCoding>
@@ -11282,7 +11281,7 @@ said on Saturday.
 ##################################################################
 -->
 
-<Sentence date = "20080801" id ="ERROR-01"  category="ERROR" valid="true">
+<Sentence date = "20080801" id ="ERROR-01"  category="ERROR" sentence="true">
 <!-- 'dateline' pattern detected in check_irregulars -->
 <!-- Last update: 26 August 2014 -->
 <EventCoding error="dateline"></EventCoding>
@@ -11318,7 +11317,7 @@ August last year and caused a massive oil spill in Cebu.
 </Sentence>
 
 
-<Sentence date="19950101" id="ERROR-02" category="ERROR" valid="true">
+<Sentence date="19950101" id="ERROR-02" category="ERROR" sentence="true">
 <!-- This has unbalanced input with a missing (VP -->
 <!-- Last update: 2 Sept 2014 -->
 <EventCoding error="bad_input_parse"></EventCoding>
@@ -11361,7 +11360,7 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="ERROR-03" category="ERROR" valid="true">
+<Sentence date="19950101" id="ERROR-03" category="ERROR" sentence="true">
 <!-- This has unbalanced input with a couple of missing )) -->
 <!-- Last update: 2 Sept 2014 -->
 <EventCoding error="bad_input_parse"></EventCoding>
@@ -11404,7 +11403,7 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DISCARD-01" category="ERROR" valid="true">
+<Sentence date="19950101" id="DISCARD-01" category="ERROR" sentence="true">
 <!-- Single word story discard -->
 <!-- Last update: 16 Sept 2014 -->
 <EventCoding error="storydiscard"></EventCoding>
@@ -11448,7 +11447,7 @@ five years after a typhoon trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DISCARD-02" category="ERROR"  valid="true">
+<Sentence date="19950101" id="DISCARD-02" category="ERROR"  sentence="true">
 <!-- Multi-word story discard -->
 <!-- Last update: 16 Sept 2014 -->
 <EventCoding error="storydiscard"></EventCoding>
@@ -11492,7 +11491,7 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DISCARD-03" category="ERROR" valid="true">
+<Sentence date="19950101" id="DISCARD-03" category="ERROR" sentence="true">
 <!-- Single word sentence discard -->
 <!-- Last update: 16 Sept 2014 -->
 <EventCoding error="sentencediscard"></EventCoding>
@@ -11536,7 +11535,7 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
-<Sentence date="19950101" id="DISCARD-04" category="ERROR"  valid="true">
+<Sentence date="19950101" id="DISCARD-04" category="ERROR"  sentence="true">
 <!-- Multi-word sentence discard -->
 <!-- Last update: 16 Sept 2014 -->
 <EventCoding error="sentencediscard"></EventCoding>
@@ -11580,6 +11579,52 @@ five years after crowds trashed its embassy.
 </Parse>
 </Sentence>
 
+
+
+
+<Sentence date="19950104" id="ABOUT-01" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests -->
+<EventCoding sourcecode="RUSCOP" targetcode="RUSEDU" eventcode="212"></EventCoding>
+
+<Text>
+Russian police arrested Russian students in Moscow today.
+</Text>
+<Parse> 
+(ROOT (S (NP (JJ Russian) (NN police)) (VP (VBD arrested) (NP (JJ Russian) (NNS students)) (PP (IN in) (NP (NNP Moscow))) (NP-TMP (NN today))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950104" id="ABOUT-02" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests -->
+<EventCoding sourcecode="RUSCOP" targetcode="---EDU" eventcode="212"></EventCoding>
+
+<Text>
+Russian police arrested students in Moscow today.
+</Text>
+<Parse> 
+(ROOT (S (NP (JJ Russian) (NN police)) (VP (VBD arrested) (NP (NNS students)) (PP (IN in) (NP (NNP Moscow))) (NP-TMP (NN today))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+<Sentence date="19950104" id="ICC-01" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests-->
+
+<EventCoding sourcecode="IGOCOPITP" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+The International Criminal Court is about to restore full diplomatic ties with Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S (NP (DT The) (NNP International) (NNP Criminal) (NNP Police) (NNP Organization)) (VP (VBZ is) (VP (IN about) (S (VP (TO to) (VP (VB restore) (NP (JJ full) (JJ diplomatic) (NNS ties)) (PP (IN with) (NP (NNP Gondor))) (SBAR (NP (RB almost) (CD five) (NNS years)) (IN after) (S (NP (NNS crowds)) (VP (VBD trashed) (NP (PRP$ its) (NN embassy)))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+
+
 <!--
 ##################################################################
 #
@@ -11588,7 +11633,7 @@ five years after crowds trashed its embassy.
 ##################################################################
 -->
 
-<Sentence date="19950104" id="FINAL-RECORD" category="DEMO" valid="true">
+<Sentence date="19950104" id="FINAL-RECORD" category="DEMO" sentence="true">
 <!-- Successful termination of the unit tests -->
 <EventCoding noevents = "True"></EventCoding>
 <Text>

@@ -4,12 +4,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-
 import PETRglobals
 import PETRreader
 
+
 class Phrase:
-    def __init__(self,label,date):
+
+    def __init__(self, label, date):
         self.label = label
         self.children = []
         self.phrasetype = label[0]
@@ -55,13 +56,13 @@ class Phrase:
 
 class NounPhrase(Phrase):
 
-    def __init__(self,label,date):
-        Phrase.__init__(self,label,date)
-    
+    def __init__(self, label, date):
+        Phrase.__init__(self, label, date)
+
     def return_meaning(self):
         return self.meaning
 
-    def check_date(self,match):
+    def check_date(self, match):
 
         code = None
         try:
@@ -90,11 +91,9 @@ class NounPhrase(Phrase):
         except:
             return code
         return code
-    
-
 
     def get_meaning(self):
-        dict_entry = ("",-1)
+        dict_entry = ("", -1)
         dicts = (PETRglobals.ActorDict, PETRglobals.AgentDict)
         match_in_progress = {}
         codes = []
@@ -102,17 +101,16 @@ class NounPhrase(Phrase):
         PPcodes = []
         VPcodes = []
         i = 0
-        option = -1
-        pathleft = [({},i,-1)]
-     
+        option = 0
+        pathleft = [({}, i, 0)]
+
         ##
         #
         #   Check for the meanings of its children. This method will be called on the children nodes as well
         #          if meaning has not already been determined, which it shouldn't have because these should be
         #          1-regular in-degree graphs,but who knows.
         ##
-        
-        APMprint = True
+
         while i < len(self.children):
             child = self.children[i]
             if match_in_progress != {} :
@@ -121,11 +119,13 @@ class NounPhrase(Phrase):
                     match_in_progress = match_in_progress[child.text]
                 elif "#" in match_in_progress:
                     match = match_in_progress['#']
-                    if isinstance(match,type([])): # We've matched from the actor dictionary
+                    # We've matched from the actor dictionary
+                    if isinstance(match, type([])):
                         code = self.check_date(match)
                         if not code is None:
                             codes.append(code)
-                    else:                           # We've matchd from the agent dictionary
+                    # We've matchd from the agent dictionary
+                    else:
                         codes.append(match_in_progress['#'])
                     match_in_progress = {}
                     option = -1
@@ -139,9 +139,9 @@ class NounPhrase(Phrase):
                     match_in_progress = p[0]
                     option = p[2]
                     continue
-                
+
             else:
-                if child.label[:2] in ["NN","JJ","DT"]:
+                if child.label[:2] in ["NN", "JJ", "DT"]:
                     text = child.text
                     if (not option >= 0) and text in PETRglobals.ActorDict:
                         dict_entry = (text,0)
@@ -157,20 +157,20 @@ class NounPhrase(Phrase):
                 elif child.label == "NP":
                     m = child.get_meaning()
                     if not m == "":
-                        NPcodes+= m
+                        NPcodes += m
                 elif child.label == "PP":
                     m = child.get_meaning()
-                    if not m == None:
+                    if not m is None:
                         PPcodes += m
                 elif child.label == "PRP":
                     # Naively find antecedent ?
                     not_found = True
                     level = self.parent
                     while not_found and not level.parent is None:
-                        if level.label in ["NP","S","SBAR"]:
+                        if level.label in ["NP", "S", "SBAR"]:
                             level = level.parent
                             continue
-                        #if level.label == "VP":
+                        # if level.label == "VP":
                         #    codes += level.get_upper()
                         for child in level.parent.children:
                             if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
@@ -180,8 +180,8 @@ class NounPhrase(Phrase):
                 elif child.label == "VP":
                     m = child.get_meaning()[1]
                     if not m == "":
-                        VPcodes+= m
- 
+                        VPcodes += m
+
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
@@ -238,18 +238,18 @@ class NounPhrase(Phrase):
         return self.meaning
 
 
-
 class PrepPhrase(Phrase):
 
-    def __init__(self,label,date):
-        Phrase.__init__(self,label,date)
+    def __init__(self, label, date):
+        Phrase.__init__(self, label, date)
         self.meaning = ""
         self.prep = ""
-    
+
     def get_meaning(self):
         self.meaning = self.children[1].get_meaning()
         self.prep = self.children[0].text
         return self.meaning
+
 
 class VerbPhrase(Phrase):
 
@@ -263,8 +263,9 @@ class VerbPhrase(Phrase):
     
     
     def get_meaning(self):
-        return self.get_upper(),self.get_lower()
-    
+
+        return self.get_upper(), self.get_lower()
+
     def return_upper(self):
         return self.upper
     
@@ -304,7 +305,9 @@ class VerbPhrase(Phrase):
                 self.upper = level.parent.upper
                 return self.upper
             for child in level.parent.children:
-                if isinstance(child,NounPhrase) and not child.get_meaning() is None : # Do we just want to pick the first?
+                # Do we just want to pick the first?
+                if isinstance(
+                        child, NounPhrase) and not child.get_meaning() == "":
                     self.upper = child.get_meaning()
                     not_found = False
                     return self.upper
@@ -318,40 +321,36 @@ class VerbPhrase(Phrase):
     def get_lower(self):
         self.get_lower = self.return_lower
         # this is WAY harder than finding upper
- 
+
         #### SUPER NAIVE ######
         #
         #   This probably only works with very basic sentences, will do some more tests and research
         #
-        
-        #   edit: Maybe it actually works fine. Who knows
-        
+
         NPcodes = []
         PPcodes = []
         VPcodes = []
 
         for child in self.children:
-            if isinstance(child,NounPhrase):
+            if isinstance(child, NounPhrase):
                 NPcodes += child.get_meaning()
-            elif isinstance(child,PrepPhrase):
+            elif isinstance(child, PrepPhrase):
                 PPcodes += (child.get_meaning())
-            elif isinstance(child,VerbPhrase):
-                VPcodes+= child.get_meaning()[1]
+            elif isinstance(child, VerbPhrase):
+                VPcodes += child.get_meaning()[1]
             elif child.label in "SBAR":
-                for ch in (child.children[0].children if child.label == "SBAR" else child.children):
-                    if isinstance(ch,NounPhrase):
+                for ch in (
+                        child.children[0].children if child.label == "SBAR" else child.children):
+                    if isinstance(ch, NounPhrase):
                         NPcodes += ch.get_meaning()
-                    elif isinstance(ch,PrepPhrase):
+                    elif isinstance(ch, PrepPhrase):
                         PPcodes += ch.get_meaning()
-                    elif isinstance(ch,VerbPhrase):
-                        VPcodes+= ch.get_meaning()[1]
-                
-
+                    elif isinstance(ch, VerbPhrase):
+                        VPcodes += ch.get_meaning()[1]
 
         if NPcodes == []:
             if PPcodes == []:
                 try:
-                    
                     return VPcodes
                 except:
                     return ""
@@ -390,8 +389,9 @@ class VerbPhrase(Phrase):
 
 
 class Event:
-    def __init__(self,str,text,date):
-        self.treestr = str.replace(')',' )')
+
+    def __init__(self, str, text, date):
+        self.treestr = str.replace(')', ' )')
         self.parse = ""
         self.agent = ""
         self.ID = -1
@@ -410,14 +410,14 @@ class Event:
             if '(' in element:
                 lab = element[1:]
                 if lab == "NP":
-                    new = NounPhrase(lab,self.date)
+                    new = NounPhrase(lab, self.date)
                 elif lab == "VP":
                     new = VerbPhrase(lab,self.date)
                     self.verbs.append(new)
                 elif lab == "PP":
-                    new = PrepPhrase(lab,self.date)
+                    new = PrepPhrase(lab, self.date)
                 else:
-                    new = Phrase(lab,self.date)
+                    new = Phrase(lab, self.date)
                 new.parent = level_stack[-1]
                 new.index = len(level_stack[-1].children)
                 level_stack[-1].children.append(new)
@@ -478,27 +478,26 @@ class Event:
     
         print("""
                     \\begin{tikzpicture}[scale= .25]
-                    \\Tree""",file=file,end=" ")
-        
-        self.print_tree(root,"",file)
+                    \\Tree""", file=file, end=" ")
+
+        self.print_tree(root, "", file)
         print("""\\end{tikzpicture}
                       \\newpage
-                    """,file=file)
-    
+                    """, file=file)
 
-    def print_tree(self,root ,indent = "", f = ""):
+    def print_tree(self, root, indent="", f=""):
         # This prints a LaTeX formatted document of the tree
         print("[."+root.label.replace("$",""),("{\\bf "+root.text+"}" if not root.text == "" else "") ,file = f,end = " ")
         if root.label in ["NP"]:
             m = root.get_meaning()
             k = ""
             for i in m:
-                k += "+"+i
-            print("[.{"+k+"}",file = f,end = " ")
+                k += "+" + i
+            print("[.{" + k + "}", file=f, end=" ")
         if root.label in ["VP"]:
             m = root.get_meaning()
             k = ""
-            if m[0] == None:
+            if m[0] is None:
                 k = ""
             else:
                 for i in m[0]:
@@ -515,32 +514,4 @@ class Event:
         if root.label in ["NP","VP"]:
             print(" ] ]",file = f,end=" \n")
         else:
-            print(" ]",file= f, end = " ")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            print(" ]", file=f, end=" ")

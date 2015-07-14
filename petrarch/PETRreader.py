@@ -18,7 +18,7 @@
 #
 # Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
 #
-# This project is part of the Open Event Data Alliance tool set; earlier developments 
+# This project is part of the Open Event Data Alliance tool set; earlier developments
 # were funded in part by National Science Foundation grant SES-1259190
 #
 # This code is covered under the MIT license
@@ -28,7 +28,7 @@
 # REVISION HISTORY:
 # 22-Nov-13:	Initial version
 # Summer-14:	Numerous modifications to handle synonyms in actor and verb dictionaries
-# 20-Nov-14:	write_actor_root/text added to parse_Config  
+# 20-Nov-14:	write_actor_root/text added to parse_Config
 # ------------------------------------------------------------------------
 
 from __future__ import print_function
@@ -105,11 +105,14 @@ def parse_Config(config_path):
         If optname not present, returns False """
         if parser.has_option('Options', optname):
             try:
-                result = parser.getboolean('Options',optname)
-                print(optname,"=", result)
+                result = parser.getboolean('Options', optname)
+                print(optname, "=", result)
                 return result
             except ValueError:
-                print("Error in config.ini: "+optname+" value must be `true' or `false'")
+                print(
+                    "Error in config.ini: " +
+                    optname +
+                    " value must be `true' or `false'")
                 raise
         else:
             return False
@@ -120,15 +123,21 @@ def parse_Config(config_path):
 #	print "pc",PETRglobals.ConfigFileName
     confdat = parser.read(config_path)
     if len(confdat) == 0:
-        print("\aError: Could not find the config file:", PETRglobals.ConfigFileName)
+        print(
+            "\aError: Could not find the config file:",
+            PETRglobals.ConfigFileName)
         print("Terminating program")
         sys.exit()
 
     try:
         PETRglobals.VerbFileName = parser.get('Dictionaries', 'verbfile_name')
-        PETRglobals.AgentFileName = parser.get('Dictionaries','agentfile_name')
+        PETRglobals.AgentFileName = parser.get(
+            'Dictionaries',
+            'agentfile_name')
 #		print "pc",PETRglobals.AgentFileName
-        PETRglobals.DiscardFileName = parser.get( 'Dictionaries','discardfile_name')
+        PETRglobals.DiscardFileName = parser.get(
+            'Dictionaries',
+            'discardfile_name')
 
         direct = parser.get('StanfordNLP', 'stanford_dir')
         PETRglobals.stanfordnlp = os.path.expanduser(direct)
@@ -146,7 +155,9 @@ def parse_Config(config_path):
                 try:
                     fpar = open(filename, 'r')
                 except IOError:
-                    print("\aError: Could not find the text file list file:", filename)
+                    print(
+                        "\aError: Could not find the text file list file:",
+                        filename)
                     print("Terminating program")
                     sys.exit()
                 PETRglobals.TextFileList = []
@@ -163,37 +174,48 @@ def parse_Config(config_path):
 #		print "pc",PETRglobals.TextFileList
 
         if parser.has_option('Dictionaries', 'issuefile_name'):
-            PETRglobals.IssueFileName = parser.get('Dictionaries','issuefile_name')
+            PETRglobals.IssueFileName = parser.get(
+                'Dictionaries',
+                'issuefile_name')
 
         if parser.has_option('Options', 'new_actor_length'):
             try:
-                PETRglobals.NewActorLength = parser.getint('Options','new_actor_length')
+                PETRglobals.NewActorLength = parser.getint(
+                    'Options',
+                    'new_actor_length')
             except ValueError:
-                print("Error in config.ini Option: new_actor_length value must be an integer")
+                print(
+                    "Error in config.ini Option: new_actor_length value must be an integer")
                 raise
         print("new_actor_length =", PETRglobals.NewActorLength)
-        
+
         PETRglobals.StoponError = get_config_boolean('stop_on_error')
         PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
         PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
 
-        if parser.has_option('Options', 'require_dyad'):  # this one defaults to True
+        if parser.has_option(
+                'Options', 'require_dyad'):  # this one defaults to True
             PETRglobals.RequireDyad = get_config_boolean('require_dyad')
         else:
             PETRglobals.RequireDyad = True
-
 
         # otherwise this was set in command line
         if len(PETRglobals.EventFileName) == 0:
             PETRglobals.EventFileName = parser.get('Options', 'eventfile_name')
 
-        PETRglobals.CodeBySentence = parser.has_option('Options','code_by_sentence')
+        PETRglobals.CodeBySentence = parser.has_option(
+            'Options',
+            'code_by_sentence')
         print("code-by-sentence", PETRglobals.CodeBySentence)
-        
-        PETRglobals.PauseBySentence = parser.has_option('Options','pause_by_sentence')
+
+        PETRglobals.PauseBySentence = parser.has_option(
+            'Options',
+            'pause_by_sentence')
         print("pause_by_sentence", PETRglobals.PauseBySentence)
-        
-        PETRglobals.PauseByStory = parser.has_option('Options','pause_by_story')
+
+        PETRglobals.PauseByStory = parser.has_option(
+            'Options',
+            'pause_by_story')
         print("pause_by_story", PETRglobals.PauseByStory)
 
         try:
@@ -210,27 +232,42 @@ def parse_Config(config_path):
             elif parser.has_option('Options', 'comma_emax'):
                 PETRglobals.CommaEMax = parser.getint('Options', 'comma_emax')
         except ValueError:
-            print("Error in config.ini Option: comma_*  value must be an integer")
+            print(
+                "Error in config.ini Option: comma_*  value must be an integer")
             raise
         print("Comma-delimited clause elimination:")
         print("Initial :", end=' ')
         if PETRglobals.CommaBMax == 0:
             print("deactivated")
         else:
-            print("min =", PETRglobals.CommaBMin, "   max =", PETRglobals.CommaBMax)
+            print(
+                "min =",
+                PETRglobals.CommaBMin,
+                "   max =",
+                PETRglobals.CommaBMax)
         print("Internal:", end=' ')
         if PETRglobals.CommaMax == 0:
             print("deactivated")
         else:
-            print("min =", PETRglobals.CommaMin, "   max =", PETRglobals.CommaMax)
+            print(
+                "min =",
+                PETRglobals.CommaMin,
+                "   max =",
+                PETRglobals.CommaMax)
         print("Terminal:", end=' ')
         if PETRglobals.CommaEMax == 0:
             print("deactivated")
         else:
-            print("min =", PETRglobals.CommaEMin, "   max =", PETRglobals.CommaEMax)
+            print(
+                "min =",
+                PETRglobals.CommaEMin,
+                "   max =",
+                PETRglobals.CommaEMax)
 
     except Exception as e:
-        print('parse_config() encountered an error: check the options in', PETRglobals.ConfigFileName)
+        print(
+            'parse_config() encountered an error: check the options in',
+            PETRglobals.ConfigFileName)
         print("Terminating program")
         sys.exit()
 #		logger.warning('Problem parsing config file. {}'.format(e))
@@ -240,8 +277,8 @@ def parse_Config(config_path):
 
 
 def open_FIN(filename, descrstr):
-# opens the global input stream fin using filename;
-# descrstr provides information about the file in the event it isn't found
+    # opens the global input stream fin using filename;
+    # descrstr provides information about the file in the event it isn't found
     global FIN
     global FINline, FINnline, CurrentFINname
     try:
@@ -255,9 +292,9 @@ def open_FIN(filename, descrstr):
 
 
 def close_FIN():
-# closes the global input stream fin.
-# IOError should only happen during debugging or if something has seriously gone wrong
-# with the system, so exit if this occurs.
+    # closes the global input stream fin.
+    # IOError should only happen during debugging or if something has seriously gone wrong
+    # with the system, so exit if this occurs.
     global FIN
     try:
         FIN.close()
@@ -316,11 +353,12 @@ def read_FIN_line():
     line = FIN.readline()
     FINnline += 1
     while True:
-#		print '==',line,
+        #		print '==',line,
         if len(line) == 0:
             break  # calling function needs to handle EOF
         # deal with simple lines we need to skip
-        if line[0] == '#' or line[0] == '\n' or line[0:2] == '<!' or len(line.strip()) == 0:
+        if line[0] == '#' or line[0] == '\n' or line[
+                0:2] == '<!' or len(line.strip()) == 0:
             line = FIN.readline()
             FINnline += 1
             continue
@@ -352,18 +390,18 @@ def read_FIN_line():
 # ========================== TAG EVALUATION FUNCTIONS ========================== #
 
 def find_tag(tagstr):
-# reads fin until tagstr is found
-# can inherit EOFError raised in PETRreader.read_FIN_line()
+    # reads fin until tagstr is found
+    # can inherit EOFError raised in PETRreader.read_FIN_line()
     line = read_FIN_line()
     while (tagstr not in line):
         line = read_FIN_line()
 
 
 def extract_attributes(theline):
-# puts list of attribute and content pairs in the global AttributeList. First item is
-# the tag itself
-# If a twice-double-quote occurs -- "" -- this treated as "\"
-# still to do: need error checking here
+    # puts list of attribute and content pairs in the global AttributeList. First item is
+    # the tag itself
+    # If a twice-double-quote occurs -- "" -- this treated as "\"
+    # still to do: need error checking here
     """
     Structure of attributes extracted to AttributeList
     At present, these always require a quoted field which follows an '=', though it
@@ -459,7 +497,7 @@ def read_discard_list(discard_path):
     BASKETBALL
     BATSMAN  # MleH 14 Jul 2009
     BATSMEN  # MleH 12 Jul 2009
-    
+
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.DiscardFileName)
     open_FIN(discard_path, "discard")
@@ -479,7 +517,7 @@ def read_discard_list(discard_path):
 
 
     """
-    
+
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.DiscardFileName)
     open_FIN(discard_path, "discard")
@@ -490,23 +528,20 @@ def read_discard_list(discard_path):
             line = line[:line.find('#')]
         targ = line.strip()
         if targ.startswith('+'):
-            targ =  targ[1:].upper() + ' +'
+            targ = targ[1:].upper() + ' +'
         else:
-            targ =  targ.upper() + ' $'
+            targ = targ.upper() + ' $'
 
         targ = targ.split()
         prev = targ[0]       # Add words to search tree
         targ = targ[1:]
-        list = PETRglobals.DiscardList.setdefault(prev,{})
+        list = PETRglobals.DiscardList.setdefault(prev, {})
         while targ != []:
-            list = list.setdefault(targ[0],{})
+            list = list.setdefault(targ[0], {})
             targ = targ[1:]
 
         line = read_FIN_line()
     close_FIN()
-
-
-
 
 
 def read_issue_list(issue_path):
@@ -673,10 +708,10 @@ def read_verb_dictionary(verb_path):
     verb -- endings of 'S','ED' and 'ING' -- if it is regular (and, implicitly, English);
     otherwise the irregular forms can be specified in {...} following the primary verb.
     Note that if irregular forms are provided in {...}, ALL forms need to be included,
-    even if some of those are the same as the regular form (in other words, no 
+    even if some of those are the same as the regular form (in other words, no
     alternative forms are generated when {...} is present). An optional code for the
     isolated verb can follow in [...].
-    
+
     The verb block begins with a comment of the form
 
     --- <GENERAL DESCRIPTION> [<CODE>] ---
@@ -691,14 +726,14 @@ def read_verb_dictionary(verb_path):
     follow the same syntax as TABARI patterns. The pattern set is terminated with a
     blank line.
 
-    MULTIPLE-WORD VERBS 
+    MULTIPLE-WORD VERBS
     Multiple-word "verbs" such as "CORDON OFF", "WIRE TAP" and "BEEF UP" are entered by
     connecting the word with an underscore (these must be consecutive) and putting a '+'
-    in front of the word -- only the first and last are currently allowed -- of the 
-    phrase that TreeBank is going to designate as the verb.If there is no {...}, regular 
-    forms are constructed for the word designated by '+'; otherwise all of the irregular 
-    forms are given in {...}. If you can't figure out which part of the phrase is the 
-    verb, the phrase you are looking at is probably a noun, not a verb. Multi-word verbs 
+    in front of the word -- only the first and last are currently allowed -- of the
+    phrase that TreeBank is going to designate as the verb.If there is no {...}, regular
+    forms are constructed for the word designated by '+'; otherwise all of the irregular
+    forms are given in {...}. If you can't figure out which part of the phrase is the
+    verb, the phrase you are looking at is probably a noun, not a verb. Multi-word verbs
     are treated in patterns just as single-word verbs are treated.
 
     Examples
@@ -707,19 +742,19 @@ def read_verb_dictionary(verb_path):
     +CORDON_OFF {+CORDONED_OFF +CORDONS_OFF +CORDONING_OFF}
     +COME_UPON {+COMES_UPON +CAME_UPON +COMING_UPON}
     WIRE_+TAP {WIRE_+TAPS WIRE_+TAPPED  WIRE_+TAPPING }
-    
+
     Multi-words are stored in a list consisting of
         code
         primary form (use as a pointer to the pattern
-        tuple: (True if verb is at start of phrase, False otherwise; remaining words) 
-        
-    [15.04.30] 
+        tuple: (True if verb is at start of phrase, False otherwise; remaining words)
+
+    [15.04.30]
     If a word occurs both as the verb in a multi-word and as a single word, it will be at
-    the end of the list of multi-word candidate strings: that is, the multi-world 
+    the end of the list of multi-word candidate strings: that is, the multi-world
     combinations are checked first, then only if none of these match is the single word
-    option used. Due to sub-optimized code, words that are the verb in a multi-word verb 
-    cannot be the first word in a block of verbs. The current dictionary has removed 
-    all of these. 
+    option used. Due to sub-optimized code, words that are the verb in a multi-word verb
+    cannot be the first word in a block of verbs. The current dictionary has removed
+    all of these.
 
     SYNSETS
     Synonym sets (synsets) are labelled with a string beginning with & and defined using
@@ -768,7 +803,7 @@ def read_verb_dictionary(verb_path):
 
 
     --- GRANT [070] ---
-    GRANT 
+    GRANT
     GIVE {GAVE GIVEN GIVING }  # jw  11/14/91
     CONTRIBUTE # tony  3/12/91
     - * &CURRENCY [903] # -PAS 12.01.12
@@ -896,40 +931,47 @@ def read_verb_dictionary(verb_path):
 
     """
     global theverb, verb  # <14.05.07> : not needed, right?
-    PETRglobals.VerbDict = {'verbs':{},'phrases':{}}
+    PETRglobals.VerbDict = {'verbs': {}, 'phrases': {}}
 
-
-    def add_dict_tree(targ,verb,meaning="",code='---',upper=[],synset = False,dict = 'phrases',line = ""):
+    def add_dict_tree(targ, verb, meaning="", code='---',
+                      upper=[], synset=False, dict='phrases', line=""):
         # DOUBLE CHECK THAT VERB =/= targ[0]
         prev = verb
-        list = PETRglobals.VerbDict[dict].setdefault(verb,{})
+        list = PETRglobals.VerbDict[dict].setdefault(verb, {})
         while targ != []:
-            if targ[0] in [' ','']:
+            if targ[0] in [' ', '']:
                 targ = targ[1:]
                 continue
-            
-            if targ[0][0] == '&':      # Put synset trees in their own bin so we can
-                list = list.setdefault('synsets',{})   # consider this case later
-            list = list.setdefault(targ[0],{})
+
+            # Put synset trees in their own bin so we can
+            if targ[0][0] == '&':
+                list = list.setdefault(
+                    'synsets',
+                    {})   # consider this case later
+            list = list.setdefault(targ[0], {})
             targ = targ[1:]
-        
-        
-        list["#"] = list.setdefault("#",{}) # termination symbol for the lower phrase
-        
+
+        list["#"] = list.setdefault(
+            "#",
+            {})  # termination symbol for the lower phrase
+
         list = list["#"]
-        
+
         targ = upper
         while targ != []:
-            if targ[-1] in [' ','']:
+            if targ[-1] in [' ', '']:
                 targ = targ[:-1]
                 continue
-            
-            if targ[-1][0] == '&':      # Put synset trees in their own bin so we can
-                list = list.setdefault('synsets',{})   # consider this case later
-            list = list.setdefault(targ[-1],{})
+
+            # Put synset trees in their own bin so we can
+            if targ[-1][0] == '&':
+                list = list.setdefault(
+                    'synsets',
+                    {})   # consider this case later
+            list = list.setdefault(targ[-1], {})
             targ = targ[:-1]
 
-        list['#'] = {'meaning':meaning,'code':code,'line':line}
+        list['#'] = {'meaning': meaning, 'code': code, 'line': line}
 
     def make_phrase_list(thepat):
         """ Converts a pattern phrase into a list of alternating words and connectors """
@@ -954,12 +996,13 @@ def read_verb_dictionary(verb_path):
                 phlist.append(thepat[start:spfind])
                 phlist.append(' ')
                 start = spfind + 1
-                                    # check for missing synsets
+                # check for missing synsets
         ka = 0
         while ka < len(phlist):
             if len(phlist[ka]) > 0:
-                if (phlist[ka][0] == '&') and (phlist[ka] not in PETRglobals.VerbDict):
-                    print("WTF",phlist[ka])
+                if (phlist[ka][0] == '&') and (
+                        phlist[ka] not in PETRglobals.VerbDict):
+                    print("WTF", phlist[ka])
                     print(sorted(PETRglobals.VerbDict.keys()))
                     exit()
 
@@ -969,40 +1012,41 @@ def read_verb_dictionary(verb_path):
             ka += 2
         return phlist
 
-    def get_verb_forms(loccode,line):
+    def get_verb_forms(loccode, line):
         """  Read the irregular forms of a verb. """
         # need error checking here
         global verb, theverb
-        
+
         forms = verb[verb.find('{') + 1:verb.find('}')].split()
         for wrd in forms:
             vscr = wrd
-            add_dict_tree([],vscr,theverb,loccode,dict='verbs',line = line)
-        
-    def store_multi_word_verb(loccode,line):
+            add_dict_tree([], vscr, theverb, loccode, dict='verbs', line=line)
+
+    def store_multi_word_verb(loccode, line):
         """  Store a multi-word verb and optional irregular forms. """
         global verb, theverb
-        
+
         if '{' in verb:
-            forms = verb[verb.find('{')+1:verb.find('}')].split()
+            forms = verb[verb.find('{') + 1:verb.find('}')].split()
             forms.append(verb[:verb.find('{')].strip())
         else:
-            forms = [verb] 
-            plind = verb.index('+')+1  # add the regular forms to the verb designated by '+'
-            if verb.find('_',plind) > 0:
-                vroot = verb[plind:verb.find('_',plind)]
+            forms = [verb]
+            # add the regular forms to the verb designated by '+'
+            plind = verb.index('+') + 1
+            if verb.find('_', plind) > 0:
+                vroot = verb[plind:verb.find('_', plind)]
             else:
                 vroot = verb[plind:]
-            forms.append(verb.replace(vroot,vroot + "S"))
+            forms.append(verb.replace(vroot, vroot + "S"))
             if vroot[-1] == 'E':  # root ends in 'E'
-                forms.append(verb.replace(vroot,vroot + "D"))
-                forms.append(verb.replace(vroot,vroot[:-1] + "ING"))
+                forms.append(verb.replace(vroot, vroot + "D"))
+                forms.append(verb.replace(vroot, vroot[:-1] + "ING"))
             else:
-                forms.append(verb.replace(vroot,vroot + "ED"))
-                forms.append(verb.replace(vroot,vroot + "ING"))
- 
+                forms.append(verb.replace(vroot, vroot + "ED"))
+                forms.append(verb.replace(vroot, vroot + "ING"))
+
         for phrase in forms:
-            if '+' in phrase: # otherwise not in correct form so skip it
+            if '+' in phrase:  # otherwise not in correct form so skip it
                 words = phrase.split('_')
 
                 multilist = []
@@ -1010,52 +1054,55 @@ def read_verb_dictionary(verb_path):
                 phrase
                 if words[0].startswith('+'):
                     multilist = [True]
-                    for ka in range(1,len(words)):
+                    for ka in range(1, len(words)):
                         multilist.append(words[ka])
                     targverb = words[0][1:]
-            
+
                 else:
                     upper = [False]
-                    for ka in range(2,len(words)+1):
-                        
-                        upper.append(words[len(words)-ka])
-                    targverb = words[len(words)-1][1:]
-        
-        
+                    for ka in range(2, len(words) + 1):
 
+                        upper.append(words[len(words) - ka])
+                    targverb = words[len(words) - 1][1:]
 
+                add_dict_tree(
+                    multilist[
+                        1:], targverb, theverb, loccode, upper=upper[
+                        1:], dict='verbs', line=line)
 
-                add_dict_tree(multilist[1:],targverb,theverb,loccode,upper = upper[1:],dict='verbs',line=line)
-        
             else:
-                logger.warning('Error in read_verb_dictionary()/store_multi_word_verb(): '+phrase+' in '+verb+' is part of a multi-word verb and should contain a +; this was skipped')
+                logger.warning(
+                    'Error in read_verb_dictionary()/store_multi_word_verb(): ' +
+                    phrase +
+                    ' in ' +
+                    verb +
+                    ' is part of a multi-word verb and should contain a +; this was skipped')
 
-
-    def make_verb_forms(loccode,line):
+    def make_verb_forms(loccode, line):
         """ Create the regular forms of a verb. """
         global verb, theverb
         vroot = verb
-        vscr = vroot + "S" if vroot[-1] not in ["S","X","Z"] else vroot+"ES"
-        add_dict_tree([],vscr,theverb,loccode,dict='verbs',line = line)
+        vscr = vroot + \
+            "S" if vroot[-1] not in ["S", "X", "Z"] else vroot + "ES"
+        add_dict_tree([], vscr, theverb, loccode, dict='verbs', line=line)
         if vroot[-1] == 'E':  # root ends in 'E'
             vscr = vroot + "D"
-            
-            add_dict_tree([],vscr,theverb,loccode,dict='verbs',line = line)
-        
+
+            add_dict_tree([], vscr, theverb, loccode, dict='verbs', line=line)
+
             vscr = vroot[:-1] + "ING"
-        
-        
+
         else:
-            vscr = vroot + "ED" # if vroot[-1] not == "Y" else vroot[-1]+"IES"
-            
-            add_dict_tree([],vscr,theverb,loccode,dict='verbs',line = line)
+            vscr = vroot + "ED"  # if vroot[-1] not == "Y" else vroot[-1]+"IES"
+
+            add_dict_tree([], vscr, theverb, loccode, dict='verbs', line=line)
             vscr = vroot + "ING"
-        
-        add_dict_tree([],vscr,theverb,loccode,dict='verbs',line = line)
+
+        add_dict_tree([], vscr, theverb, loccode, dict='verbs', line=line)
 
     def make_plural(st):
         """ Create the plural of a synonym noun st """
-        
+
         if 'Y' == st[-1]:
             return st[:-1] + 'IES'  # space is added below
         elif 'S' == st[-1]:
@@ -1074,7 +1121,6 @@ def read_verb_dictionary(verb_path):
     line = read_FIN_line()
     while len(line) > 0:  # loop through the file
 
-        
         if '[' in line:
             part = line.partition('[')
             verb = part[0].strip()
@@ -1089,9 +1135,9 @@ def read_verb_dictionary(verb_path):
                 primarycode = '---'
             newblock = True
             line = read_FIN_line()
-        
+
         elif verb[0] == '-':   # pattern
-            
+
             # TABARI legacy: currently aren't processing these
             if '{' in verb:
                 line = read_FIN_line()
@@ -1111,8 +1157,8 @@ def read_verb_dictionary(verb_path):
                     lowpat = [targ[2][0]]   # start with connector
                     loclist = make_phrase_list(lowphrase[1:])
                     lowpat.extend(loclist[:-1])   # don't need the final blank
-                
-                add_dict_tree(lowpat,theverb,"",code,highpat,line=line)
+
+                add_dict_tree(lowpat, theverb, "", code, highpat, line=line)
 
             except ValueError:
                 # just trap the error, which will skip the line containing it
@@ -1126,19 +1172,33 @@ def read_verb_dictionary(verb_path):
                 verb = verb[:-1]  # remove final blank and _
             else:
                 noplural = False
-            PETRglobals.VerbDict[verb] =  {}
+            PETRglobals.VerbDict[verb] = {}
             line = read_FIN_line()
             while line[0] == '+':
                 wordstr = line[1:].strip()
                 if noplural or wordstr[-1] == '_':
                     wordstr = wordstr.strip().replace('_', ' ')
-                    add_dict_tree(wordstr.split(),verb,synset = True,dict='verbs',line =line)
+                    add_dict_tree(
+                        wordstr.split(),
+                        verb,
+                        synset=True,
+                        dict='verbs',
+                        line=line)
                 else:
                     wordstr = wordstr.replace('_', ' ')
-                    add_dict_tree(wordstr.split(),verb,synset = True,dict='verbs',line=line)
-                    add_dict_tree(make_plural(wordstr).split(),verb,synset = True,dict='verbs',line=line)
-       
-                    
+                    add_dict_tree(
+                        wordstr.split(),
+                        verb,
+                        synset=True,
+                        dict='verbs',
+                        line=line)
+                    add_dict_tree(
+                        make_plural(wordstr).split(),
+                        verb,
+                        synset=True,
+                        dict='verbs',
+                        line=line)
+
                 line = read_FIN_line()
 
         else:  # verb
@@ -1151,33 +1211,40 @@ def read_verb_dictionary(verb_path):
                     # theverb is the index to the pattern storage for the
                     # remainder of the block
                     theverb = verb[:verb.find('{')].strip()
-                
+
                 else:
                     theverb = verb
-                add_dict_tree([],theverb,code=curcode,line=line)
+                add_dict_tree([], theverb, code=curcode, line=line)
                 newblock = False
             if '_' in verb:
-                store_multi_word_verb(curcode,line)
+                store_multi_word_verb(curcode, line)
             else:
-                add_dict_tree([],verb.split()[0],theverb,curcode,dict='verbs',line = line)
+                add_dict_tree(
+                    [],
+                    verb.split()[0],
+                    theverb,
+                    curcode,
+                    dict='verbs',
+                    line=line)
                 if '{' in verb:
-                    
-                    get_verb_forms(curcode,line)
+
+                    get_verb_forms(curcode, line)
                 else:
-                    make_verb_forms(curcode,line)
+                    make_verb_forms(curcode, line)
             ka += 1   # counting primary verbs
             line = read_FIN_line()
 
     close_FIN()
 
-    #for k,v in sorted(PETRglobals.VerbDict.items()):
+    # for k,v in sorted(PETRglobals.VerbDict.items()):
     #    print(k)
     #    for i,j in v.items():
     #        print('\t',i,j)
-    #exit()
+    # exit()
+
 
 def show_verb_dictionary(filename=''):
-# debugging function: displays VerbDict to screen or writes to filename
+    # debugging function: displays VerbDict to screen or writes to filename
     if len(filename) > 0:
         fout = open(filename, 'w')
         fout.write('PETRARCH Verb Dictionary Internal Format\n')
@@ -1214,8 +1281,8 @@ def show_verb_dictionary(filename=''):
 
 
 def make_noun_list(nounst):
-# parses a noun string -- actor, agent or agent plural -- and returns in a list which
-# has the keyword and initial connector in the first tuple
+    # parses a noun string -- actor, agent or agent plural -- and returns in a list which
+    # has the keyword and initial connector in the first tuple
     nounlist = []
     start = 0
     maxlen = len(nounst) + 1  # this is just a telltail
@@ -1335,7 +1402,7 @@ def read_actor_dictionary(actorfile):
     current_acts = []
     datelist = []
     while len(line) > 0:
-        if line[0] == '[': # Date
+        if line[0] == '[':  # Date
             data = line[1:-1].split()
             code = data[0]
             try:
@@ -1344,29 +1411,29 @@ def read_actor_dictionary(actorfile):
                 else:
                     dates = [data[1]]
             except:
-                dates= []
-            datelist.append((code,dates))
+                dates = []
+            datelist.append((code, dates))
         else:
             if line[0] == '+':  # Synonym
-                actor = line[1:].replace("_",' ').split()
-            else: # Base verb
+                actor = line[1:].replace("_", ' ').split()
+            else:  # Base verb
                 # add previous verb entry to dictionary:
                 for targ in current_acts:
                     list = PETRglobals.ActorDict
                     while targ != []:
-                        if targ[0] in [' ','']:
+                        if targ[0] in [' ', '']:
                             targ = targ[1:]
                             continue
-                        if not isinstance(list,dict):
-                            print("BADNESS",list)
+                        if not isinstance(list, dict):
+                            print("BADNESS", list)
                             exit()
-                        list = list.setdefault(targ[0],{})
+                        list = list.setdefault(targ[0], {})
                         targ = targ[1:]
                     list["#"] = datelist
-            
+
                 datelist = []
                 current_acts = []
-                actor  = line.replace("_",' ').split()
+                actor = line.replace("_", ' ').split()
                 if actor[-1][-1] == ']':
                     data = actor[-1][1:-1].split()
                     code = data[0]
@@ -1376,14 +1443,14 @@ def read_actor_dictionary(actorfile):
                         else:
                             dates = [data[1][1:]]
                     except:
-                        dates= []
-                    datelist.append((code,dates))
+                        dates = []
+                    datelist.append((code, dates))
                     actor.pop()
             current_acts.append(actor)
-            
+
         line = read_FIN_line().strip()
 
-    #for j,k in sorted(PETRglobals.ActorDict.items()):
+    # for j,k in sorted(PETRglobals.ActorDict.items()):
     #    print(j,'\t\t',k.keys())
 
 
@@ -1413,7 +1480,7 @@ def _read_actor_dictionary(actorfile):
 		[0,ordate,code] : < restriction
 		[1,ordate,code] : > restriction
 		[2,ordate,ordate, code] : - (interval) restriction
-	If PETRglobals.WriteActorRoot is True, the final element of a PETRglobals.ActorCodes 
+	If PETRglobals.WriteActorRoot is True, the final element of a PETRglobals.ActorCodes
 	list is the text of the actor at the beginning of the synonym list.
 
 	Synonyms simply use the integer code index to point to these tuples.
@@ -1512,7 +1579,7 @@ def _read_actor_dictionary(actorfile):
         if '---STOP---' in line:
             break
         if line[0] == '\t':  # deal with date restriction
-# print "DR:",line,   # debug
+            # print "DR:",line,   # debug
             try:
                 brack = line.index('[')
             except ValueError:
@@ -1568,15 +1635,16 @@ def _read_actor_dictionary(actorfile):
 
         else:
             if line[0] == '+':  # deal with synonym
-#				print "Syn:",line,
+                #				print "Syn:",line,
                 part = line.partition(';')  # split on comment, if any
                 actor = part[0][1:].strip() + ' '
             else:  					# primary phrase with code
                 if len(curlist) > 0:
                     if PETRglobals.WriteActorRoot:
-                    	curlist.append(rootactor)
+                        curlist.append(rootactor)
 #                    print(curlist)
-                    PETRglobals.ActorCodes.append(tuple(curlist)) # store code from previous entry
+                    PETRglobals.ActorCodes.append(
+                        tuple(curlist))  # store code from previous entry
                     """print(PETRglobals.ActorCodes[-1])
                     thelist = PETRglobals.ActorCodes[-1]
                     for item in thelist:
@@ -1611,12 +1679,12 @@ def _read_actor_dictionary(actorfile):
 #    <14.11.20: does this need to save the final entry? >
 
     # sort the patterns by the number of words
-    #for lockey in list(PETRglobals.ActorDict.keys()):
+    # for lockey in list(PETRglobals.ActorDict.keys()):
     #    PETRglobals.ActorDict[lockey].sort(key=len, reverse=True)
 
 
 def show_actor_dictionary(filename=''):
-# debugging function: displays ActorDict to screen or writes to filename
+    # debugging function: displays ActorDict to screen or writes to filename
     if len(filename) > 0:
         fout = open(filename, 'w')
         fout.write(
@@ -1746,7 +1814,7 @@ def read_agent_dictionary(agent_path):
             list = list.setdefault(targ[0],{})
             targ = targ[1:]
         list["#"] = code
-        
+
         return
         
     
@@ -1767,7 +1835,8 @@ def read_agent_dictionary(agent_path):
 
     def define_marker(line):
         global subdict
-        if line[line.find('!') + 1:].find('!') < 0 or line[line.find('!'):].find('=') < 0:
+        if line[
+                line.find('!') + 1:].find('!') < 0 or line[line.find('!'):].find('=') < 0:
             logger.warning(markdeferrorstr + enderrorstr)
             return
         ka = line.find('!') + 1
@@ -1794,7 +1863,7 @@ def read_agent_dictionary(agent_path):
                            "! missing in .agents file; line skipped")
             return
         for subst in subdict[part2[0]]:
-#			print part[0]+subst+part2[2]
+            #			print part[0]+subst+part2[2]
             store_agent(part[0] + subst + part2[2], code)
 
     # this is just called when the program is loading, so keep them local.
@@ -1855,14 +1924,15 @@ def read_agent_dictionary(agent_path):
     close_FIN()
 
     # sort the patterns by the number of words
-    #for lockey in list(PETRglobals.AgentDict.keys()):
+    # for lockey in list(PETRglobals.AgentDict.keys()):
     #    PETRglobals.AgentDict[lockey].sort(key=len, reverse=True)
-    #for i,j in sorted(PETRglobals.AgentDict.items()):
+    # for i,j in sorted(PETRglobals.AgentDict.items()):
     #    print(i,'\t\t',j.items())
-    #exit()
+    # exit()
+
 
 def show_AgentDict(filename=''):
-# debugging function: displays AgentDict to screen or writes to filename
+    # debugging function: displays AgentDict to screen or writes to filename
     if len(filename) > 0:
         fout = open(filename, 'w')
         fout.write('PETRARCH Agent Dictionary Internal Format\n')
@@ -1934,7 +2004,6 @@ def read_xml_input(filepaths, parsed=False):
                 else:
                     parsed_content = ''
 
-                
                 # Get the sentence information
                 if story.attrib['sentence'] == 'True':
                     entry_id, sent_id = story.attrib['id'].split('_')
@@ -2092,14 +2161,16 @@ def _sentence_segmenter(paragr):
         if paragr[terloc.start()] == '.':
             if (paragr[terloc.start() - 1].isupper() and
                     paragr[terloc.start() - 2] == ' '):
-                        isok = False      # single initials
+                isok = False      # single initials
             else:
                 # check abbreviations
                 loc = paragr.rfind(' ', 0, terloc.start() - 1)
                 if loc > 0:
-                    if paragr[loc + 1:terloc.start() + 1].lower() in ABBREV_LIST:
+                    if paragr[
+                            loc + 1:terloc.start() + 1].lower() in ABBREV_LIST:
                         isok = False
-        if paragr[:terloc.start()].count('(') != paragr[:terloc.start()].count(')'):
+        if paragr[:terloc.start()].count(
+                '(') != paragr[:terloc.start()].count(')'):
             isok = False
         if paragr[:terloc.start()].count('"') % 2 != 0:
             isok = False

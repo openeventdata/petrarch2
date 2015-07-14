@@ -93,7 +93,7 @@ class NounPhrase(Phrase):
         return code
 
     def get_meaning(self):
-        dict_entry = ("", -1)
+        dict_entry = ("",-1)
         dicts = (PETRglobals.ActorDict, PETRglobals.AgentDict)
         match_in_progress = {}
         codes = []
@@ -101,16 +101,17 @@ class NounPhrase(Phrase):
         PPcodes = []
         VPcodes = []
         i = 0
-        option = 0
-        pathleft = [({}, i, 0)]
-
+        option = -1
+        pathleft = [({},i,-1)]
+     
         ##
         #
         #   Check for the meanings of its children. This method will be called on the children nodes as well
         #          if meaning has not already been determined, which it shouldn't have because these should be
         #          1-regular in-degree graphs,but who knows.
         ##
-
+        
+        APMprint = True
         while i < len(self.children):
             child = self.children[i]
             if match_in_progress != {} :
@@ -119,13 +120,11 @@ class NounPhrase(Phrase):
                     match_in_progress = match_in_progress[child.text]
                 elif "#" in match_in_progress:
                     match = match_in_progress['#']
-                    # We've matched from the actor dictionary
-                    if isinstance(match, type([])):
+                    if isinstance(match,type([])): # We've matched from the actor dictionary
                         code = self.check_date(match)
                         if not code is None:
                             codes.append(code)
-                    # We've matchd from the agent dictionary
-                    else:
+                    else:                           # We've matchd from the agent dictionary
                         codes.append(match_in_progress['#'])
                     match_in_progress = {}
                     option = -1
@@ -139,9 +138,9 @@ class NounPhrase(Phrase):
                     match_in_progress = p[0]
                     option = p[2]
                     continue
-
+                
             else:
-                if child.label[:2] in ["NN", "JJ", "DT"]:
+                if child.label[:2] in ["NN","JJ","DT"]:
                     text = child.text
                     if (not option >= 0) and text in PETRglobals.ActorDict:
                         dict_entry = (text,0)
@@ -157,20 +156,20 @@ class NounPhrase(Phrase):
                 elif child.label == "NP":
                     m = child.get_meaning()
                     if not m == "":
-                        NPcodes += m
+                        NPcodes+= m
                 elif child.label == "PP":
                     m = child.get_meaning()
-                    if not m is None:
+                    if not m == None:
                         PPcodes += m
                 elif child.label == "PRP":
                     # Naively find antecedent ?
                     not_found = True
                     level = self.parent
                     while not_found and not level.parent is None:
-                        if level.label in ["NP", "S", "SBAR"]:
+                        if level.label in ["NP","S","SBAR"]:
                             level = level.parent
                             continue
-                        # if level.label == "VP":
+                        #if level.label == "VP":
                         #    codes += level.get_upper()
                         for child in level.parent.children:
                             if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
@@ -180,8 +179,8 @@ class NounPhrase(Phrase):
                 elif child.label == "VP":
                     m = child.get_meaning()[1]
                     if not m == "":
-                        VPcodes += m
-
+                        VPcodes+= m
+ 
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):

@@ -23,7 +23,35 @@ class Phrase:
     def get_meaning(self):
         return self.meaning
 
+    def resolve_codes(self,codes):
+        actorcodes = []
+        agentcodes = []
+        for code in codes:
+            if code.startswith("~"):
+                agentcodes.append(code[1:])
+            else:
+                actorcodes.append(code)
+        return actorcodes,agentcodes
+        
+        
+        
+
+    def mix_codes(self,agents,actors):
+        codes = set()
+        for act in (actors if actors else ['~']):
+            for ag in (agents if agents else ['']) :
+                if not ag in act:
+                    codes.add(act+ag)
+                else:
+                    codes.add(act)
+
     
+        return list(codes)
+
+
+
+
+
 
 class NounPhrase(Phrase):
 
@@ -62,6 +90,8 @@ class NounPhrase(Phrase):
         except:
             return code
         return code
+    
+
 
     def get_meaning(self):
         dict_entry = ("",-1)
@@ -177,38 +207,31 @@ class NounPhrase(Phrase):
                     
                         
                     
-        actorcodes = []
-        codes += NPcodes
-        agentcodes = ""
-        for code in codes:
-            try:
-                if code[0] == '~' and not code[1:] in agentcodes:
-                    agentcodes+=code[1:]
-                else:
-                    actorcodes.append(code)
-            except:
-                print("Weird coding thing")
-                
-        if actorcodes == []:
-            for code in PPcodes:
-                try:
-                    if code[0] == '~' and not code[1:] in agentcodes:
-                        agentcodes+=code[1:]
-                    else:
-                        actorcodes.append(code)
-                except:
-                    print("Weird coding thing in PP")
+        actorcodes,agentcodes = self.resolve_codes(codes)
+        NPactor, NPagent = self.resolve_codes(NPcodes)
+        PPactor, PPagent = self.resolve_codes(PPcodes)
+        VPactor, VPagent = self.resolve_codes(VPcodes)
+        if not actorcodes:
+            actorcodes += NPactor
+            if not actorcodes:
+                actorcodes += PPactor
+                if not actorcodes:
+                    actorcodes += VPactor
+        
+        if not agentcodes:
+            agentcodes += NPagent
+            if not agentcodes:
+                agentcodes += PPagent
+                if not agentcodes:
+                    agentcodes += VPagent
+                    
+        
+        self.meaning = self.mix_codes(agentcodes,actorcodes)
 
-        if actorcodes == []:
-            actorcodes = VPcodes
-
-        try:
-            self.meaning = map(lambda x: x + agentcodes,actorcodes if len(actorcodes) > 0 else ['~'])
-        except:
-            self.meaning = ['~']
         self.get_meaning = self.return_meaning # don't need to calculate every time
 
-
+        if self.meaning == "":
+            self.meaning =['~']
         if self.meaning == ['~']:
             self.meaning = NPcodes
 
@@ -232,7 +255,7 @@ class VerbPhrase(Phrase):
 
     def __init__(self,label,date):
         Phrase.__init__(self,label,date)
-        self.meaning = "---" # code for this particular verb
+        self.meaning = "---" # "meaning" for the verb, i.e. the basic verb the synonym refers to
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
         self.passive = False
@@ -352,11 +375,14 @@ class VerbPhrase(Phrase):
             if '#' in dict[verb]:
                 try:
                     code = dict[verb]['#']['#']['code']
+                    meaning = dict[verb]['#']['#']['meaning']
+                    self.meaning = meaning if not meaning == "" else verb
                     
                     if not code == '':
                         self.code = code
                         return code
                     self.code =patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code']
+                    
                     return self.code
                 except:
                     return "---"
@@ -375,7 +401,7 @@ class Event:
         self.verbs = []
         self.tree = self.str_to_tree(str[1:-1].strip())
         self.txt = text
-    
+        self.verb_analysis = {}
     
     def str_to_tree(self,str):
         root = Phrase(str[1],self.date)
@@ -413,17 +439,40 @@ class Event:
             code = v.get_code()
         
             if not code == "---" and not [] in scopes and not "" in scopes:
-                print("SRC: ",scopes[0],"TARG ",scopes[1],"CODE ",code)
+                #print("SRC: ",scopes[0],"TARG ",scopes[1],"CODE ",code)
                 srcs = scopes[0]
                 targs = scopes[1]
                 for src in srcs:
                     for targ in targs:
-                        if not (src == targ and code == '010'): # ... said it ...
-                            events.append([src,targ,code] )
+                        #if not (src == targ and code == '010'): # ... said it ...
+                        events.append([src,targ,code] )
                 
 
         return events
-    
+
+
+    def do_verb_analysis(self):
+        verbs = self.verbs
+        records = self.verb_analysis
+        preps = map(lambda a: a[:-1],open("data/dictionaries/Phoenix.prepositions.txt").readlines())
+        for verb_obj in verbs:
+            code= verb_obj.get_code()
+            scopes = verb_obj.get_meaning()
+            record = records.setdefault(verb_obj.meaning,{'count':0,'sources':0,'targets':0,'before':{},'after':{},'preps' : {}})
+            record['count'] += 1
+            record['sources'] += len(scopes[0])
+            record['targets'] += len(scopes[1])
+            try:
+                segs = self.txt.upper().split(verb_obj.children[0].text)
+                for i in range(0,5):
+                    record['before'][segs[0][-i-1]] = record['before'].setdefault(segs[0][-i-1],0) + (6.0-i)/4
+                    record['after'][segs[1][i]] = record['after'].setdefault(segs[1][i],0) + (6.0-i)/4
+                    if segs[1][i] in preps:
+                        record['preps'][segs[1][i]] = record['preps'].setdefault(segs[1][i],0) + 1
+            except:
+                print("oops")
+
+
     
     def print_to_file(self,root,file = ""):
     

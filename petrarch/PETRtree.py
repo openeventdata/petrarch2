@@ -6,6 +6,26 @@ from __future__ import unicode_literals
 
 import PETRglobals
 import PETRreader
+import time
+
+#   PETRtree.py
+#   Author: Clayton Norris
+#           Caerus Associates/ University of Chicago
+#
+#
+#   Purpose:
+#           Called from petrarch.py, this contains the main logic
+#           of the petrarch software. Sentences are stored into
+#           Sentence class objects, which contain a tree of Phrase
+#           class objects. The phrases then do analyses of their role
+#           in the sentence and the event information of the overall sentence
+#           is calculated and returned within the get_events() method
+#
+#
+#   Revision history:
+#       July 2015 - Created
+#
+
 
 
 class Phrase:
@@ -25,13 +45,18 @@ class Phrase:
         return self.meaning
 
     def resolve_codes(self,codes):
+        
+        if not codes:
+            return [],[]
+        
         actorcodes = []
         agentcodes = []
         for code in codes:
             if code.startswith("~"):
-                agentcodes.append(code[1:])
+                agentcodes.append(code)
             else:
                 actorcodes.append(code)
+        
         return actorcodes,agentcodes
         
         
@@ -40,9 +65,9 @@ class Phrase:
     def mix_codes(self,agents,actors):
         codes = set()
         for act in (actors if actors else ['~']):
-            for ag in (agents if agents else ['']) :
-                if not ag in act:
-                    codes.add(act+ag)
+            for ag in (agents if agents else ['~']) :
+                if not ag[1:] in act:
+                    codes.add(act+ag[1:])
                 else:
                     codes.add(act)
 
@@ -119,6 +144,7 @@ class NounPhrase(Phrase):
                     pathleft.append((match_in_progress,i,2))
                     match_in_progress = match_in_progress[child.text]
                 elif "#" in match_in_progress:
+                    
                     match = match_in_progress['#']
                     if isinstance(match,type([])): # We've matched from the actor dictionary
                         code = self.check_date(match)
@@ -142,6 +168,7 @@ class NounPhrase(Phrase):
             else:
                 if child.label[:2] in ["NN","JJ","DT"]:
                     text = child.text
+                    
                     if (not option >= 0) and text in PETRglobals.ActorDict:
                         dict_entry = (text,0)
                     elif text in PETRglobals.AgentDict and not option == 1:
@@ -180,7 +207,7 @@ class NounPhrase(Phrase):
                     m = child.get_meaning()[1]
                     if not m == "":
                         VPcodes+= m
- 
+        
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
@@ -204,8 +231,8 @@ class NounPhrase(Phrase):
                         i= p[1]
                     #print("retracing",i)
                     
-                        
-                    
+            
+        
         actorcodes,agentcodes = self.resolve_codes(codes)
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
@@ -226,13 +253,7 @@ class NounPhrase(Phrase):
                     
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
-
         self.get_meaning = self.return_meaning # don't need to calculate every time
-
-        if self.meaning == "":
-            self.meaning =['~']
-        if self.meaning == ['~']:
-            self.meaning = NPcodes
 
         return self.meaning
 
@@ -262,8 +283,10 @@ class VerbPhrase(Phrase):
     
     
     def get_meaning(self):
-
-        return self.get_upper(), self.get_lower()
+        up = self.get_upper()
+        low = self.get_lower()
+        return up,low
+        #return self.get_upper(), self.get_lower()
 
     def return_upper(self):
         return self.upper
@@ -273,22 +296,22 @@ class VerbPhrase(Phrase):
     
     def check_passive(self):
         self.check_passive = self.return_passive
-        
-        try:
+        if True:
             if self.children[0].label in ["VBD","VBN"]:
                 level= self.parent
                 if level.label == "NP":
                     self.passive = True
                     return True
                 for i in range(2):
-                    if isinstance(level,VerbPhrase):
-                        if level.children[0].text in ["AM","IS","ARE","WAS","WERE","BE","BEEN","BEING"]:
+                    if level and isinstance(level,VerbPhrase):
+                        if level.children[0].text in {"AM":1,"IS":1,"ARE":1,"WAS":1,"WERE":1,"BE":1,"BEEN":1,"BEING":1}:
                             self.passive = True
                             return True
                     level = level.parent
-        
-
-        except:
+                    if not level:
+                        break
+    
+        else:
             print("Error in passive check")
         self.passive = False
         return False
@@ -300,7 +323,7 @@ class VerbPhrase(Phrase):
         not_found = True
         level = self
         while not_found and not level.parent is None:
-            if isinstance(level.parent,VerbPhrase):
+            if isinstance(level.parent,VerbPhrase) and level.label in ["S","SBAR","VP"]:
                 self.upper = level.parent.upper
                 return self.upper
             for child in level.parent.children:
@@ -329,7 +352,8 @@ class VerbPhrase(Phrase):
         NPcodes = []
         PPcodes = []
         VPcodes = []
-
+        
+        
         for child in self.children:
             if isinstance(child, NounPhrase):
                 NPcodes += child.get_meaning()
@@ -338,25 +362,36 @@ class VerbPhrase(Phrase):
             elif isinstance(child, VerbPhrase):
                 VPcodes += child.get_meaning()[1]
             elif child.label in "SBAR":
-                for ch in (
-                        child.children[0].children if child.label == "SBAR" else child.children):
+                #print("HERE",child.label)
+                for ch in (child.children[-1].children if child.label == "SBAR" else child.children):
                     if isinstance(ch, NounPhrase):
                         NPcodes += ch.get_meaning()
                     elif isinstance(ch, PrepPhrase):
                         PPcodes += ch.get_meaning()
                     elif isinstance(ch, VerbPhrase):
                         VPcodes += ch.get_meaning()[1]
+        
+        actorcodes,agentcodes = ([],[])
+        NPactor, NPagent = self.resolve_codes(NPcodes)
+        PPactor, PPagent = self.resolve_codes(PPcodes)
+        VPactor, VPagent = self.resolve_codes(VPcodes)
+        
 
-        if NPcodes == []:
-            if PPcodes == []:
-                try:
-                    return VPcodes
-                except:
-                    return ""
-            self.lower = PPcodes
-            return PPcodes
-        self.lower = NPcodes
-        return NPcodes
+        actorcodes += NPactor
+        if not actorcodes:
+            actorcodes += PPactor
+            if not actorcodes:
+                actorcodes += VPactor
+    
+        agentcodes += NPagent
+        if not agentcodes:
+            agentcodes += PPagent
+            if not agentcodes:
+                agentcodes += VPagent
+                
+        
+        self.lower = self.mix_codes(agentcodes,actorcodes)
+        return self.lower
 
     def return_code(self):
         return str(self.code)
@@ -387,7 +422,7 @@ class VerbPhrase(Phrase):
         return "---"
 
 
-class Event:
+class Sentence:
 
     def __init__(self, str, text, date):
         self.treestr = str.replace(')', ' )')
@@ -401,6 +436,7 @@ class Event:
         self.tree = self.str_to_tree(str[1:-1].strip())
         self.txt = text
         self.verb_analysis = {}
+        self.events = []
     
     def str_to_tree(self,str):
         root = Phrase(str[1],self.date)
@@ -442,9 +478,16 @@ class Event:
                 srcs = scopes[0]
                 targs = scopes[1]
                 for src in srcs:
+                    if src == "~":
+                        continue
                     for targ in targs:
-                        #if not (src == targ and code == '010'): # ... said it ...
-                        events.append([src,targ,code] )
+                        if targ == "~":
+                            continue
+                        if not (src == targ and code == '010'): # ... said it ...
+                            if v.check_passive():
+                                events.append([targ,src,code] )
+                            else:
+                                events.append([src,targ,code] )
                 
 
         return events

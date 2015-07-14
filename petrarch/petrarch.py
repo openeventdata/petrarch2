@@ -2803,7 +2803,7 @@ def do_validation(filepath):
                 parsed = story.findall('EventCoding')
                 entry_id = entry_id + "" + sent_id
 
-                # if not entry_id == "SYNSET22b": # Debugging validation files
+                #if not entry_id == "AGENTS19": # Debugging validation files
                 #    continue
 
                 if not parsed is None:
@@ -2832,7 +2832,7 @@ def do_validation(filepath):
 
     correct = 0
     count = 0
-    return
+    
     for id, entry in sorted(updated.items()):
         count += 1
         if entry['sents'] is None:
@@ -2923,7 +2923,7 @@ def do_coding(event_dict, out_file):
 \\date{}
 
 \\begin{document}
-)""", file = file)
+""", file = file)
 
 
     logger = logging.getLogger('petr_log')
@@ -2958,7 +2958,7 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "music" in SentenceText:
+                #if not "Tunisian" in SentenceText:
                 #    continue
                 """
                 disc = check_discards(SentenceText)
@@ -2979,7 +2979,7 @@ def do_coding(event_dict, out_file):
                 """
                 
                 t1 = time.time()
-                test_obj = PETRtree.Event(treestr,SentenceText,Date)
+                test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
                 
                 coded_events = test_obj.get_events()
                 #test_obj.do_verb_analysis()
@@ -2987,13 +2987,13 @@ def do_coding(event_dict, out_file):
                 
                 
                 test_obj.print_to_file(test_obj.tree,file = file)
-                
+                del(test_obj)
                 code_time = time.time()-t1
+                
                 times+=code_time
                 sents += 1
                 print(code_time)
 
-                continue
                 """
 
                 disc = check_discards(SentenceText)
@@ -3076,7 +3076,7 @@ def do_coding(event_dict, out_file):
         NDiscardStory,
         "  Sentences without events:",
         NEmpty)
-    #print("Average Coding time = ", times/sents)
+    print("Average Coding time = ", times/sents)
     print("\n\\end{document})",file=file)
 
     return event_dict

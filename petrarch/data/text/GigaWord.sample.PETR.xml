@@ -770,4 +770,84 @@ discuss their music tastes
 
 
 
+<Sentence date = "20150609" id ="NEST_0" source = "AFP" sentence = "True">
+<Text>
+The US claimed that they had attacked Iraq
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq)))))))))
+
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_1" source = "AFP" sentence = "True">
+<Text>
+The US claimed that ISIL had attacked Iraq
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq)))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_2" source = "AFP" sentence = "True">
+<Text>
+The US claimed that ISIL had attacked Iraq and that they had taken the city of Mosul
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq)))))) (CC and) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD had) (VP (VBN taken) (NP (NP (DT the) (NN city)) (PP (IN of) (NP (NNP Mosul))))))))))))
+
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_2.5" source = "AFP" sentence = "True">
+<Text>
+The US claimed that ISIL had attacked Iraq and had taken the city of Mosul
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VP (VBD claimed) (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq))))))) (CC and) (VP (VBD had) (VP (VBN taken) (NP (NP (DT the) (NN city)) (PP (IN of) (NP (NNP Mosul)))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_2.75" source = "AFP" sentence = "True">
+<Text>
+The US claimed that ISIL had attacked Iraq and taken the city of Mosul
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VP (VBN attacked) (NP (NNP Iraq))) (CC and) (VP (VBN taken) (NP (NP (DT the) (NN city)) (PP (IN of) (NP (NNP Mosul))))))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_3" source = "AFP" sentence = "True">
+<Text>
+The US warned that ISIL might attack Iraq
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD warned) (SBAR (IN that) (S (NP (NN ISIL)) (VP (MD might) (VP (VB attack) (NP (NNP Iraq)))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_4" source = "AFP" sentence = "True">
+<Text>
+The US said that they warned that they would attack Iraq
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD warned) (SBAR (IN that) (S (NP (PRP they)) (VP (MD would) (VP (VB attack) (NP (NNP Iraq))))))))))))
+
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="NEST_5" source = "AFP" sentence = "True">
+<Text>
+The US said that Iraq had attacked them
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (NNP Iraq)) (VP (VBD had) (VP (VBN attacked) (NP (PRP them)))))))))
+
+</Parse>
+</Sentence>
+
+
 </Sentences>

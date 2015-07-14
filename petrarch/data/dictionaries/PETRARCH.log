@@ -1,0 +1,8 @@
+INFO 2015-07-13 13:52:24,072: Running
+INFO 2015-07-13 13:52:24,072: Using default config file.
+INFO 2015-07-13 13:52:24,073: Reading CAMEO.verbpatterns.150430.txt
+INFO 2015-07-13 13:52:24,887: Reading Phoenix.agents.txt
+
+WARNING 2015-07-13 13:52:24,918: Codes are required for agents in .agents file ; line skipped
+INFO 2015-07-13 13:52:24,923: Reading Phoenix.discards.txt
+INFO 2015-07-13 13:52:24,927: Reading Phoenix.IssueCoding.txt

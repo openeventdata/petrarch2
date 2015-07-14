@@ -562,9 +562,211 @@ Ukrainian lawmakers Tuesday endorsed an association agreement with the European 
 </Parse>
 </Sentence>
 
+<Sentence date = "20150609" id ="GOLD_5" source = "AFP" sentence = "True">
+<Text>
+OBAMA AIRDROPS
+</Text>
+<Parse>
+(ROOT (NP (NP (NNP WASHINGTON)) (: --) (S (S (NP (NNP President) (NNP Obama)) (VP (VBZ is) (VP (VBG considering) (NP (NP (NNS airstrikes) (CC or) (NNS airdrops)) (PP (IN of) (NP (NN food) (CC and) (NN medicine)))) (S (VP (TO to) (VP (VB address) (NP (DT a) (JJ humanitarian) (NN crisis)) (PP (IN among) (NP (NP (QP (RB as) (JJ many) (IN as) (CD 40,000)) (NNS members)) (PP (IN of) (NP (NP (JJ religious) (NNS minorities)) (PP (IN in) (NP (NNP Iraq))))) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBP have) (VP (VBN been) (VP (VBG dying) (PP (IN of) (NP (NN heat) (CC and) (NN thirst))) (PP (IN on) (NP (NP (DT a) (NN mountaintop)) (SBAR (WHADVP (WRB where)) (S (NP (PRP they)) (VP (VBD took) (NP (NN shelter)) (PP (IN after) (NP (NN death) (NNS threats))) (PP (IN from) (NP (NP (DT the) (JJ Islamic) (NN State)) (PP (IN in) (NP (NNP Iraq) (CC and) (NNP Syria))))))))))))))))))))))) (, ,) (NP (NN administration) (NNS officials)) (VP (VBD said) (PP (IN on) (NP (NNP Thursday))))) (. .)))
 
 
 
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="GOLD_6" source = "AFP" sentence = "True">
+<Text>
+Qatar has pledged to expel exiled leaders of Egypt's Muslim Brotherhood as one of the conditions of an agreement forced on the wealthy Gulf state by Saudi Arabia, the United Arab Emirates and other neighbours.
+
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Qatar)) (VP (VBZ has) (VP (VBN pledged) (S (VP (TO to) (VP (VB expel) (VP (VBN exiled) (NP (NP (NNS leaders)) (PP (IN of) (NP (NP (NNP Egypt) (POS 's)) (JJ Muslim) (NNP Brotherhood)))) (PP (IN as) (NP (NP (CD one)) (PP (IN of) (NP (NP (DT the) (NNS conditions)) (PP (IN of) (NP (NP (DT an) (NN agreement)) (VP (VBN forced) (PP (IN on) (NP (DT the) (JJ wealthy) (NNP Gulf) (NN state))) (PP (IN by) (NP (NP (NNP Saudi) (NNP Arabia)) (, ,) (NP (DT the) (NNP United) (NNP Arab) (NNPS Emirates)) (CC and) (NP (JJ other) (NNS neighbours))))))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="GOLD_7" source = "AFP" sentence = "True">
+<Text>
+
+The Canadian government announced asset freezes and bans on travel to Canada against four senior officers in the Russian military, as well as economic sanctions against five more of Russia’s arms makers and one Moscow-based bank.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (JJ Canadian) (NN government)) (VP (VBD announced) (SBAR (S (NP (NN asset)) (VP (VBZ freezes) (CC and) (VBZ bans) (PP (IN on) (NP (NP (ADJP (NN travel) (PP (TO to) (NP (NP (NNP Canada)) (PP (IN against) (NP (NP (NP (CD four) (JJ senior) (NNS officers)) (PP (IN in) (NP (DT the) (JJ Russian) (NN military)))) (, ,) (CONJP (RB as) (RB well) (IN as)) (NP (NP (JJ economic) (NNS sanctions)) (PP (IN against) (NP (NP (CD five) (JJR more)) (PP (IN of) (NP (NP (NNP Russia) (POS 's)) (NNS arms))))))))))) (NNS makers)) (CC and) (NP (CD one) (JJ Moscow-based) (NN bank)))))))) (. .)))
+
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="GOLD_8" source = "AFP" sentence = "True">
+<Text>
+Hundreds of UN troops withdrew from the Syrian to the Israeli-occupied sector of the Golan on Monday, an AFP correspondent said, two weeks after Al-Qaeda-linked rebels kidnapped dozens of peacekeepers.
+
+</Text>
+<Parse>
+
+(ROOT (S (NP (NP (NNS Hundreds)) (PP (IN of) (NP (NNP UN) (NNS troops)))) (VP (VBD withdrew) (PP (IN from) (NP (DT the) (JJ Syrian))) (PP (TO to) (NP (NP (DT the) (JJ Israeli-occupied) (NN sector)) (PP (IN of) (NP (NP (DT the) (NNP Golan)) (PP (IN on) (NP (NNP Monday))))))) (PRN (, ,) (S (NP (DT an) (NN AFP) (NN correspondent)) (VP (VBD said))) (, ,)) (PP (NP (CD two) (NNS weeks)) (IN after) (NP (NP (JJ Al-Qaeda-linked) (NNS rebels)) (VP (VBN kidnapped) (NP (NP (NNS dozens)) (PP (IN of) (NP (NNS peacekeepers)))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="GOLD_9" source = "AFP" sentence = "True">
+<Text>
+The Philippines and the European Union (EU) agree that territorial disputes in the South China Sea should be resolved through international arbitration.
+
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NP (DT The) (NNPS Philippines)) (CC and) (NP (DT the) (NNP European) (NNP Union))) (PRN (-LRB- -LRB-) (NP (NNP EU)) (-RRB- -RRB-))) (VP (VBP agree) (SBAR (IN that) (S (NP (NP (JJ territorial) (NNS disputes)) (PP (IN in) (NP (DT the) (NNP South) (NNP China) (NNP Sea)))) (VP (MD should) (VP (VB be) (VP (VBN resolved) (PP (IN through) (NP (JJ international) (NN arbitration))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+<Sentence date = "20150609" id ="GOLD_9" source = "AFP" sentence = "True">
+<Text>
+Syrian rebels engaged Filipino peacekeepers in a firefight in Golan Heights on Saturday, defense and military officials said.
+</Text>
+<Parse>
+(ROOT (S (S (NP (JJ Syrian) (NNS rebels)) (VP (VBD engaged) (NP (NNP Filipino) (NNS peacekeepers)) (PP (IN in) (NP (NP (DT a) (NN firefight)) (PP (IN in) (NP (NNP Golan) (NNP Heights))))) (PP (IN on) (NP (NNP Saturday))))) (, ,) (NP (NP (NN defense)) (CC and) (NP (JJ military) (NNS officials))) (VP (VBD said)) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="VERB_0" source = "AFP" sentence = "True">
+<Text>
+Obama is scheduled to attend a summit on the unrest in Iran
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Obama)) (VP (VBZ is) (VP (VBN scheduled) (S (VP (TO to) (VP (VB attend) (NP (DT a) (NN summit)) (PP (IN on) (NP (NP (DT the) (NN unrest)) (PP (IN in) (NP (NNP Iran))))))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="VERB_1" source = "AFP" sentence = "True">
+<Text>
+Obama is scheduled to attend a summit in Switzerland on the unrest in Iran
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Obama)) (VP (VBZ is) (VP (VBN scheduled) (S (VP (TO to) (VP (VB attend) (NP (NP (DT a) (NN summit)) (PP (IN in) (NP (NNP Switzerland)))) (PP (IN on) (NP (NP (DT the) (NN unrest)) (PP (IN in) (NP (NNP Iran))))))))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="TEST_1" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP Malaysia) (NNPS Airlines) (NNP Boeing) (ADJP (CD 777)) (NN flight) (NN MH17)) (VP (VBD was) (VP (VBN blown) (PRT (RP up)) (PP (IN over) (NP (NNP Eastern) (NNP Ukraine))) (PP (IN by) (NP (NP (DT a) (JJ sophisticated) (NN BAK) (JJ surface-to-air) (NN missile)) (VP (VBN believed) (S (VP (TO to) (VP (VB be) (VP (VBN fired) (PP (IN by) (NP (JJ pro-Russia) (NNS rebels)))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_2" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP United) (NNPS States)) (VP (VBD fired) (NP (JJ anti-aircraft) (NNS batteries)) (PP (IN at) (NP (NNP Russia))) (NP-TMP (DT this) (NN week))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_3" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD fired) (NP (JJ anti-aircraft) (NNS batteries)) (PP (IN at) (NP (NNP Russia))) (NP-TMP (DT this) (NN week))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_4" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (S (NP (NP (NNP GAZA) (NNP CITY)) (, ,) (NP (NP (NNP Palestinian) (NNPS Territories)) (: :) (NP (NP (CD Four) (NNS children)) (CC and) (NP (DT a) (NN man))))) (VP (VBD were) (VP (VBN killed) (PP (IN in) (NP (NP (JJ Israeli) (NN tank)) (VP (VBG shelling) (PP (IN in) (NP (NP (DT the) (JJ east)) (PP (IN of) (NP (NP (DT the) (NNP Gaza) (NNP Strip)) (PP (IN on) (NP (NNP Friday))))))) (NP-TMP (NN evening)))))))) (, ,) (NP (NNS medics)) (VP (VBD said)) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_5" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP United) (NNPS Nations) (NN chief)) (VP (VBD made) (NP (PRP$ his) (NNS remarks)) (PP (IN in) (NP (NNP Doha))) (PP (IN at) (NP (NP (DT the) (NN start)) (PP (IN of) (NP (NP (DT a) (JJ regional) (NN trip)) (VP (VBN aimed) (PP (IN at) (S (VP (VBG pushing) (PP (IN for) (NP (NP (DT a) (NN ceasefire)) (PP (IN in) (NP (DT the) (NNP Gaza) (NNP Strip)))))))))))))) (. .)))
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_6" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (NP (NP (DT The) (NNP Al) (JJ Qaeda-linked) (JJ Somali) (JJ militant) (NN group)) (NP (NNP al-Shabab))) (VP (VBZ is) (VP (VBG claiming) (NP (NN responsibility)) (PP (IN for) (NP (NP (DT a) (JJ deadly) (NN attack)) (VP (VBG targeting) (NP (NNS non-Muslims)) (PP (IN at) (NP (NP (DT an) (JJ upscale) (NN mall)) (PP (IN in) (NP (NP (NNP Kenya) (POS 's)) (NN capital)))))))))) (. .)))
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_7" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (S (PP (IN At) (NP (DT the) (JJ same) (NN time))) (, ,) (NP (PRP it)) (VP (VBZ seems) (ADJP (JJ clear)) (SBAR (IN that) (S (NP (NP (DT no) (JJ lasting) (NN solution)) (PP (TO to) (NP (NP (DT the) (NN problem)) (PP (IN of) (NP (NNP Gaza)))))) (VP (MD can) (VP (VB be) (VP (VBN conceived) (SBAR (IN unless) (S (NP (DT the) (NNP Hamas) (NN regime)) (VP (VP (VBZ is) (VP (VP (VBN disarmed)) (, ,) (CC or) (ADVP (IN at) (JJS least)) (VP (VBN put) (PP (IN in) (NP (NP (DT a) (NN position)) (SBAR (WHADVP (WRB where)) (S (NP (PRP it)) (VP (VP (MD can)) (CC neither) (VP (VB build) (PRT (RP up)) (NP (NP (PRP$ its) (NN inventory)) (PP (IN of) (NP (NNS rockets))))))))))))) (CC nor) (VP (VB replace) (NP (NP (DT those)) (SBAR (S (NP (PRP it)) (VP (VBZ fires) (PP (IN at) (NP (NNP Israel))))))))))))))))) (. .)))
+
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_8" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+(ROOT (FRAG (NP (NNP LYON)) (: :) (S (NP (NNP Interpol)) (VP (VBZ has) (VP (VBD said) (SBAR (S (NP (PRP it)) (VP (MD will) (VP (VB send) (NP (NP (DT a) (NN team)) (PP (IN in) (NP (DT the) (JJ next) (CD 48) (NNS hours)))) (S (VP (TO to) (VP (VB help) (S (VP (VB identify) (NP (NP (NNS victims)) (VP (VBN killed) (PP (IN by) (NP (DT the) (NNP Malaysia) (NNPS Airlines) (NN flight)))))) (NP (NP (NN MH17) (NN crash)) (PP (IN in) (NP (JJ east) (NNP Ukraine))))))))))))))) (. .)))
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="TEST_9" source = "AFP" sentence = "True">
+<Text>
+
+</Text>
+<Parse>
+
+(ROOT (S (NP (DT The) (NNP United) (NNPS Nations) (NN chief)) (VP (VBD made) (NP (PRP$ his) (NNS remarks)) (PP (IN in) (NP (NNP Doha))) (PP (IN at) (NP (NP (DT the) (NN start)) (PP (IN of) (NP (NP (DT a) (JJ regional) (NN trip)) (VP (VBN aimed) (PP (IN at) (S (VP (VBG pushing) (PP (IN for) (NP (NP (DT a) (NN ceasefire)) (PP (IN in) (NP (DT the) (NNP Gaza) (NNP Strip)))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="TEST_10" source = "AFP" sentence = "True">
+<Text>
+President obama expressed sorrow for the horrific shootings in South Carolina
+</Text>
+<Parse>
+(ROOT (S (NP (NNP President) (NN obama)) (VP (VBD expressed) (NP (NN sorrow)) (PP (IN for) (NP (DT the) (JJ horrific) (NNS shootings))) (PP (IN in) (NP (NNP South) (NNP Carolina))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="TEST_11" source = "AFP" sentence = "True">
+<Text>
+Ukraine says it has strong evidence proving Russia was behind the chemical attacks
+</Text>
+<Parse>(ROOT (S (NP (NNP Ukraine)) (VP (VBZ says) (SBAR (S (NP (PRP it)) (VP (VBZ has) (NP (NP (JJ strong) (NN evidence)) (VP (VBG proving) (SBAR (S (NP (NNP Russia)) (VP (VBD was) (PP (IN behind) (NP (DT the) (NN chemical) (NNS attacks))))))))))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="TEST_12" source = "AFP" sentence = "True">
+<Text>
+Barack Obama and Vladimir Putin will meet in Zurich to 
+discuss their music tastes
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Barack) (NNP Obama) (CC and) (NNP Vladimir) (NNP Putin)) (VP (MD will) (VP (VB meet) (PP (IN in) (NP (NNP Zurich))) (S (VP (TO to) (VP (VB discuss) (NP (PRP$ their) (NN music) (NNS tastes)))))))))
+</Parse>
+</Sentence>
 
 
 

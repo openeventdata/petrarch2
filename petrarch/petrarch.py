@@ -2854,7 +2854,9 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                
+                #if not "music" in SentenceText:
+                #    continue
+                """
                 disc = check_discards(SentenceText)
                 
                 if disc[0] > 0:
@@ -2870,12 +2872,15 @@ def do_coding(event_dict, out_file):
                         NDiscardStory += 1
                         break
                 
-                
+                """
                 
                 t1 = time.time()
                 test_obj = PETRtree.Event(treestr,SentenceText,Date)
                 
                 coded_events = test_obj.get_events()
+                #test_obj.do_verb_analysis()
+                #print(test_obj.verb_analysis)
+                
                 
                 test_obj.print_to_file(test_obj.tree,file = file)
                 
@@ -2967,7 +2972,7 @@ def do_coding(event_dict, out_file):
     print("Stories read:", NStory, "   Sentences coded:", NSent, "  Events generated:", NEvents)
     print("Discards:  Sentence", NDiscardSent, "  Story", NDiscardStory, "  Sentences without events:", NEmpty)
     #print("Average Coding time = ", times/sents)
-    #print("\n\\end{document})",file=file)
+    print("\n\\end{document})",file=file)
 
     return event_dict
 

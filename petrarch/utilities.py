@@ -41,20 +41,6 @@ import dateutil.parser
 import PETRglobals
 from collections import defaultdict, Counter
 
-# ================== EVENT OBJECT ================ #
-class Event():
-    
-    def __init__(str):
-        self.tree = str
-        self.parse = ""
-        self.agent = ""
-        self.ID = -1
-        self.actor = ""
-        self.date = ""
-        self.longlat = (-1,-1)
-
-
-# ================================================= #
 
 
 

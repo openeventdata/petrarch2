@@ -2958,7 +2958,7 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "Tunisian" in SentenceText:
+                #if not "IDIOM" in SentenceID:
                 #    continue
                 """
                 disc = check_discards(SentenceText)

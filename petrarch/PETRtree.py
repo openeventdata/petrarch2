@@ -74,11 +74,6 @@ class Phrase:
     
         return list(codes)
 
-
-
-
-
-
 class NounPhrase(Phrase):
 
     def __init__(self, label, date):
@@ -280,6 +275,24 @@ class VerbPhrase(Phrase):
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
         self.passive = False
         self.code = ""
+        self.valid = self.is_valid()
+    
+    
+    def get_head(self):
+        for child in children:
+            if "V" in child.label:
+                return child
+    
+    def is_valid(self):
+        # This function is to weed out things like helping verbs and participles coded as verbs
+        helping = ["HAVE","HAD","HAVING"]
+        if self.label == "VBN":
+            if not self.parent.get_head().text in helping:
+                self.valid = False
+                return False
+        self.valid = True
+        return True
+    
     
     
     def get_meaning(self):
@@ -304,7 +317,7 @@ class VerbPhrase(Phrase):
                     return True
                 for i in range(2):
                     if level and isinstance(level,VerbPhrase):
-                        if level.children[0].text in {"AM":1,"IS":1,"ARE":1,"WAS":1,"WERE":1,"BE":1,"BEEN":1,"BEING":1}:
+                        if level.children[0].text in ["AM","IS","ARE","WAS","WERE","BE","BEEN","BEING"]:
                             self.passive = True
                             return True
                     level = level.parent
@@ -470,6 +483,8 @@ class Sentence:
     def get_events(self):
         events = []
         for v in self.verbs:
+            if not v.valid:
+                continue
             scopes = v.get_meaning()
             code = v.get_code()
         
@@ -483,11 +498,16 @@ class Sentence:
                     for targ in targs:
                         if targ == "~":
                             continue
-                        if not (src == targ and code == '010'): # ... said it ...
+                        if not (src == targ and code == '010'): # ... said he/she/it/they ...
                             if v.check_passive():
                                 events.append([targ,src,code] )
                             else:
-                                events.append([src,targ,code] )
+                                if ':' in code:
+                                    codes = code.split(':')
+                                    events.append([src,targ,codes[0]])
+                                    events.append([targ,src,codes[1]])
+                                else:
+                                    events.append([src,targ,code] )
                 
 
         return events

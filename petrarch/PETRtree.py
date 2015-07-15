@@ -139,7 +139,6 @@ class NounPhrase(Phrase):
                     pathleft.append((match_in_progress,i,2))
                     match_in_progress = match_in_progress[child.text]
                 elif "#" in match_in_progress:
-                    
                     match = match_in_progress['#']
                     if isinstance(match,type([])): # We've matched from the actor dictionary
                         code = self.check_date(match)
@@ -163,7 +162,6 @@ class NounPhrase(Phrase):
             else:
                 if child.label[:2] in ["NN","JJ","DT"]:
                     text = child.text
-                    
                     if (not option >= 0) and text in PETRglobals.ActorDict:
                         dict_entry = (text,0)
                     elif text in PETRglobals.AgentDict and not option == 1:
@@ -187,16 +185,23 @@ class NounPhrase(Phrase):
                     # Naively find antecedent ?
                     not_found = True
                     level = self.parent
-                    while not_found and not level.parent is None:
-                        if level.label in ["NP","S","SBAR"]:
-                            level = level.parent
+                    reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
+                    local = True
+                    while not_found and level.parent:
+                        if level.label.startswith("NP") and reflexive: #Intensive
+                            break
+                        if (not local) or (reflexive and local):
+                            for child in level.parent.children:
+                                if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
+                                    not_found = False
+                                    codes += child.get_meaning()
+                                    break
+                        elif level.label in ["S","SBAR"]:
+                            local = False
                             continue
-                        #if level.label == "VP":
-                        #    codes += level.get_upper()
-                        for child in level.parent.children:
-                            if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
-                                not_found = False
-                                codes += child.get_meaning()
+                        
+                        
+                    
                         level = level.parent
                 elif child.label == "VP":
                     m = child.get_meaning()[1]
@@ -224,7 +229,6 @@ class NounPhrase(Phrase):
                         i = p[1] + 1
                     else:
                         i= p[1]
-                    #print("retracing",i)
                     
             
         
@@ -365,7 +369,7 @@ class VerbPhrase(Phrase):
         NPcodes = []
         PPcodes = []
         VPcodes = []
-        
+        Scodes = []
         
         for child in self.children:
             if isinstance(child, NounPhrase):
@@ -375,33 +379,35 @@ class VerbPhrase(Phrase):
             elif isinstance(child, VerbPhrase):
                 VPcodes += child.get_meaning()[1]
             elif child.label in "SBAR":
-                #print("HERE",child.label)
                 for ch in (child.children[-1].children if child.label == "SBAR" else child.children):
                     if isinstance(ch, NounPhrase):
-                        NPcodes += ch.get_meaning()
+                        Scodes += ch.get_meaning()
                     elif isinstance(ch, PrepPhrase):
-                        PPcodes += ch.get_meaning()
+                        Scodes += ch.get_meaning()
                     elif isinstance(ch, VerbPhrase):
-                        VPcodes += ch.get_meaning()[1]
+                        Scodes += ch.get_meaning()[1]
         
         actorcodes,agentcodes = ([],[])
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
-        
+        Sactor,Sagent = self.resolve_codes(Scodes)
 
         actorcodes += NPactor
         if not actorcodes:
             actorcodes += PPactor
             if not actorcodes:
                 actorcodes += VPactor
+                if not actorcodes:
+                    actorcodes += Sactor
     
         agentcodes += NPagent
         if not agentcodes:
             agentcodes += PPagent
             if not agentcodes:
                 agentcodes += VPagent
-                
+                if not agentcodes:
+                    agentcodes += Sagent
         
         self.lower = self.mix_codes(agentcodes,actorcodes)
         return self.lower

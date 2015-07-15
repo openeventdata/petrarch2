@@ -877,15 +877,66 @@ There were 10 Russian soldiers killed in Ukraine today.
 </Parse>
 </Sentence>
 
-<Sentence date = "20010101" id ="abc12_3" source = "AFP" sentence = "True">
+<Sentence date = "20150101" id ="abc12_3" source = "AFP" sentence = "True">
 <Text>
-At least 37 people are dead after Islamist radical group Boko Haram assaulted a town in northeastern Nigeria.
+Boko Haram has launched many similar attacks during its six-year campaign for a strict Islamic state in northeastern Nigeria.</Text>
+<Parse>
+ROOT (S (NP (DT The) (JJ Islamic) (NN state)) (VP (VBZ has) (VP (VBN launched) (NP (JJ many) (JJ similar) (NNS attacks)) (PP (IN during) (NP (NP (PRP$ its) (JJ six-year) (NN campaign)) (PP (IN for) (NP (NP (DT a) (JJ strict) (JJ Islamic) (NN state)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+<Sentence date = "20150609" id ="NEST_8" source = "AFP" sentence = "True">
+<Text>
+The US said that Iraq had attacked themselves
 </Text>
 <Parse>
-(ROOT (S (NP (QP (IN At) (JJS least) (CD 37)) (NNS people)) (VP (VBP are) (ADJP (JJ dead)) (SBAR (IN after) (S (NP (JJ Islamist) (JJ radical) (NN group) (NNP Boko) (NNP Haram)) (VP (VBD assaulted) (NP (NP (DT a) (NN town)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria)))))))) (. .)))
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (NNP Iraq)) (VP (VBD had) (VP (VBN attacked) (NP (PRP themselves)))))))))
 
 </Parse>
 </Sentence>
+
+
+
+<Sentence date = "20150609" id ="PREP_1" source = "AFP" sentence = "True">
+<Text>
+Opponents of Rwanda's Senate protested yesterday in the city's capital
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NNS Enemies)) (PP (IN of) (NP (NP (NNP Rwanda) (POS 's)) (NNP Government)))) (VP (VBD protested) (NP-TMP (NN yesterday)) (PP (IN in) (NP (NP (DT the) (NN Country) (POS 's)) (NN capital))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="PREP_0" source = "AFP" sentence = "True">
+<Text>
+The civilians imprisoned for acting against Moscow were released yesterday by Putin himself
+</Text>
+<Parse>
+(ROOT
+    (S
+        (NP
+            (NP (DT The)
+                (NNS men))
+            (, ,)
+            (VP (VBN imprisoned)
+                (PP (IN for)
+                    (S
+                        (VP (VBG acting)
+                            (PP (IN against)
+                                (NP (NNP Moscow)))))))
+            (, ,))
+        (VP (VBD were)
+            (VP (VBN released)
+                (NP-TMP (NN yesterday))
+                (PP (IN by) (NP (NP (NNP Putin))
+                                (NP (PRP himself))))))))
+</Parse>
+</Sentence>
+
+
+
 
 
 

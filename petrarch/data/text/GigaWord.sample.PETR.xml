@@ -873,7 +873,7 @@ Local news reports that there was a pause in the bombing in Aleppo.
 There were 10 Russian soldiers killed in Ukraine today.
 </Text>
 <Parse>
-(ROOT (X (NP (JJ Local) (NN news) (NNS reports)) (SBAR (IN that) (S (NP (EX there)) (VP (VBD was) (NP (NP (DT a) (NN pause)) (PP (IN in) (NP (NP (DT the) (NN bombing)) (PP (IN in) (NP (NNP Aleppo)))))))))))
+(ROOT (S (NP (EX There)) (VP (VBD were) (NP (NP (CD 10) (JJ Russian) (NNS soldiers)) (VP (VBN killed) (PP (IN in) (NP (NNP Ukraine))) (NP-TMP (NN today))))) (. .)))
 </Parse>
 </Sentence>
 

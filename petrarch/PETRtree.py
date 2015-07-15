@@ -190,15 +190,20 @@ class NounPhrase(Phrase):
                     while not_found and level.parent:
                         if level.label.startswith("NP") and reflexive: #Intensive
                             break
+                        if level.label in ["S","SBAR"]:
+                            local = False
+                            level=level.parent
+                            continue
+                        
                         if (not local) or (reflexive and local):
+                            if isinstance(level,VerbPhrase):
+                                codes += level.get_upper()
+                                break
                             for child in level.parent.children:
                                 if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
                                     not_found = False
                                     codes += child.get_meaning()
                                     break
-                        elif level.label in ["S","SBAR"]:
-                            local = False
-                            continue
                         
                         
                     

@@ -283,7 +283,7 @@ def do_validation(filepath):
 
     correct = 0
     count = 0
-    
+    return
     for id, entry in sorted(updated.items()):
         count += 1
         if entry['sents'] is None:
@@ -381,15 +381,16 @@ def do_coding(event_dict, out_file):
     times = 0
     sents = 0
     for key, val in event_dict.items():
-
+        NStory += 1
         prev_code = []
 
         SkipStory = False
-        print('\n\nProcessing {}'.format(key))
+        #print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
 
         for sent in val['sents']:
+            NSent += 1
             if 'parsed' in event_dict[key]['sents'][sent]:
                 if 'config' in val['sents'][sent]:
                     for id, config in event_dict[key][
@@ -397,7 +398,8 @@ def do_coding(event_dict, out_file):
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
-
+                #if not "AFP" in SentenceID:
+                #    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 # print(SentenceText)
@@ -409,8 +411,9 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                if not "EXIST" in SentenceID:
-                    continue
+                #if not "PREP" in SentenceID:
+                #    continue
+
                 """
                 disc = check_discards(SentenceText)
                 
@@ -458,7 +461,9 @@ def do_coding(event_dict, out_file):
                         sys.exit()
 
                 prev_code = coded_events
-
+                NEvents += len(coded_events)
+                if len(coded_events) == 0:
+                    NEmpty += 1
             else:
                 logger.info(
                     '{} has no parse information. Passing.'.format(SentenceID))

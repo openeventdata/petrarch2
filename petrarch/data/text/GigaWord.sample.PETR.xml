@@ -849,5 +849,45 @@ The US said that Iraq had attacked them
 </Parse>
 </Sentence>
 
+<Sentence date = "20150609" id ="NEST_6" source = "AFP" sentence = "True">
+<Text>
+The US said that Iraq had attacked themselves
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (NNP Iraq)) (VP (VBD had) (VP (VBN attacked) (NP (PRP themselves)))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="EXIST_0" source = "AFP" sentence = "True">
+<Text>
+Local news reports that there was a pause in the bombing in Aleppo.
+</Text>
+<Parse>
+(ROOT (X (NP (JJ Local) (NN news) (NNS reports)) (SBAR (IN that) (S (NP (EX there)) (VP (VBD was) (NP (NP (DT a) (NN pause)) (PP (IN in) (NP (NP (DT the) (NN bombing)) (PP (IN in) (NP (NNP Aleppo)))))))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="EXIST_1" source = "AFP" sentence = "True">
+<Text>
+There were 10 Russian soldiers killed in Ukraine today.
+</Text>
+<Parse>
+(ROOT (X (NP (JJ Local) (NN news) (NNS reports)) (SBAR (IN that) (S (NP (EX there)) (VP (VBD was) (NP (NP (DT a) (NN pause)) (PP (IN in) (NP (NP (DT the) (NN bombing)) (PP (IN in) (NP (NNP Aleppo)))))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20010101" id ="abc12_3" source = "AFP" sentence = "True">
+<Text>
+At least 37 people are dead after Islamist radical group Boko Haram assaulted a town in northeastern Nigeria.
+</Text>
+<Parse>
+(ROOT (S (NP (QP (IN At) (JJS least) (CD 37)) (NNS people)) (VP (VBP are) (ADJP (JJ dead)) (SBAR (IN after) (S (NP (JJ Islamist) (JJ radical) (NN group) (NNP Boko) (NNP Haram)) (VP (VBD assaulted) (NP (NP (DT a) (NN town)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria)))))))) (. .)))
+
+</Parse>
+</Sentence>
+
+
+
 
 </Sentences>

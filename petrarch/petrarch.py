@@ -380,7 +380,7 @@ def do_coding(event_dict, out_file):
     logger = logging.getLogger('petr_log')
     times = 0
     sents = 0
-    for key, val in event_dict.items():
+    for key, val in sorted(event_dict.items()):
         NStory += 1
         prev_code = []
 
@@ -411,8 +411,8 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "PREP" in SentenceID:
-                #    continue
+                #if not "824_1" in SentenceID:
+                #   continue
 
                 """
                 disc = check_discards(SentenceText)
@@ -441,10 +441,10 @@ def do_coding(event_dict, out_file):
                 #print(test_obj.verb_analysis)
                 
                 
-                test_obj.print_to_file(test_obj.tree,file = file)
-                del(test_obj)
-                code_time = time.time()-t1
+                #test_obj.print_to_file(test_obj.tree,file = file)
                 
+                code_time = time.time()-t1
+                del(test_obj)
                 times+=code_time
                 sents += 1
                 print(code_time)

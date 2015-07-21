@@ -40,6 +40,7 @@ class Phrase:
         self.meaning = ""
         self.date = date
         self.index = -1
+        self.head = None
     
     def get_meaning(self):
         return self.meaning
@@ -58,21 +59,47 @@ class Phrase:
                 actorcodes.append(code)
         
         return actorcodes,agentcodes
-        
-        
-        
+    
 
     def mix_codes(self,agents,actors):
         codes = set()
         for act in (actors if actors else ['~']):
             for ag in (agents if agents else ['~']) :
+                code = act
                 if not ag[1:] in act:
-                    codes.add(act+ag[1:])
-                else:
-                    codes.add(act)
-
-    
+                    code += ag[1:]
+                if not code in ['~','~~']:
+                    codes.add(code)
         return list(codes)
+
+    def return_head(self):
+        return self.head
+
+    def get_head(self):
+        #   Find the head of the phrase
+        self.get_head = self.return_head
+        
+        try:
+            if self.label == 'S':
+                self.head = map(lambda b: b.get_head(),filter(lambda a : a.label == 'VP', self.children))[0]
+                return self.head
+            
+            if (not self.label[1] == 'P'): # I don't think this will ever happen, but who knows, Core NLP does weird things
+                return self.text
+        
+            head_children = filter(lambda child : child.label.startswith(self.label[0]) and not child.label[1] == 'P', self.children)
+            if head_children:
+                possibilities = filter(lambda b: b, map(lambda a: a.text,head_children))
+            else:
+                other_children= filter(lambda child : child.label.startswith(self.label[0]), self.children)
+                possibilities = filter(lambda b: b, map(lambda a: a.get_head(),other_children))
+            
+            self.head = possibilities[-1]   # return the last, English usually compounds words to the front
+            return possibilities[-1]
+            
+        except:
+            return None
+
 
 class NounPhrase(Phrase):
 
@@ -83,7 +110,6 @@ class NounPhrase(Phrase):
         return self.meaning
 
     def check_date(self, match):
-
         code = None
         try:
             for j in match:
@@ -240,20 +266,20 @@ class NounPhrase(Phrase):
         actorcodes,agentcodes = self.resolve_codes(codes)
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
-        VPactor, VPagent = self.resolve_codes(VPcodes)
+        #VPactor, VPagent = self.resolve_codes(VPcodes)
         if not actorcodes:
             actorcodes += NPactor
             if not actorcodes:
                 actorcodes += PPactor
-                if not actorcodes:
-                    actorcodes += VPactor
+        #        if not actorcodes:
+        #            actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
         
         if not agentcodes:
             agentcodes += NPagent
             if not agentcodes:
                 agentcodes += PPagent
-                if not agentcodes:
-                    agentcodes += VPagent
+         #       if not agentcodes:
+         #           agentcodes += VPagent
                     
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
@@ -268,10 +294,12 @@ class PrepPhrase(Phrase):
         Phrase.__init__(self, label, date)
         self.meaning = ""
         self.prep = ""
+        self.noun_head = ""
 
     def get_meaning(self):
         self.meaning = self.children[1].get_meaning()
         self.prep = self.children[0].text
+        self.head = self.children[1].get_head()
         return self.meaning
 
 
@@ -286,17 +314,12 @@ class VerbPhrase(Phrase):
         self.code = ""
         self.valid = self.is_valid()
     
-    
-    def get_head(self):
-        for child in children:
-            if "V" in child.label:
-                return child
-    
     def is_valid(self):
         # This function is to weed out things like helping verbs and participles coded as verbs
-        helping = ["HAVE","HAD","HAVING"]
+        # Largely to overcome frequently made Stanford errors
         if self.label == "VBN":
-            if not self.parent.get_head().text in helping:
+            helping = ["HAVE","HAD","HAVING"]
+            if not self.parent.get_head() in helping:
                 self.valid = False
                 return False
         self.valid = True
@@ -308,7 +331,6 @@ class VerbPhrase(Phrase):
         up = self.get_upper()
         low = self.get_lower()
         return up,low
-        #return self.get_upper(), self.get_lower()
 
     def return_upper(self):
         return self.upper
@@ -351,11 +373,12 @@ class VerbPhrase(Phrase):
             for child in level.parent.children:
                 # Do we just want to pick the first?
                 if isinstance(
-                        child, NounPhrase) and not child.get_meaning() == "":
+                        child, NounPhrase) and not child.get_meaning() == ["~"]:
                     self.upper = child.get_meaning()
                     not_found = False
                     return self.upper
             level = level.parent
+        return [""]
 
 
 

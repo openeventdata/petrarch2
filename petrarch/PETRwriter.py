@@ -67,7 +67,7 @@ def write_events(event_dict, output_file):
             story_date = event[0]
             source = event[1]
             target = event[2]
-            code = event[3]
+            code = filter(lambda a: not a == '\n', event[3])
 
             ids = ';'.join(filtered_events[event]['ids'])
 
@@ -89,7 +89,7 @@ def write_events(event_dict, output_file):
                     event[:3]) + '\t010\t' + '\t'.join(event[4:])
             else:
                 event_str = '\t'.join(event)
-            print(event_str)
+            #print(event_str)
             if joined_issues:
                 event_str += '\t{}'.format(joined_issues)
             else:

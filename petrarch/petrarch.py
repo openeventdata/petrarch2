@@ -347,7 +347,7 @@ def do_coding(event_dict, out_file):
     NDiscardSent = 0
     NDiscardStory = 0
 
-    file = open("output.tex",'w')
+    file = open("tex_outputs/output.tex",'w')
     
     print("""
 \\documentclass[11pt]{article}
@@ -411,7 +411,7 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "824_1" in SentenceID:
+                #if not "857" in SentenceID:
                 #   continue
 
                 """
@@ -434,16 +434,15 @@ def do_coding(event_dict, out_file):
                 
                 t1 = time.time()
                 test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
-                
                 coded_events = test_obj.get_events()
-
+                code_time = time.time()-t1
                 #test_obj.do_verb_analysis()
                 #print(test_obj.verb_analysis)
                 
                 
-                #test_obj.print_to_file(test_obj.tree,file = file)
+                test_obj.print_to_file(test_obj.tree,file = file)
                 
-                code_time = time.time()-t1
+                
                 del(test_obj)
                 times+=code_time
                 sents += 1

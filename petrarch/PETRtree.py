@@ -7,6 +7,9 @@ from __future__ import unicode_literals
 import PETRglobals
 import PETRreader
 import time
+import utilities
+import numpy as np
+
 
 #   PETRtree.py
 #   Author: Clayton Norris
@@ -72,11 +75,12 @@ class Phrase:
                     codes.add(code)
         return list(codes)
 
+
     def return_head(self):
         return self.head
 
+
     def get_head(self):
-        #   Find the head of the phrase
         self.get_head = self.return_head
         
         try:
@@ -84,7 +88,7 @@ class Phrase:
                 self.head = map(lambda b: b.get_head(),filter(lambda a : a.label == 'VP', self.children))[0]
                 return self.head
             
-            if (not self.label[1] == 'P'): # I don't think this will ever happen, but who knows, Core NLP does weird things
+            if (not self.label[1] == 'P'):
                 return self.text
         
             head_children = filter(lambda child : child.label.startswith(self.label[0]) and not child.label[1] == 'P', self.children)
@@ -99,6 +103,19 @@ class Phrase:
             
         except:
             return None
+
+    def get_code(self):
+        if not self.label in "SBAR":
+            return None
+
+        child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
+        if len(child_codes) == 0:
+            child_codes = np.array([0,0,0,0])
+        elif len(child_codes) == 1:
+            child_codes = np.array(child_codes[0])
+        else:
+            child_codes = np.array(child_codes)
+        return child_codes
 
 
 class NounPhrase(Phrase):
@@ -311,7 +328,7 @@ class VerbPhrase(Phrase):
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
         self.passive = False
-        self.code = ""
+        self.code = np.array([0,0,0,0])
         self.valid = self.is_valid()
     
     def is_valid(self):
@@ -330,7 +347,7 @@ class VerbPhrase(Phrase):
     def get_meaning(self):
         up = self.get_upper()
         low = self.get_lower()
-        return up,low
+        return up,low,self.get_code()
 
     def return_upper(self):
         return self.upper
@@ -441,7 +458,7 @@ class VerbPhrase(Phrase):
         return self.lower
 
     def return_code(self):
-        return str(self.code)
+        return self.code
     
     def get_code(self):
         self.get_code = self.return_code
@@ -449,9 +466,8 @@ class VerbPhrase(Phrase):
         dict = PETRglobals.VerbDict['verbs']
         patterns = PETRglobals.VerbDict['phrases']
         verb = self.children[0].text
-
         if verb in dict:
-            code = '---'
+            code = 0
             if '#' in dict[verb]:
                 try:
                     code = dict[verb]['#']['#']['code']
@@ -459,14 +475,27 @@ class VerbPhrase(Phrase):
                     self.meaning = meaning if not meaning == "" else verb
                     
                     if not code == '':
-                        self.code = code
-                        return code
-                    self.code =patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code']
-                    
-                    return self.code
+                        self.code = utilities.convert_code(code)
+                    else:
+                        self.code = utilities.convert_code(patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code'])
                 except:
-                    return "---"
-        return "---"
+                    self.code = np.array([0,0,0,0])
+        
+        
+        # Combine with children codes
+        child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
+        if len(child_codes) == 0:
+            child_codes = np.array([0,0,0,0])
+        elif len(child_codes) == 1:
+            child_codes = np.array(child_codes[0])
+        else:
+            child_codes = np.array(child_codes)
+        try:
+            self.code = utilities.combine_code(self.code,child_codes )
+        except:
+            print("weird additions")
+        return self.code
+
 
 
 class Sentence:
@@ -522,7 +551,7 @@ class Sentence:
             scopes = v.get_meaning()
             code = v.get_code()
         
-            if not code == "---" and not [] in scopes and not "" in scopes:
+            if not False and not [] in scopes and not "" in scopes:
                 #print("SRC: ",scopes[0],"TARG ",scopes[1],"CODE ",code)
                 srcs = scopes[0]
                 targs = scopes[1]
@@ -532,16 +561,16 @@ class Sentence:
                     for targ in targs:
                         if targ == "~":
                             continue
-                        if not (src == targ and code == '010'): # ... said he/she/it/they ...
+                        if not (src == targ and np.array([0,0,0,0]) in code): # ... said he/she/it/they ...
                             if v.check_passive():
-                                events.append([targ,src,code] )
+                                events.append([targ,src,str(code)] )
                             else:
-                                if ':' in code:
+                                if False and ':' in code:
                                     codes = code.split(':')
                                     events.append([src,targ,codes[0]])
                                     events.append([targ,src,codes[1]])
                                 else:
-                                    events.append([src,targ,code] )
+                                    events.append([src,targ,str(code)] )
                 
 
         return events
@@ -604,7 +633,11 @@ class Sentence:
             else:
                 for g in m[1]:
                     j += "+"+g
-            print("[.{\it Upper "+k+", Lower "+j+", Code: "+root.get_code()+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
+            if not isinstance(root.get_code(),np.ndarray):
+                print("SOMETHING WENT WRONG")
+                print(root.get_code())
+                print(root.get_head())
+            print("[.{\it Upper "+k+", Lower "+j+", Code: "+str(root.get_code())+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)
         if root.label in ["NP","VP"]:

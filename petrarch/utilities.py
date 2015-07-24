@@ -227,6 +227,28 @@ def combine_code(selfcode,to_add):
 
 
 
+def code_to_string(events):
+    retstr= ""
+
+    def ev_to_string(ev):
+        local = ""
+        up = str(ev[0])
+        low = ev[1]
+        c = ev[2]
+
+        if isinstance(low,tuple):
+            low = "("+ev_to_string(low)+")"
+        
+        return up + " " + low + " " + hex(c)
+
+    for ev in events:
+        print(ev)
+        retstr += ev_to_string(ev) +" , "
+
+    return retstr[:-3]
+
+
+
 
 
 def convert_code(code):
@@ -262,7 +284,7 @@ def convert_code(code):
                                         4 Consult
                                         5 Posture
                                         6 Coerce
-    """
+    
     
     
                       # Old     :     New           #  Top-level codes in the new system
@@ -770,11 +792,11 @@ def convert_code(code):
                         "18"    :     0x0090    ,         #  Assault
                         "19"    :     0x00A0    ,         #  Fight
                         "20"    :     0x00B0    ,   }      #  Use Unconventional Mass Violence
-    """
+    
 
     if code in cat:
         if not code == -1:
-            return numpy.array(cat[code])
+            return cat[code]
         return -1
-    return numpy.array(cat[code[:2]])
+    return cat[code[:2]]
 

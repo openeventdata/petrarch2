@@ -54,7 +54,7 @@ class Phrase:
             if events:
                 self.lower = events
                 return events
-
+    
         return self.meaning
 
     def resolve_codes(self,codes):
@@ -118,11 +118,11 @@ class Phrase:
 
         child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
         if len(child_codes) == 0:
-            child_codes = np.array([0,0,0,0])
+            child_codes = 0
         elif len(child_codes) == 1:
-            child_codes = np.array(child_codes[0])
+            child_codes = child_codes[0]
         else:
-            child_codes = np.array(child_codes)
+            child_codes = child_codes
         return child_codes
 
 
@@ -331,17 +331,17 @@ class VerbPhrase(Phrase):
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
         self.passive = False
-        self.code = np.array([0,0,0,0])
+        self.code = 0
         self.valid = self.is_valid()
     
     def is_valid(self):
         # This function is to weed out things like helping verbs and participles coded as verbs
         # Largely to overcome frequently made Stanford errors
+        
         try:
             if self.children[0].label == "VBN":
-                helping = ["HAVE","HAD","HAVING"]
-                
-                if ((not self.parent.get_head() in helping or self.parent.children[0] in helping) and
+                helping = ["HAVE","HAD","HAVING","HAS"]
+                if ((not (self.parent.get_head() in helping or self.parent.children[0].text in helping)) and
                   len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
                     not self.check_passive()):
                     self.valid = False
@@ -360,29 +360,42 @@ class VerbPhrase(Phrase):
         low = self.get_lower()
         
         c = self.get_code()
-        print(low)
+    
+        def resolve_events(event):
+            first,second,third = [up,"",""]
+            if not event[0] in ['',[],[""],["~"],["~~"]]:
+                second = event
+                third = c
+            else:
+                second = event[1]
+                third = c + event[2]
+            return first,second,third
+        
+        
+        
         if isinstance(low,list):
             events = []
             for event in low:
-                first,second,third = [up,"",""]
-                if not event[0] in ['',[],[""],["~"],["~~"]]:
-                    second = event
-                    third = c
-                else:
-                    second = event[1]
-                    third = c + event[2]
-                    
-                events.append((first,second,third))
-            print(events)
-            return events
-                
+                events.append(resolve_events(event))
+        else:
+            events.append((up,low,c))
         
         
         
         
+        s_options = filter(lambda a: a.label in "SBAR",self.children)
+        lower = map(lambda a: a.get_meaning(),s_options)
+        sents = []
+        for item in lower:
+            sents += item
         
+        if sents:
+            for event in sents:
+                events.append(resolve_events(event))
         
-        return [(up,low,self.get_code())]
+        return events
+            
+        #return [(up,low,self.get_code())]
 
     def return_upper(self):
         return self.upper
@@ -440,7 +453,7 @@ class VerbPhrase(Phrase):
         self.get_lower = self.return_lower
         
         lower = []
-        v_options = filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()) or a.label in "SBAR",self.children)
+        v_options = filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()),self.children)
         
         lower = map(lambda a: a.get_meaning(),v_options)
 
@@ -521,17 +534,17 @@ class VerbPhrase(Phrase):
                     else:
                         self.code = utilities.convert_code(patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code'])
                 except:
-                    self.code = np.array([0,0,0,0])
+                    self.code = 0
         
         
         # Combine with children codes
         child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
         if len(child_codes) == 0:
-            child_codes = np.array([0,0,0,0])
+            child_codes = 0
         elif len(child_codes) == 1:
-            child_codes = np.array(child_codes[0])
+            child_codes = child_codes[0]
         else:
-            child_codes = np.array(child_codes)
+            child_codes = child_codes
         #try:
         #    self.code = utilities.combine_code(self.code,child_codes )
         #except:
@@ -603,7 +616,7 @@ class Sentence:
                     for targ in targs:
                         if targ == "~":
                             continue
-                        if not (src == targ and np.array([0,0,0,0]) in code): # ... said he/she/it/they ...
+                        if not (src == targ and code == 0): # ... said he/she/it/they ...
                             if v.check_passive():
                                 events.append([targ,src,str(code)] )
                             else:
@@ -664,7 +677,7 @@ class Sentence:
         if root.label in ["VP"]:
             m = root.get_meaning()
             k = ""
-            print("[.{\it Upper "+str(m)+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
+            print("[.{\it "+utilities.code_to_string(m)+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
             """
             if m[0] is None:
                 k = ""

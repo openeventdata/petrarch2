@@ -411,7 +411,7 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "857" in SentenceID:
+                #if not "Guyana" in SentenceText:
                 #   continue
 
                 """
@@ -434,7 +434,7 @@ def do_coding(event_dict, out_file):
                 
                 t1 = time.time()
                 test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
-                coded_events = test_obj.get_events()
+                #coded_events = test_obj.get_events()
                 code_time = time.time()-t1
                 #test_obj.do_verb_analysis()
                 #print(test_obj.verb_analysis)
@@ -447,7 +447,7 @@ def do_coding(event_dict, out_file):
                 times+=code_time
                 sents += 1
                 print(code_time)
-
+                continue
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":

@@ -46,10 +46,18 @@ class Phrase:
         self.head = None
     
     def get_meaning(self):
+        if self.label in "SBAR":
+            lower = map(lambda b: b.get_meaning(), filter(lambda a: a.label in "SBARVP",self.children))
+            events = []
+            for item in lower:
+                events += item
+            if events:
+                self.lower = events
+                return events
+
         return self.meaning
 
     def resolve_codes(self,codes):
-        
         if not codes:
             return [],[]
         
@@ -239,20 +247,15 @@ class NounPhrase(Phrase):
                             continue
                         
                         if (not local) or (reflexive and local):
-                            if isinstance(level,VerbPhrase):
-                                codes += level.get_upper()
-                                break
                             for child in level.parent.children:
                                 if isinstance(child,NounPhrase) and not child.get_meaning() == "" :  # Do we just want to pick the first?
                                     not_found = False
                                     codes += child.get_meaning()
                                     break
-                        
-                        
-                    
+
                         level = level.parent
                 elif child.label == "VP":
-                    m = child.get_meaning()[1]
+                    m = "" # child.get_meaning()[1]
                     if not m == "":
                         VPcodes+= m
         
@@ -314,7 +317,7 @@ class PrepPhrase(Phrase):
         self.noun_head = ""
 
     def get_meaning(self):
-        self.meaning = self.children[1].get_meaning()
+        self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
         self.prep = self.children[0].text
         self.head = self.children[1].get_head()
         return self.meaning
@@ -334,20 +337,52 @@ class VerbPhrase(Phrase):
     def is_valid(self):
         # This function is to weed out things like helping verbs and participles coded as verbs
         # Largely to overcome frequently made Stanford errors
-        if self.label == "VBN":
-            helping = ["HAVE","HAD","HAVING"]
-            if not self.parent.get_head() in helping:
-                self.valid = False
-                return False
-        self.valid = True
+        try:
+            if self.children[0].label == "VBN":
+                helping = ["HAVE","HAD","HAVING"]
+                
+                if ((not self.parent.get_head() in helping or self.parent.children[0] in helping) and
+                  len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
+                    not self.check_passive()):
+                    self.valid = False
+                    return False
+            self.valid = True
+        except:
+            self.valid = True
         return True
     
     
+    def return_meaning():
+        return self.meaning
     
     def get_meaning(self):
         up = self.get_upper()
         low = self.get_lower()
-        return up,low,self.get_code()
+        
+        c = self.get_code()
+        print(low)
+        if isinstance(low,list):
+            events = []
+            for event in low:
+                first,second,third = [up,"",""]
+                if not event[0] in ['',[],[""],["~"],["~~"]]:
+                    second = event
+                    third = c
+                else:
+                    second = event[1]
+                    third = c + event[2]
+                    
+                events.append((first,second,third))
+            print(events)
+            return events
+                
+        
+        
+        
+        
+        
+        
+        return [(up,low,self.get_code())]
 
     def return_upper(self):
         return self.upper
@@ -384,9 +419,9 @@ class VerbPhrase(Phrase):
         not_found = True
         level = self
         while not_found and not level.parent is None:
-            if isinstance(level.parent,VerbPhrase) and level.label in ["S","SBAR","VP"]:
-                self.upper = level.parent.upper
-                return self.upper
+            #if isinstance(level.parent,VerbPhrase) and level.label in ["S","SBAR","VP"]:
+            #    self.upper = level.parent.upper
+            #    return self.upper
             for child in level.parent.children:
                 # Do we just want to pick the first?
                 if isinstance(
@@ -394,36 +429,43 @@ class VerbPhrase(Phrase):
                     self.upper = child.get_meaning()
                     not_found = False
                     return self.upper
-            level = level.parent
+            #level = level.parent
+            not_found = False
         return [""]
-
-
 
     def return_lower(self):
         return self.lower
     
     def get_lower(self):
         self.get_lower = self.return_lower
-        # this is WAY harder than finding upper
+        
+        lower = []
+        v_options = filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()) or a.label in "SBAR",self.children)
+        
+        lower = map(lambda a: a.get_meaning(),v_options)
 
-        #### SUPER NAIVE ######
-        #
-        #   This probably only works with very basic sentences, will do some more tests and research
-        #
-
+#        for child in filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()) or a.label in "SBAR",self.children):
+#            lower.append(child.get_meaning())
+        events = []
+        for item in lower:
+            events += item
+        if events:
+            self.lower = events
+            return events
+        
         NPcodes = []
         PPcodes = []
         VPcodes = []
-        Scodes = []
+        #Scodes = []
         
         for child in self.children:
             if isinstance(child, NounPhrase):
                 NPcodes += child.get_meaning()
             elif isinstance(child, PrepPhrase):
                 PPcodes += (child.get_meaning())
-            elif isinstance(child, VerbPhrase):
-                VPcodes += child.get_meaning()[1]
-            elif child.label in "SBAR":
+            #elif isinstance(child, VerbPhrase):
+            #    VPcodes += child.get_meaning()[1]
+            elif False and child.label in "SBAR":
                 for ch in (child.children[-1].children if child.label == "SBAR" else child.children):
                     if isinstance(ch, NounPhrase):
                         Scodes += ch.get_meaning()
@@ -436,23 +478,23 @@ class VerbPhrase(Phrase):
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
-        Sactor,Sagent = self.resolve_codes(Scodes)
+        #Sactor,Sagent = self.resolve_codes(Scodes)
 
         actorcodes += NPactor
         if not actorcodes:
             actorcodes += PPactor
             if not actorcodes:
                 actorcodes += VPactor
-                if not actorcodes:
-                    actorcodes += Sactor
+                #if not actorcodes:
+                #    actorcodes += Sactor
     
         agentcodes += NPagent
         if not agentcodes:
             agentcodes += PPagent
             if not agentcodes:
                 agentcodes += VPagent
-                if not agentcodes:
-                    agentcodes += Sagent
+                #if not agentcodes:
+                #    agentcodes += Sagent
         
         self.lower = self.mix_codes(agentcodes,actorcodes)
         return self.lower
@@ -490,10 +532,10 @@ class VerbPhrase(Phrase):
             child_codes = np.array(child_codes[0])
         else:
             child_codes = np.array(child_codes)
-        try:
-            self.code = utilities.combine_code(self.code,child_codes )
-        except:
-            print("weird additions")
+        #try:
+        #    self.code = utilities.combine_code(self.code,child_codes )
+        #except:
+        #    print("weird additions")
         return self.code
 
 
@@ -622,6 +664,8 @@ class Sentence:
         if root.label in ["VP"]:
             m = root.get_meaning()
             k = ""
+            print("[.{\it Upper "+str(m)+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
+            """
             if m[0] is None:
                 k = ""
             else:
@@ -632,12 +676,12 @@ class Sentence:
                 j == ""
             else:
                 for g in m[1]:
-                    j += "+"+g
+                    j += "+"+str(g)
             if not isinstance(root.get_code(),np.ndarray):
                 print("SOMETHING WENT WRONG")
                 print(root.get_code())
                 print(root.get_head())
-            print("[.{\it Upper "+k+", Lower "+j+", Code: "+str(root.get_code())+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
+            print("[.{\it Upper "+k+", Lower "+j+", Code: "+str(root.get_code())+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")"""
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)
         if root.label in ["NP","VP"]:

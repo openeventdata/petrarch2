@@ -357,10 +357,13 @@ class VerbPhrase(Phrase):
     
     def get_meaning(self):
         up = self.get_upper()
-        low = self.get_lower()
-        
+        low = self.get_lower() if self.get_lower() else ""
         c = self.get_code()
-    
+        #print("FINDING MEANING", self.children[0].text,c)
+        
+        
+        s_options = filter(lambda a: a.label in "SBAR",self.children)
+        events = []
         def resolve_events(event):
             first,second,third = [up,"",""]
             if not event[0] in ['',[],[""],["~"],["~~"]]:
@@ -368,22 +371,15 @@ class VerbPhrase(Phrase):
                 third = c
             else:
                 second = event[1]
-                third = c + event[2]
+                third = utilities.combine_code(c,event[2])
             return first,second,third
-        
-        
-        
-        if isinstance(low,list):
-            events = []
+ 
+        if isinstance(low,list) :
             for event in low:
                 events.append(resolve_events(event))
-        else:
+        elif not s_options:
             events.append((up,low,c))
         
-        
-        
-        
-        s_options = filter(lambda a: a.label in "SBAR",self.children)
         lower = map(lambda a: a.get_meaning(),s_options)
         sents = []
         for item in lower:
@@ -392,10 +388,11 @@ class VerbPhrase(Phrase):
         if sents:
             for event in sents:
                 events.append(resolve_events(event))
+                
+        #print("\t",events)
         
         return events
-            
-        #return [(up,low,self.get_code())]
+    
 
     def return_upper(self):
         return self.upper

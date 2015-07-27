@@ -196,8 +196,10 @@ def init_logger(logger_filename):
 def combine_code(selfcode,to_add):
 
     #print(selfcode,to_add)
-    if isinstance(selfcode,int):
+    if selfcode < 0:
         return -to_add
+    if selfcode >= 0x1000 and to_add >= 0x1000:
+        return to_add  # If both verbs are high-level, take the lower nested one. I think this is what we want?
     return selfcode + to_add
 
     """
@@ -242,7 +244,7 @@ def code_to_string(events):
         return up + " " + low + " " + hex(c)
 
     for ev in events:
-        print(ev)
+        #print(ev)
         retstr += ev_to_string(ev) +" , "
 
     return retstr[:-3]
@@ -253,41 +255,36 @@ def code_to_string(events):
 
 def convert_code(code):
 
-
-
     if ':' in code:
         code = code[:3]
+        print("\t\tWHADDUP",code)
     """
                 New coding scheme:
 
-            0                           0                       0
-            1 Appeal                    1 Meet                  1 Leadership
-            2 Demand                    2 Settle                2 Policy
-            3 Intend                    3 Mediate               3 Rights
-            4 Protest                   4 Aid                   4 Regime
-            5 Other                     5 Expell                5 Econ
-            6 Threaten                  6 Pol. Change           6 Military
-            7 Fight                     7 Mat. Coop             7 Humanitarian
-            8 Assault                   8 Dip. Coop             8 Judicial
-            9 Mass Violence             9 Yield                 9 Peacekeeping
-            A Reject                    A Reduce                A Intelligence
-            B     + Appeal              B     + meet            B Admin. Sanctions
-            V     + Demand              C     + settle          C Dissent
-            D Threaten + fight          D     + mediate         D Release
-            E          + assault        E     + Aid             E Int'l Involvemnet
-            F          + mass violence  F Yield + pol change    F D-escalation
-                    
-                    
-                                        1 Say
-                                        2 Investigate
-                                        3 Disapprove
-                                        4 Consult
-                                        5 Posture
-                                        6 Coerce
+            0                0          0                       0
+            2 Appeal         1 Reduce   1 Meet                  1 Leadership
+            3 Intend         2 Yield    2 Settle                2 Policy
+            4 Demand                    3 Mediate               3 Rights
+            5 Protest                   4 Aid                   4 Regime
+            6 Threaten	                5 Expel                 5 Econ
+            1 Say                       6 Pol. Change           6 Military
+            7 Disapprove                7 Mat. Coop             7 Humanitarian
+            8 Posture                   8 Dip. Coop             8 Judicial
+            9 Coerce                    9 Assault	            9 Peacekeeping
+            A Investigate               A Fight		        	A Intelligence
+            B Consult  		       		B Mass violence			B Admin. Sanctions
+            						    			            C Dissent
+            						    				        D Release
+            							     		            E Int'l Involvement
+            						   						    F D-escalation
+         
+    In the first column, higher numbers take priority. i.e. “Say + Intend” is just “Intend” or “Intend + Consult” is just Consult
+ 
     
     
     
-                      # Old     :     New           #  Top-level codes in the new system
+                      # Old      :     New           #  Top-level codes in the new system
+                      
     cat = {             "010"    :     [1,0,0,0] ,         #  Make Public Statement
                         "011"    :     [1,0,0,0] ,
                         "012"    :     [1,0,0,0] ,

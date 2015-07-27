@@ -411,7 +411,7 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "Guyana" in SentenceText:
+                #if not "stopover" in SentenceText:
                 #   continue
 
                 """

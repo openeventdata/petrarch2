@@ -691,8 +691,134 @@ def read_issue_list(issue_path):
 
 # ================== VERB DICTIONARY INPUT ================== #
 
-
 def read_verb_dictionary(verb_path):
+
+    logger = logging.getLogger('petr_log')
+    logger.info("Reading " + PETRglobals.VerbFileName)
+    file = open(verb_path,'r')
+
+    block_meaning = ""
+    block_code = ""
+    record_patterns = 1
+
+
+
+    def resolve_patseg(segment):
+        prepphrase = 0
+        nounphrase = 0
+        nps = []
+        head = ""
+        modifiers = []
+        index = 0
+        prepstarts=[]
+        prepends=[]
+        for element in segment:
+            
+            # SKIP OVER PREPS, We consider these later
+            if element.endswith(")"):
+                prepends.append(index)
+                if element.startswith("("):
+                    prepstarts.append(index)
+                prepphrase = 0
+            
+            elif element.startswith("("):
+                prepstarts.append(index)
+                prepphrase = 1
+            
+            elif not prepphrase:
+                # Find noun phrases
+                if element.endswith("}"):
+                    nounphrase = 0
+                    head = element[:-1]
+                    nps.append((head,modifiers))
+                    modifiers = []
+                elif nounphrase:
+                    modifiers.append(element)
+                elif element.startswith("{"):
+                    modifiers.append(element[1:])
+                    nounphrase = 1
+                else:
+                    nps.append(element)
+                    
+            index += 1
+            
+        
+        preps = map(lambda a: segment[a[0]:a[1]+1], zip(prepstarts,prepends))
+        prep_pats = []
+        for phrase in preps:
+            phrase = map(lambda a: a.replace("(","").replace(")",""), phrase)
+            p = phrase[0]
+            pnps = []
+            pmodifiers = []
+            if len(phrase)> 1:
+                
+                head = ""
+                for element in phrase[1:]:
+                    # Find noun phrases
+                    if element.endswith("}"):
+                        nounphrase = 0
+                        head = element[:-2]
+                        pnps.append((head,pmodifiers))
+                        pmodifiers = []
+                    elif nounphrase:
+                        pmodifiers.append(element)
+                    elif element.startswith("{"):
+                        pmodifiers.append(element[1:])
+                        nounphrase = 1
+                    else:
+                        pnps.append(element)
+            prep_pats.append((p,pnps))
+                        
+
+        return prep_pats,nps
+            
+
+
+
+
+
+    for line in file:
+        if line.startswith("<!-- STOP"):
+            record_patterns= 0
+            continue
+        if not line.strip():
+            continue
+        if line.startswith("---"):
+            segs = line.split()
+            block_meaning  = segs[1]
+            block_code = segs[2]
+        elif line.startswith("-") and record_patterns:
+            dict_entry = {}
+            pat = line[1:].split("#")[0]
+            
+            segs = pat.split("*")
+            
+            pre = segs[0].split()
+            pre = resolve_patseg(pre)
+            
+            post = segs[1].split()
+            code = post.pop()
+            post = resolve_patseg(post)
+
+            path =  PETRglobals.VerbDict.setdefault(block_meaning,{})
+            if not pre == ([],[]):
+                if pre[1]:
+                    for noun in pre[1]:
+                        pass
+            
+            
+            path = path.setdefault('*',{})
+            print(pre)
+            print(post)
+
+
+
+    exit()
+
+
+
+
+def _read_verb_dictionary(verb_path):
     """ Reads the verb dictionary from VerbFileName """
 
     """

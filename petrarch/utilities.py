@@ -148,6 +148,8 @@ def story_filter(story_dict, story_id):
 
 
 def _format_parsed_str(parsed_str):
+    if parsed_str.startswith("(ROOT") and parsed_str.endswith(")"):
+        parsed_str = parsed_str[5:-1].strip()
     parsed = parsed_str.split('\n')
     parsed = [line.strip() + ' ' for line in [line1.strip() for line1 in
                                               parsed if line1] if line]
@@ -257,7 +259,7 @@ def convert_code(code):
 
     if ':' in code:
         code = code[:3]
-        print("\t\tWHADDUP",code)
+        #print("\t\tWHADDUP",code)
     """
                 New coding scheme:
 
@@ -666,11 +668,11 @@ def convert_code(code):
                         "084"    :     0x0200   ,
                         
                         
-                        "090"    :     0x0A00  ,         #  Investigate
-                        "091"    :     0x0A00  ,
-                        "092"    :     0x0A00  ,
-                        "093"    :     0x0A00  ,
-                        "094"    :     0x0A00  ,
+                        "090"    :     0xA000  ,         #  Investigate
+                        "091"    :     0xA000  ,
+                        "092"    :     0xA000  ,
+                        "093"    :     0xA000  ,
+                        "094"    :     0xA000  ,
                         
                         "100"    :     0x4000  ,         #  Demand
                         "101"    :     0x4070  ,

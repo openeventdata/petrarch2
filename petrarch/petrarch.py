@@ -434,13 +434,15 @@ def do_coding(event_dict, out_file):
                 
                 t1 = time.time()
                 test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
-                #coded_events = test_obj.get_events()
+                coded_events = test_obj.get_events()
                 code_time = time.time()-t1
                 #test_obj.do_verb_analysis()
                 #print(test_obj.verb_analysis)
                 
                 
                 test_obj.print_to_file(test_obj.tree,file = file)
+                
+                
                 
                 
                 del(test_obj)

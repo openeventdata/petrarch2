@@ -241,7 +241,7 @@ class NounPhrase(Phrase):
                     while not_found and level.parent:
                         if level.label.startswith("NP") and reflexive: #Intensive
                             break
-                        if level.label in ["S","SBAR"]:
+                        if local and level.label in ["S","SBAR"]:
                             local = False
                             level=level.parent
                             continue
@@ -317,9 +317,10 @@ class PrepPhrase(Phrase):
         self.noun_head = ""
 
     def get_meaning(self):
-        self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
         self.prep = self.children[0].text
-        self.head = self.children[1].get_head()
+        if len(self.children) > 1:
+            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
+            self.head = self.children[1].get_head()
         return self.meaning
 
 
@@ -359,7 +360,6 @@ class VerbPhrase(Phrase):
         up = self.get_upper()
         low = self.get_lower() if self.get_lower() else ""
         c = self.get_code()
-        #print("FINDING MEANING", self.children[0].text,c)
         
         
         s_options = filter(lambda a: a.label in "SBAR",self.children)
@@ -378,7 +378,8 @@ class VerbPhrase(Phrase):
             for event in low:
                 events.append(resolve_events(event))
         elif not s_options:
-            events.append((up,low,c))
+            if up or c or low:
+                events.append((up,low,c))
         
         lower = map(lambda a: a.get_meaning(),s_options)
         sents = []
@@ -387,7 +388,8 @@ class VerbPhrase(Phrase):
         
         if sents:
             for event in sents:
-                events.append(resolve_events(event))
+                if event[1] or event[2]:
+                    events.append(resolve_events(event))
                 
         #print("\t",events)
         
@@ -517,7 +519,7 @@ class VerbPhrase(Phrase):
         
         dict = PETRglobals.VerbDict['verbs']
         patterns = PETRglobals.VerbDict['phrases']
-        verb = self.children[0].text
+        verb = "TO" if self.children[0].label == "TO" else self.head
         if verb in dict:
             code = 0
             if '#' in dict[verb]:
@@ -561,7 +563,7 @@ class Sentence:
         self.date = date
         self.longlat = (-1,-1)
         self.verbs = []
-        self.tree = self.str_to_tree(str[1:-1].strip())
+        self.tree = self.str_to_tree(str.strip())
         self.txt = text
         self.verb_analysis = {}
         self.events = []
@@ -597,6 +599,12 @@ class Sentence:
 
     def get_events(self):
         events = []
+        
+        
+        
+        events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
+        
+        """
         for v in self.verbs:
             if not v.valid:
                 continue
@@ -624,7 +632,8 @@ class Sentence:
                                 else:
                                     events.append([src,targ,str(code)] )
                 
-
+        """
+        #print(events)
         return events
 
 

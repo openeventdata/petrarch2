@@ -712,8 +712,7 @@ Obama is scheduled to attend a summit in Switzerland on the unrest in Iran
 
 </Text>
 <Parse>
-(ROOT (S (PP (IN At) (NP (DT the) (JJ same) (NN time))) (, ,) (NP (PRP it)) (VP (VBZ seems) (ADJP (JJ clear)) (SBAR (IN that) (S (NP (NP (DT no) (JJ lasting) (NN solution)) (PP (TO to) (NP (NP (DT the) (NN problem)) (PP (IN of) (NP (NNP Gaza)))))) (VP (MD can) (VP (VB be) (VP (VBN conceived) (SBAR (IN unless) (S (NP (DT the) (NNP Hamas) (NN regime)) (VP (VP (VBZ is) (VP (VP (VBN disarmed)) (, ,) (CC or) (ADVP (IN at) (JJS least)) (VP (VBN put) (PP (IN in) (NP (NP (DT a) (NN position)) (SBAR (WHADVP (WRB where)) (S (NP (PRP it)) (VP (VP (MD can)) (CC neither) (VP (VB build) (PRT (RP up)) (NP (NP (PRP$ its) (NN inventory)) (PP (IN of) (NP (NNS rockets))))))))))))) (CC nor) (VP (VB replace) (NP (NP (DT those)) (SBAR (S (NP (PRP it)) (VP (VBZ fires) (PP (IN at) (NP (NNP Israel))))))))))))))))) (. .)))
-
+(ROOT (S (PP (IN At) (NP (DT the) (JJ same) (NN time))) (, ,) (NP (PRP it)) (VP (VBZ seems) (ADJP (JJ clear)) (SBAR (IN that) (S (NP (NP (DT no) (JJ lasting) (NN solution)) (PP (TO to) (NP (NP (DT the) (NN problem)) (PP (IN of) (NP (NNP Gaza)))))) (VP (MD can) (VP (VB be) (VP (VBN conceived) (SBAR (IN unless) (S (NP (DT the) (NNP Hamas) (NN regime)) (VP (VBZ is) (VP (VP (VBN disarmed)) (, ,) (CC or) (ADVP (IN at) (JJS least)) (VP (VBN put) (PP (IN in) (NP (NP (DT a) (NN position)) (SBAR (WHADVP (WRB where)) (S (NP (PRP it)) (VP (VP (MD can) (RB neither) (VP (VB build) (PRT (RP up)) (NP (NP (PRP$ its) (NN inventory)) (PP (IN of) (NP (NNS rockets)))))) (CC nor) (VP (VB replace) (NP (NP (DT those)) (SBAR (S (NP (PRP it)) (VP (VBZ fires) (PP (IN at) (NP (NNP Israel)))))))))))))))))))))))) (. .)))
 
 </Parse>
 </Sentence>
@@ -937,6 +936,83 @@ The civilians imprisoned for acting against Moscow were released yesterday by Pu
 
 
 
+<Sentence date = "20150609" id ="VERB_2" source = "AFP" sentence = "True">
+<Text>
+The government expressed appreciation for China's assistance.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NN government)) (VP (VBD expressed) (NP (NN appreciation)) (PP (IN for) (NP (NP (NNP China) (POS 's)) (NN assistance))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="VERB_3" source = "AFP" sentence = "True">
+<Text>
+The US State department has advised against travel to Tunisia after the museum shooting last week.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP US) (NN State) (NN department)) (VP (VBZ has) (VP (VBN advised) (PP (IN against) (NP (NP (NN travel)) (PP (TO to) (NP (NNP Tunisia))))) (PP (IN after) (NP (DT the) (NN museum) (NN shooting))) (NP-TMP (JJ last) (NNP wednesday))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="VERB_4" source = "AFP" sentence = "True">
+<Text>
+The tanks head back from the border after the skirmish went wrong
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNS tanks)) (VP (VBP head) (ADVP (RB back)) (PP (IN from) (NP (DT the) (NN border))) (SBAR (IN after) (S (NP (DT the) (NN skirmish)) (VP (VBD went) (ADJP (JJ wrong))))))))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="VERB_5" source = "AFP" sentence = "True">
+<Text>
+The tanks might want to head back after what just happened.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNS tanks)) (VP (MD might) (VP (VB want) (S (NP (NNP Obama)) (VP (TO to) (VP (VB head) (ADVP (RB back)) (PP (IN after) (SBAR (WHNP (WP what)) (S (ADVP (RB just)) (VP (VBD happened))))))))))))
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="PASSIVE_0" source = "AFP" sentence = "True">
+<Text>
+Evidence against Russia was presented by the US.
+</Text>
+<Parse>
+ (S (NP (NP (NN Evidence)) (PP (IN against) (NP (NNP Russia)))) (VP (VBD was) (VP (VBN presented) (PP (IN by) (NP (DT the) (NNP US))))) (. .))
+
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="PASSIVE_1" source = "AFP" sentence = "True">
+<Text>
+The US presented evidence against Russia.
+</Text>
+<Parse>
+(S (NP (DT The) (NNP US)) (VP (VBD presented) (NP (NN evidence)) (PP (IN against) (NP (NNP Russia)))) (. .))
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="PASSIVE_2" source = "AFP" sentence = "True">
+<Text>
+A protestor demolished the building.
+</Text>
+<Parse>
+(S (NP (DT A) (NN protestor)) (VP (VBD demolished) (NP (DT the) (NN building))) (. .))
+
+</Parse>
+</Sentence>
+
+<Sentence date = "20150609" id ="PASSIVE_3" source = "AFP" sentence = "True">
+<Text>
+The building was demolished by a protestor.
+</Text>
+<Parse>
+(S (NP (DT The) (NN building)) (VP (VBD was) (VP (VBN demolished) (PP (IN by) (NP (DT a) (NN protestor))))) (. .))
+
+
+</Parse>
+</Sentence>
 
 
 

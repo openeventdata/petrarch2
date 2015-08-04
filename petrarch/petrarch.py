@@ -398,11 +398,10 @@ def do_coding(event_dict, out_file):
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
-                #if not "AFP" in SentenceID:
-                #    continue
+                if not "TEST_1" == SentenceID:
+                    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
-                # print(SentenceText)
                 SentenceDate = event_dict[key]['sents'][sent][
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
@@ -411,9 +410,10 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #if not "stopover" in SentenceText:
+                #print(utilities.parse_to_text(parsed))
+                #if not "warrant" in SentenceText:
                 #   continue
-
+        
                 """
                 disc = check_discards(SentenceText)
                 
@@ -474,7 +474,7 @@ def do_coding(event_dict, out_file):
             event_dict[key]['sents'] = None
 
 
-    print("Summary:")
+    print("\nSummary:")
     print(
         "Stories read:",
         NStory,

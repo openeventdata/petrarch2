@@ -693,6 +693,29 @@ def read_issue_list(issue_path):
 
 def read_verb_dictionary(verb_path):
 
+
+    """
+
+
+    Verb storage:  
+    
+        Storage sequence:
+            
+                Upper Noun phrases
+                    |
+                Upper prepositional phrases
+                    *
+                Lower noun phrases
+                    |
+                Lower prepositional phrases
+                    #
+                    
+                    
+        - symbol acts as extender, indicating the noun phrase is longer
+        , symbol acts as delimiter between several selected options
+        
+    """
+
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.VerbFileName)
     file = open(verb_path,'r')
@@ -700,7 +723,10 @@ def read_verb_dictionary(verb_path):
     block_meaning = ""
     block_code = ""
     record_patterns = 1
-
+    synsets=  1
+    
+    def add_synonym(word,base):
+        pass
 
 
     def resolve_patseg(segment):
@@ -712,6 +738,7 @@ def read_verb_dictionary(verb_path):
         index = 0
         prepstarts=[]
         prepends=[]
+        
         for element in segment:
             
             # SKIP OVER PREPS, We consider these later
@@ -742,7 +769,6 @@ def read_verb_dictionary(verb_path):
                     
             index += 1
             
-        
         preps = map(lambda a: segment[a[0]:a[1]+1], zip(prepstarts,prepends))
         prep_pats = []
         for phrase in preps:
@@ -757,7 +783,7 @@ def read_verb_dictionary(verb_path):
                     # Find noun phrases
                     if element.endswith("}"):
                         nounphrase = 0
-                        head = element[:-2]
+                        head = element[:-1]
                         pnps.append((head,pmodifiers))
                         pmodifiers = []
                     elif nounphrase:
@@ -768,26 +794,25 @@ def read_verb_dictionary(verb_path):
                     else:
                         pnps.append(element)
             prep_pats.append((p,pnps))
-                        
-
-        return prep_pats,nps
-            
-
-
+        return nps,prep_pats
 
 
 
     for line in file:
-        if line.startswith("<!-- STOP"):
+        if line.startswith("<!"):
             record_patterns= 0
             continue
+        elif line.startswith("####### VERB PATTERNS #######"):
+            synsets = 0
         if not line.strip():
             continue
         if line.startswith("---"):
             segs = line.split()
             block_meaning  = segs[1]
             block_code = segs[2]
-        elif line.startswith("-") and record_patterns:
+        elif line.startswith("-"):
+            if not record_patterns:
+                continue
             dict_entry = {}
             pat = line[1:].split("#")[0]
             
@@ -800,20 +825,156 @@ def read_verb_dictionary(verb_path):
             code = post.pop()
             post = resolve_patseg(post)
 
-            path =  PETRglobals.VerbDict.setdefault(block_meaning,{})
+            path =  PETRglobals.VerbDict['phrases'].setdefault(block_meaning,{})
             if not pre == ([],[]):
+                if pre[0]:
+                    count = 1
+                    for noun in pre[0]:
+                        if not isinstance(noun,tuple):
+                            path  = path.setdefault(noun,{})
+                        else:
+                            head = noun[0]
+                            path = path.setdefault(head,{})
+                            for element in noun[1]:
+                                path = path.setdefault("-",{})
+                                path = path.setdefault(element,{})
+                        path = path.setdefault(",",{}) if not count == len(pre[0]) else path
+                        count += 1
+            
                 if pre[1]:
-                    for noun in pre[1]:
-                        pass
+                    path = path.setdefault("|",{})
+                    for phrase in pre[1]:
+                        head = phrase[0]
+                        path = path.setdefault(head,{})
+                        count = 1
+                        for noun in phrase[1]:
+                            if not isinstance(noun,tuple):
+                                path = path.setdefault("-",{})
+                                path  = path.setdefault(noun,{})
+                            else:
+                        
+                                head = noun[0]
+                                path = path.setdefault(head,{})
+                                for element in noun[1]:
+                                    path = path.setdefault("-",{})
+                                    path = path.setdefault(element,{})
+                            path = path.setdefault(",",{}) if not count == len(phrase[1]) else path
+                            count += 1
             
+            if not post == ([],[]):
+                path = path.setdefault('*',{})
+                if post[0]:
+                    count = 1
+                    for noun in post[0]:
+                        if not isinstance(noun,tuple):
+                            path  = path.setdefault(noun,{})
+                        else:
+                    
+                            head = noun[0]
+                            path = path.setdefault(head,{})
+                            for element in noun[1]:
+                                path = path.setdefault("-",{})
+                                path = path.setdefault(element,{})
+                        path = path.setdefault(",",{}) if not count == len(post[0]) else path
+                path = path.setdefault("|",{}) if post[1] else path
+                if post[1]:
+                    for phrase in post[1]:
+                        head = phrase[0]
+                        path = path.setdefault(head,{})
+                        count = 1
+                        for noun in phrase[1]:
+                            if not isinstance(noun,tuple):
+                                path = path.setdefault("-",{})
+                                path  = path.setdefault(noun,{})
+                            else:
+                        
+                                head = noun[0]
+                                path = path.setdefault(head,{})
+                                for element in noun[1]:
+                                    path = path.setdefault("-",{})
+                                    path = path.setdefault(element,{})
+                            path = path.setdefault(",",{}) if not count == len(phrase[1]) else path
+                            count += 1
+
+            path["#"] = {'code' : code[1:-1], 'line' : line[:-1]}
+        elif line.startswith("&") or line.startswith("+") and synsets:
+            pass
+        else:
+            # Add synonyms
+            word = line.split("#")[0]
+            words = word.replace("}","").replace("{","").split()
+            if not words:
+                continue
+        
+            code = block_code
+            front = []
+            back  = []
+            compound = 0
+            stem = words[0]
+            if "_" in stem:
+                # We're dealing with a compound verb
+                #print(stem)
+                segs = stem.split('+')
+                front = segs[0].split('_')
+                back = segs[1].split('_')[1:]
+                stem = segs[1].split('_')[0]
+                compound = 1
             
-            path = path.setdefault('*',{})
-            print(pre)
-            print(post)
+            if words[-1].startswith("["):
+                code = words.pop()
+
+            
+            if not (len(words) > 1 or '{' in word):
+                
+                if stem.endswith("S") or stem.endswith("X") or stem.endswith("Z"):
+                     words.append(stem + "ES")
+                elif stem.endswith("Y"):
+                    words.append(stem[:-1] + "IES")
+                else:
+                    words.append(stem + "S")
+                
+                if stem.endswith("E"):
+                    words.append(stem + "D")
+                elif stem.endswith("Y"):
+                    words.append(stem+"IED")
+                else:
+                    words.append(stem+"ED")
+        
+                words.append(stem + "ING")
+        
+            for w in words:
+                wstem = w
+                if "_" in w:
+                    segs = w.split('+')
+                    front = segs[0].split('_')
+                    back = segs[1].split('_')[1:]
+                    
+                    wstem = segs[1].split('_')[0]
+
+                path = PETRglobals.VerbDict['verbs']
+                path = path.setdefault(wstem,{})
+                for item in back:
+                    if not item:
+                        continue
+                    path = path.setdefault(item,{})
+                path = path.setdefault("#",{})
+                for item in front:
+                    if not item:
+                        continue
+                    path = path.setdefault(item,{})
+                path = path.setdefault("#",{'code':code[1:-1],'meaning':block_meaning,'line':line[:-1]})
 
 
 
-    exit()
+
+    #print(sorted(PETRglobals.VerbDict['phrases'].keys()))
+    #print(PETRglobals.VerbDict.__sizeof__())
+    #print(PETRglobals.VerbDict['phrases'].__sizeof__())
+    #exit()
+    #for root , k in sorted(PETRglobals.VerbDict['verbs'].items()):
+    #    print(root)
+    #    print("\t",k)
+
 
 
 
@@ -1353,7 +1514,6 @@ def _read_verb_dictionary(verb_path):
                     dict='verbs',
                     line=line)
                 if '{' in verb:
-
                     get_verb_forms(curcode, line)
                 else:
                     make_verb_forms(curcode, line)

@@ -31,7 +31,7 @@
 # be found in various function definitions. The various options are described
 # in more detail in the config.ini file.
 
-VerbDict = {}  # verb dictionary
+VerbDict = {'verbs':{}, 'phrases':{}}  # verb dictionary
 ActorDict = {}  # actor dictionary
 ActorCodes = []  # actor code list
 AgentDict = {}  # agent dictionary

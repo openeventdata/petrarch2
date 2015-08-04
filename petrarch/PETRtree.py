@@ -44,6 +44,7 @@ class Phrase:
         self.date = date
         self.index = -1
         self.head = None
+        self.head_phrase = None
     
     def get_meaning(self):
         if self.label in "SBAR":
@@ -71,7 +72,6 @@ class Phrase:
         
         return actorcodes,agentcodes
     
-
     def mix_codes(self,agents,actors):
         codes = set()
         for act in (actors if actors else ['~']):
@@ -85,38 +85,39 @@ class Phrase:
 
 
     def return_head(self):
-        return self.head
+        return self.head,self.head_phrase
 
 
     def get_head(self):
         self.get_head = self.return_head
-        
         try:
             if self.label == 'S':
-                self.head = map(lambda b: b.get_head(),filter(lambda a : a.label == 'VP', self.children))[0]
-                return self.head
-            
+                self.head, self.head_phrase = map(lambda b: b.get_head(),filter(lambda a : a.label == 'VP', self.children))[0]
+                return (self.head,self.head_phrase)
+            elif self.label == 'ADVP':
+                return self.children[0].text,self
             if (not self.label[1] == 'P'):
-                return self.text
+                return (self.text,self.parent)
         
             head_children = filter(lambda child : child.label.startswith(self.label[0]) and not child.label[1] == 'P', self.children)
             if head_children:
-                possibilities = filter(lambda b: b, map(lambda a: a.text,head_children))
+                possibilities = filter(None, map(lambda a: a.get_head(),head_children))
             else:
                 other_children= filter(lambda child : child.label.startswith(self.label[0]), self.children)
-                possibilities = filter(lambda b: b, map(lambda a: a.get_head(),other_children))
+                possibilities = filter(None, map(lambda a: a.get_head(),other_children))
             
-            self.head = possibilities[-1]   # return the last, English usually compounds words to the front
+            self.head_phrase = possibilities[-1][1]
+            self.head = possibilities[-1][0]   # return the last, English usually compounds words to the front
             return possibilities[-1]
             
         except:
-            return None
+            return (None,None)
 
     def get_code(self):
         if not self.label in "SBAR":
             return None
 
-        child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
+        child_codes = filter(None, map(lambda a: a.get_code(),self.children))
         if len(child_codes) == 0:
             child_codes = 0
         elif len(child_codes) == 1:
@@ -130,6 +131,7 @@ class NounPhrase(Phrase):
 
     def __init__(self, label, date):
         Phrase.__init__(self, label, date)
+    
 
     def return_meaning(self):
         return self.meaning
@@ -255,9 +257,10 @@ class NounPhrase(Phrase):
 
                         level = level.parent
                 elif child.label == "VP":
-                    m = "" # child.get_meaning()[1]
-                    if not m == "":
-                        VPcodes+= m
+                    meaning = child.get_meaning()
+                    #print(meaning)
+                    if meaning and isinstance(meaning[0][1],basestring):
+                        VPcodes += child.get_theme()
         
             i += 1
             option = -1
@@ -286,20 +289,20 @@ class NounPhrase(Phrase):
         actorcodes,agentcodes = self.resolve_codes(codes)
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
-        #VPactor, VPagent = self.resolve_codes(VPcodes)
+        VPactor, VPagent = self.resolve_codes(VPcodes)
         if not actorcodes:
             actorcodes += NPactor
             if not actorcodes:
                 actorcodes += PPactor
-        #        if not actorcodes:
-        #            actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
+                if not actorcodes:
+                    actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
         
         if not agentcodes:
             agentcodes += NPagent
             if not agentcodes:
                 agentcodes += PPagent
-         #       if not agentcodes:
-         #           agentcodes += VPagent
+                if not agentcodes:
+                    agentcodes += VPagent
                     
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
@@ -320,8 +323,13 @@ class PrepPhrase(Phrase):
         self.prep = self.children[0].text
         if len(self.children) > 1:
             self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
-            self.head = self.children[1].get_head()
+            self.head = self.children[1].get_head()[0]
+        
         return self.meaning
+
+    def get_prep(self):
+        
+        return self.children[0].text
 
 
 class VerbPhrase(Phrase):
@@ -334,6 +342,7 @@ class VerbPhrase(Phrase):
         self.passive = False
         self.code = 0
         self.valid = self.is_valid()
+        self.S  = None
     
     def is_valid(self):
         # This function is to weed out things like helping verbs and participles coded as verbs
@@ -342,7 +351,7 @@ class VerbPhrase(Phrase):
         try:
             if self.children[0].label == "VBN":
                 helping = ["HAVE","HAD","HAVING","HAS"]
-                if ((not (self.parent.get_head() in helping or self.parent.children[0].text in helping)) and
+                if ((not (self.parent.get_head()[0] in helping or self.parent.children[0].text in helping)) and
                   len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
                     not self.check_passive()):
                     self.valid = False
@@ -352,37 +361,82 @@ class VerbPhrase(Phrase):
             self.valid = True
         return True
     
+    def get_theme(self):
+        m = self.get_meaning()
+        
+        if m[0][1] == 'passive':
+            return m[0][0]
+        return [m[0][1]]
     
-    def return_meaning():
+    def return_meaning(self):
+        #print("RETURNING")
         return self.meaning
     
     def get_meaning(self):
-        up = self.get_upper()
-        low = self.get_lower() if self.get_lower() else ""
+        self.get_meaning = self.return_meaning
+        
+        
         c = self.get_code()
         
+        
+        if self.check_passive():
+            # Check for source in preps
+            source_options = []
+            target_options = []
+            for child in self.children:
+                if isinstance(child,PrepPhrase):
+                    
+                    if child.get_prep() in ["BY","FROM"]:
+                        source_options += child.get_meaning()
+                    elif child.get_prep() in ["AT","AGAINST","INTO","TOWARDS"]:
+                        target_options += child.get_meaning()
+            if not target_options:
+                target_options = "passive"
+            if source_options or c:
+                self.meaning = [(source_options, target_options, c)]
+                
+                return self.meaning
+    
+        up = self.get_upper()
+        up = "" if up in ['',[],[""],["~"],["~~"]] else up
+        low = self.get_lower() if self.get_lower() else ""
+
         
         s_options = filter(lambda a: a.label in "SBAR",self.children)
         events = []
         def resolve_events(event):
             first,second,third = [up,"",""]
-            if not event[0] in ['',[],[""],["~"],["~~"]]:
+            if not isinstance(event,tuple):
+                second = event
+                third = c
+            if not (up or c) :
+                return event
+            elif event[1] == 'passive':
+                first = event[0]
+                second = up[0] if up else 'passive'
+                third = utilities.combine_code(c,event[2])
+            elif not event[0] in ['',[],[""],["~"],["~~"]]:
                 second = event
                 third = c
             else:
                 second = event[1]
                 third = utilities.combine_code(c,event[2])
+            
             return first,second,third
- 
-        if isinstance(low,list) :
+        
+        if isinstance(low,list):
             for event in low:
                 events.append(resolve_events(event))
         elif not s_options:
-            if up or c or low:
-                events.append((up,low,c))
-        
+            if low:
+                if up or c:
+                    events.append((up,low,c))
+                else:
+                    events.append(low)
+
         lower = map(lambda a: a.get_meaning(),s_options)
         sents = []
+
         for item in lower:
             sents += item
         
@@ -390,9 +444,7 @@ class VerbPhrase(Phrase):
             for event in sents:
                 if event[1] or event[2]:
                     events.append(resolve_events(event))
-                
-        #print("\t",events)
-        
+        self.meaning = events
         return events
     
 
@@ -423,7 +475,28 @@ class VerbPhrase(Phrase):
             print("Error in passive check")
         self.passive = False
         return False
-        
+
+
+    def return_S(self):
+        return self.S
+
+    def get_S(self):
+        self.get_S = self.return_S
+        not_found = True
+        level = self
+        while not_found and not level.parent is None:
+            if isinstance(level.parent, VerbPhrase):
+                level = level.parent
+            elif level.parent.label == "S":
+                if level.children[0].label == "TO" and level.index == 0:
+                    level = level.parent
+                    continue
+                self.S = level.parent
+                return level.parent
+            else:
+                return level
+        return None
+    
 
 
     def get_upper(self):
@@ -458,6 +531,7 @@ class VerbPhrase(Phrase):
 
 #        for child in filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()) or a.label in "SBAR",self.children):
 #            lower.append(child.get_meaning())
+
         events = []
         for item in lower:
             events += item
@@ -476,7 +550,8 @@ class VerbPhrase(Phrase):
             elif isinstance(child, PrepPhrase):
                 PPcodes += (child.get_meaning())
             #elif isinstance(child, VerbPhrase):
-            #    VPcodes += child.get_meaning()[1]
+                #meaning = child.get_meaning()
+                #VPcodes += meaning[1] if isinstance(meaning[1],basestring)
             elif False and child.label in "SBAR":
                 for ch in (child.children[-1].children if child.label == "SBAR" else child.children):
                     if isinstance(ch, NounPhrase):
@@ -490,8 +565,7 @@ class VerbPhrase(Phrase):
         NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
-        #Sactor,Sagent = self.resolve_codes(Scodes)
-
+        
         actorcodes += NPactor
         if not actorcodes:
             actorcodes += PPactor
@@ -516,10 +590,10 @@ class VerbPhrase(Phrase):
     
     def get_code(self):
         self.get_code = self.return_code
-        
         dict = PETRglobals.VerbDict['verbs']
         patterns = PETRglobals.VerbDict['phrases']
-        verb = "TO" if self.children[0].label == "TO" else self.head
+        verb = "TO" if self.children[0].label == "TO" else self.get_head()[0]
+        meaning = ""
         if verb in dict:
             code = 0
             if '#' in dict[verb]:
@@ -527,28 +601,103 @@ class VerbPhrase(Phrase):
                     code = dict[verb]['#']['#']['code']
                     meaning = dict[verb]['#']['#']['meaning']
                     self.meaning = meaning if not meaning == "" else verb
-                    
                     if not code == '':
                         self.code = utilities.convert_code(code)
-                    else:
-                        self.code = utilities.convert_code(patterns[dict[verb]['#']['#']['meaning']]['#']['#']['code'])
-                except:
+                except :
                     self.code = 0
+        match = self.match_pattern()
+        if match:
+            print(match)
+            self.code = utilities.convert_code(match['code'])
         
-        
-        # Combine with children codes
-        child_codes = filter(lambda b: b is not None ,map(lambda a: a.get_code(),self.children))
-        if len(child_codes) == 0:
-            child_codes = 0
-        elif len(child_codes) == 1:
-            child_codes = child_codes[0]
-        else:
-            child_codes = child_codes
-        #try:
-        #    self.code = utilities.combine_code(self.code,child_codes )
-        #except:
-        #    print("weird additions")
         return self.code
+
+
+
+
+
+    def match_pattern(self):
+        meaning = self.meaning
+        code = self.code
+
+        def match_phrase(path,phrase):
+            # Having matched the head of the phrase, this matches the full noun phrase, if specified
+            for item in filter(lambda b: b.text in path,phrase.children):
+                
+                subpath = path[item.text]
+                match = reroute(subpath,lambda a: match_phrase(a,item.head_phrase))
+                if match:
+                    return match
+            return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
+        
+        def match_noun(path,phrase = self if not self.check_passive() else self.get_S(),preplimit = 0):
+            # Matches a noun or head of noun phrase
+            noun_phrases = []
+            if preplimit:
+                for sib in phrase.children:
+                    if isinstance(sib,PrepPhrase) and sib.get_prep() in ["BY","FROM"]:
+                        noun_phrases.append(sib.children[1])
+            else:
+                for child in phrase.children:
+                    if child.label in ("NP","ADVP"):
+                        noun_phrases.append(child)
+            
+            for item in noun_phrases:
+                head = item.get_head()[0]
+                
+                if head in path:
+                    subpath = path[head]
+                    match = reroute(subpath,(lambda a : match_phrase(a,item.head_phrase)) if isinstance(item,NounPhrase) else None)
+                    if match:
+                        return match
+            return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
+
+        def match_prep(path):
+            # Matches preposition
+            for item in filter(lambda b: isinstance(b,PrepPhrase),self.children):
+                meaning = item.get_meaning()
+                prep = item.prep
+                if prep in path:
+                    subpath = path[prep]
+                    match = reroute(subpath,lambda a : match_noun(a,item.children[1]), match_prep)
+                    if match:
+                        return match
+            return reroute(path, o2 = match_prep)
+
+        def reroute(subpath, o1 = match_noun,o2 = match_noun,o3 = match_prep,o4 = match_noun):
+                if '-' in subpath:
+                    match = o1(subpath['-'])
+                    if match:
+                        return match
+                        
+                if ',' in subpath:
+                    match = o2(subpath[','])
+                    if match:
+                        return match
+    
+                if '|' in subpath:
+                    match = o3(subpath['|'])
+                    if match:
+                        return match
+                
+                if '*' in subpath:
+                    match = o4(subpath['*'])
+                    if match:
+                        return match
+                
+                if '#' in subpath:
+                    return subpath['#']
+                return False
+        
+        # Match pattern
+        if meaning in PETRglobals.VerbDict['phrases']:
+            path = PETRglobals.VerbDict['phrases'][meaning]
+            if self.check_passive():
+                #print('here',self.head)
+                return match_noun(path,self,1)
+            else:
+                return match_noun(path,self.get_S())
+        return False
 
 
 
@@ -596,14 +745,9 @@ class Sentence:
                 level_stack[-1].text = element
         return root
 
-
     def get_events(self):
-        events = []
-        
-        
-        
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
-        
+        return events
         """
         for v in self.verbs:
             if not v.valid:
@@ -633,8 +777,7 @@ class Sentence:
                                     events.append([src,targ,str(code)] )
                 
         """
-        #print(events)
-        return events
+    
 
 
     def do_verb_analysis(self):
@@ -682,8 +825,9 @@ class Sentence:
             print("[.{" + k + "}", file=f, end=" ")
         if root.label in ["VP"]:
             m = root.get_meaning()
+            #print(root.head,m)
             k = ""
-            print("[.{\it "+utilities.code_to_string(m)+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")
+            print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")
             """
             if m[0] is None:
                 k = ""

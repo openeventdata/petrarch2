@@ -90,6 +90,14 @@ def stanford_parse(event_dict):
     return event_dict
 
 
+
+def parse_to_text(parse):
+    x = filter(lambda a : not a.startswith("("), parse.replace(")","").split())
+    r = "" + x[0]
+    for item in x[1:]:
+        r += " " + item
+    return r
+
 def story_filter(story_dict, story_id):
     """
     One-a-story filter for the events. There can only be only one unique
@@ -200,6 +208,8 @@ def combine_code(selfcode,to_add):
     #print(selfcode,to_add)
     if selfcode < 0:
         return -to_add
+    if to_add >= selfcode:
+        return to_add
     if selfcode >= 0x1000 and to_add >= 0x1000:
         return to_add  # If both verbs are high-level, take the lower nested one. I think this is what we want?
     return selfcode + to_add
@@ -233,24 +243,26 @@ def combine_code(selfcode,to_add):
 
 def code_to_string(events):
     retstr= ""
+    try:
+        def ev_to_string(ev):
+            local = ""
+            #print(ev)
+            up = str(ev[0])
+            low = ev[1]
+            c = ev[2]
 
-    def ev_to_string(ev):
-        local = ""
-        up = str(ev[0])
-        low = ev[1]
-        c = ev[2]
+            if isinstance(low,tuple):
+                low = "("+ev_to_string(low)+")"
+            
+            return up + " " + low + " " + hex(c)
 
-        if isinstance(low,tuple):
-            low = "("+ev_to_string(low)+")"
-        
-        return up + " " + low + " " + hex(c)
+        for ev in events:
+            #print(ev)
+            retstr += ev_to_string(ev) +" , "
 
-    for ev in events:
-        #print(ev)
-        retstr += ev_to_string(ev) +" , "
-
-    return retstr[:-3]
-
+        return retstr[:-3]
+    except:
+        return "ERROR "+str(events)
 
 
 
@@ -663,10 +675,10 @@ def convert_code(code):
                         "0863"   :     0x0200   ,
                         "087"    :     0x0200   ,
                         "0871"   :     0x0200   ,
-                        "082"    :     0x0200  ,
-                        "083"    :     0x0200    ,
-                        "084"    :     0x0200   ,
-                        
+                        "082"    :     0x0200 ,
+                        "083"    :     0x0200 ,
+                        "084"    :     0x0200 ,
+                        "08"     :     0x0200 ,
                         
                         "090"    :     0xA000  ,         #  Investigate
                         "091"    :     0xA000  ,
@@ -790,8 +802,8 @@ def convert_code(code):
                         "17"    :     0x9000    ,         #  Coerce
                         "18"    :     0x0090    ,         #  Assault
                         "19"    :     0x00A0    ,         #  Fight
-                        "20"    :     0x00B0    ,   }      #  Use Unconventional Mass Violence
-    
+                        "20"    :     0x00B0    ,         #  Use Unconventional Mass Violence
+                        "---"   : 0              }
 
     if code in cat:
         if not code == -1:

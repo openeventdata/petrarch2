@@ -693,7 +693,6 @@ def read_issue_list(issue_path):
 
 def read_verb_dictionary(verb_path):
 
-
     """
 
 
@@ -899,6 +898,23 @@ def read_verb_dictionary(verb_path):
             path["#"] = {'code' : code[1:-1], 'line' : line[:-1]}
         elif line.startswith("&") or line.startswith("+") and synsets:
             pass
+        elif line.startswith("~"):
+            # VERB TRANSFORMATION
+            p = line[1:].replace("(","").replace(")","")
+            segs = p.split("=")
+            pat = segs[0].split()
+            answer = segs[1].split()
+            ev2 = pat
+            path = PETRglobals.VerbDict['transformations']
+            while len(ev2) > 1:
+                source = ev2[0]
+                verb = reduce(lambda a,b : a + b , map(lambda c: utilities.convert_code(PETRglobals.VerbDict['verbs'][c]['#']['#']['code'])[0], ev2[-1].split("_")), 0)
+                
+                path = path.setdefault(verb,{})
+                path = path.setdefault(source,{})
+                ev2 = ev2[1:-1]
+            path[ev2[0]] = answer
+
         else:
             # Add synonyms
             word = line.split("#")[0]
@@ -935,8 +951,6 @@ def read_verb_dictionary(verb_path):
                 
                 if stem.endswith("E"):
                     words.append(stem + "D")
-                elif stem.endswith("Y"):
-                    words.append(stem+"IED")
                 else:
                     words.append(stem+"ED")
         

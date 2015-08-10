@@ -34,7 +34,7 @@ import numpy as np
 class Phrase:
 
     def __init__(self, label, date):
-        self.label = label
+        self.label = label if not label == "MD" else "VB"
         self.children = []
         self.phrasetype = label[0]
         self.annotation = ""
@@ -83,10 +83,8 @@ class Phrase:
                     codes.add(code)
         return list(codes)
 
-
     def return_head(self):
         return self.head,self.head_phrase
-
 
     def get_head(self):
         self.get_head = self.return_head
@@ -132,7 +130,7 @@ class NounPhrase(Phrase):
     def __init__(self, label, date):
         Phrase.__init__(self, label, date)
     
-
+    
     def return_meaning(self):
         return self.meaning
 
@@ -345,8 +343,9 @@ class VerbPhrase(Phrase):
         self.S  = None
     
     def is_valid(self):
-        # This function is to weed out things like helping verbs and participles coded as verbs
-        # Largely to overcome frequently made Stanford errors
+
+        # This is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
+        # marked as verb phrases, and treating them as such would yield weird parses.
         
         try:
             if self.children[0].label == "VBN":
@@ -355,15 +354,24 @@ class VerbPhrase(Phrase):
                   len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
                     not self.check_passive()):
                     self.valid = False
+                    
+                    np_replacement = NounPhrase("NP",self.date)
+                    np_replacement.children = self.children
+                    np_replacement.parent = self.parent
+                    np_replacement.index = self.index
+                    
+                    self.parent.children.remove(self)
+                    self.parent.children.insert(self.index,np_replacement)
+                    del(self)
+                    self = np_replacement
                     return False
             self.valid = True
-        except:
+        except IndexError as e:
             self.valid = True
         return True
     
     def get_theme(self):
         m = self.get_meaning()
-        
         if m[0][1] == 'passive':
             return m[0][0]
         return [m[0][1]]
@@ -375,18 +383,15 @@ class VerbPhrase(Phrase):
     def get_meaning(self):
         self.get_meaning = self.return_meaning
         
-        
         c = self.get_code()
-        
         
         if self.check_passive():
             # Check for source in preps
             source_options = []
-            target_options = []
+            target_options = self.get_upper()
             for child in self.children:
                 if isinstance(child,PrepPhrase):
-                    
-                    if child.get_prep() in ["BY","FROM"]:
+                    if child.get_prep() in ["BY","FROM","IN"]:
                         source_options += child.get_meaning()
                     elif child.get_prep() in ["AT","AGAINST","INTO","TOWARDS"]:
                         target_options += child.get_meaning()
@@ -394,14 +399,17 @@ class VerbPhrase(Phrase):
                 target_options = "passive"
             if source_options or c:
                 self.meaning = [(source_options, target_options, c)]
-                
                 return self.meaning
     
         up = self.get_upper()
         up = "" if up in ['',[],[""],["~"],["~~"]] else up
-        low = self.get_lower() if self.get_lower() else ""
-
         
+        low,neg = self.get_lower()
+        if not low:
+            low = ""
+        if neg:
+            return []
+
         s_options = filter(lambda a: a.label in "SBAR",self.children)
         events = []
         def resolve_events(event):
@@ -428,11 +436,10 @@ class VerbPhrase(Phrase):
             for event in low:
                 events.append(resolve_events(event))
         elif not s_options:
-            if low:
-                if up or c:
-                    events.append((up,low,c))
-                else:
-                    events.append(low)
+            if up or c:
+                events.append((up,low,c))
+            elif low:
+                events.append(low)
 
         lower = map(lambda a: a.get_meaning(),s_options)
         sents = []
@@ -444,8 +451,13 @@ class VerbPhrase(Phrase):
             for event in sents:
                 if event[1] or event[2]:
                     events.append(resolve_events(event))
+
+        events = map(self.match_transform, events)
         self.meaning = events
-        return events
+        try:
+            return list(set(events))
+        except:
+            return events
     
 
     def return_upper(self):
@@ -516,7 +528,7 @@ class VerbPhrase(Phrase):
                     return self.upper
             #level = level.parent
             not_found = False
-        return [""]
+        return []
 
     def return_lower(self):
         return self.lower
@@ -532,12 +544,15 @@ class VerbPhrase(Phrase):
 #        for child in filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()) or a.label in "SBAR",self.children):
 #            lower.append(child.get_meaning())
 
-        events = []
+        events  = []
+        negated = 0
+        if lower:
+            negated = self.children[1].text == "NOT"
         for item in lower:
             events += item
         if events:
             self.lower = events
-            return events
+            return events,negated
         
         NPcodes = []
         PPcodes = []
@@ -548,6 +563,7 @@ class VerbPhrase(Phrase):
             if isinstance(child, NounPhrase):
                 NPcodes += child.get_meaning()
             elif isinstance(child, PrepPhrase):
+                #print(child.get_meaning(),child.prep)
                 PPcodes += (child.get_meaning())
             #elif isinstance(child, VerbPhrase):
                 #meaning = child.get_meaning()
@@ -583,7 +599,7 @@ class VerbPhrase(Phrase):
                 #    agentcodes += Sagent
         
         self.lower = self.mix_codes(agentcodes,actorcodes)
-        return self.lower
+        return self.lower,negated
 
     def return_code(self):
         return self.code
@@ -591,30 +607,95 @@ class VerbPhrase(Phrase):
     def get_code(self):
         self.get_code = self.return_code
         dict = PETRglobals.VerbDict['verbs']
+        if 'AND' in map(lambda a: a.text, self.children):
+            return 0
         patterns = PETRglobals.VerbDict['phrases']
         verb = "TO" if self.children[0].label == "TO" else self.get_head()[0]
+        
         meaning = ""
+        path = dict
+        passive = False
         if verb in dict:
             code = 0
-            if '#' in dict[verb]:
-                try:
-                    code = dict[verb]['#']['#']['code']
-                    meaning = dict[verb]['#']['#']['meaning']
-                    self.meaning = meaning if not meaning == "" else verb
-                    if not code == '':
-                        self.code = utilities.convert_code(code)
-                except :
-                    self.code = 0
+            path = dict[verb]
+            if ['#'] == path.keys():
+                path = path['#']
+                if True or path.keys() == ['#']:
+                    try:
+                        code = path['#']['code']
+                        meaning = path['#']['meaning']
+                        self.meaning = meaning if not meaning == "" else verb
+                        if not code == '':
+                            self.code, passive  = utilities.convert_code(code)
+                    except:
+                        self.code = 0
+            else:
+                # Post - compounds
+                for child in self.children:
+                    if child.label in ["PRT","ADVP"]:
+                        if child.children[0].text in path:
+                            #print(child.children[0].text)
+                            path = path[child.children[0].text]
+                if "#" in path:
+                    try:
+                        code = path['#']['#']['code']
+                        meaning = path['#']['#']['meaning']
+                        self.meaning = meaning if not meaning == "" else verb
+                        if not code == '':
+                            self.code, passive  = utilities.convert_code(code)
+                    except:
+                        pass
+        
         match = self.match_pattern()
         if match:
             print(match)
-            self.code = utilities.convert_code(match['code'])
+            self.code, passive  = utilities.convert_code(match['code'])
         
+        if passive:
+            self.check_passive = lambda : True
         return self.code
 
 
 
-
+    def match_transform(self,e):
+        def recurse(pdict,event,a2v = {}, v2a = {}):
+            path = pdict
+            if isinstance(pdict,list):
+                return v2a[path[0]],v2a[path[1]],utilities.convert_code(path[2])[0]
+            if isinstance(event,tuple):
+                actor = event[0] if not isinstance(event[0],list) else event[0][0]
+                masks = filter(lambda a :a in pdict, [event[2],event[2] - event[2] % 0x10,
+                        event[2] - event[2] % 0x100,event[2] - event[2] % 0x1000])
+                if masks:
+                    path = pdict[masks[0]]
+                else:
+                    return False
+            else:
+                actor = event
+            if actor in a2v:
+                actor = a2v[actor]
+            if not actor:
+                actor = "_"
+            if actor in path:
+                return recurse(path[actor],event[1],a2v,v2a)
+            else:
+                for var in sorted(path.keys())[::-1]:
+                    if var in v2a:
+                        continue
+                    if not var == '.':
+                        v2a[var] = actor
+                        a2v[actor] = var
+                    return recurse(path[var],event[1],a2v,v2a)
+            return False
+        
+        try:
+            t = recurse(PETRglobals.VerbDict['transformations'],e)
+            if t:
+                return t
+        except Exception as ex:
+            print(ex)
+        return e
+    
 
     def match_pattern(self):
         meaning = self.meaning
@@ -664,7 +745,7 @@ class VerbPhrase(Phrase):
                         return match
             return reroute(path, o2 = match_prep)
 
-        def reroute(subpath, o1 = match_noun,o2 = match_noun,o3 = match_prep,o4 = match_noun):
+        def reroute(subpath, o1 = match_noun, o2 = match_noun, o3 = match_prep, o4 = match_noun):
                 if '-' in subpath:
                     match = o1(subpath['-'])
                     if match:
@@ -705,7 +786,7 @@ class Sentence:
 
     def __init__(self, str, text, date):
         self.treestr = str.replace(')', ' )')
-        self.parse = ""
+        self.parse = str
         self.agent = ""
         self.ID = -1
         self.actor = ""
@@ -747,6 +828,9 @@ class Sentence:
 
     def get_events(self):
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
+        print(self.txt if self.txt else utilities.parse_to_text(self.parse).lower())
+        print(events)
+        print("\n\n")
         return events
         """
         for v in self.verbs:
@@ -823,7 +907,7 @@ class Sentence:
             for i in m:
                 k += "+" + i
             print("[.{" + k + "}", file=f, end=" ")
-        if root.label in ["VP"]:
+        elif root.label in ["VP"]:
             m = root.get_meaning()
             #print(root.head,m)
             k = ""

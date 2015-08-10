@@ -156,8 +156,10 @@ def story_filter(story_dict, story_id):
 
 
 def _format_parsed_str(parsed_str):
-    if parsed_str.startswith("(ROOT") and parsed_str.endswith(")"):
-        parsed_str = parsed_str[5:-1].strip()
+    if parsed_str.strip().startswith("(ROOT") and parsed_str.endswith(")"):
+        parsed_str = parsed_str.strip()[5:-1].strip()
+    elif parsed_str.strip()[1:].strip().startswith("("):
+        parsed_str = parsed_str.strip()[1:-1]
     parsed = parsed_str.split('\n')
     parsed = [line.strip() + ' ' for line in [line1.strip() for line1 in
                                               parsed if line1] if line]
@@ -201,6 +203,55 @@ def init_logger(logger_filename):
 
     logger.addHandler(fh)
     logger.info('Running')
+
+def read_transformation():
+    pattern1 = "a (a b ATTACK) SAY = a b XXX"
+    pattern3 = "a (b c ATTACK) SAY = a b ZZZ"
+    pattern2 = "a (a b WILL_ATTACK) SAY = a b YYY"
+    
+    #patdict = {0x1000 : {"a", { 0xA0 : {"a": {"b" : ["a b XXX"] }, "b" : { "c" : ["a b ZZZ"] } } } } }
+    
+    event = (['USA'], (['USA'], 'CHE', 0xa0), 0x1000)
+    
+    segs = pattern1.split("=")
+    pat = segs[0].split()
+    answer = segs[1].split()
+    patdict = {}
+    matchdict = {}
+    for p in [pattern1,pattern2,pattern3]:
+        p = p.replace("(","").replace(")","")
+        segs = p.split("=")
+        pat = segs[0].split()
+        answer = segs[1].split()
+        ev2 = pat
+        path = patdict
+        while len(ev2) > 1:
+            source = ev2[0]
+            verb = reduce(lambda a,b : a + b , map(lambda c: convert_code(PETRglobals.VerbDict['verbs'][c]['#']['#']['code']), ev2[-1].split("_")), 0)
+            path = path.setdefault(verb,{})
+            path = path.setdefault(source,{})
+            ev2 = ev2[1:-1]
+        path[ev2[0]] = answer
+
+    print(patdict)
+    return
+    
+    def recurse(pdict,event,matchdict = {}):
+        if event[2] in pdict:
+            verb = event[2]
+            actor = event[0]
+            var = pdict[verb][0]
+            path = pdict[verb][1]
+            if isinstance(path,basestring):
+                return path
+            if var in matchdict:
+                if not actor == matchdict[var]:
+                    return False
+            else:
+                matchdict[var] = actor
+            return recurse(pdict[verb][1],event[1],matchdict)
+        return False
+    print(recurse(patdict,event))
 
 
 def combine_code(selfcode,to_add):
@@ -262,13 +313,16 @@ def code_to_string(events):
 
         return retstr[:-3]
     except:
-        return "ERROR "+str(events)
+        return str(events)
 
 
 
 
 def convert_code(code):
-
+    passive = False
+    if code.startswith(":"):
+        code = code[1:]
+        passive = True
     if ':' in code:
         code = code[:3]
         #print("\t\tWHADDUP",code)
@@ -557,7 +611,7 @@ def convert_code(code):
                         "012"    :     0x1000 ,
                         "013"    :     0x1000  ,
                         "014"    :     0x1000  ,
-                        "015"    :     0x1000  ,
+                        "015"    :     0x10a0  ,
                         "016"    :     0x1000  ,
                         "017"    :     0x1000  ,
                         "018"    :     0x1000  ,
@@ -717,7 +771,7 @@ def convert_code(code):
                         
                         "110"    :     0x7000   ,         #  Disapprove
                         "111"    :     0x7000  ,
-                        "112"    :     0x7000   ,
+                        "112"    :     0x70a0   ,
                         "1121"   :     0x7000   ,
                         "1122"   :     0x7000  ,
                         "1123"   :     0x7000   ,
@@ -729,7 +783,7 @@ def convert_code(code):
                         "116"    :     0x7000  ,
                         
                         
-                        "12"     :   -1 ,
+                        "12"     :   -0xFFFF ,
               #          "120"    :     0xA00  ,         #  Reject
               #          "121"    :     0xA70  ,
               #          "1211"   :     0xA75  ,
@@ -807,7 +861,7 @@ def convert_code(code):
 
     if code in cat:
         if not code == -1:
-            return cat[code]
+            return cat[code], passive
         return -1
-    return cat[code[:2]]
+    return cat[code[:2]], passive
 

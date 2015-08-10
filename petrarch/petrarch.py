@@ -398,8 +398,8 @@ def do_coding(event_dict, out_file):
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
-                if not "TEST_1" == SentenceID:
-                    continue
+                #if not "NEST_2.75" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
@@ -410,9 +410,9 @@ def do_coding(event_dict, out_file):
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 
-                #print(utilities.parse_to_text(parsed))
-                #if not "warrant" in SentenceText:
-                #   continue
+                
+                if not "WANT" in utilities.parse_to_text(parsed):
+                   continue
         
                 """
                 disc = check_discards(SentenceText)

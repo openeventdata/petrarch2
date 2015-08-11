@@ -1015,7 +1015,7 @@ The building was demolished by a protestor.
 <Text>
 The inspectors want to re-examine the refineries in Iran</Text>
 <Parse>
-(ROOT (S (NP (DT The) (NNS inspectors)) (VP (VBP want) (S (VP (TO to) (VP (VB re-examine) (NP (DT the) (NNS refineries)) (PP (IN in) (NP (NNP Iran)))))))))
+(ROOT (S (NP (DT The) (NNS inspectors)) (VP (VBP want) (S (VP (TO to) (VP (VB attack) (NP (DT the) (NNS refineries)) (PP (IN in) (NP (NNP Iran)))))))))
 
 </Parse>
 </Sentence>
@@ -1056,11 +1056,11 @@ Obama said he would not help Israel
 
 
 
-<Sentence date = "20150609" id ="NEG_1" source = "AFP" sentence = "True">
+<Sentence date = "20150609" id ="Pattern_1" source = "AFP" sentence = "True">
 <Text>
 Obama said he will attack Iraq
 </Text>
-<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBD said) (SBAR (S (NP (PRP he)) (VP (MD will) (VP (VB attack) (NP (NNP Iraq)))))))))
+<Parse>(ROOT (S (NP (NNP Obama) (CC and) (NNP Putin)) (VP (VBD said) (SBAR (S (NP (PRP they)) (VP (MD will) (VP (VB attack) (NP (NNP Iraq)))))))))
 
 
 </Parse>
@@ -1103,6 +1103,40 @@ Obama wants to attack Switzerland.
 
 </Parse>
 </Sentence>
+
+
+<Sentence date = "20150609" id ="SYNSET_0" source = "AFP" sentence = "True">
+<Text>
+Obama ordered an investigation against Iran
+</Text>
+<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBD ordered) (NP (DT an) (NN investigation)) (PP (IN against) (NP (NNP Iran))))))
+
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="AGREE_0" source = "AFP" sentence = "True">
+<Text>
+Obama has agreed to lift the sanctions on Iran
+</Text>
+<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBZ has) (VP (VBN agreed) (S (VP (TO to) (VP (VB lift) (NP (DT the) (NNS sanctions)) (PP (IN on) (NP (NNP Iran))))))))))
+
+
+</Parse>
+</Sentence>
+
+
+
+
+<Sentence date = "20150609" id ="VERB_7" source = "AFP" sentence = "True">
+<Text>
+The United States will supply arms to Israel
+</Text>
+<Parse>(ROOT (S (NP (DT The) (NNP United) (NNPS States)) (VP (MD will) (VP (VB supply) (NP (NNS arms)) (PP (TO to) (NP (NNP Israel)))))))
+
+</Parse>
+</Sentence>
+
 
 
 

@@ -233,13 +233,13 @@ class NounPhrase(Phrase):
                     if not m == None:
                         PPcodes += m
                 elif child.label == "PRP":
-                    # Naively find antecedent ?
+                    # Find antecedent
                     not_found = True
                     level = self.parent
                     reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
                     local = True
                     while not_found and level.parent:
-                        if level.label.startswith("NP") and reflexive: #Intensive
+                        if level.label.startswith("NP") and reflexive: #Intensive, ignore
                             break
                         if local and level.label in ["S","SBAR"]:
                             local = False
@@ -396,9 +396,9 @@ class VerbPhrase(Phrase):
                     elif child.get_prep() in ["AT","AGAINST","INTO","TOWARDS"]:
                         target_options += child.get_meaning()
             if not target_options:
-                target_options = "passive"
+                target_options = ["passive"]
             if source_options or c:
-                self.meaning = [(source_options, target_options, c)]
+                self.meaning = map(lambda a: (source_options, a, c), target_options)
                 return self.meaning
     
         up = self.get_upper()
@@ -418,11 +418,16 @@ class VerbPhrase(Phrase):
                 second = event
                 third = c
             if not (up or c) :
-                return event
+                return [event]
             elif event[1] == 'passive':
                 first = event[0]
-                second = up[0] if up else 'passive'
                 third = utilities.combine_code(c,event[2])
+                if up:
+                    returns = []
+                    for source in up:
+                        returns += [(first,source,third)]
+                    return returns
+                second = 'passive'
             elif not event[0] in ['',[],[""],["~"],["~~"]]:
                 second = event
                 third = c
@@ -430,11 +435,11 @@ class VerbPhrase(Phrase):
                 second = event[1]
                 third = utilities.combine_code(c,event[2])
             
-            return first,second,third
+            return [(first,second,third)]
         
         if isinstance(low,list):
             for event in low:
-                events.append(resolve_events(event))
+                events += resolve_events(event)
         elif not s_options:
             if up or c:
                 events.append((up,low,c))
@@ -450,7 +455,12 @@ class VerbPhrase(Phrase):
         if sents:
             for event in sents:
                 if event[1] or event[2]:
-                    events.append(resolve_events(event))
+                    ev = resolve_events(event)[0]
+                    if isinstance(ev[1],list):
+                        for item in ev[1]:
+                            events.append((ev[0],item,ev[2]))
+                    else:
+                        events += resolve_events(event)
 
         events = map(self.match_transform, events)
         self.meaning = events
@@ -513,21 +523,11 @@ class VerbPhrase(Phrase):
 
     def get_upper(self):
         self.get_upper = self.return_upper
-        not_found = True
-        level = self
-        while not_found and not level.parent is None:
-            #if isinstance(level.parent,VerbPhrase) and level.label in ["S","SBAR","VP"]:
-            #    self.upper = level.parent.upper
-            #    return self.upper
-            for child in level.parent.children:
-                # Do we just want to pick the first?
-                if isinstance(
-                        child, NounPhrase) and not child.get_meaning() == ["~"]:
-                    self.upper = child.get_meaning()
-                    not_found = False
-                    return self.upper
-            #level = level.parent
-            not_found = False
+        
+        for child in self.parent.children:
+            if isinstance(child, NounPhrase) and not child.get_meaning() == ["~"]:
+                self.upper = child.get_meaning()
+                return self.upper
         return []
 
     def return_lower(self):
@@ -634,7 +634,6 @@ class VerbPhrase(Phrase):
                 for child in self.children:
                     if child.label in ["PRT","ADVP"]:
                         if child.children[0].text in path:
-                            #print(child.children[0].text)
                             path = path[child.children[0].text]
                 if "#" in path:
                     try:
@@ -661,9 +660,10 @@ class VerbPhrase(Phrase):
         def recurse(pdict,event,a2v = {}, v2a = {}):
             path = pdict
             if isinstance(pdict,list):
-                return v2a[path[0]],v2a[path[1]],utilities.convert_code(path[2])[0]
+                return list(v2a[path[0]]),v2a[path[1]],utilities.convert_code(path[2])[0]
             if isinstance(event,tuple):
-                actor = event[0] if not isinstance(event[0],list) else event[0][0]
+            
+                actor = None if not event[0] else tuple(event[0])
                 masks = filter(lambda a :a in pdict, [event[2],event[2] - event[2] % 0x10,
                         event[2] - event[2] % 0x100,event[2] - event[2] % 0x1000])
                 if masks:
@@ -678,7 +678,7 @@ class VerbPhrase(Phrase):
                 actor = "_"
             if actor in path:
                 return recurse(path[actor],event[1],a2v,v2a)
-            else:
+            elif not actor == '_':
                 for var in sorted(path.keys())[::-1]:
                     if var in v2a:
                         continue
@@ -693,7 +693,7 @@ class VerbPhrase(Phrase):
             if t:
                 return t
         except Exception as ex:
-            print(ex)
+            pass
         return e
     
 
@@ -826,42 +826,21 @@ class Sentence:
                 level_stack[-1].text = element
         return root
 
+
+
     def get_events(self):
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
         print(self.txt if self.txt else utilities.parse_to_text(self.parse).lower())
-        print(events)
-        print("\n\n")
-        return events
-        """
-        for v in self.verbs:
-            if not v.valid:
-                continue
-            scopes = v.get_meaning()
-            code = v.get_code()
         
-            if not False and not [] in scopes and not "" in scopes:
-                #print("SRC: ",scopes[0],"TARG ",scopes[1],"CODE ",code)
-                srcs = scopes[0]
-                targs = scopes[1]
-                for src in srcs:
-                    if src == "~":
-                        continue
-                    for targ in targs:
-                        if targ == "~":
-                            continue
-                        if not (src == targ and code == 0): # ... said he/she/it/they ...
-                            if v.check_passive():
-                                events.append([targ,src,str(code)] )
-                            else:
-                                if False and ':' in code:
-                                    codes = code.split(':')
-                                    events.append([src,targ,codes[0]])
-                                    events.append([targ,src,codes[1]])
-                                else:
-                                    events.append([src,targ,str(code)] )
-                
-        """
-    
+        valid = []
+        for sent in events:
+            for event in sent:
+                if isinstance(event,tuple):
+                    if event[0] and event[1] and event[2] and isinstance(event[1],basestring):
+                        for source in event[0]:
+                            valid.append([source,event[1],utilities.convert_code(event[2],0)])
+        
+        return valid
 
 
     def do_verb_analysis(self):

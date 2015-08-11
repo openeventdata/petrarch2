@@ -398,7 +398,7 @@ def do_coding(event_dict, out_file):
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
-                #if not "NEST_2.75" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #if not "Pattern" in SentenceID: # and not  "NEST_2" in SentenceID:
                 #    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
@@ -411,8 +411,8 @@ def do_coding(event_dict, out_file):
                 treestr = parsed
                 
                 
-                if not "WANT" in utilities.parse_to_text(parsed):
-                   continue
+                #if not "ORDER" in utilities.parse_to_text(parsed):
+                #   continue
         
                 """
                 disc = check_discards(SentenceText)
@@ -449,7 +449,8 @@ def do_coding(event_dict, out_file):
                 times+=code_time
                 sents += 1
                 print(code_time)
-                continue
+                #continue
+                print(coded_events)
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":

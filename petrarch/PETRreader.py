@@ -727,13 +727,18 @@ def read_verb_dictionary(verb_path):
     
     
     def resolve_synset(line):
+    
         segs = line.split()
         #print(line)
-        syns = filter(lambda a: a.startswith('&'), segs)
+        syns = filter(lambda a: a.startswith('&') or '&' in a[:3], segs)
         lines = []
-        if syns and syns[0] in synsets:
-            lines = map(lambda a: line.replace(syns[0],a,1), synsets[syns[0]])
-            return reduce(lambda a,b : a + b, map(resolve_synset,lines), [] )
+        if syns:
+            set = syns[0].replace("{","").replace("}","").replace("(","").replace(")","")
+            if set in synsets:
+                lines = map(lambda a: line.replace(set,a,1), synsets[set])
+                return reduce(lambda a,b : a + b, map(resolve_synset,lines), [] )
+            else:
+                print(set)
         return [line]
     
     
@@ -825,7 +830,6 @@ def read_verb_dictionary(verb_path):
                 continue
             dict_entry = {}
             pattern = line[1:].split("#")[0]
-            #print(resolve_synset(pattern))
             for pat in resolve_synset(pattern):
             
                 segs = pat.split("*")
@@ -929,7 +933,9 @@ def read_verb_dictionary(verb_path):
             path = PETRglobals.VerbDict['transformations']
             while len(ev2) > 1:
                 source = ev2[0]
-                verb = reduce(lambda a,b : a + b , map(lambda c: utilities.convert_code(PETRglobals.VerbDict['verbs'][c]['#']['#']['code'])[0], ev2[-1].split("_")), 0)
+                verb = reduce(lambda a,b : a + b ,
+                    map(lambda c: utilities.convert_code(PETRglobals.VerbDict['verbs'][c]['#']['#']['code'])[0] if not c== "Q" else -1,
+                    ev2[-1].split("_")), 0)
                 
                 path = path.setdefault(verb,{})
                 path = path.setdefault(source,{})
@@ -974,8 +980,11 @@ def read_verb_dictionary(verb_path):
                     words.append(stem + "D")
                 else:
                     words.append(stem+"ED")
-        
-                words.append(stem + "ING")
+                
+                if stem.endswith("E") and not stem[-2] in "AEIOU":
+                    words.append(stem[:-1] + "ING")
+                else:
+                    words.append(stem + "ING")
         
             for w in words:
                 wstem = w

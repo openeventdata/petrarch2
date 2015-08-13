@@ -398,8 +398,10 @@ def do_coding(event_dict, out_file):
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
-                #if not "Pattern" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #if not "NEG" in SentenceID: # and not  "NEST_2" in SentenceID:
                 #    continue
+                #print(PETRglobals.VerbDict['verbs']['WOULD'])
+                #exit()
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
@@ -411,7 +413,7 @@ def do_coding(event_dict, out_file):
                 treestr = parsed
                 
                 
-                #if not "ORDER" in utilities.parse_to_text(parsed):
+                #if not "INTERPOL" in utilities.parse_to_text(parsed):
                 #   continue
         
                 """

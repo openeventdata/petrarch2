@@ -156,7 +156,7 @@ def story_filter(story_dict, story_id):
 
 
 def _format_parsed_str(parsed_str):
-    if parsed_str.strip().startswith("(ROOT") and parsed_str.endswith(")"):
+    if parsed_str.strip().startswith("(ROOT") and parsed_str.strip().endswith(")"):
         parsed_str = parsed_str.strip()[5:-1].strip()
     elif parsed_str.strip()[1:].strip().startswith("("):
         parsed_str = parsed_str.strip()[1:-1]
@@ -165,7 +165,6 @@ def _format_parsed_str(parsed_str):
                                               parsed if line1] if line]
     parsed = [line.replace(')', ' ) ').upper() for line in parsed]
     treestr = ''.join(parsed)
-
     return treestr
 
 
@@ -257,8 +256,9 @@ def read_transformation():
 def combine_code(selfcode,to_add):
 
     #print(selfcode,to_add)
-    if selfcode < 0:
-        return -to_add
+    if to_add < 0:
+        print("to",to_add,selfcode)
+        return to_add + selfcode
     if to_add >= selfcode:
         return to_add
     if selfcode >= 0x1000 and to_add >= 0x1000:
@@ -306,14 +306,14 @@ def code_to_string(events):
             if isinstance(low,tuple):
                 low = "("+ev_to_string(low)+")"
             
-            return up + " " + low + " " + convert_code(c,0)
+            return up + " " + low + " " + hex(c)
 
         for ev in events:
             #print(ev)
             retstr += ev_to_string(ev) +" , "
 
         return retstr[:-3]
-    except Exception as e:
+    except TypeError:
         print(e)
         return str(events)
 
@@ -605,7 +605,7 @@ def convert_code(code,forward = 1):
     """
     cat = {             "010"    :     0x1000 ,         #  Make Public Statement
                         "011"    :     0x1000 - 0xFFFF ,
-                        "012"    :     0x100C ,
+                        "012"    :     0x100C  ,
                         "013"    :     0x1001  ,
                         "014"    :     0x1002  ,
                         "015"    :     0x10a0  ,
@@ -620,7 +620,7 @@ def convert_code(code,forward = 1):
                         "0211"   :     0x2075  ,
                         "0212"   :     0x2076  ,
                         "0213"   :     0x2078  ,
-                        "0214"   :     0x207A ,
+                        "0214"   :     0x207A  ,
                         "022"    :     0x2080  ,
                         "023"    :     0x2040  ,
                         "0231"   :     0x2045  ,
@@ -644,12 +644,12 @@ def convert_code(code,forward = 1):
                         "028"    :     0x2030  ,
                         
                         
-                        "030"    :     0x3000   ,         #  Intend
+                        "030"    :     0x3000  ,         #  Intend
                         "031"    :     0x3070  ,
                         "0311"   :     0x3075  ,
                         "0312"   :     0x3076  ,
                         "0313"   :     0x3078  ,
-                        "0314"   :     0x307A ,
+                        "0314"   :     0x307A  ,
                         "032"    :     0x3080  ,
                         "033"    :     0x3040  ,
                         "0331"   :     0x3045  ,
@@ -682,9 +682,9 @@ def convert_code(code,forward = 1):
                         "046"    :     0xB010  ,
                         
                         
-                        "050"    :     0x0080  ,        # Diplomatic Coop
+                        "050"    :     0x0080   ,        # Diplomatic Coop
                         "051"    :     0x0081   ,
-                        "052"    :     0x0082  ,
+                        "052"    :     0x0082   ,
                         "053"    :     0x0083   ,
                         "054"    :     0x0084   ,
                         "055"    :     0x0085   ,
@@ -704,32 +704,32 @@ def convert_code(code,forward = 1):
                         "074"    :     0x0049   ,
                         "075"    :     0x004E   ,
                     
-                        "080"    :     0x0200   ,         #  Yield
-                        "081"    :     0x020B    ,
-                        "0811"   :     0x0203   ,
-                        "0812"   :     0x0201    ,
-                        "0813"   :     0x0204    ,
-                        "0814"   :     0x0206    ,
-                        "082"    :     0x020C    ,
-                        "083"    :     0x0260   ,
-                        "0831"   :     0x0261   ,
-                        "0832"   :     0x0262    ,
-                        "0833"   :     0x0263   ,
-                        "0834"   :     0x0264    ,
-                        "084"    :     0x0250   ,
-                        "0841"   :     0x020C   ,
-                        "0842"   :     0x020C   ,
-                        "085"    :     0x0205    ,
-                        "086"    :     0x020E    ,
-                        "0861"   :     0x0209    ,
-                        "0862"   :     0x020A   ,
-                        "0863"   :     0x0207   ,
-                        "087"    :     0x02C0   ,
-                        "0871"   :     0x02C9   ,
-                        "0872"   :     0x02C1 ,
-                        "0873"   :     0x02C6 ,
-                        "0874"   :     0x02C2 ,
-                        "08"     :     0x0200 ,
+                        "080"    :     0x0200  ,         #  Yield
+                        "081"    :     0x020B  ,
+                        "0811"   :     0x0203  ,
+                        "0812"   :     0x0201  ,
+                        "0813"   :     0x0204  ,
+                        "0814"   :     0x0206  ,
+                        "082"    :     0x020C  ,
+                        "083"    :     0x0260  ,
+                        "0831"   :     0x0261  ,
+                        "0832"   :     0x0262  ,
+                        "0833"   :     0x0263  ,
+                        "0834"   :     0x0264  ,
+                        "084"    :     0x0250  ,
+                        "0841"   :     0x020C  ,
+                        "0842"   :     0x020C  ,
+                        "085"    :     0x0205  ,
+                        "086"    :     0x020E  ,
+                        "0861"   :     0x0209  ,
+                        "0862"   :     0x020A  ,
+                        "0863"   :     0x0207  ,
+                        "087"    :     0x02C0  ,
+                        "0871"   :     0x02C9  ,
+                        "0872"   :     0x02C1  ,
+                        "0873"   :     0x02C6  ,
+                        "0874"   :     0x02C2  ,
+                        "08"     :     0x0200  ,
                         
                         "090"    :     0xA000  ,         #  Investigate
                         "091"    :     0xA001  ,
@@ -782,30 +782,30 @@ def convert_code(code,forward = 1):
                         
                         "12"     :   -0xFFFF ,
                         "120"    :   -0xFFFF   ,         #  Reject
-                        "121"    :   -0xFFFF + 0x0070  ,
-                        "1211"   :   -0xFFFF + 0x0075  ,
-                        "1212"   :   -0xFFFF + 0x0076  ,
-                        "122"    :   -0xFFFF + 0x2040  ,      ### THESE ALSO HAVE DEMAND COUNTERPARTS
-                        "1221"   :   -0xFFFF + 0x2045  ,
-                        "1222"   :   -0xFFFF + 0x2046  ,
-                        "1223"   :   -0xFFFF + 0x2047  ,
-                        "1224"   :   -0xFFFF + 0x2049 ,
-                        "123"    :   -0xFFFF + 0x2060  ,
-                        "1231"   :   -0xFFFF + 0x2061 ,
-                        "1232"   :   -0xFFFF + 0x2062 ,
-                        "1233"   :   -0xFFFF + 0x2063 ,
-                        "1234"   :   -0xFFFF + 0x2064 ,
+                        "121"    :   -0xFFFF + 0x0070 ,
+                        "1211"   :   -0xFFFF + 0x0075 ,
+                        "1212"   :   -0xFFFF + 0x0076 ,
+                        "122"    :   -0xFFFF + 0x2040 + 0x300 ,      # The 0x300 mask makes these not code
+                        "1221"   :   -0xFFFF + 0x2045 + 0x300,       # from "refuse to request aid", but rather
+                        "1222"   :   -0xFFFF + 0x2046 + 0x300,       # be a thing of their own while retaining
+                        "1223"   :   -0xFFFF + 0x2047 + 0x300,       # the features of the meaning.
+                        "1224"   :   -0xFFFF + 0x2049 + 0x300,
+                        "123"    :   -0xFFFF + 0x2060 + 0x300,
+                        "1231"   :   -0xFFFF + 0x2061 + 0x300,
+                        "1232"   :   -0xFFFF + 0x2062 + 0x300,
+                        "1233"   :   -0xFFFF + 0x2063 + 0x300,
+                        "1234"   :   -0xFFFF + 0x2064 + 0x300,
                         "124"    :   -0xFFFF + 0x0200 ,
-                        "1241"   :   -0xFFFF + 0x020B  ,
-                        "1242"   :   -0xFFFF + 0x020C  ,
-                        "1243"   :   -0xFFFF + 0x020D  ,
-                        "1244"   :   -0xFFFF + 0x0205  ,
-                        "1245"   :   -0xFFFF + 0x020E  ,
-                        "1246"   :   -0xFFFF + 0x02C0  ,
-                        "125"    :   -0xFFFF + 0x0010  ,
+                        "1241"   :   -0xFFFF + 0x020B ,
+                        "1242"   :   -0xFFFF + 0x020C ,
+                        "1243"   :   -0xFFFF + 0x020D ,
+                        "1244"   :   -0xFFFF + 0x0205 ,
+                        "1245"   :   -0xFFFF + 0x020E ,
+                        "1246"   :   -0xFFFF + 0x02C0 ,
+                        "125"    :   -0xFFFF + 0x0010 ,
                         "126"    :   -0xFFFF + 0x0030 ,
-                        "127"    :   -0xFFFF + 0x0020  ,
-                        "128"    :   -0xFFFF + 0x0002  ,
+                        "127"    :   -0xFFFF + 0x0020 ,
+                        "128"    :   -0xFFFF + 0x0002 ,
                         "129"    :   -0xFFFF + 0x0001 ,
               
                         "130"    :     0x6000  ,         #  Threaten
@@ -832,16 +832,21 @@ def convert_code(code,forward = 1):
                         "139"    :     0x6005  ,
                         
                         
-                        "140"     :     0x5000   ,         #  Protest
+                        "140"    :     0x5000   ,         #  Protest
+                        "145"    :     0x50A0
                        
-                        "150"     :     0x8000   ,         #  Exhibit Force Posture
+                        "150"    :     0x8000   ,         #  Exhibit Force Posture
+                        "151"    :     0x8001   ,
+                        "152"    :     0x8002   ,
+                        "153"    :     0x8003   ,
+                        "154"    :     0x8004   ,
                         
                         "160"    :     0x0100   ,         #  Reduce Relations
                         "161"    :     0x0180   ,
-                        "162"    :     0x0140  ,
-                        "1621"   :     0x0145,
-                        "1622"   :     0x0146  ,
-                        "1623"   :     0x0147  ,
+                        "162"    :     0x0140   ,
+                        "1621"   :     0x0145   ,
+                        "1622"   :     0x0146   ,
+                        "1623"   :     0x0147   ,
                         "163"    :     0x000B   ,
                         "164"    :     0x0110   ,
                         "165"    :     0x0130   ,
@@ -851,8 +856,45 @@ def convert_code(code,forward = 1):
                         "1663"   :     0x015E   ,
                         
                         "170"    :     0x9000    ,         #  Coerce
+                        "171"    :     0x9010    ,
+                        "1711"   :     0x9011    ,
+                        "1712"   :     0x9012    ,
+                        "172"    :     0x900B    ,
+                        "1721"   :     0x9003    ,
+                        "1722"   :     0x9001    ,
+                        "1723"   :     0x9004    ,
+                        "1724"   :     0x9006    ,
+                        "173"    :     0x9020    ,
+                        "174"    :     0x9030    ,
+                        "175"    :     0x9040    ,
+                        
                         "180"    :     0x0090    ,         #  Assault
+                        "181"    :     0x0091    ,
+                        "182"    :     0x0092    ,
+                        "1821"   :     0x0093    ,
+                        "1822"   :     0x0094    ,
+                        "1823"   :     0x0095    ,
+                        "1824"   :     0x0096    ,
+                        "183"    :     0x0097    ,
+                        "1831"   :     0x0098    ,
+                        "1832"   :     0x0099    ,
+                        "1833"   :     0x009A    ,
+                        "1834"   :     0x009B    ,
+                        "184"    :     0x009C    ,
+                        "185"    :     0x009D    ,
+                        "186"    :     0x009E    ,
+                        
+                        
                         "190"    :     0x00A0    ,         #  Fight
+                        "191"    :     0x00A1    ,
+                        "192"    :     0x00A2    ,
+                        "193"    :     0x00A3    ,
+                        "194"    :     0x00A4    ,
+                        "195"    :     0x00A5    ,
+                        "1951"   :     0x00A6    ,
+                        "1952"   :     0x00A7    ,
+                        "196"    :     0x00A8    ,
+                       
                         "200"    :     0x00B0    ,         #  Use Unconventional Mass Violence
                         "---"   : 0              }
     
@@ -876,7 +918,7 @@ def convert_code(code,forward = 1):
                 [   (0x30a0,"138"),   # Want to attack
                  
                 ])
-        if code in reverse:
+        if code and code in reverse:
             return reverse[code]
-        print("##############",code)
-        return hex(code)
+        
+        return 0 # hex(code)

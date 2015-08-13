@@ -203,61 +203,25 @@ def init_logger(logger_filename):
     logger.addHandler(fh)
     logger.info('Running')
 
-def read_transformation():
-    pattern1 = "a (a b ATTACK) SAY = a b XXX"
-    pattern3 = "a (b c ATTACK) SAY = a b ZZZ"
-    pattern2 = "a (a b WILL_ATTACK) SAY = a b YYY"
-    
-    #patdict = {0x1000 : {"a", { 0xA0 : {"a": {"b" : ["a b XXX"] }, "b" : { "c" : ["a b ZZZ"] } } } } }
-    
-    event = (['USA'], (['USA'], 'CHE', 0xa0), 0x1000)
-    
-    segs = pattern1.split("=")
-    pat = segs[0].split()
-    answer = segs[1].split()
-    patdict = {}
-    matchdict = {}
-    for p in [pattern1,pattern2,pattern3]:
-        p = p.replace("(","").replace(")","")
-        segs = p.split("=")
-        pat = segs[0].split()
-        answer = segs[1].split()
-        ev2 = pat
-        path = patdict
-        while len(ev2) > 1:
-            source = ev2[0]
-            verb = reduce(lambda a,b : a + b , map(lambda c: convert_code(PETRglobals.VerbDict['verbs'][c]['#']['#']['code']), ev2[-1].split("_")), 0)
-            path = path.setdefault(verb,{})
-            path = path.setdefault(source,{})
-            ev2 = ev2[1:-1]
-        path[ev2[0]] = answer
-
-    print(patdict)
-    return
-    
-    def recurse(pdict,event,matchdict = {}):
-        if event[2] in pdict:
-            verb = event[2]
-            actor = event[0]
-            var = pdict[verb][0]
-            path = pdict[verb][1]
-            if isinstance(path,basestring):
-                return path
-            if var in matchdict:
-                if not actor == matchdict[var]:
-                    return False
-            else:
-                matchdict[var] = actor
-            return recurse(pdict[verb][1],event[1],matchdict)
-        return False
-    print(recurse(patdict,event))
 
 
 def combine_code(selfcode,to_add):
+    """
+    Combines two verb codes, part of the verb interaction framework
+    
+    
+    Parameters
+    ----------
+    selfcode,to_add: ints
+                     Upper and lower verb codes, respectively
+                     
+    Returns
+    -------
+    combined value
+    
+    """
 
-    #print(selfcode,to_add)
     if to_add < 0:
-        print("to",to_add,selfcode)
         return to_add + selfcode
     if to_add >= selfcode:
         return to_add
@@ -265,34 +229,13 @@ def combine_code(selfcode,to_add):
         return to_add  # If both verbs are high-level, take the lower nested one. I think this is what we want?
     return selfcode + to_add
 
-    """
-    if hex(selfcode).startswith('0x5'):
-        return selfcode
-    
-    if to_add/256  > 0 and 7 <= selfcode/256 and selfcode/256 <= 9: # Remap "intend to attack" as threaten
-        category = to_add/256
-        if category == 3:
-            return 0x600 + selfcode
-        elif category == 6:
-            return  selfcode + to_add
-
-        elif category == 5:
-            subcat = (to_add /16) % 16
-            if subcat == 3:
-                return 0x536
-            if subcat == 1:
-                return 0x515
-
-
-    if to_add/256 > 0 and selfcode/256 > 0:
-        return selfcode
-
-    return selfcode + to_add
-    """
-
 
 
 def code_to_string(events):
+    """
+    Converts an event into a string, replacing the integer codes with strings 
+    representing their value in hex
+    """
     retstr= ""
     try:
         def ev_to_string(ev):
@@ -313,17 +256,17 @@ def code_to_string(events):
             retstr += ev_to_string(ev) +" , "
 
         return retstr[:-3]
-    except TypeError:
-        print(e)
+
+    except:
         return str(events)
 
 
 
 
 def convert_code(code,forward = 1):
-
-    
     """
+    Convert a verb code between CAMEO and the Petrarch internal coding ontology.
+    
                 New coding scheme:
 
             0                0          0                       0
@@ -344,265 +287,26 @@ def convert_code(code,forward = 1):
             						   						    F D-escalation
          
     In the first column, higher numbers take priority. i.e. “Say + Intend” is just “Intend” or “Intend + Consult” is just Consult
- 
     
     
-    
-                      # Old      :     New           #  Top-level codes in the new system
-                      
-    cat = {             "010"    :     [1,0,0,0] ,         #  Make Public Statement
-                        "011"    :     [1,0,0,0] ,
-                        "012"    :     [1,0,0,0] ,
-                        "013"    :     [1,0,0,0]  ,
-                        "014"    :     [1,0,0,0]  ,
-                        "015"    :     [1,0,0,0]  ,
-                        "016"    :     [1,0,0,0]  ,
-                        "017"    :     [1,0,0,0]  ,
-                        "018"    :     [1,0,0,0]  ,
-                        "019"    :     [1,0,0,0]  ,
+    Parameters
+    ----------
+    code: string or int, depending on forward
+          Code to be converted
+          
+    forward: boolean
+             Direction of conversion, True = CAMEO -> PICO
 
-    
-                        "020"    :     [2,0,0,0]  ,         #  Appeal
-                        "021"    :     [2,0,7,0]  ,
-                        "0211"   :     [2,0,7,5]  ,
-                        "0212"   :     [2,0,7,6]  ,
-                        "0213"   :     [2,0,7,8]  ,
-                        "0214"   :     [2,0,7,10] ,
-                        "022"    :     [2,0,8,0]  ,
-                        "023"    :     [2,0,4,0]  ,
-                        "0231"   :     [2,0,4,5]  ,
-                        "0232"   :     [2,0,4,6]  ,
-                        "0233"   :     [2,0,4,7]  ,
-                        "0234"   :     [2,0,4,9]  ,
-                        "024"    :     [2,0,6,0]  ,
-                        "0241"   :     [2,0,6,1]  ,
-                        "0242"   :     [2,0,6,2]  ,
-                        "0243"   :     [2,0,6,3]  ,
-                        "0244"   :     [2,0,6,4]  ,
-                        "025"    :     [2,2,0,0]  ,
-                        "0251"   :     [2,2,0,11]  ,
-                        "0252"   :     [2,2,0,12]  ,
-                        "0253"   :     [2,2,0,13]  ,
-                        "0254"   :     [2,2,0,5]  ,
-                        "0255"   :     [2,2,0,14]  ,
-                        "0256"   :     [2,2,0,15]  ,
-                        "026"    :     [2,0,1,0]  ,
-                        "027"    :     [2,0,2,0]  ,
-                        "028"    :     [2,0,3,0]  ,
-                        
-                        
-                        "030"    :     [3,0,0,0]  ,         #  Intend
-                        "031"    :     [3,0,7,0]  ,
-                        "0311"   :     [3,0,7,5]  ,
-                        "0312"   :     [3,0,7,6]  ,
-                        "0313"   :     [3,0,7,8]  ,
-                        "0314"   :     [3,0,7,10] ,
-                        "032"    :     [3,0,8,0]  ,
-                        "033"    :     [3,0,4,0]  ,
-                        "0331"   :     [3,0,4,5]  ,
-                        "0332"   :     [3,0,4,6]  ,
-                        "0333"   :     [3,0,4,7]  ,
-                        "0334"   :     [3,0,4,9]  ,
-                        "034"    :     [3,0,6,0]  ,
-                        "0341"   :     [3,0,6,1]  ,
-                        "0342"   :     [3,0,6,2]  ,
-                        "0343"   :     [3,0,6,3]  ,
-                        "0344"   :     [3,0,6,4]  ,
-                        "035"    :     [3,2,0,0]  ,
-                        "0351"   :     [3,2,0,11]  ,
-                        "0352"   :     [3,2,0,12]  ,
-                        "0353"   :     [3,2,0,13]  ,
-                        "0354"   :     [3,2,0,5]  ,
-                        "0355"   :     [3,2,0,14]  ,
-                        "0356"   :     [3,2,0,15]  ,
-                        "036"    :     [3,0,1,0]  ,
-                        "037"    :     [3,0,2,0]  ,
-                        "038"    :     [3,2,3,0]  ,
-                        "039"    :     [3,0,3,0]  ,
-                        
-                        "040"    :     [11,0,0,0]   ,         #  Consult
-                        "041"    :     [11,0,0,0]   ,
-                        "042"    :     [11,0,0,0]  ,
-                        "043"    :     [11,0,0,0]  ,
-                        "044"    :     [11,0,1,0] ,
-                        "045"    :     [11,0,3,0]   ,
-                        "046"    :     [11,0,1,0] ,
-                        
-                        
-                        "050"    :     [0,0,8,0]   ,        # Diplomatic Coop
-                        "051"    :     [0,0,8,0]   ,
-                        "052"    :     [0,0,8,0]  ,
-                        "053"    :     [0,0,8,0]   ,
-                        "054"    :     [0,0,8,0]   ,
-                        "055"    :     [0,0,8,0]   ,
-                        "056"    :     [0,0,8,0]   ,
-                        "057"    :     [0,0,8,0]   ,
-                        
-                        "060"    :     [0,0,7,0]   ,        # Material Coop
-                        "061"    :     [0,0,7,0]   ,
-                        "062"    :     [0,0,7,0]   ,
-                        "063"    :     [0,0,7,0]   ,
-                        "064"    :     [0,0,7,0]   ,
 
-                        "070"    :     [0,0,4,0]   ,        # Provide Aid
-                        "071"    :     [0,0,4,0]   ,
-                        "072"    :     [0,0,4,0]   ,
-                        "073"    :     [0,0,4,0]   ,
-                        "074"    :     [0,0,4,0]  ,
-                        "075"    :     [0,0,4,0]   ,
-                    
-                        "080"    :     [0,2,0,0]   ,         #  Yield
-                        "081"    :     [0,2,0,0]    ,
-                        "0811"   :     [0,2,0,0]    ,
-                        "0812"   :     [0,2,0,0]    ,
-                        "0813"   :     [0,2,0,0]    ,
-                        "0814"   :     [0,2,0,0]    ,
-                        "082"    :     [0,2,0,0]    ,
-                        "083"    :     [0,2,0,0]   ,
-                        "0831"   :     [0,2,0,0]    ,
-                        "0832"   :     [0,2,0,0]    ,
-                        "0833"   :     [0,2,0,0]   ,
-                        "0834"   :     [0,2,0,0]    ,
-                        "084"    :     [0,2,0,0]    ,
-                        "0841"   :     [0,2,0,0]    ,
-                        "0842"   :     [0,2,0,0]    ,
-                        "085"    :     [0,2,0,0]    ,
-                        "086"    :     [0,2,0,0]    ,
-                        "0861"   :     [0,2,0,0]    ,
-                        "0862"   :     [0,2,0,0]    ,
-                        "0863"   :     [0,2,0,0]    ,
-                        "087"    :     [0,2,0,0]    ,
-                        "0871"   :     [0,2,0,0]    ,
-                        "082"    :     [0,2,0,0]    ,
-                        "083"    :     [0,2,0,0]    ,
-                        "084"    :     [0,2,0,0]    ,
-                        
-                        
-                        "090"    :     [0,10,0,0]    ,         #  Investigate
-                        "091"    :     [0,10,0,0]   ,
-                        "092"    :     [0,10,0,0]   ,
-                        "093"    :     [0,10,0,0]  ,
-                        "094"    :     [0,10,0,0]  ,
-                        
-                        "100"    :     [4,0,0,0]  ,         #  Demand
-                        "101"    :     [4,0,7,0]  ,
-                        "1011"   :     [4,0,7,5]  ,
-                        "1012"   :     [4,0,7,6]  ,
-                        "1013"   :     [4,0,7,8]  ,
-                        "1014"   :     [4,0,7,10] ,
-                        "102"    :     [4,0,8,0]  ,
-                        "103"    :     [4,0,4,0]  ,
-                        "1031"   :     [4,0,4,5]  ,
-                        "1032"   :     [4,0,4,6]  ,
-                        "1033"   :     [4,0,4,7]  ,
-                        "1034"   :     [4,0,4,9]  ,
-                        "104"    :     [4,0,6,0]  ,
-                        "1041"   :     [4,0,6,1]  ,
-                        "1042"   :     [4,0,6,2]  ,
-                        "1043"   :     [4,0,6,3]  ,
-                        "1044"   :     [4,0,6,4]  ,
-                        "105"    :     [4,2,0,0]  ,
-                        "1051"   :     [4,2,0,11]  ,
-                        "1052"   :     [4,2,0,12]  ,
-                        "1053"   :     [4,2,0,13]  ,
-                        "1054"   :     [4,2,0,5]  ,
-                        "1055"   :     [4,2,0,14]  ,
-                        "1056"   :     [4,2,0,15]  ,
-                        "106"    :     [4,0,1,0]  ,
-                        "107"    :     [4,0,2,0]  ,
-                        "108"    :     [4,0,3,0]  ,
-
-                        
-                        "110"    :     [7,0,0,0]   ,         #  Disapprove
-                        "111"    :     [7,0,0,0]  ,
-                        "112"    :     [7,0,0,0]   ,
-                        "1121"   :     [7,0,0,0]   ,
-                        "1122"   :     [7,0,0,0]  ,
-                        "1123"   :     [7,0,0,0]   ,
-                        "1124"   :     [7,0,0,0]   ,
-                        "1125"   :     [7,0,0,0]   ,
-                        "113"    :     [7,0,0,0]   ,
-                        "114"    :     [7,0,0,0]   ,
-                        "115"    :     [7,0,0,0]   ,
-                        "116"    :     [7,0,0,0]  ,
-                        
-                        
-                        "12"     :   -1 ,
-              #          "120"    :     0xA00  ,         #  Reject
-              #          "121"    :     0xA70  ,
-              #          "1211"   :     0xA75  ,
-              #          "1212"   :     0xA76  ,
-              #          "122"    :     0xB40  ,      ### THESE ALSO HAVE DEMAND COUNTERPARTS
-              #          "1221"   :     0xB45  ,
-              #          "1222"   :     0xB46  ,
-              #          "1223"   :     0xB47  ,
-              #          "1224"   :     0xB49  ,
-              #          "123"    :     0xB60  ,
-              #          "1231"   :     0xB61  ,
-              #          "1232"   :     0xB62  ,
-              #          "1233"   :     0xB63  ,
-              #          "1234"   :     0xB64  ,
-              #          "124"    :     0xA90  ,
-              #          "1241"   :     0xA9B  ,
-              #          "1242"   :     0xA9C  ,
-              #          "1243"   :     0xA9D  ,
-              #          "1244"   :     0xA95  ,
-              #          "1245"   :     0xA9E  ,
-              #          "1246"   :     0xA9F  ,
-              #          "125"    :     0xA10  ,
-              #         "126"    :     0xA30  ,
-              #         "127"    :     0xA20  ,
-              #          "128"    :     0xA01  ,
-              #          "129"    :     0xA02  ,
-              
-                        "130"    :     [6,0,0,0]  ,         #  Threaten
-                        "131"    :     [6,0,0,0] ,
-                        "1311"   :     [6,0,0,0]  ,
-                        "1312"   :     [6,0,0,0]  ,
-                        "1313"   :     [6,0,0,0]  ,
-                        "132"    :     [6,0,0,0]  ,
-                        "1321"   :     [6,0,0,0]  ,
-                        "1322"   :     [6,0,0,0]  ,
-                        "1323"   :     [6,0,0,0]  ,
-                        "1324"   :     [6,0,0,0]  ,
-                        "133"    :     [6,0,0,0]  ,
-                        "134"    :     [6,0,0,0]  ,
-                        "135"    :     [6,0,0,0]  ,
-                        "136"    :     [6,0,0,0]  ,
-                        "137"    :     [6,0,0,0]  ,
-                        "138"    :     [6,0,0,0]  ,
-                        "1381"   :     [6,0,0,0]  ,
-                        "1382"   :     [6,0,0,0]  ,
-                        "1383"   :     [6,0,0,0]  ,
-                        "1384"   :     [6,0,0,0]  ,
-                        "1385"   :     [6,0,0,0]  ,
-                        "139"    :     [6,0,0,0]  ,
-                        
-                        
-                        "14"     :     [5,0,0,0]   ,         #  Protest
-                        
-                        "15"     :     [8,0,0,0]   ,         #  Exhibit Force Posture
-                        
-                        "160"    :     [0,1,0,0]   ,         #  Reduce Relations
-                        "161"    :     [0,1,0,0]   ,
-                        "162"    :     [0,1,0,0]   ,
-                        "1621"   :     [0,1,0,0]   ,
-                        "1622"   :     [0,1,0,0]   ,
-                        "1623"   :     [0,1,0,0]   ,
-                        "163"    :     [0,1,0,0]   ,
-                        "164"    :     [0,1,0,0]   ,
-                        "165"    :     [0,1,0,0]   ,
-                        "166"    :     [0,1,0,0]   ,
-                        "1661"   :     [0,1,0,0]   ,
-                        "1662"   :     [0,1,0,0]   ,
-                        "1663"   :     [0,1,0,0]   ,
-                        
-                        "17"    :     [9,0,0,0]    ,         #  Coerce
-                        "18"    :     [0,0,9,0]    ,         #  Assault
-                        "19"    :     [0,0,10,0]    ,         #  Fight
-                        "20"    :     [0,0,11,0]    ,   }      #  Use Unconventional Mass Violence
+    Returns
+    -------
+    string or int code, depending on the direction of conversion 
     
+    if forward, "passive" is also returned, which flags inherently passive codes 
+            defined as [:XXX]
     """
+
+
     cat = {             "010"    :     0x1000 ,         #  Make Public Statement
                         "011"    :     0x1000 - 0xFFFF ,
                         "012"    :     0x100C  ,
@@ -896,7 +600,7 @@ def convert_code(code,forward = 1):
                         "196"    :     0x00A8    ,
                        
                         "200"    :     0x00B0    ,         #  Use Unconventional Mass Violence
-                        "---"   : 0              }
+                        "---"    : 0              }
     
     if forward:
         passive = False

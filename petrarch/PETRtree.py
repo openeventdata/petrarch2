@@ -18,7 +18,7 @@ import numpy as np
 #
 #   Purpose:
 #           Called from petrarch.py, this contains the main logic
-#           of the petrarch software. Sentences are stored into
+#           of the Petrarch software. Sentences are stored into
 #           Sentence class objects, which contain a tree of Phrase
 #           class objects. The phrases then do analyses of their role
 #           in the sentence and the event information of the overall sentence
@@ -27,13 +27,33 @@ import numpy as np
 #
 #   Revision history:
 #       July 2015 - Created
-#
+#       August 2015 - First release
 
 
 
 class Phrase:
-
+    """
+    This is a general class for all Phrase instances, which make up the nodes in the syntactic tree.
+    The three subtypes are below.
+    
+    """
+    
     def __init__(self, label, date):
+        """
+        Initialization for Phrase classes. 
+        
+        
+        Parameters
+        -----------
+    
+        label: list
+                Label for the phrase type, date
+        
+        Returns
+        -------
+        An instantiated Phrase object
+
+        """
         self.label = label if not label == "MD" else "VB"
         self.children = []
         self.phrasetype = label[0]
@@ -48,19 +68,59 @@ class Phrase:
         self.head_phrase = None
         self.color = False
     
+    
+    
     def get_meaning(self):
+        """
+        Method for returning the meaning of the subtree rooted by this phrase,
+        is overwritten by all subclasses, so this works primarily for
+        S and S-Bar phrases.
+        
+        
+        
+        Parameters
+        -----------
+        self: Phrase object that called the method
+        
+        
+        Returns
+        -------
+        
+        events: list
+                Combined meanings of the phrases children
+        """
+        
         if self.label in "SBAR":
             lower = map(lambda b: b.get_meaning(), filter(lambda a: a.label in "SBARVP",self.children))
             events = []
             for item in lower:
                 events += item
             if events:
-                self.lower = events
+                self.meaning = events
                 return events
     
         return self.meaning
 
+
+
     def resolve_codes(self,codes):
+        """
+        Method that divides a list of mixed codes into actor and agent codes
+        
+        Parameters
+        -----------
+        codes: list
+               Mixed list of codes
+        
+        Returns
+        -------
+        actorcodes: list
+                    List of actor codes
+                    
+        agentcodes: list
+                    List of actor codes
+        
+        """
         if not codes:
             return [],[]
         
@@ -73,8 +133,25 @@ class Phrase:
                 actorcodes.append(code)
         
         return actorcodes,agentcodes
-    
+
+
+
     def mix_codes(self,agents,actors):
+        """
+        Combine the actor codes and agent codes addressing duplicates
+        and removing the general "~PPL" if there's a better option.
+        
+        Parameters
+        -----------
+        agents, actors : Lists of their respective codes
+        
+        
+        Returns
+        -------
+        codes: list
+               [Agent codes] x [Actor codes]
+        
+        """
         codes = set()
         for act in (actors if actors else ['~']):
             for ag in (agents if agents else ['~']) :
@@ -87,10 +164,31 @@ class Phrase:
                     codes.add(code)
         return list(codes)
 
+
+
     def return_head(self):
         return self.head,self.head_phrase
 
+
+
     def get_head(self):
+        """
+        Method for finding the head of a phrase. The head of a phrase is the rightmost
+        word-level constituent such that the path from root to head consists only of similarly-labeled
+        phrases.
+        
+        Parameters
+        -----------
+        self: Phrase object that called the method
+        
+        Returns
+        -------
+        possibilities[-1]: tuple (string,NounPhrase)
+                (The text of the head of the phrase, the NounPhrase object whose rightmost child is the
+                head).
+                
+        
+        """
         self.get_head = self.return_head
         try:
             if self.label == 'S':
@@ -115,22 +213,16 @@ class Phrase:
         except:
             return (None,None)
 
-    def get_code(self):
-        if not self.label in "SBAR":
-            return None
-
-        child_codes = filter(None, map(lambda a: a.get_code(),self.children))
-        if len(child_codes) == 0:
-            child_codes = 0
-        elif len(child_codes) == 1:
-            child_codes = child_codes[0]
-        else:
-            child_codes = child_codes
-        return child_codes
 
 
 class NounPhrase(Phrase):
-
+    """
+    Class specific to noun phrases. 
+    
+    Methods: get_meaning()  -   specific version of the super's method
+             check_date()   -   find the date-specific version of an actor
+             
+    """
     def __init__(self, label, date):
         Phrase.__init__(self, label, date)
     
@@ -139,6 +231,20 @@ class NounPhrase(Phrase):
         return self.meaning
 
     def check_date(self, match):
+        """
+        Method for resolving date restrictions on actor codes. 
+        
+        Parameters
+        -----------
+        match: list
+               Dates and codes from the dictionary
+        
+        Returns
+        -------
+        code: string
+              The code corresponding to how the actor should be coded given the date
+        """
+        
         code = None
         try:
             for j in match:
@@ -167,7 +273,26 @@ class NounPhrase(Phrase):
             return code
         return code
 
+
+
     def get_meaning(self):
+        """
+        Combine the meanings of the children of this node to find the actor code.
+        Priority is given to word-level children, then to NP-level children,
+        then Prepositional phrases, then Verb phrases.
+        
+        Word level children are matched against the Actor and Agent dictionaries.
+        
+        Parameters
+        -----------
+        self: NounPhrase object that called the method.
+        
+        Returns
+        -------
+        self.meaning: [string]
+                      Actor coding of the subtree rooted by this noun phrase, also set as attribute
+        
+        """
         dict_entry = ("",-1)
         dicts = (PETRglobals.ActorDict, PETRglobals.AgentDict)
         match_in_progress = {}
@@ -179,13 +304,7 @@ class NounPhrase(Phrase):
         option = -1
         pathleft = [({},i,-1)]
      
-        ##
-        #
-        #   Check for the meanings of its children. This method will be called on the children nodes as well
-        #          if meaning has not already been determined, which it shouldn't have because these should be
-        #          1-regular in-degree graphs,but who knows.
-        ##
-        
+     
         APMprint = True
         while i < len(self.children):
             child = self.children[i]
@@ -318,9 +437,13 @@ class PrepPhrase(Phrase):
         Phrase.__init__(self, label, date)
         self.meaning = ""
         self.prep = ""
-        self.noun_head = ""
+        self.head = ""
 
     def get_meaning(self):
+        """
+        Return the meaning of the non-preposition constituent, and store the
+        preposition.
+        """
         self.prep = self.children[0].text
         if len(self.children) > 1:
             self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
@@ -334,10 +457,37 @@ class PrepPhrase(Phrase):
 
 
 class VerbPhrase(Phrase):
+    """
+    Subclass specific to Verb Phrases
+    
+    Methods
+    -------
+    __init__: Initialization and Instatiation
+    
+    is_valid: Corrects a known stanford error regarding miscoded noun phrases
+    
+    get_theme: Returns the coded target of the VP
+    
+    get_meaning: Returns event coding described by the verb phrase
+    
+    get_lower: Finds meanings of children
+    
+    get_upper: Finds grammatical subject
+    
+    get_code: Finds base verb code and calls match_code
+    
+    match_pattern: Matches the tree to a pattern in the Verb Dictionary
+    
+    get_S: Finds the closest S-level phrase above the verb
+    
+    match_transform: Matches an event code against transformation patterns in the dictionary
+    
+    
+    """
 
     def __init__(self,label,date):
         Phrase.__init__(self,label,date)
-        self.meaning = "" # "meaning" for the verb, i.e. the events coded by the vp
+        self.meaning = ""    # "meaning" for the verb, i.e. the events coded by the vp
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
         self.passive = False
@@ -346,16 +496,21 @@ class VerbPhrase(Phrase):
         self.S  = None
     
     def is_valid(self):
-
-        # This is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
-        # marked as verb phrases, and treating them as such would yield weird parses.
+        """
+        This method is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
+        marked as verb phrases, and treating them as such would yield weird parses.
         
+        Once such a phrase is identified because of its weird distribution, it is converted to 
+        a NounPhrase object
+        
+        """
         try:
             if self.children[0].label == "VBN":
                 helping = ["HAVE","HAD","HAVING","HAS"]
                 if ((not (self.parent.get_head()[0] in helping or self.parent.children[0].text in helping)) and
-                  len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
-                    not self.check_passive()):
+                         len(filter(lambda a: isinstance(a,VerbPhrase),self.parent.children)) <= 1  and
+                         not self.check_passive()):
+                    
                     self.valid = False
                     
                     np_replacement = NounPhrase("NP",self.date)
@@ -374,23 +529,80 @@ class VerbPhrase(Phrase):
         return True
     
     def get_theme(self):
+        """
+        This is used by the NounPhrase.get_meaning() method to determine relevant
+        information in the VerbPhrase.
+        """
         m = self.get_meaning()
         if m[0][1] == 'passive':
             return m[0][0]
         return [m[0][1]]
     
     def return_meaning(self):
-        #print("RETURNING")
         return self.meaning
     
     def get_meaning(self):
+        """
+        This determines the event coding of the subtree rooted in this verb phrase.
+        
+        Four methods are key in this process: get_upper(), get_lower(), get_code() 
+        and match_transform().
+        
+        First, get_meaning() gets the verb code from get_code()
+        
+        Then, it checks passivity. If the verb is passive, then it looks within 
+        verb phrases headed by [by, from, in] for the source, and for an explicit target
+        in verb phrases headed by [at,against,into,towards]. If no target is found,
+        this space is filled with 'passive', a flag used later to assign a target
+        if it is in the grammatical subject position. 
+        
+        If the verb is not passive, then the process goes:
+        
+        1) call get_upper() and get_lower() to check for a grammatical subject 
+        and find the coding of the subtree and children, respectively.
+        
+        2) If get_lower returned a list of events, combine those events with
+        the upper and code, add to event list.
+        
+        3) Otherwise, combine upper, lower, and code  and add to event list
+        
+        4) Check to see if there are S-level children, if so, combine with
+        upper and code, add to list. 
+        
+        5) call match_transform() on all events in the list
+        
+        
+        Parameters
+        ----------
+        self: VerbPhrase object that called the method
+       
+        Returns
+        -------
+        events: list
+                List of events coded by the subtree rooted in this phrase.
+        
+        """
         self.get_meaning = self.return_meaning
         c = self.get_code()
         s_options = filter(lambda a: a.label in "SBAR",self.children)
-       
-        print(hex(c))
+
 
         def resolve_events(event):
+            """
+            Helper method to combine events, accounting for 
+            missing sources, and  targets, passives, multiple-
+            target passives, and codeless verbs.
+            
+            Parameters
+            ----------
+            event: tuple
+                   (source, target, code) of lower event
+            
+            Returns
+            -------
+            returns: [tuple]
+                     list of resolved event tuples
+            """
             first,second,third = [up,"",""]
             if not isinstance(event,tuple):
                 second = event
@@ -414,8 +626,6 @@ class VerbPhrase(Phrase):
                 third = utilities.combine_code(c,event[2])
             return [(first,second,third)]
 
-
-
         if self.check_passive():
             # Check for source in preps
             source_options = []
@@ -432,21 +642,13 @@ class VerbPhrase(Phrase):
                 self.meaning = map(lambda a: (source_options, a, c), target_options)
                 return self.meaning
     
-    
-    
-    
         up = self.get_upper()
         up = "" if up in ['',[],[""],["~"],["~~"]] else up
         low,neg = self.get_lower()
-        print("LOWER",low)
         if not low:
             low = ""
         if neg:
             c = 0
-        #    self.meaning = []
-        #    return []
-
-
         events = []
         
         if isinstance(low,list):
@@ -489,6 +691,20 @@ class VerbPhrase(Phrase):
         return self.passive
     
     def check_passive(self):
+        """
+        Check if the verb is passive under these conditions:
+            1) Verb is -ed form, which is notated by stanford as VBD or VBN
+            2) Verb has a form of "be" as its next highest verb 
+            
+        Parameters
+        ----------
+        self: VerbPhrase object calling the method
+        
+        Returns
+        -------
+        self.passive: boolean
+                      Whether or not it is passive
+        """
         self.check_passive = self.return_passive
         if True:
             if self.children[0].label in ["VBD","VBN"]:
@@ -515,6 +731,21 @@ class VerbPhrase(Phrase):
         return self.S
 
     def get_S(self):
+        """
+        Navigate up the tree following a VP path to find the closest s-level phrase. 
+        There is the extra condition that if the S-level phrase is a "TO"-phrase 
+        without a second subject specified, just so that "A wants to help B" will
+        navigate all the way up to "A wants" rather than stopping at "to"
+        
+        Parameters
+        -----------
+        self: VerbPhrase object that called the method
+        
+        Returns
+        -------
+        level: VerbPhrase object
+               Lowest non-TO S-level phrase object above the verb
+        """
         self.get_S = self.return_S
         not_found = True
         level = self
@@ -534,6 +765,18 @@ class VerbPhrase(Phrase):
 
 
     def get_upper(self):
+        """
+        Finds the meaning of the specifier (NP sibling) of the VP. 
+        
+        Parameters
+        -----------
+        self: VerbPhrase object that called the method
+        
+        Returns
+        -------
+        self.upper: List 
+                    Actor codes of spec-VP
+        """
         self.get_upper = self.return_upper
         
         for child in self.parent.children:
@@ -542,10 +785,35 @@ class VerbPhrase(Phrase):
                 return self.upper
         return []
 
+
+
     def return_lower(self):
         return self.lower
-    
+
     def get_lower(self):
+        """
+        Find the meaning of the children of the VP, and whether or not there is a "not" in the VP.
+        
+        If the VP has VP children, look only at these.
+        
+        Otherwise, this function pretty much is identical to the NounPhrase.get_meaning() 
+        method, except that it doesn't look at word-level children, because it shouldn't
+        have any. 
+        
+        Parameters
+        -----------
+        self: VerbPhrase object that called the method
+        
+        Returns
+        -------
+        self.lower: list
+                    Actor codes or Event codes, depending on situation
+        
+        negated: boolean
+                 Whether a "not" is present
+        
+        """
+    
         self.get_lower = self.return_lower
         
         lower = []
@@ -563,7 +831,6 @@ class VerbPhrase(Phrase):
                 for event in item:
                     if isinstance(event,tuple):
                         adjusted.append((event[0],event[1],event[2] - 0xFFFF))
-                        print(adjusted)
                     else:
                         adjusted.append(event)
                 item = adjusted
@@ -576,17 +843,12 @@ class VerbPhrase(Phrase):
         NPcodes = []
         PPcodes = []
         VPcodes = []
-        #Scodes = []
         
         for child in self.children:
             if isinstance(child, NounPhrase):
                 NPcodes += child.get_meaning()
             elif isinstance(child, PrepPhrase):
-                #print(child.get_meaning(),child.prep)
                 PPcodes += (child.get_meaning())
-            #elif isinstance(child, VerbPhrase):
-                #meaning = child.get_meaning()
-                #VPcodes += meaning[1] if isinstance(meaning[1],basestring)
             elif False and child.label in "SBAR":
                 for ch in (child.children[-1].children if child.label == "SBAR" else child.children):
                     if isinstance(ch, NounPhrase):
@@ -606,16 +868,12 @@ class VerbPhrase(Phrase):
             actorcodes += PPactor
             if not actorcodes:
                 actorcodes += VPactor
-                #if not actorcodes:
-                #    actorcodes += Sactor
     
         agentcodes += NPagent
         if not agentcodes:
             agentcodes += PPagent
             if not agentcodes:
                 agentcodes += VPagent
-                #if not agentcodes:
-                #    agentcodes += Sagent
         
         self.lower = self.mix_codes(agentcodes,actorcodes)
         return self.lower,negated
@@ -624,6 +882,24 @@ class VerbPhrase(Phrase):
         return self.code
     
     def get_code(self):
+        """
+        Match the codes from the Verb Dictionary.
+        
+        Step 1.  Check for compound verb matches
+        
+        Step 2.  Check for pattern matches via match_pattern() method
+        
+        
+        Parameters
+        -----------
+        self: VerbPhrase object that called the method
+        
+        Returns
+        -------
+        code:   int
+                Code described by this verb, best read in hex
+        """
+        
         self.get_code = self.return_code
         dict = PETRglobals.VerbDict['verbs']
         if 'AND' in map(lambda a: a.text, self.children):
@@ -667,7 +943,6 @@ class VerbPhrase(Phrase):
         
         match = self.match_pattern()
         if match:
-            print(match)
             self.code, passive  = utilities.convert_code(match['code'])
         
         if passive:
@@ -677,7 +952,29 @@ class VerbPhrase(Phrase):
 
 
     def match_transform(self,e):
-
+        """
+        Check to see if the event e follows one of the verb transformation patterns
+        specified at the bottom of the Verb Dictionary file.
+        
+        If the transformation is present, adjust the event accordingly. 
+        If no transformation is present, check if the event is of the form:
+        
+                    a ( b . Q ) P , where Q is not a top-level verb. 
+           
+            and then convert this to ( a b P+Q )
+        
+        Otherwise, return the event as-is.
+        
+        Parameters
+        -----------
+        e: tuple
+           Event to be transformed
+        
+        Returns
+        -------
+        t: list of tuples
+           List of modified events, since multiple events can come from one single event
+        """
     
     
         def recurse(pdict,event,a2v = {}, v2a = {}):
@@ -732,18 +1029,30 @@ class VerbPhrase(Phrase):
                         for item in e[1][0]:
                     
                             results.append((e[0],item,utilities.combine_code(e[1][2],e[2])))
-                        print("RESULTS",results,e)
                         return results
-                    print("HELLO",[(e[0],e[1][0],utilities.combine_code(e[2],e[1][2]))])
                     return [(e[0],e[1][0],utilities.combine_code(e[2],e[1][2]))]
 
 
         except Exception as ex:
-            print(ex)
+            pass #print(ex)
         return [e]
     
 
     def match_pattern(self):
+        """ 
+        Match the tree against patterns specified in the dictionary. For a more illustrated explanation
+        of how this process works, see the Petrarch2.pdf file in the documentation. 
+        
+        
+        Parameters
+        -----------
+        self: VerbPhrase object that called the method
+        
+        Returns
+        -------
+        False if no match, dict of match if present.
+        
+        """
         meaning = self.verbclass
         code = self.code
 
@@ -831,26 +1140,54 @@ class VerbPhrase(Phrase):
 
 
 class Sentence:
-
-    def __init__(self, str, text, date):
-        self.treestr = str.replace(')', ' )')
-        self.parse = str
+    """
+    Holds the information of a sentence and its tree.
+    
+    Methods
+    -------
+    
+    __init__ : Initialization and instantiation
+    
+    str_to_tree: Reads CoreNLP parse into memory
+    
+    get_events: Extracts events from sentence tree
+    
+    print_tree: Prints tree to a LaTeX file
+    """
+    def __init__(self, parse, text, date):
+        self.treestr = parse.replace(')', ' )')
+        self.parse = parse
         self.agent = ""
         self.ID = -1
         self.actor = ""
         self.date = date
         self.longlat = (-1,-1)
         self.verbs = []
-        self.tree = self.str_to_tree(str.strip())
+        self.tree = self.str_to_tree(parse.strip())
         self.txt = text
         self.verb_analysis = {}
         self.events = []
     
     def str_to_tree(self,str):
-        root = Phrase(str[1],self.date)
+        """
+        Take the Stanford CoreNLP parse and convert it to an object/pointer tree.
+        
+        Parameters
+        -----------
+        str: string 
+             Pre-processed CoreNLP parse, needs to be formated by utilities.format_parsed_str
+             before being passed.
+        
+        Returns
+        -------
+        root: Phrase object
+              Top level of the tree that represents the sentence
+        """
+        segs = str.split()
+        root = Phrase(segs[0][1:],self.date)
         level_stack = [root]
-        for element in str[2:].split():
-            if '(' in element:
+        for element in segs[1:]:
+            if element.startswith("("):
                 lab = element[1:]
                 if lab == "NP":
                     new = NounPhrase(lab, self.date)
@@ -865,7 +1202,7 @@ class Sentence:
                 new.index = len(level_stack[-1].children)
                 level_stack[-1].children.append(new)
                 level_stack.append(new)
-            elif ')' in element:
+            elif element.endswith(")"):
                 try:
                     level_stack.pop()
                 except:
@@ -877,8 +1214,25 @@ class Sentence:
 
 
     def get_events(self):
+        """
+        Take the coding of the highest verb phrase and return that, given:
+                1) Target and source are both present
+                2) Code is non-zero
+                3) Target isn't another event
+                
+        Parameters
+        -----------
+        self: Sentence object calling the method
+        
+        Returns
+        -------
+        valid: list
+               List of coded events that satisfy the above conditions, of form
+               (source, target, code) where the code has been converted from an int
+               back into CAMEO
+        
+        """
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
-        print(self.txt if self.txt else utilities.parse_to_text(self.parse).lower())
         
         valid = []
         for sent in events:
@@ -891,31 +1245,11 @@ class Sentence:
         return valid
 
 
-    def do_verb_analysis(self):
-        verbs = self.verbs
-        records = self.verb_analysis
-        preps = map(lambda a: a[:-1],open("data/dictionaries/Phoenix.prepositions.txt").readlines())
-        for verb_obj in verbs:
-            code= verb_obj.get_code()
-            scopes = verb_obj.get_meaning()
-            record = records.setdefault(verb_obj.meaning,{'count':0,'sources':0,'targets':0,'before':{},'after':{},'preps' : {}})
-            record['count'] += 1
-            record['sources'] += len(scopes[0])
-            record['targets'] += len(scopes[1])
-            try:
-                segs = self.txt.upper().split(verb_obj.children[0].text)
-                for i in range(0,5):
-                    record['before'][segs[0][-i-1]] = record['before'].setdefault(segs[0][-i-1],0) + (6.0-i)/4
-                    record['after'][segs[1][i]] = record['after'].setdefault(segs[1][i],0) + (6.0-i)/4
-                    if segs[1][i] in preps:
-                        record['preps'][segs[1][i]] = record['preps'].setdefault(segs[1][i],0) + 1
-            except:
-                print("oops")
-
-
-    
     def print_to_file(self,root,file = ""):
-    
+        """
+        Prints a LaTeX representation of the tree to a file, calls the recursive method
+        print_tree() on the tree to print all of it
+        """
         print("""
                     \\begin{tikzpicture}[scale= .25]
                     \\Tree""", file=file, end=" ")
@@ -924,9 +1258,16 @@ class Sentence:
         print("\\end{tikzpicture}\n\n", file=file)
         print("EVENTS: ",self.get_events(), file = file)
         print("\\newpage",file=file)
-              
+    
+    def print_to_stdout(self,root,indent):
+        print(indent, root.label,root.text,root.get_meaning(),root)
+        for child in root.children:
+            self.print_to_stdout(child,indent + "\t")
+    
     def print_tree(self, root, indent="", f=""):
-        # This prints a LaTeX formatted document of the tree
+        """
+        This prints a LaTeX formatted document of the tree. Calls on each of the children as well.
+        """
         print("[."+root.label.replace("$",""),("{\\bf "+root.text+"}" if not root.text == "" else "") ,file = f,end = " ")
         if root.label in ["NP"]:
             m = root.get_meaning()
@@ -936,26 +1277,8 @@ class Sentence:
             print("[.{" + k + "}", file=f, end=" ")
         elif root.label in ["VP"]:
             m = root.get_meaning()
-            #print(root.head,m)
-            k = ""
             print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")
-            """
-            if m[0] is None:
-                k = ""
-            else:
-                for i in m[0]:
-                    k += "+"+i
-            j =""
-            if m[1] == None:
-                j == ""
-            else:
-                for g in m[1]:
-                    j += "+"+str(g)
-            if not isinstance(root.get_code(),np.ndarray):
-                print("SOMETHING WENT WRONG")
-                print(root.get_code())
-                print(root.get_head())
-            print("[.{\it Upper "+k+", Lower "+j+", Code: "+str(root.get_code())+(" Passive" if root.check_passive() else "")+"}",file = f,end = " ")"""
+        
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)
         if root.label in ["NP","VP"]:

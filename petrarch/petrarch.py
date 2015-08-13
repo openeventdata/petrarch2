@@ -59,6 +59,8 @@ import PETRtree
 
 # ========================== VALIDATION FUNCTIONS ========================== #
 
+def get_version():
+    return "1.0.0"
 
 def change_Config_Options(line):
     """Changes selected configuration options."""
@@ -385,7 +387,7 @@ def do_coding(event_dict, out_file):
         prev_code = []
 
         SkipStory = False
-        #print('\n\nProcessing {}'.format(key))
+        print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
 
@@ -397,11 +399,10 @@ def do_coding(event_dict, out_file):
                             'sents'][sent]['config'].items():
                         change_Config_Options(config)
 
+
                 SentenceID = '{}_{}'.format(key, sent)
-                #if not "NEG" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #if not "GOLD_2" in SentenceID: # and not  "NEST_2" in SentenceID:
                 #    continue
-                #print(PETRglobals.VerbDict['verbs']['WOULD'])
-                #exit()
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
@@ -413,10 +414,7 @@ def do_coding(event_dict, out_file):
                 treestr = parsed
                 
                 
-                #if not "INTERPOL" in utilities.parse_to_text(parsed):
-                #   continue
-        
-                """
+                
                 disc = check_discards(SentenceText)
                 
                 if disc[0] > 0:
@@ -432,14 +430,11 @@ def do_coding(event_dict, out_file):
                         NDiscardStory += 1
                         break
                 
-                """
                 
                 t1 = time.time()
                 test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
                 coded_events = test_obj.get_events()
                 code_time = time.time()-t1
-                #test_obj.do_verb_analysis()
-                #print(test_obj.verb_analysis)
                 
                 
                 test_obj.print_to_file(test_obj.tree,file = file)
@@ -450,9 +445,9 @@ def do_coding(event_dict, out_file):
                 del(test_obj)
                 times+=code_time
                 sents += 1
-                print(code_time)
-                #continue
-                print(coded_events)
+                print('\t\t',code_time)
+                
+                
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":
@@ -528,7 +523,8 @@ PETRARCH
                                help="""Filepath for the PETRARCH configuration
                                file. Defaults to PETR_config.ini""",
                                required=False)
-
+    
+    
     unittest_command = sub_parse.add_parser('validate', help="""Command to run
                                          the PETRARCH validation suite.""",
                                             description="""Command to run the

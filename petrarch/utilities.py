@@ -833,7 +833,7 @@ def convert_code(code,forward = 1):
                         
                         
                         "140"    :     0x5000   ,         #  Protest
-                        "145"    :     0x50A0
+                        "145"    :     0x50A0   ,
                        
                         "150"    :     0x8000   ,         #  Exhibit Force Posture
                         "151"    :     0x8001   ,

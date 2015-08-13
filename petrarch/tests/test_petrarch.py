@@ -19,6 +19,126 @@ def test_read():
     assert "RUSSIA" in PETRglobals.ActorDict
 
 
+###################################
+#
+#           Unit tests
+#
+#   note : Even though most of these
+#          are phrasal tests, the
+#          tree needs to be S-rooted
+#          for it to read correctly
+#
+###################################
+
+def test_noun_meaning1():
+    parse = "(S (NP (DT THE ) (JJ ISLAMIC ) (NN STATE ) ) "
+
+    test = ptree.Sentence(parse,"The Islamic State", "081315")
+
+    phrase = test.tree.children[0]
+
+    head, headphrase = phrase.get_head()
+    
+    assert head== "STATE"
+    assert headphrase == phrase
+    assert phrase.get_meaning() == ["IMGMUSISI"]
+
+
+def test_noun_meaning2():
+    parse = "(S (NP (DT THE ) (JJ NORTH ) (NN ATLANTIC ) (NN TREATY ) (NN ORGANIZATION ) ) )  "
+
+    test = ptree.Sentence(parse,"The North Atlantic Treaty Organization", "081315")
+
+    phrase = test.tree.children[0]
+
+    head, headphrase = phrase.get_head()
+    
+    assert head== "ORGANIZATION"
+    assert headphrase == phrase
+    assert phrase.get_meaning() == ["IGOWSTNAT"]
+
+
+def test_noun_meaning3():
+    parse = "(S (NP (NP (NNP BARACK ) (NNP OBAMA ) ) (CC AND ) (NP (NNP VLADIMIR ) (NNP PUTIN ) ) ) )"
+
+    test = ptree.Sentence(parse,"Barack Obama and Vladimir Putin", "081315")
+
+    phrase = test.tree.children[0]
+    
+    assert sorted(phrase.get_meaning()) == sorted(["USAGOV","RUSGOV"])
+
+
+def test_prepmeaning():
+    parse = "(S (PP (IN TO ) (NP (DT THE ) (JJ TURKISH ) (NN MARKET )  ) ) )"
+
+    test = ptree.Sentence(parse,"to the market", "081315")
+
+    phrase = test.tree.children[0]
+    
+    assert phrase.get_meaning() == ['TUR']
+    assert phrase.head == "MARKET"
+    assert phrase.get_prep() == "TO"
+
+
+def test_noun_meaning4():
+    parse = "(S (NP (DT THE ) (NNP REBELS ) (PP (IN FROM ) (NP (NNP SYRIA ) ) ) ) )"
+
+    test = ptree.Sentence(parse,"The rebels from Syria", "081315")
+
+    phrase = test.tree.children[0]
+    
+    assert phrase.get_meaning() == ['SYRREB']
+    assert phrase.get_head()[0] == "REBELS"
+    assert phrase.get_head()[1] == phrase
+
+
+def test_date_check():
+    parse = "(S (NP (NNP CARL ) (NN XVI ) (NNP GUSTAF ) ) )"
+
+    test = ptree.Sentence(parse,"Carl XVI Gustaf", PETRreader.dstr_to_ordate("20150813"))
+    phrase = test.tree.children[0]
+    assert phrase.get_meaning() == ["SWEGOV"]
+
+    test = ptree.Sentence(parse,"Carl XVI Gustaf", PETRreader.dstr_to_ordate( "19720813"))
+    phrase = test.tree.children[0]
+    assert phrase.get_meaning() == ["SWEELI"]
+
+    test = ptree.Sentence(parse,"Carl XVI Gustaf", PETRreader.dstr_to_ordate("19010813"))
+    phrase = test.tree.children[0]
+    assert phrase.get_meaning() == ["SWEELI"]
+
+
+def test_personal1():
+    parse = "(S (NP (NNP Obama ) ) (VP (VBD said ) (SBAR (S (NP (PRP he ) ) (VP (VBD was ) (ADJP (VBN tired ) ) ) ) ) ) ) ".upper()
+
+    test = ptree.Sentence(parse,"Obama said he was tired",PETRreader.dstr_to_ordate("20150813"))
+    phrase = test.tree.children[1].children[1].children[0].children[0]
+    assert phrase.get_meaning() == ["USAGOV"]
+
+
+def test_reflexive():
+    parse = "(S (NP (NNP Obama ) )  (VP (VBD asked ) (NP (PRP himself ) )  (SBAR (WHADVP (WRB why ) ) (S (NP (NNP Biden ) ) (VP (VBD was ) (ADJP (VBN tired ) ) ) ) ) ) )".upper()
+
+    test = ptree.Sentence(parse,"Obama asked himself why Biden was tired",PETRreader.dstr_to_ordate("20150813"))
+    phrase = test.tree.children[1].children[1]
+    assert phrase.get_meaning() == ["USAGOV"]
+
+
+def test_personal2():
+    parse = "(S (NP (NNP Obama ) ) (VP (VBD knew ) (SBAR (IN that ) (S (NP (NNP Biden ) ) (VP (VBD liked ) (NP (PRP him ) ) ) ) ) )  ) ".upper()
+
+    test = ptree.Sentence(parse,"Obama knew that Biden liked him",PETRreader.dstr_to_ordate("20150813"))
+    phrase = test.tree.children[1].children[1].children[1].children[1].children[1]
+    assert phrase.get_meaning() == ["USAGOV"]
+
+
+def test_reflexive2():
+    parse = "(S (NP (NNP Obama ) ) (VP (VBD knew ) (SBAR (IN that ) (S (NP (NNP Putin ) ) (VP (VBD liked ) (NP (PRP himself ) ) ) ) ) )  ) ".upper()
+
+    test = ptree.Sentence(parse,"Obama knew that Biden liked him",PETRreader.dstr_to_ordate("20150813"))
+    phrase = test.tree.children[1].children[1].children[1].children[1].children[1]
+    assert phrase.get_meaning() == ["RUSGOV"]
+
 
 ###################################
 #
@@ -52,7 +172,6 @@ def test_simple2():
     assert return_dict['test123']['sents']['0']['events'] == [['DEU','FRA','173']]
 
 
-
 def test_complex1():
 
     text = "A Tunisian court has jailed a Nigerian student for two years for helping young militants join an armed Islamic group in Lebanon, his lawyer said Wednesday."
@@ -80,91 +199,8 @@ def test_complex1():
 
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
-
     return_dict = petrarch.do_coding(dict,None)
     assert return_dict['test123']['sents']['0']['events'] == [['TUNJUD','NGAEDU','173']]
-
-
-###################################
-#
-#           Unit tests
-#
-#   note : Even though most of these
-#          are phrasal tests, the
-#          tree needs to be S-rooted
-#          for it to read correctly
-#
-###################################
-
-def test_noun_meaning1():
-    parse = "(S (NP (DT THE ) (JJ ISLAMIC ) (NN STATE ) ) "
-
-    test = ptree.Sentence(parse,"The Islamic State", "081315")
-
-    phrase = test.tree.children[0]
-
-    head, headphrase = phrase.get_head()
-    
-    assert head== "STATE"
-    
-    assert headphrase == phrase
-    
-    assert phrase.get_meaning() == ["IMGMUSISI"]
-
-
-def test_noun_meaning2():
-    parse = "(S (NP (DT THE ) (JJ NORTH ) (NN ATLANTIC ) (NN TREATY ) (NN ORGANIZATION ) ) )  "
-
-    test = ptree.Sentence(parse,"The North Atlantic Treaty Organization", "081315")
-
-    phrase = test.tree.children[0]
-
-    head, headphrase = phrase.get_head()
-    
-    assert head== "ORGANIZATION"
-    
-    assert headphrase == phrase
-    
-    assert phrase.get_meaning() == ["IGOWSTNAT"]
-
-
-def test_noun_meaning3():
-    parse = "(S (NP (NP (NNP BARACK ) (NNP OBAMA ) ) (CC AND ) (NP (NNP VLADIMIR ) (NNP PUTIN ) ) ) )"
-
-    test = ptree.Sentence(parse,"Barack Obama and Vladimir Putin", "081315")
-
-    phrase = test.tree.children[0]
-    
-    assert sorted(phrase.get_meaning()) == sorted(["USAGOV","RUSELI"])
-
-
-def test_prepmeaning():
-    parse = "(S (PP (IN TO ) (NP (DT THE ) (JJ TURKISH ) (NN MARKET )  ) ) )"
-
-    test = ptree.Sentence(parse,"to the market", "081315")
-
-    phrase = test.tree.children[0]
-    
-    assert phrase.get_meaning() == ['TUR']
-
-    assert phrase.head == "MARKET"
-
-    assert phrase.get_prep() == "TO"
-
-
-
-def test_noun_meaning4():
-    parse = "(S (NP (DT THE ) (NNP REBELS ) (PP (IN FROM ) (NP (NNP SYRIA ) ) ) ) )"
-
-    test = ptree.Sentence(parse,"The rebels from Syria", "081315")
-
-    phrase = test.tree.children[0]
-    
-    assert phrase.get_meaning() == ['SYRREB']
-
-    assert phrase.get_head()[0] == "REBELS"
-
-    assert phrase.get_head()[1] == phrase
 
 
 

@@ -247,16 +247,18 @@ class NounPhrase(Phrase):
         
         code = None
         try:
+       
             for j in match:
                 dates = j[1]
                 date = []
+                code = ""
                 for d in dates:
                     if d[0] in '<>':
                         date.append(d[0]+str(PETRreader.dstr_to_ordate(d[1:])))
                     else:
-                        date.append(PETRreader.dstr_to_ordate(d))
+                        date.append(str(PETRreader.dstr_to_ordate(d)))
                 curdate= self.date
-                if len(date) ==0:
+                if not date:
                     code = j[0]
                 elif len(date) == 1:
                     if date[0][0] == '<':
@@ -269,8 +271,14 @@ class NounPhrase(Phrase):
                     if curdate < int(date[1]):
                         if curdate >= int(date[0]):
                             code = j[0]
-        except:
+            
+                if code:
+                    return code
+        except Exception as e:
+            print(e)
             return code
+        
+
         return code
 
 
@@ -474,14 +482,13 @@ class VerbPhrase(Phrase):
     
     get_upper: Finds grammatical subject
     
-    get_code: Finds base verb code and calls match_code
+    get_code: Finds base verb code and calls match_pattern 
     
     match_pattern: Matches the tree to a pattern in the Verb Dictionary
     
     get_S: Finds the closest S-level phrase above the verb
     
     match_transform: Matches an event code against transformation patterns in the dictionary
-    
     
     """
 

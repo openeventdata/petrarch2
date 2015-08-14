@@ -200,8 +200,8 @@ def do_coding(event_dict, out_file):
 
 
                 SentenceID = '{}_{}'.format(key, sent)
-                #if not "GOLD_2" in SentenceID: # and not  "NEST_2" in SentenceID:
-                #    continue
+                if not "SYRIA" in SentenceID: # and not  "NEST_2" in SentenceID:
+                    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][

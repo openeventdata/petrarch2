@@ -780,35 +780,6 @@ The US claimed that they had attacked Iraq
 </Parse>
 </Sentence>
 
-<Sentence date = "20150609" id ="NEST_1" source = "AFP" sentence = "True">
-<Text>
-The US claimed that ISIL had attacked Iraq
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq)))))))))
-</Parse>
-</Sentence>
-
-<Sentence date = "20150609" id ="NEST_2" source = "AFP" sentence = "True">
-<Text>
-The US claimed that ISIL had attacked Iraq and that they had taken the city of Mosul
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD claimed) (SBAR (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq)))))) (CC and) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD had) (VP (VBN taken) (NP (NP (DT the) (NN city)) (PP (IN of) (NP (NNP Mosul))))))))))))
-
-
-</Parse>
-</Sentence>
-
-<Sentence date = "20150609" id ="NEST_2.5" source = "AFP" sentence = "True">
-<Text>
-The US claimed that ISIL had attacked Iraq and had taken the city of Mosul
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VP (VBD claimed) (SBAR (IN that) (S (NP (NNP ISIL)) (VP (VBD had) (VP (VBN attacked) (NP (NNP Iraq))))))) (CC and) (VP (VBD had) (VP (VBN taken) (NP (NP (DT the) (NN city)) (PP (IN of) (NP (NNP Mosul)))))))))
-</Parse>
-</Sentence>
-
 <Sentence date = "20150609" id ="NEST_2.75" source = "AFP" sentence = "True">
 <Text>
 The US claimed that ISIL had attacked Iraq and taken the city of Mosul
@@ -818,44 +789,7 @@ The US claimed that ISIL had attacked Iraq and taken the city of Mosul
 </Parse>
 </Sentence>
 
-<Sentence date = "20150609" id ="NEST_3" source = "AFP" sentence = "True">
-<Text>
-The US warned that ISIL might attack Iraq
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD warned) (SBAR (IN that) (S (NP (NN ISIL)) (VP (MD might) (VP (VB attack) (NP (NNP Iraq)))))))))
-</Parse>
-</Sentence>
 
-<Sentence date = "20150609" id ="NEST_4" source = "AFP" sentence = "True">
-<Text>
-The US said that they warned that they would attack Iraq
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD warned) (SBAR (IN that) (S (NP (PRP they)) (VP (MD would) (VP (VB attack) (NP (NNP Iraq))))))))))))
-
-
-</Parse>
-</Sentence>
-
-<Sentence date = "20150609" id ="NEST_5" source = "AFP" sentence = "True">
-<Text>
-The US said that Iraq had attacked them
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (NNP Iraq)) (VP (VBD had) (VP (VBN attacked) (NP (PRP them)))))))))
-
-</Parse>
-</Sentence>
-
-<Sentence date = "20150609" id ="NEST_6" source = "AFP" sentence = "True">
-<Text>
-The US said that Iraq had attacked themselves
-</Text>
-<Parse>
-(ROOT (S (NP (DT The) (NNP US)) (VP (VBD said) (SBAR (IN that) (S (NP (NNP Iraq)) (VP (VBD had) (VP (VBN attacked) (NP (PRP themselves)))))))))
-</Parse>
-</Sentence>
 
 <Sentence date = "20150609" id ="EXIST_0" source = "AFP" sentence = "True">
 <Text>
@@ -880,7 +814,7 @@ There were 10 Russian soldiers killed in Ukraine today.
 <Text>
 Boko Haram has launched many similar attacks during its six-year campaign for a strict Islamic state in northeastern Nigeria.</Text>
 <Parse>
-ROOT (S (NP (DT The) (JJ Islamic) (NN state)) (VP (VBZ has) (VP (VBN launched) (NP (JJ many) (JJ similar) (NNS attacks)) (PP (IN during) (NP (NP (PRP$ its) (JJ six-year) (NN campaign)) (PP (IN for) (NP (NP (DT a) (JJ strict) (JJ Islamic) (NN state)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria))))))))) (. .)))
+(ROOT (S (NP (DT The) (JJ Islamic) (NN state)) (VP (VBZ has) (VP (VBN launched) (NP (JJ many) (JJ similar) (NNS attacks)) (PP (IN during) (NP (NP (PRP$ its) (JJ six-year) (NN campaign)) (PP (IN for) (NP (NP (DT a) (JJ strict) (JJ Islamic) (NN state)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria))))))))) (. .)))
 </Parse>
 </Sentence>
 
@@ -1055,6 +989,17 @@ Obama said he would not help Israel
 </Sentence>
 
 
+<Sentence date = "20150609" id ="NEG_1" source = "AFP" sentence = "True">
+<Text>
+Obama said he would not ask Russia to help Israel
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Obama)) (VP (VBD said) (SBAR (S (NP (PRP he)) (VP (MD would) (RB not) (VP (VB ask) (S (NP (NNP Russia)) (VP (TO to) (VP (VB help) (NP (NNP Israel))))))))))))
+
+</Parse>
+</Sentence>
+
+
 
 <Sentence date = "20150609" id ="Pattern_1" source = "AFP" sentence = "True">
 <Text>
@@ -1070,21 +1015,38 @@ Obama said he will attack Iraq
 
 <Sentence date = "20150609" id ="PASSIVE_4" source = "AFP" sentence = "True">
 <Text>
-Obama faces pressure from Congress to get a better deal.
+Obama faces pressure from Congress to help Iran.
 </Text>
-<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBZ faces) (NP (NN pressure)) (PP (IN from) (NP (NNP Congress))) (S (VP (TO to) (VP (VB get) (NP (DT a) (JJR better) (NN deal)))))) (. .)))
+<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBZ faces) (NP (NN pressure)) (PP (IN from) (NP (NNP Congress))) (S (VP (TO to) (VP (VB help) (NP (NNP Iran)))))) (. .)))
 </Parse>
 </Sentence>
 
 
-
-<Sentence date = "20150609" id ="PASSIVE_4" source = "AFP" sentence = "True">
+<Sentence date = "20150609" id ="PASSIVE_5" source = "AFP" sentence = "True">
 <Text>
-Obama faces pressure from Congress to get a better deal.
+Congress is pressuring Obama to help Iran.
 </Text>
-<Parse>(ROOT (S (NP (NNP Obama)) (VP (VBZ faces) (NP (NN pressure)) (PP (IN from) (NP (NNP Congress))) (S (VP (TO to) (VP (VB get) (NP (DT a) (JJR better) (NN deal)))))) (. .)))
+<Parse>
+
+(ROOT (S (NP (NNP Congress)) (VP (VBZ is) (VP (VBG asking) (S (NP (NNP Obama)) (VP (TO to) (VP (VB help) (NP (NNP Iran))))))) (. .)))
+
 </Parse>
 </Sentence>
+
+<Sentence date = "20150609" id ="PASSIVE_6" source = "AFP" sentence = "True">
+<Text>
+Obama is being pressured by congress to help Iran.
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Obama)) (VP (VBZ is) (VP (VBG being) (VP (VBN pressured) (PP (IN by) (NP (NN congress))) (S (VP (TO to) (VP (VB help) (NP (NNP Iran)))))))) (. .)))
+
+
+</Parse>
+</Sentence>
+
+
+
+
 
 <Sentence date = "20150609" id ="APPEALS_0" source = "AFP" sentence = "True">
 <Text>
@@ -1133,6 +1095,27 @@ Obama has agreed to lift the sanctions on Iran
 The United States will supply arms to Israel
 </Text>
 <Parse>(ROOT (S (NP (DT The) (NNP United) (NNPS States)) (VP (MD will) (VP (VB supply) (NP (NNS arms)) (PP (TO to) (NP (NNP Israel)))))))
+
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="VALID_0" source = "AFP" sentence = "True">
+<Text>
+The USA gave the two exiled dissidents from Egypt assylum
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP USA)) (VP (VBD helped) (NP (CD two)) (S (NP (NP (VBD exiled) (NNS dissidents)) (PP (IN from) (NP (NNP Egypt))))))))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="OVERLAP_0" source = "AFP" sentence = "True">
+<Text>
+Russia is conducting military exercises in Alaska
+</Text>
+<Parse>
+(ROOT (S (NP (NNP Russia)) (VP (VBZ is) (VP (VBG conducting) (NP (JJ military) (NNS exercises)) (PP (IN in) (NP (NNP Alaska)))))))
 
 </Parse>
 </Sentence>

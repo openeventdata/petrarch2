@@ -482,7 +482,7 @@ class VerbPhrase(Phrase):
     
     get_upper: Finds grammatical subject
     
-    get_code: Finds base verb code and calls match_pattern 
+    get_code: Finds base verb code and calls match_pattern
     
     match_pattern: Matches the tree to a pattern in the Verb Dictionary
     
@@ -1092,6 +1092,10 @@ class VerbPhrase(Phrase):
                 
                 if head in path:
                     subpath = path[head]
+                    
+                    # TO DO:
+                        # Try first to match prepositional phrases within NP?
+                        
                     match = reroute(subpath,(lambda a : match_phrase(a,item.head_phrase)) if isinstance(item,NounPhrase) else None)
                     if match:
                         headphrase.children[-1].color = True

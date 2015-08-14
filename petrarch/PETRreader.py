@@ -836,7 +836,6 @@ def read_verb_dictionary(verb_path):
                 
                 pre = segs[0].split()
                 pre = resolve_patseg(pre)
-                
                 post = segs[1].split()
                 code = post.pop()
                 post = resolve_patseg(post)
@@ -918,7 +917,7 @@ def read_verb_dictionary(verb_path):
         elif syn and line.startswith("+"):
             term = line.strip()[1:]
             if "_" in term:
-                if len(term.replace("_","").split()) > 1:
+                if len(term.replace("_"," ").split()) > 1:
                     term = "{" + term.replace("_"," ") + "}"
                 else:
                     term = term.replace("_","")
@@ -1716,10 +1715,8 @@ def dstr_to_ordate(datestring):
     ordate = day + math.floor((153 * mo + 2) / 5) + 365 * yr
     ordate += math.floor(yr / 4) - math.floor(yr / 100) + \
         math.floor(yr / 400) - 32045  # pure Julian date
-# print "Julian:", ordate        # debug to cross-check for unit test
     ordate -= 2305813   # adjust for ANSI date
 
-# print ordate        # debug
     return int(ordate)
 
 

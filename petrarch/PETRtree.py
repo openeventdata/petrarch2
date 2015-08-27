@@ -160,7 +160,7 @@ class Phrase:
                 code = act
                 if not ag[1:] in act:
                     code += ag[1:]
-                if not code in ['~','~~']:
+                if not code in ['~','~~',""]:
                     codes.add(code)
         return list(codes)
 
@@ -212,6 +212,12 @@ class Phrase:
             
         except:
             return (None,None)
+
+
+    def print_to_stdout(self,indent):
+        print(indent, self.label,self.text,self.get_meaning(),self)
+        for child in self.children:
+            child.print_to_stdout(indent + "\t")
 
 
 
@@ -301,6 +307,8 @@ class NounPhrase(Phrase):
                       Actor coding of the subtree rooted by this noun phrase, also set as attribute
         
         """
+        
+        self.get_meaning = self.return_meaning
         dict_entry = ("",-1)
         dicts = (PETRglobals.ActorDict, PETRglobals.AgentDict)
         match_in_progress = {}
@@ -311,8 +319,7 @@ class NounPhrase(Phrase):
         i = 0
         option = -1
         pathleft = [({},i,-1)]
-     
-     
+        
         APMprint = True
         while i < len(self.children):
             child = self.children[i]
@@ -355,7 +362,7 @@ class NounPhrase(Phrase):
                     except:
                         if False:
                             print("No match")
-                elif child.label == "NP":
+                elif child.label == "NP" and not child.color:
                     m = child.get_meaning()
                     if not m == "":
                         NPcodes+= m
@@ -390,6 +397,10 @@ class NounPhrase(Phrase):
                     if meaning and isinstance(meaning[0][1],basestring):
                         VPcodes += child.get_theme()
         
+                elif child.label == "EX":
+                    m =  self.convert_existential().get_meaning()
+                    self.meaning = m
+                    return m
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
@@ -401,6 +412,7 @@ class NounPhrase(Phrase):
                             codes.append(code)
                     else:
                         codes.append(match)
+                
                 else:
                     
                 
@@ -434,9 +446,32 @@ class NounPhrase(Phrase):
                     
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
-        self.get_meaning = self.return_meaning # don't need to calculate every time
 
         return self.meaning
+
+
+
+
+    def convert_existential(self):
+        # Reshuffle the tree to get existential "There are" phrases into a more basic form
+        parent = self.parent
+        sister = parent.children[1]
+        neice = sister.children[1]
+        subject = neice.children[0]
+        predicate = neice.children[1]
+    
+    
+        parent.children[0] = subject
+        subject.parent = parent
+       
+        sister.children[1] = predicate
+        predicate.parent = sister
+    
+        self.parent = None
+
+
+        #parent.print_to_stdout("")
+        return subject
 
 
 class PrepPhrase(Phrase):
@@ -453,10 +488,11 @@ class PrepPhrase(Phrase):
         preposition.
         """
         self.prep = self.children[0].text
-        if len(self.children) > 1:
+        if len(self.children) > 1 and not self.children[1].color:
+            
             self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
             self.head = self.children[1].get_head()[0]
-        
+            
         return self.meaning
 
     def get_prep(self):
@@ -589,10 +625,11 @@ class VerbPhrase(Phrase):
                 List of events coded by the subtree rooted in this phrase.
         
         """
+        time1 = time.time()
         self.get_meaning = self.return_meaning
-        c = self.get_code()
+        
+        c, passive = self.get_code()
         s_options = filter(lambda a: a.label in "SBAR",self.children)
-
 
         def resolve_events(event):
             """
@@ -633,7 +670,8 @@ class VerbPhrase(Phrase):
                 third = utilities.combine_code(c,event[2])
             return [(first,second,third)]
 
-        if self.check_passive():
+        events = []
+        if self.check_passive() or passive:
             # Check for source in preps
             source_options = []
             target_options = self.get_upper()
@@ -646,8 +684,10 @@ class VerbPhrase(Phrase):
             if not target_options:
                 target_options = ["passive"]
             if source_options or c:
-                self.meaning = map(lambda a: (source_options, a, c), target_options)
-                return self.meaning
+                events = map(lambda a: (source_options, a, c if self.check_passive() else passive), target_options)
+                if self.check_passive():
+                    self.meaning = events
+                    return events
     
         up = self.get_upper()
         up = "" if up in ['',[],[""],["~"],["~~"]] else up
@@ -656,7 +696,6 @@ class VerbPhrase(Phrase):
             low = ""
         if neg:
             c = 0
-        events = []
         
         if isinstance(low,list):
             for event in low:
@@ -910,7 +949,7 @@ class VerbPhrase(Phrase):
         self.get_code = self.return_code
         dict = PETRglobals.VerbDict['verbs']
         if 'AND' in map(lambda a: a.text, self.children):
-            return 0
+            return 0,0
         patterns = PETRglobals.VerbDict['phrases']
         verb = "TO" if self.children[0].label == "TO" else self.get_head()[0]
         
@@ -929,9 +968,10 @@ class VerbPhrase(Phrase):
                     
                         self.verbclass = meaning if not meaning == "" else verb
                         if not code == '':
-                            self.code, passive  = utilities.convert_code(code)
+                            active, passive  = utilities.convert_code(code)
+                            self.code = active
                     except:
-                        self.code = 0
+                        self.code = (0,0)
             else:
                 # Post - compounds
                 for child in self.children:
@@ -944,17 +984,20 @@ class VerbPhrase(Phrase):
                         meaning = path['#']['#']['meaning']
                         self.verbclass = meaning if not meaning == "" else verb
                         if not code == '':
-                            self.code, passive  = utilities.convert_code(code)
+                            active, passive  = utilities.convert_code(code)
+                            self.code = active
                     except:
                         pass
         
         match = self.match_pattern()
         if match:
-            self.code, passive  = utilities.convert_code(match['code'])
-        
-        if passive:
+            print("\t\t",match)
+            active, passive  = utilities.convert_code(match['code'])
+            self.code = active
+        if passive and not active:
             self.check_passive = lambda : True
-        return self.code
+            self.code = passive
+        return self.code, passive
 
 
 
@@ -1066,13 +1109,14 @@ class VerbPhrase(Phrase):
         def match_phrase(path,phrase):
             # Having matched the head of the phrase, this matches the full noun phrase, if specified
             for item in filter(lambda b: b.text in path,phrase.children):
-                
+            
                 subpath = path[item.text]
                 match = reroute(subpath,lambda a: match_phrase(a,item.head_phrase))
                 if match:
                     item.color = True
-                    
                     return match
+        
+            
             return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
         
         def match_noun(path,phrase = self if not self.check_passive() else self.get_S(),preplimit = 0):
@@ -1086,27 +1130,37 @@ class VerbPhrase(Phrase):
                 for child in phrase.children:
                     if child.label in ("NP","ADVP"):
                         noun_phrases.append(child)
-            
+                if isinstance(phrase,NounPhrase):
+                    noun_phrases.append(phrase)
+        
             for item in noun_phrases:
                 head,headphrase  = item.get_head()
                 
-                if head in path:
+                if head and head in path:
                     subpath = path[head]
                     
-                    # TO DO:
-                        # Try first to match prepositional phrases within NP?
-                        
-                    match = reroute(subpath,(lambda a : match_phrase(a,item.head_phrase)) if isinstance(item,NounPhrase) else None)
+                    # First check within the NP for PP's
+                    skip = lambda a: False
+                    match = reroute(subpath, skip , skip , lambda a: match_prep(a,item), skip )
                     if match:
                         headphrase.children[-1].color = True
                         return match
+
+                    # Then check the other siblings
+                    match = reroute(subpath,(lambda a : match_phrase(a,item.head_phrase))
+                            if isinstance(item,NounPhrase) else None )
+                    if match:
+                        headphrase.children[-1].color = True
+                        return match
+            if '^' in path:
+                phrase.color = True
+                return reroute(path['^'], lambda a: match_phrase(a,phrase.head_phrase))
             return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
 
-        def match_prep(path):
+        def match_prep(path,phrase=self):
             # Matches preposition
-            for item in filter(lambda b: isinstance(b,PrepPhrase),self.children):
-                meaning = item.get_meaning()
-                prep = item.prep
+            for item in filter(lambda b: isinstance(b,PrepPhrase),phrase.children):
+                prep = item.children[0].text
                 if prep in path:
                     subpath = path[prep]
                     match = reroute(subpath,lambda a : match_noun(a,item.children[1]), match_prep)
@@ -1115,6 +1169,7 @@ class VerbPhrase(Phrase):
             return reroute(path, o2 = match_prep)
 
         def reroute(subpath, o1 = match_noun, o2 = match_noun, o3 = match_prep, o4 = match_noun):
+            
                 if '-' in subpath:
                     match = o1(subpath['-'])
                     if match:
@@ -1197,6 +1252,8 @@ class Sentence:
         segs = str.split()
         root = Phrase(segs[0][1:],self.date)
         level_stack = [root]
+        existentials = []
+        
         for element in segs[1:]:
             if element.startswith("("):
                 lab = element[1:]
@@ -1209,6 +1266,8 @@ class Sentence:
                     new = PrepPhrase(lab, self.date)
                 else:
                     new = Phrase(lab, self.date)
+                    if lab == "EX":
+                        existentials.append(new)
                 new.parent = level_stack[-1]
                 new.index = len(level_stack[-1].children)
                 level_stack[-1].children.append(new)
@@ -1220,11 +1279,14 @@ class Sentence:
                     break
             else:
                 level_stack[-1].text = element
+    
+        for element in existentials:
+            element.parent.convert_existential()
         return root
 
 
 
-    def get_events(self):
+    def get_events(self,require_dyad = 1):
         """
         Take the coding of the highest verb phrase and return that, given:
                 1) Target and source are both present
@@ -1244,14 +1306,29 @@ class Sentence:
         
         """
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
-        
         valid = []
         for sent in events:
             for event in sent:
-                if isinstance(event,tuple):
-                    if event[0] and event[1] and utilities.convert_code(event[2],0) and isinstance(event[1],basestring):
+                if isinstance(event,tuple) and isinstance(event[1],basestring) :
+                    code = utilities.convert_code(event[2],0)
+                    if event[0] and event[1] and code :
                         for source in event[0]:
-                            valid.append([source,event[1],utilities.convert_code(event[2],0)])
+                            valid.append([source,event[1],code])
+                    elif (not require_dyad) and event[0] and code and not event[1]:
+                        for source in event[0]:
+                            print("##############",source,code)
+                            valid.append([source,"---",code])
+                    elif (not require_dyad) and event[1] and code and not event[0]:
+                        print("%%%%%%%%%%%%%%%%%%",event[1],code)
+                        valid.append(["---",event[1],code])
+                    
+                    
+                    # If there are multiple actors in a cooperation scenario, code their cooperation as well
+                    if len(event[0]) > 1 and (not event[1]) and code and code[:2] in ["03","04","05","06"]:
+                        for source in event[0]:
+                            for target in event[0]:
+                                if not source == target:
+                                    valid.append([source,target,code])
     
         return valid
 
@@ -1261,19 +1338,17 @@ class Sentence:
         Prints a LaTeX representation of the tree to a file, calls the recursive method
         print_tree() on the tree to print all of it
         """
-        print("""
-                    \\begin{tikzpicture}[scale= .25]
+        print("""   
+                    \\resizebox{\\textwidth}{250}{%
+                    \\begin{tikzpicture}
                     \\Tree""", file=file, end=" ")
 
         self.print_tree(root, "", file)
-        print("\\end{tikzpicture}\n\n", file=file)
+        print("\\end{tikzpicture}}\n\n", file=file)
         print("EVENTS: ",self.get_events(), file = file)
+        print("\\\\\nTEXT: ", self.txt, file=file)
         print("\\newpage",file=file)
     
-    def print_to_stdout(self,root,indent):
-        print(indent, root.label,root.text,root.get_meaning(),root)
-        for child in root.children:
-            self.print_to_stdout(child,indent + "\t")
     
     def print_tree(self, root, indent="", f=""):
         """

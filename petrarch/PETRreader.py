@@ -844,6 +844,7 @@ def read_verb_dictionary(verb_path):
                 if not pre == ([],[]):
                     if pre[0]:
                         count = 1
+                        
                         for noun in pre[0]:
                             if not isinstance(noun,tuple):
                                 path  = path.setdefault(noun,{})
@@ -853,6 +854,7 @@ def read_verb_dictionary(verb_path):
                                 for element in noun[1]:
                                     path = path.setdefault("-",{})
                                     path = path.setdefault(element,{})
+                            
                             path = path.setdefault(",",{}) if not count == len(pre[0]) else path
                             count += 1
                 
@@ -890,11 +892,13 @@ def read_verb_dictionary(verb_path):
                                 for element in noun[1]:
                                     path = path.setdefault("-",{})
                                     path = path.setdefault(element,{})
+                                
                             path = path.setdefault(",",{}) if not count == len(post[0]) else path
-                    path = path.setdefault("|",{}) if post[1] else path
+                
                     if post[1]:
                         for phrase in post[1]:
                             head = phrase[0]
+                            path = path.setdefault("|",{})
                             path = path.setdefault(head,{})
                             count = 1
                             for noun in phrase[1]:
@@ -902,8 +906,8 @@ def read_verb_dictionary(verb_path):
                                     path = path.setdefault("-",{})
                                     path  = path.setdefault(noun,{})
                                 else:
-                            
                                     head = noun[0]
+                                    path = path.setdefault("-",{})
                                     path = path.setdefault(head,{})
                                     for element in noun[1]:
                                         path = path.setdefault("-",{})
@@ -920,8 +924,8 @@ def read_verb_dictionary(verb_path):
                 if len(term.replace("_"," ").split()) > 1:
                     term = "{" + term.replace("_"," ") + "}"
                 else:
-                    term = term.replace("_","")
-            synsets[block_meaning] = synsets.setdefault(block_meaning,[]) + [line.strip()[1:]]
+                    term = term.replace("_"," ")
+            synsets[block_meaning] = synsets.setdefault(block_meaning,[]) + [term]
         elif line.startswith("~"):
             # VERB TRANSFORMATION
             p = line[1:].replace("(","").replace(")","")
@@ -1009,7 +1013,6 @@ def read_verb_dictionary(verb_path):
 
 
 
-
     #print(sorted(PETRglobals.VerbDict['phrases'].keys()))
     #print(PETRglobals.VerbDict.__sizeof__())
     #print(PETRglobals.VerbDict['phrases'].__sizeof__())
@@ -1029,7 +1032,7 @@ def _read_verb_dictionary(verb_path):
     ======= VERB DICTIONARY ORGANIZATION =======
 
     The verb dictionary consists of a set of synsets followed by a series of verb
-    synonyms and patterns.
+    synonyms and patterns, followed by a list of verb transformations.
 
     VERB SYNONYM BLOCKS AND PATTERNS
 
@@ -1053,11 +1056,30 @@ def _read_verb_dictionary(verb_path):
     does not generate an event. The null code also can be used as a secondary code.
 
     This is followed by a set of patterns -- these begin with '-' -- which generally
-    follow the same syntax as TABARI patterns. The pattern set is terminated with a
-    blank line.
+    follow a syntax that is based on that of TABARI patterns, but contains more grammatical
+    information. Patterns now have four sections: 
+    
+    - Pre-Verb Nouns (Pre-Verb Prep Phrases) * Post-Verb Nouns (Post-Verb Prep Phrases)
+    
+    These contain several symbolic annotations:
+    
+        ()  Parentheses indicate a Prepositional phrase. The first word is the preposition,
+            followed by the noun(s) that it governs
+        
+        Single words without annotation denote nouns. These are the "heads" of the phrases they
+            represent.
+            
+        {}  Brackets denote a longer noun phrase. The last word in the brackets will be the head,
+            remaining words are descriptors.
+        
+        +$  In rare cases, the + and $ symbols will be used to mark target and source respectively.
+            These should only be used in instances where it would be possible to confuse one with 
+            the other going strictly off syntactic information, such as both would occur after the verb
+            in prepositional phrases
+            
 
     MULTIPLE-WORD VERBS
-    Multiple-word "verbs" such as "CORDON OFF", "WIRE TAP" and "BEEF UP" are entered by
+    Multiple-word "compound verbs" such as "CORDON OFF", "WIRE TAP" and "BEEF UP" are entered by
     connecting the word with an underscore (these must be consecutive) and putting a '+'
     in front of the word -- only the first and last are currently allowed -- of the
     phrase that TreeBank is going to designate as the verb.If there is no {...}, regular

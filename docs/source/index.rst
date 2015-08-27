@@ -58,11 +58,7 @@ For more information on event data as well as event data related research see: h
 Installing
 ----------
 
-It is now possible to install the program. It is highly recommended that you
-install within a virtual environment. This is alpha software, so things will
-change moving forward. Seriously, install in a virtual environment.
 
-To install (you're in a virtual environment, right?):
 
 1) Clone the repo
 

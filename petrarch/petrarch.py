@@ -65,7 +65,6 @@ def get_version():
 # ========================== PRIMARY CODING FUNCTIONS ====================== #
 
 
-
 def check_discards(SentenceText):
     """
     Checks whether any of the discard phrases are in SentenceText, giving
@@ -200,8 +199,6 @@ def do_coding(event_dict, out_file):
 
 
                 SentenceID = '{}_{}'.format(key, sent)
-                if not "SYRIA" in SentenceID: # and not  "NEST_2" in SentenceID:
-                    continue
                 print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
@@ -211,6 +208,11 @@ def do_coding(event_dict, out_file):
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
+                #if not "GUYANA" in SentenceText.upper():
+                #    continue
+                
+                #if not "EXIST" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #   continue
                 
                 
                 
@@ -231,17 +233,15 @@ def do_coding(event_dict, out_file):
                 
                 
                 t1 = time.time()
-                test_obj = PETRtree.Sentence(treestr,SentenceText,Date)
-                coded_events = test_obj.get_events()
+                sentence = PETRtree.Sentence(treestr,SentenceText,Date)
+                coded_events = sentence.get_events()
                 code_time = time.time()-t1
+
+
+                sentence.print_to_file(sentence.tree,file = file)
                 
                 
-                test_obj.print_to_file(test_obj.tree,file = file)
-                
-                
-                
-                
-                del(test_obj)
+                del(sentence)
                 times+=code_time
                 sents += 1
                 print('\t\t',code_time)

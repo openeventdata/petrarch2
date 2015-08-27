@@ -1,3 +1,6 @@
+
+
+
 Status of the program 21-November-2014
 ======================================
 
@@ -32,4 +35,7 @@ in PETRwriter.read_verb_dictionary() for an extended discussion of these issues.
 4.  The ``write_actor_root`` and ``write_actor_text`` options in the config file add to the 
     output record the actor 
     'root' -- the phrase that begins a list of synonyms -- and the full text in the 
-    noun phrase used to code the actor. 
+    noun phrase used to code the actor.
+
+
+

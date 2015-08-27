@@ -8,7 +8,7 @@ import PETRglobals
 import PETRreader
 import time
 import utilities
-import numpy as np
+
 
 
 #   PETRtree.py

@@ -1,8 +1,8 @@
 Input Formats
 =============
 
-There are three (fairly) unique input formats for PETRARCH: the processing
-pipeline, the XML input, and the validation routine input. The following
+There are two input formats for PETRARCH: the processing
+pipeline and the XML input. The following
 sections describe the details of these input types and formats.
 
 Pipeline
@@ -58,81 +58,7 @@ the text in the entry is from a single sentence or a block of sentences, such
 as from the lead paragraph of a news story. Finally, the ``source`` attribute
 indicates what source the material came from, such as Agence-France Presse.
 
-
-Validation Input
-----------------
-
-Validation files are used for debugging and unit testing, combining the
-contents of a ``config.ini`` file and text file as well as providing information on
-the correct coding for each record. This approach is based on some
-decidedly aggravating experiences during the TABARI development where the
-validation records and the required ``.verbs`` and ``.actors`` files were not properly
-synchronized.
-
-The general format of the file is:
-
-::
-
-    <Validation>
-
-    <Environment>
-    </Environment>		
-
-    <Sentences>
-
-    <Sentence>
-    <Text>
-    </Text>
-    <Parse>
-    </Parse>
-    </Sentence>
-
-    </Sentences>
-
-    </Validation>
-
-These elements are described in greater detail below.
-
-**Required elements in the <Environment> block:**
-
-::
-
-    <Environment>
-            <Verbfile name="<filename>"></Verbfile>
-            <Actorfile name="<filename>"></Actorfile>
-            <Agentfile name="<filename>"></Agentfile>
-    </Environment>
-
-There can only be one actorfile, unlike in the config file, which allows a list.
-
-**Optional elements in the <Environment> block:**
-
-``<Discardfile name="<filename>"></∂iscardfile>``
-
-Include a discard file: these phrases can be checked using the ``sentencediscard`` and 
-``storydiscard`` error conditions.
-
-
-``<Include categories="<space-delimited list of categories to include in test>">``
-
-If 'valid' is included as a category, only records containing valid="true" in <SENTENCE> will be evaluated.
-
-``<Exclude categories="<space-delimited list of categories to exclude in test>">``
-
-If a category is in both lists, the case is excluded. But please don't do this.
-
-``<Pause value="<always, never>">``
-
-|        Pause conditions:
-|                always  -- pause after every record
-|                never   -- never pause (errors are still recorded
-|                                        in file)
-|                stop    -- exit program on the default condition
-|                            [below]
-|                default -- pause only when EventCodes record
-|                            doesn't correspond to the generated
-|                            events or if there is no EventCodes
-|                            record
+,
 
 **General record fields:**
 
@@ -157,100 +83,3 @@ Delimits the source text. This is used only for the display. The tags should occ
 
 Delimits the TreeBank parse tree text: this used only for the actual coding.
 
-**Required elements in each record for validation:**
-
-One or more of these should occur prior to the TreeBank. If none are present,
-the record is coded and the program pauses unless ``<Pause value = "never'>`` has
-been used.
-
-``<EventCoding  sourcecode="<srccode>" targetcode="<tarcode>" eventcode="<evtcode>"></EventCoding>``
-
-Coding should generate an event-triple ``-<srccode>-<tarcode>-<evtcode>``. If the coding produces 
-multiple events, there should be multiple ``<EventCoding>`` tags. The record is considered 
-an error unless the coded and expected events match exactly.
-
-``<EventCoding noevents = "True"></EventCoding>``:
-
-Indicates the record generates no events. Presently, system just looks for the presence of a 'noevents' attribute. This is also equivalent to no <EventCodes record, but better to state this explicitly.
-
-``<EventCoding error = "<error_string>"></EventCoding>``:
-
-Indicates the record will generate an error of the type <error_string>. If this occurs, the 
-record is treated as being correctly coded, even though no events are generated. Presently, 
-recognizes the following errors:
-
-- dateline: ``(ROOT (NE (NEC`` pattern detected by ``check_irregulars``
-- sentencediscard: Sentence-level discard phrase was found in the text 
-- storydiscard: Story-level discard phrase was found in the text 
-
- 
-**Optional elements in record:**
-
-``<Skip>``:
-
-Skip this record without coding
-
-``<Config option ="<config.ini option from list below>" value ="<value>">``:
-
-Change values of PETR_config.ini globals.
-
-Currently works for: new_actor_length, require_dyad, stop_on_error, comma_*
-
-**Additional notes:**
-
-1. The record ``<Stop></Stop>`` will stop coding of file and exit program
-
-
-**Example:**
-
-::
-
-    <Validation>
-    <Environment>
-        <Verbfile>PETR.Validate.verbs.txt</Verbfile>
-        <Actorfile>PETR.Validate.actors.txt</Actorfile>
-        <Agentfile>PETR.Validate.agents.txt</Agentfile>
-        <Errorfile>Errors.unit-test.txt</Errorfile>
-        <Include>valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET</Include>
-        <Pause>Stop</Pause>
-        <Config option="stop_on_error" value="True"></Config>
-    </Environment>		
-    <Sentences>
-    <Sentence date="19950101" id="DEMO-01" category="DEMO">
-    <!-- [Simple coding] -->
-    <EventCoding sourcecode="ARN" targetcode="GON" eventcode="064">
-    <Text>
-    Arnor is about to restore full diplomatic ties with Gondor almost
-    five years after crowds trashed its embassy, a senior official
-    said on Saturday.
-    </Text>
-    <Parse>
-    (ROOT
-        (S
-            (S
-                (NP (NNP Arnor))
-                (VP (VBZ is)
-                    (VP (IN about)
-                        (S
-                            (VP (TO to)
-                                (VP (VB restore)
-                                    (NP (JJ full) (JJ diplomatic) (NNS ties))
-                                    (PP (IN with)
-                                        (NP (NNP Gondor)))
-                                    (SBAR
-                                        (NP (RB almost) (CD five) (NNS years))
-                                        (IN after)
-                                        (S
-                                            (NP (NNS crowds))
-                                            (VP (VBD trashed)
-                                                (NP (PRP$ its) (NN embassy)))))))))))
-            (, ,)
-            (NP (DT a) (JJ senior) (NN official))
-            (VP (VBD said)
-                (PP (IN on)
-                    (NP (NNP Saturday))))
-            (. .)))
-    </Parse>
-    </Sentence>
-    </Sentences>
-    </Validation>

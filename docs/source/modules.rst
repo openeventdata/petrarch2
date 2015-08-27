@@ -40,3 +40,11 @@ PETRARCH Package
     :members:
     :undoc-members:
     :show-inheritance:
+
+:mod:`PETRtree` Module
+-----------------------
+                
+.. automodule:: PETRtree
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -9,29 +9,19 @@ Tutorial
 Walk through how to contribute some code/a function to PETRARCH. Explain how
 the hooks work.
 
-Unit Tests
-----------
+Tests
+-----
 
-Commits should always successfully complete
+Petrarch has a testing suite using pytest and TravisCI. This is run upon a
+pull request to GitHub, and notfies us if your version passes. If you want
+to test them yourself, just go into the main directory of Petrarch and run
 
-``petrarch validate``
+    $ py.test
 
-This command defaults to the ``PETR.UnitTest.records.txt`` file included with the
-program. Alternative files can be indicated using the ``-i`` option. For example
-(this is equivalent to the default command):
+and the tests will be run. If it fails any tests, the PR will probably not
+be accepted unless you provide a compelling reason.
 
-``petrarch validate -i data/text/PETR.UnitTest.records.xml``
 
-The final record should read
-
-::
-
-    Sentence: FINAL-RECORD [ DEMO ]
-    ALL OF THE UNIT TESTS WERE CODED CORRECTLY. 
-    No events should be coded
-    No events were coded
-    Events correctly coded in FINAL-RECORD
-    Exiting: <Stop> record 
 
 Contributing Process
 --------------------

@@ -41,7 +41,6 @@ import dateutil.parser
 import PETRglobals
 from collections import defaultdict, Counter
 
-import numpy
 
 
 
@@ -131,22 +130,21 @@ def story_filter(story_dict, story_id):
             for event in events:
                 # do not print unresolved agents
                 try:
-                    if event[0][0] != '-' and event[1][0] != '-':
-                        alist = [story_date]
-                        alist.extend(event)
-                        event_tuple = tuple(alist)
-                        filtered[event_tuple]
-                        if 'issues' in sent_dict:
-                            filtered[event_tuple]['issues'] = Counter()
-                            issues = sent_dict['issues']
-                            for issue in issues:
-                                filtered[event_tuple]['issues'][
-                                    issue[0]] += issue[1]
+                    alist = [story_date]
+                    alist.extend(event)
+                    event_tuple = tuple(alist)
+                    filtered[event_tuple]
+                    if 'issues' in sent_dict:
+                        filtered[event_tuple]['issues'] = Counter()
+                        issues = sent_dict['issues']
+                        for issue in issues:
+                            filtered[event_tuple]['issues'][
+                                issue[0]] += issue[1]
 
-                        # Will keep track of this info, but not necessarily write it
-                        # out
-                        filtered[event_tuple]['ids'] = []
-                        filtered[event_tuple]['ids'].append(sent_id)
+                    # Will keep track of this info, but not necessarily write it
+                    # out
+                    filtered[event_tuple]['ids'] = []
+                    filtered[event_tuple]['ids'].append(sent_id)
                 except IndexError:
                     pass
         else:
@@ -300,10 +298,12 @@ def convert_code(code,forward = 1):
 
     Returns
     -------
-    string or int code, depending on the direction of conversion 
-    
-    if forward, "passive" is also returned, which flags inherently passive codes 
-            defined as [:XXX]
+    Forward mode:
+        active, passive : int
+                          The two parts of the code [XXX:XXX], converted to the new system. The first is an inherent
+                          active meaning, the second is an inherent passive meaning. Both are not always present,
+                          most codes just have the active.
+                        
     """
 
 
@@ -604,18 +604,22 @@ def convert_code(code,forward = 1):
     
     if forward:
         passive = False
-        if code.startswith(":"):
-            code = code[1:]
-            passive = True
-        if ':' in code:
-            code = code[:3]
-
-        if code in cat:
-            if not code == -1:
-                return cat[code], passive
-            return -1
-        return cat[code[:2]+"0"], passive
+        active = code.split(":")
+        passive = active[1] if len(active) > 1 else "---"
+        active = active[0] if active[0] else "---"
         
+        if active in cat:
+            active = cat[active]
+        else:
+            active = cat[active[:2]+"0"]
+        if passive in cat:
+            passive = cat[passive]
+        else:
+            passive = cat[passive[:2]+"0"]
+
+        return active, passive
+        
+
         
     else:
         reverse = dict(map(lambda a : (a[1],a[0]) , cat.items())  + # Other weird quirks

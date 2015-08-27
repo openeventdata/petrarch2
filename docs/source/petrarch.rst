@@ -26,8 +26,6 @@ Command Line Interface
 ``parse``
   Run the PETRARCH parser specifying files in the command line
   
-``validate``
-  Command to run the PETRARCH validation suite. If combined with ``-i``, validation records are read from that file (which needs to be in the validation file format, not the standard format) ; otherwise the input file is  PETR.UnitTest.records.txt
 
 The following options can be used in the command line
 
@@ -119,21 +117,6 @@ PETRARCH.
     #                file, record is skipped, and processing continues. 
     stop_on_error = False
 
-    # commas: These adjust the length (in words) of comma-delimited clauses that are eliminated 
-    #         from the parse. To deactivate, set the max to zero. 
-    #         Defaults, based on TABARI, are in ()
-    #         comma_min :  internal clause minimum length [2]
-    #         comma_max :  internal clause maximum length [8]
-    #         comma_bmin : initial ("begin") clause minimum length [0]
-    #         comma_bmax : initial clause maximum length [0 : deactivated by default]
-    #         comma_emin : terminal ("end") clause minimum length [2]
-    #         comma_emax : terminal clause maximum length [8]
-    comma_min = 2
-    comma_max = 8
-    comma_bmin = 0
-    comma_bmax = 0
-    comma_emin = 2
-    comma_emax = 8
 
     [StanfordNLP]
     stanford_dir = ~/stanford-corenlp/

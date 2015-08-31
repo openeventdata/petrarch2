@@ -484,7 +484,6 @@ def convert_code(code,forward = 1):
                         "116"    :     0x7005  ,
                         
                         
-                        "12"     :   -0xFFFF ,
                         "120"    :   -0xFFFF   ,         #  Reject
                         "121"    :   -0xFFFF + 0x0070 ,
                         "1211"   :   -0xFFFF + 0x0075 ,

@@ -215,7 +215,7 @@ class Phrase:
 
 
     def print_to_stdout(self,indent):
-        print(indent, self.label,self.text,self.get_meaning(),self)
+        print(indent, self.label,self.text,self.get_meaning())
         for child in self.children:
             child.print_to_stdout(indent + "\t")
 
@@ -397,10 +397,10 @@ class NounPhrase(Phrase):
                     if meaning and isinstance(meaning[0][1],basestring):
                         VPcodes += child.get_theme()
         
-                elif child.label == "EX":
-                    m =  self.convert_existential().get_meaning()
-                    self.meaning = m
-                    return m
+                #elif child.label == "EX":
+                #    m =  self.convert_existential().get_meaning()
+                #    self.meaning = m
+                #    return m
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
@@ -648,11 +648,11 @@ class VerbPhrase(Phrase):
                      list of resolved event tuples
             """
             first,second,third = [up,"",""]
+            if not (up or c) :
+                return [event]
             if not isinstance(event,tuple):
                 second = event
                 third = c
-            if not (up or c) :
-                return [event]
             elif event[1] == 'passive':
                 first = event[0]
                 third = utilities.combine_code(c,event[2])
@@ -714,7 +714,7 @@ class VerbPhrase(Phrase):
         
         if sents:
             for event in sents:
-                if event[1] or event[2]:
+                if isinstance(event,tuple) and (event[1] or event[2]):
                     ev = resolve_events(event)[0]
                     if isinstance(ev[1],list):
                         for item in ev[1]:
@@ -991,7 +991,7 @@ class VerbPhrase(Phrase):
         
         match = self.match_pattern()
         if match:
-            print("\t\t",match)
+            #print("\t\t",match)
             active, passive  = utilities.convert_code(match['code'])
             self.code = active
         if passive and not active:
@@ -1281,7 +1281,10 @@ class Sentence:
                 level_stack[-1].text = element
     
         for element in existentials:
-            element.parent.convert_existential()
+            try:
+                element.parent.convert_existential()
+            except:
+                pass
         return root
 
 
@@ -1309,18 +1312,19 @@ class Sentence:
         valid = []
         for sent in events:
             for event in sent:
+                if event[1] == 'passive':
+                    event = (event[0],None,event[2])
                 if isinstance(event,tuple) and isinstance(event[1],basestring) :
+                    
                     code = utilities.convert_code(event[2],0)
                     if event[0] and event[1] and code :
                         for source in event[0]:
-                            valid.append([source,event[1],code])
+                            valid.append((source,event[1],code))
                     elif (not require_dyad) and event[0] and code and not event[1]:
                         for source in event[0]:
-                            print("##############",source,code)
-                            valid.append([source,"---",code])
+                            valid.append((source,"---",code))
                     elif (not require_dyad) and event[1] and code and not event[0]:
-                        print("%%%%%%%%%%%%%%%%%%",event[1],code)
-                        valid.append(["---",event[1],code])
+                        valid.append(("---",event[1],code))
                     
                     
                     # If there are multiple actors in a cooperation scenario, code their cooperation as well
@@ -1328,7 +1332,7 @@ class Sentence:
                         for source in event[0]:
                             for target in event[0]:
                                 if not source == target:
-                                    valid.append([source,target,code])
+                                    valid.append((source,target,code))
     
         return valid
 

@@ -81,7 +81,7 @@ ago, a senior Guyanese police officer said Wednesday.
 (NP (NNP Guyana)))) 
 (VP (AUXZ has) 
 (VP (VBN issued) 
-(NP (NP (NN arrest) (NNS warrants)) 
+(NP (NP (NN arrest) (NNS warrants))
 (PP (IN for) 
 (NP (NP (CD two) (JJ Brazilian) (NNS men)) 
 (VP (VBN sought) 
@@ -546,7 +546,7 @@ Israel said a mortar bomb was fired at it from the Gaza Strip on Tuesday in the 
 
 <Sentence date = "20150609" id ="GOLD_2" source = "AFP" sentence = "True">
 <Text>
-Iraq’s national security advisor met with Syrian President Bashar Assad Tuesday to discuss efforts to counter Islamic State militants, Reuters reports.
+Iraq's national security advisor met with Syrian President Bashar Assad Tuesday to discuss efforts to counter Islamic State militants, Reuters reports.
 </Text>
 <Parse>
 (ROOT (S (NP (NP (NNP Iraq) (POS 's)) (JJ national) (NN security) (NN advisor)) (VP (VBD met) (PP (IN with) (NP (JJ Syrian) (NNP President) (NNP Bashar) (NNP Assad) (NNP Tuesday))) (S (VP (TO to) (VP (VB discuss) (S (NP (NNS efforts)) (VP (TO to) (VP (VB counter) (NP (NP (JJ Islamic) (NN State) (NNS militants)) (, ,) (NP (NNP Reuters) (NNS reports)))))))))) (. .)))
@@ -589,7 +589,7 @@ Qatar has pledged to expel exiled leaders of Egypt's Muslim Brotherhood as one o
 <Sentence date = "20150609" id ="GOLD_7" source = "AFP" sentence = "True">
 <Text>
 
-The Canadian government announced asset freezes and bans on travel to Canada against four senior officers in the Russian military, as well as economic sanctions against five more of Russia’s arms makers and one Moscow-based bank.
+The Canadian government announced asset freezes and bans on travel to Canada against four senior officers in the Russian military, as well as economic sanctions against five more of Russia's arms makers and one Moscow-based bank.
 </Text>
 <Parse>
 (ROOT (S (NP (DT The) (JJ Canadian) (NN government)) (VP (VBD announced) (SBAR (S (NP (NN asset)) (VP (VBZ freezes) (CC and) (VBZ bans) (PP (IN on) (NP (NP (ADJP (NN travel) (PP (TO to) (NP (NP (NNP Canada)) (PP (IN against) (NP (NP (NP (CD four) (JJ senior) (NNS officers)) (PP (IN in) (NP (DT the) (JJ Russian) (NN military)))) (, ,) (CONJP (RB as) (RB well) (IN as)) (NP (NP (JJ economic) (NNS sanctions)) (PP (IN against) (NP (NP (CD five) (JJR more)) (PP (IN of) (NP (NP (NNP Russia) (POS 's)) (NNS arms))))))))))) (NNS makers)) (CC and) (NP (CD one) (JJ Moscow-based) (NN bank)))))))) (. .)))
@@ -1120,7 +1120,39 @@ Russia is conducting military exercises in Alaska
 </Parse>
 </Sentence>
 
+<Sentence date = "20150609" id ="PMATCH_0" source = "AFP" sentence = "True">
+<Text>
+He oversaw the deployment of military forces in the region
+</Text>
+<Parse>
+(ROOT (S (NP (PRP he)) (VP (VBD oversaw) (NP (NP (DT the) (NN deployment)) (PP (IN of) (NP (JJ security) (NNS forces)))) (PP (IN in) (NP (DT the) (NN region))))))
 
+
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20150609" id ="PASSIVE_10" source = "AFP" sentence = "True">
+<Text>
+Government forces clash with tunisian rioters in the downtown square
+</Text>
+<Parse>
+(S (NP (JJ SYRIAN) (NNP FORCES)) (VP (VB CLASH) (PP (IN WITH) (NP (NNP RIOTERS))) (PP (IN IN) (NP (DT THE) (JJ EGYPTIAN) (NNP SQUARE)))))
+</Parse>
+</Sentence>AFP0808020840_2
+
+
+(ROOT (S (NP (NP (DT The) (NNP US)) (, ,) (NP (NNP Russia)) (, ,) (CC and) (NP (NNP Switzerland))) (VP (VBD met) (NP-TMP (NN yesterday)))))
+
+
+<Sentence date = "20150609" id ="COOP_0" source = "AFP" sentence = "True">
+<Text>
+THe US, Russia, and Switzerland met yesterday
+</Text>
+<Parse>
+(ROOT (S (NP (NP (DT The) (NNP US)) (, ,) (NP (NNP Russia)) (, ,) (CC and) (NP (NNP Switzerland))) (VP (VBD met) (NP-TMP (NN yesterday)))))
+</Parse>
+</Sentence>
 
 
 

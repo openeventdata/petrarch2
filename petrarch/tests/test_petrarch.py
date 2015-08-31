@@ -200,6 +200,7 @@ def test_complex1():
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
     return_dict = petrarch.do_coding(dict,None)
+    print(return_dict)
     assert return_dict['test123']['sents']['0']['events'] == [['TUNJUD','NGAEDU','173']]
 
 

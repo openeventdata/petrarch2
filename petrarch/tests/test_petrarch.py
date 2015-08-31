@@ -156,7 +156,7 @@ def test_simple():
 
     return_dict = petrarch.do_coding(dict,None)
     print(return_dict)
-    assert return_dict['test123']['sents']['0']['events'] == [['DEU','FRA','192']]
+    assert return_dict['test123']['sents']['0']['events'] == [('DEU','FRA','192')]
 
 
 def test_simple2():
@@ -169,7 +169,7 @@ def test_simple2():
 
     return_dict = petrarch.do_coding(dict,None)
     print(return_dict)
-    assert return_dict['test123']['sents']['0']['events'] == [['DEU','FRA','173']]
+    assert return_dict['test123']['sents']['0']['events'] == [('DEU','FRA','173')]
 
 
 def test_complex1():
@@ -187,7 +187,7 @@ def test_complex1():
     (VP (VBG helping) (S
     (NP (JJ young) (NNS militants))
     (VP (VB join)
-    (NP (NP (DT an) (JJ armed) (JJ Islamic) (NN group))
+    (NP (NP (DT an) (JJ armed) (JJ Islamic) (NN group))f
     (PP (IN in)
     (NP (NNP Lebanon)))))))))))) (, ,)
     (NP (PRP$ his) (NN lawyer))
@@ -201,7 +201,7 @@ def test_complex1():
                 u'meta': {u'date': u'20010101'}}}
     return_dict = petrarch.do_coding(dict,None)
     print(return_dict)
-    assert return_dict['test123']['sents']['0']['events'] == [['TUNJUD','NGAEDU','173']]
+    assert return_dict['test123']['sents']['0']['events'] == [('TUNJUD','NGAEDU','173')]
 
 
 

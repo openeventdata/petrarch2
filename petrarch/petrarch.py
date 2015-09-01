@@ -234,7 +234,6 @@ def do_coding(event_dict, out_file):
 
 
                 SentenceID = '{}_{}'.format(key, sent)
-                #print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
@@ -243,15 +242,8 @@ def do_coding(event_dict, out_file):
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
-                #if not "GUYANA" in SentenceText.upper():
-                #    continue
-                
-                #if not "EXIST" in SentenceID: # and not  "NEST_2" in SentenceID:
-                #   continue
                 
                 disc = check_discards(SentenceText)
-                #if not "TEST_8" in SentenceID:
-                #    continue
                 if disc[0] > 0:
                     if disc[0] == 1:
                         print("Discard sentence:", disc[1])

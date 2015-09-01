@@ -480,7 +480,7 @@ def run(filepaths, out_file, s_parsed):
     events = PETRreader.read_xml_input(filepaths, s_parsed)
     if not s_parsed:
         events = utilities.stanford_parse(events)
-    updated_events = do_parallel_coding(events, out_file)
+    updated_events = do_coding(events, out_file)
     PETRwriter.write_events(updated_events, out_file)
 
 

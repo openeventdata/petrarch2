@@ -172,7 +172,7 @@ def get_issues(SentenceText):
     return issues
 
 
-
+"""
 def do_parallel_coding(event_dict,out_file):
     time1 = time.time()
     ev = do_coding(event_dict,out_file)
@@ -190,6 +190,7 @@ def do_parallel_coding(event_dict,out_file):
         returns.setdefault(item[0],{})
         returns[item[0]].update(item[1])
     return returns
+"""
 
 def do_coding(event_dict, out_file):
     """

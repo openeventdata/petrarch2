@@ -38,7 +38,7 @@ class Phrase:
     
     """
     
-    def __init__(self, label, date):
+    def __init__(self, label, date,sentence):
         """
         Initialization for Phrase classes. 
         
@@ -67,7 +67,7 @@ class Phrase:
         self.head = None
         self.head_phrase = None
         self.color = False
-    
+        self.sentence = sentence
     
     
     def get_meaning(self):
@@ -101,8 +101,15 @@ class Phrase:
     
         return self.meaning
 
-
-
+    def get_text(self):
+        if self.color:
+            return ""
+        text = self.text
+        for child in self.children:
+            text += " " + child.get_text()
+        
+        return text
+    
     def resolve_codes(self,codes):
         """
         Method that divides a list of mixed codes into actor and agent codes
@@ -229,8 +236,8 @@ class NounPhrase(Phrase):
              check_date()   -   find the date-specific version of an actor
              
     """
-    def __init__(self, label, date):
-        Phrase.__init__(self, label, date)
+    def __init__(self, label, date, sentence):
+        Phrase.__init__(self, label, date, sentence )
     
     
     def return_meaning(self):
@@ -289,7 +296,117 @@ class NounPhrase(Phrase):
 
 
 
+
+
+
     def get_meaning(self):
+        text_children = []
+        PPcodes = []
+        VPcodes = []
+        codes = []
+        
+        for child in self.children:
+            if isinstance(child,NounPhrase) or child.label[:2] in ["JJ","DT","NN"]:
+                text_children += child.get_text().split()
+            elif child.label == "PP":
+                m = self.resolve_codes(child.get_meaning())
+                if m[0]:
+                    PPcodes += child.get_meaning()
+                else:
+                    text_children += child.get_text().split()
+            elif child.label == "VP":
+                m = child.get_meaning()
+                if m and isinstance(m[0][1],basestring):
+                    m = self.resolve_codes(m[0][1])
+                    if m[0]:
+                        VPcodes += child.get_theme()
+                    else:
+                        pass
+                        # We could add the subtree here, but there shouldn't be
+                        # any codes with VP components
+            elif child.label == "PRP":
+                # Find antecedent
+                not_found = True
+                level = self.parent
+                reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
+                local = True
+                while not_found and level.parent:
+                    if level.label.startswith("NP") and reflexive: #Intensive, ignore
+                        break
+                    if local and level.label in ["S","SBAR"]:
+                        local = False
+                        level=level.parent
+                        continue
+                    
+                    if (not local) or (reflexive and local):
+                        for child in level.parent.children:
+                            if isinstance(child,NounPhrase) and not child.get_meaning() == "~" :  # Do we just want to pick the first?
+                                not_found = False
+                                codes += child.get_meaning()
+                                break
+
+                    level = level.parent
+                    
+        
+        def recurse(path, words, length,so_far= ""):
+            
+            if words and  words[0] in path:
+                match = recurse(path[words[0]],words[1:],length + 1 , so_far + words[0])
+                if match:
+                    return match
+            if '#' in path:
+                if isinstance(path["#"],list):
+            
+                    code = self.check_date(path['#'])
+                    if not code is None:
+                        return [code] , length
+                else:
+                    return [path['#']], length
+            return False
+        
+        index = 0
+        while index < len(text_children):
+            match = recurse(PETRglobals.ActorDict,text_children[index:],0)
+            if match:
+                codes += match[0]
+                index += match[1]
+                continue
+
+            match = recurse(PETRglobals.AgentDict,text_children[index:],0)
+            if match:
+                codes += match[0]
+                index += match[1]
+                continue
+            index += 1
+            
+        
+        
+        actorcodes,agentcodes = self.resolve_codes(codes)
+        PPactor, PPagent = self.resolve_codes(PPcodes)
+        VPactor, VPagent = self.resolve_codes(VPcodes)
+        if not actorcodes:
+            actorcodes += PPactor
+            if not actorcodes:
+                actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
+        
+        if not agentcodes:
+            agentcodes += PPagent
+            if not agentcodes:
+                agentcodes += VPagent
+
+        
+        self.meaning = self.mix_codes(agentcodes,actorcodes)
+
+        return self.meaning
+
+
+
+
+
+
+
+
+    def _get_meaning(self):
         """
         Combine the meanings of the children of this node to find the actor code.
         Priority is given to word-level children, then to NP-level children,
@@ -329,7 +446,7 @@ class NounPhrase(Phrase):
                     match_in_progress = match_in_progress[child.text]
                 elif "#" in match_in_progress:
                     match = match_in_progress['#']
-                    if isinstance(match,type([])): # We've matched from the actor dictionary
+                    if isinstance(match,list): # We've matched from the actor dictionary
                         code = self.check_date(match)
                         if not code is None:
                             codes.append(code)
@@ -397,10 +514,7 @@ class NounPhrase(Phrase):
                     if meaning and isinstance(meaning[0][1],basestring):
                         VPcodes += child.get_theme()
         
-                #elif child.label == "EX":
-                #    m =  self.convert_existential().get_meaning()
-                #    self.meaning = m
-                #    return m
+
             i += 1
             option = -1
             if(i >= len(self.children) and not match_in_progress == {}):
@@ -476,8 +590,8 @@ class NounPhrase(Phrase):
 
 class PrepPhrase(Phrase):
 
-    def __init__(self, label, date):
-        Phrase.__init__(self, label, date)
+    def __init__(self, label, date, sentence):
+        Phrase.__init__(self, label, date, sentence)
         self.meaning = ""
         self.prep = ""
         self.head = ""
@@ -528,8 +642,8 @@ class VerbPhrase(Phrase):
     
     """
 
-    def __init__(self,label,date):
-        Phrase.__init__(self,label,date)
+    def __init__(self,label,date,sentence):
+        Phrase.__init__(self,label,date,sentence)
         self.meaning = ""    # "meaning" for the verb, i.e. the events coded by the vp
         self.upper = ""      # contains the meaning of the noun phrase in the specifier position for the vp or its parents
         self.lower = ""      # contains the meaning of the subtree c-commanded by the verb
@@ -556,7 +670,7 @@ class VerbPhrase(Phrase):
                     
                     self.valid = False
                     
-                    np_replacement = NounPhrase("NP",self.date)
+                    np_replacement = NounPhrase("NP",self.date,self.sentence)
                     np_replacement.children = self.children
                     np_replacement.parent = self.parent
                     np_replacement.index = self.index
@@ -659,6 +773,7 @@ class VerbPhrase(Phrase):
                 if up:
                     returns = []
                     for source in up:
+                        self.sentence.metadata[id((first,second,third))] = [event,id(self)]
                         returns += [(first,source,third)]
                     return returns
                 second = 'passive'
@@ -668,6 +783,7 @@ class VerbPhrase(Phrase):
             else:
                 second = event[1]
                 third = utilities.combine_code(c,event[2])
+            self.sentence.metadata[id((first,second,third))] = [event,id(self)]
             return [(first,second,third)]
 
         events = []
@@ -702,7 +818,9 @@ class VerbPhrase(Phrase):
                 events += resolve_events(event)
         elif not s_options:
             if up or c:
-                events.append((up,low,c))
+                e = (up,low,c)
+                self.sentence.metadata[id(e)] = [e,self]
+                events.append(e)
             elif low:
                 events.append(low)
 
@@ -718,16 +836,21 @@ class VerbPhrase(Phrase):
                     ev = resolve_events(event)[0]
                     if isinstance(ev[1],list):
                         for item in ev[1]:
-                            events.append((ev[0],item,ev[2]))
+                            local = (ev[0],item,ev[2])
+                            self.sentence.metadata[id(local)] = [local,self]
+                            events.append(local)
                     else:
                         events += resolve_events(event)
-        maps = map(self.match_transform, events)
-        events = reduce(lambda a,b: a + b, maps,[])
-        self.meaning = events
-        try:
-            return list(set(events))
-        except:
-            return events
+
+        maps = []
+        for i in events:
+            evs = self.match_transform(i)
+            for j in evs:
+                maps.append(j)
+                self.sentence.metadata[id(j)] = [i,self]
+        #print(map(lambda a:id(a),maps))
+        self.meaning = maps
+        return maps
     
 
     def return_upper(self):
@@ -992,6 +1115,7 @@ class VerbPhrase(Phrase):
         match = self.match_pattern()
         if match:
             #print("\t\t",match)
+            self.sentence.metadata[id(self)] = [meaning, match]
             active, passive  = utilities.convert_code(match['code'])
             self.code = active
         if passive and not active:
@@ -1077,10 +1201,12 @@ class VerbPhrase(Phrase):
                     if isinstance(e[1][0],list):
                         results = []
                         for item in e[1][0]:
-                    
-                            results.append((e[0],item,utilities.combine_code(e[1][2],e[2])))
+                            event =(e[0],item,utilities.combine_code(e[1][2],e[2]))
+                            results.append(event)
+                            #print(id(event),id(e))
                         return results
-                    return [(e[0],e[1][0],utilities.combine_code(e[2],e[1][2]))]
+                    event =(e[0],e[1][0],utilities.combine_code(e[2],e[1][2]))
+                    return [event]
 
 
         except Exception as ex:
@@ -1233,6 +1359,8 @@ class Sentence:
         self.txt = text
         self.verb_analysis = {}
         self.events = []
+        self.metadata = {}
+    
     
     def str_to_tree(self,str):
         """
@@ -1250,7 +1378,7 @@ class Sentence:
               Top level of the tree that represents the sentence
         """
         segs = str.split()
-        root = Phrase(segs[0][1:],self.date)
+        root = Phrase(segs[0][1:],self.date, self )
         level_stack = [root]
         existentials = []
         
@@ -1258,14 +1386,14 @@ class Sentence:
             if element.startswith("("):
                 lab = element[1:]
                 if lab == "NP":
-                    new = NounPhrase(lab, self.date)
+                    new = NounPhrase(lab, self.date, self)
                 elif lab == "VP":
-                    new = VerbPhrase(lab,self.date)
+                    new = VerbPhrase(lab,self.date, self)
                     self.verbs.append(new)
                 elif lab == "PP":
-                    new = PrepPhrase(lab, self.date)
+                    new = PrepPhrase(lab, self.date, self)
                 else:
-                    new = Phrase(lab, self.date)
+                    new = Phrase(lab, self.date, self)
                     if lab == "EX":
                         existentials.append(new)
                 new.parent = level_stack[-1]
@@ -1320,6 +1448,11 @@ class Sentence:
                     if event[0] and event[1] and code :
                         for source in event[0]:
                             valid.append((source,event[1],code))
+                            try:
+                                print("\tMETA",self.metadata[id(event)])
+                            except:
+                                print("ERROR",event,id(event))
+                                print(self.metadata)
                     elif (not require_dyad) and event[0] and code and not event[1]:
                         for source in event[0]:
                             valid.append((source,"---",code))

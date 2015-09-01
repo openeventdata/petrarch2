@@ -247,7 +247,7 @@ def code_to_string(events):
             if isinstance(low,tuple):
                 low = "("+ev_to_string(low)+")"
             
-            return up + " " + low + " " + hex(c)
+            return up + " " + low + " " + hex(c) + " " + str(id(ev))
 
         for ev in events:
             #print(ev)
@@ -255,7 +255,8 @@ def code_to_string(events):
 
         return retstr[:-3]
 
-    except:
+    except Exception as e:
+        print(e)
         return str(events)
 
 

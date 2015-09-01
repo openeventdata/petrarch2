@@ -11,6 +11,7 @@ import types
 import logging
 import argparse
 import xml.etree.ElementTree as ET
+from joblib import Parallel,delayed
 
 # petrarch.py
 ##
@@ -61,6 +62,48 @@ import PETRtree
 
 def get_version():
     return "1.0.0"
+
+
+# ========================== OUTPUT/ANALYSIS FUNCTIONS ========================== #
+
+def open_tex(filename):
+    file = open(filename,'w')
+    print("""
+\\documentclass[11pt]{article}
+\\usepackage{tikz-qtree}
+\\usepackage{ifpdf}
+\\usepackage{fullpage}
+\\usepackage[landscape]{geometry}
+\\ifpdf
+    \\pdfcompresslevel=9
+    \\usepackage[pdftex,     % sets up hyperref to use pdftex driver
+            plainpages=false,   % allows page i and 1 to exist in the same document
+            breaklinks=true,    % link texts can be broken at the end of line
+            colorlinks=true,
+            pdftitle=My Document
+            pdfauthor=My Good Self
+           ]{hyperref} 
+    \\usepackage{thumbpdf}
+\\else
+    \\usepackage{graphicx}       % to include graphics
+    \\usepackage{hyperref}       % to simplify the use of \href
+\\fi
+
+\\title{Petrarch Output}
+\\date{}
+
+\\begin{document}
+""", file = file)
+
+    return file
+
+
+
+def close_tex(file):
+
+    print("\n\\end{document})",file=file)
+
+
 
 # ========================== PRIMARY CODING FUNCTIONS ====================== #
 
@@ -130,6 +173,24 @@ def get_issues(SentenceText):
 
 
 
+def do_parallel_coding(event_dict,out_file):
+    time1 = time.time()
+    ev = do_coding(event_dict,out_file)
+    time2 = time.time()
+    time5 = time2-time1
+    time3 = time.time()
+    events =  Parallel(n_jobs = 1)(delayed(do_coding)({a[0]:a[1]},None) for a in event_dict.items())
+    time4 = time.time()
+    print(time4-time3, time5)
+    exit()
+    
+    returns = {}
+    for i in events:
+        item = i.items()[0]
+        returns.setdefault(item[0],{})
+        returns[item[0]].update(item[1])
+    return returns
+
 def do_coding(event_dict, out_file):
     """
     Main coding loop Note that entering any character other than 'Enter' at the
@@ -147,35 +208,8 @@ def do_coding(event_dict, out_file):
     NDiscardSent = 0
     NDiscardStory = 0
 
-    file = open("tex_outputs/output.tex",'w')
-    
-    print("""
-\\documentclass[11pt]{article}
-\\usepackage{tikz-qtree}
-\\usepackage{ifpdf}
-\\usepackage{fullpage}
-\\usepackage[landscape]{geometry}
-\\ifpdf
-    \\pdfcompresslevel=9
-    \\usepackage[pdftex,     % sets up hyperref to use pdftex driver
-            plainpages=false,   % allows page i and 1 to exist in the same document
-            breaklinks=true,    % link texts can be broken at the end of line
-            colorlinks=true,
-            pdftitle=My Document
-            pdfauthor=My Good Self
-           ]{hyperref} 
-    \\usepackage{thumbpdf}
-\\else
-    \\usepackage{graphicx}       % to include graphics
-    \\usepackage{hyperref}       % to simplify the use of \href
-\\fi
-
-\\title{Petrarch Output}
-\\date{}
-
-\\begin{document}
-""", file = file)
-
+    if out_file:
+        file = open_tex(out_file)
 
     logger = logging.getLogger('petr_log')
     times = 0
@@ -185,7 +219,7 @@ def do_coding(event_dict, out_file):
         prev_code = []
 
         SkipStory = False
-        print('\n\nProcessing {}'.format(key))
+        #print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
 
@@ -199,7 +233,7 @@ def do_coding(event_dict, out_file):
 
 
                 SentenceID = '{}_{}'.format(key, sent)
-                print('\tProcessing {}'.format(SentenceID))
+                #print('\tProcessing {}'.format(SentenceID))
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
@@ -208,16 +242,10 @@ def do_coding(event_dict, out_file):
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
-                #if not "GUYANA" in SentenceText.upper():
-                #    continue
-                
-                #if not "EXIST" in SentenceID: # and not  "NEST_2" in SentenceID:
-                #   continue
-                
-                
                 
                 disc = check_discards(SentenceText)
-                
+                #if not "TEST_8" in SentenceID:
+                #    continue
                 if disc[0] > 0:
                     if disc[0] == 1:
                         print("Discard sentence:", disc[1])
@@ -238,7 +266,8 @@ def do_coding(event_dict, out_file):
                 code_time = time.time()-t1
 
 
-                sentence.print_to_file(sentence.tree,file = file)
+                if out_file:
+                    sentence.print_to_file(sentence.tree,file = file)
                 
                 
                 del(sentence)
@@ -271,6 +300,10 @@ def do_coding(event_dict, out_file):
             event_dict[key]['sents'] = None
 
 
+    if out_file:
+        close_tex(file)
+    
+    """
     print("\nSummary:")
     print(
         "Stories read:",
@@ -286,9 +319,8 @@ def do_coding(event_dict, out_file):
         NDiscardStory,
         "  Sentences without events:",
         NEmpty)
-    print("Average Coding time = ", times/sents)
-    print("\n\\end{document})",file=file)
-
+    print("Average Coding time = ", times/sents if sents else 0)
+    """
     return event_dict
 
 
@@ -341,6 +373,11 @@ PETRARCH
                                help="""Filepath for the input XML file. Defaults to 
                                data/text/Gigaword.sample.PETR.xml""",
                                required=False)
+                               
+    batch_command.add_argument('-o', '--outputs',
+                               help="""Filepath for the input XML file. Defaults to 
+                               data/text/Gigaword.sample.PETR.xml""",
+                               required=False)
 
     args = aparse.parse_args()
     return args
@@ -372,7 +409,7 @@ def main():
         print('\n\n')
 
         paths = PETRglobals.TextFileList
-        if cli_args.inputs or cli_args.command_name == 'parse':
+        if cli_args.inputs:
             if os.path.isdir(cli_args.inputs):
                 if cli_args.inputs[-1] != '/':
                     paths = glob.glob(cli_args.inputs + '/*.xml')
@@ -380,19 +417,22 @@ def main():
                     paths = glob.glob(cli_args.inputs + '*.xml')
             elif os.path.isfile(cli_args.inputs):
                 paths = [cli_args.inputs]
-            elif cli_args.command_name == 'parse':
+            else:
                 print(
                     '\nFatal runtime error:\n"' +
                     cli_args.inputs +
                     '" could not be located\nPlease enter a valid directory or file of source texts.')
                 sys.exit()
-             
+        
+        out = "" #PETRglobals.EventFileName
+        if cli_args.outputs:
+                out = cli_args.outputs
              
         if cli_args.command_name == 'parse':
-            run(paths, cli_args.output, cli_args.parsed)
+            run(paths, out, cli_args.parsed)
 
         else:
-            run(paths, PETRglobals.EventFileName, True)
+            run(paths, out , True)
 
         print("Coding time:", time.time() - start_time)
 
@@ -434,7 +474,7 @@ def run(filepaths, out_file, s_parsed):
     events = PETRreader.read_xml_input(filepaths, s_parsed)
     if not s_parsed:
         events = utilities.stanford_parse(events)
-    updated_events = do_coding(events, 'TEMP')
+    updated_events = do_parallel_coding(events, out_file)
     PETRwriter.write_events(updated_events, out_file)
 
 
@@ -459,10 +499,10 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
     events = PETRreader.read_pipeline_input(data)
     if parsed:
         logger.info('Hitting do_coding')
-        updated_events = do_coding(events, 'TEMP')
+        updated_events = do_coding(events, None)
     else:
         events = utilities.stanford_parse(events)
-        updated_events = do_coding(events, 'TEMP')
+        updated_events = do_coding(events, None)
     if not write_output:
         output_events = PETRwriter.pipe_output(updated_events)
         return output_events

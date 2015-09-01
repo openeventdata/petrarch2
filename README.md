@@ -9,6 +9,14 @@ without crashing, using the included dictionaries.
 
 For more information, please visit the (work-in-progress)
 [documentation](http://petrarch.readthedocs.org/en/latest/#).
+##First, a note.
+
+It is possible to run PETRARCH as a stand-alone program. Most of our
+development work has gone into incorporating PETRARCH into a full pipeline of
+utilities, though, e.g., the [Phoenix pipeline](https://github.com/openeventdata/phoenix_pipeline).
+There's also a RESTful wrapper around PETRARCH and CoreNLP named
+[hypnos](https://github.com/caerusassociates/hypnos). It's probably worthwhile
+to explore those options before trying to use PETRARCH as a stand-alone.
 
 ##Installing
 
@@ -36,25 +44,23 @@ You can get more information using:
 
 **StanfordNLP:**
 
-If you plan on using StanfordNLP for parsing within the program you will also
-need to download that program. PETRARCH uses StanfordNLP 3.2.0, which can be
-obtained from
-[Stanford](http://www-nlp.stanford.edu/software/stanford-corenlp-full-2013-06-20.zip). 
-PETRARCH's default configuration file assumes that this is unzipped and located
-in the user's home directory in a directory named ``stanford-corenlp/``, e.g., ``~/stanford-corenlp``.
+There was a time where Stanford CoreNLP was incorporated directly into Petrarch, but due
+to operating system differences that we don't want to deal with, this is no longer the case.
+We recommend [this dockerized API](http://github.com/chilland/ccnlp) if you need to incorporate
+a CoreNLP parse into a script, or the Stanford website has a nice [web app](http://nlp.stanford.edu:8080/corenlp/), where if you select the "Pretty Print," output option, it'll give you the 
+syntactic parse in Treebank form. Or if you're not looking to edit Petrarch itself and just
+use its functionality, [hypnos](https://github.com/caerusassociates/hypnos) is an easier option.
 
-The program is stable enough that it is useable, and it is not *that* likely that there 
-will be large changes in the API. 
 
 ##Running
 
 Currently, you can run PETRARCH using the following command if installed:
 
-``petrarch parse -i <INPUT FILE> -o <OUTPUT FILE>``
+``petrarch batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
 
 If not installed:
 
-``python petrarch.py parse -i data/text/GigaWord.sample.PETR.xml -o test_output.txt``
+``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
 
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.
@@ -65,30 +71,12 @@ files are being opened, and error messages.
 
 ##Unit tests
 
-Commits should always successfully complete
+Commits should always successfully complete the PyTest command
 
-``petrarch validate``
+``py.test``
 
-This command defaults to the ``PETR.UnitTest.records.txt`` file included with the
-program. Alternative files can be indicated using the ``-i`` option. For example
-(this is equivalent to the default command):
-
-``petrarch validate -i data/text/PETR.UnitTest.records.xml``
-
-The final record should read
-
-    Sentence: FINAL-RECORD [ DEMO ]
-    ALL OF THE UNIT TESTS WERE CODED CORRECTLY. 
-    No events should be coded
-    No events were coded
-    Events correctly coded in FINAL-RECORD
-    Exiting: <Stop> record 
-
-##Compatibilities with TABARI dictionaries
-
-PETRARCH has a much richer dictionary syntax than TABARI, and because PETRARCH uses 
-parsed input, many dictionary entries used by TABARI for noun-verb disambiguation are 
-no longer needed. While the initial versions of the program could use existing TABARI 
-dictionaries, PETRARCH-formatted dictionaries are now required: these are available in 
-this repository and in https://github.com/openeventdata/Dictionaries.
+Naturally you need PyTest installed for this to work. Commits will be tested
+by TravisCI upon Pull Request to the master directory, and will tell us whether
+the version has passed the tests. If for whatever reason you need to change the 
+tests or add cases to the test file, state that in the PR description. 
 

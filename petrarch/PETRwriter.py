@@ -108,8 +108,9 @@ def write_events(event_dict, output_file):
     # Filter out blank lines
     event_output = [event for event in event_output if event]
     final_event_str = '\n'.join(event_output)
-    with open(output_file, 'w') as f:
-        f.write(final_event_str)
+    #if output_file:
+    #    with open(output_file, 'w') as f:
+    #,        f.write(final_event_str)
 
 
 def pipe_output(event_dict):

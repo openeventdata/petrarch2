@@ -11,7 +11,6 @@ import types
 import logging
 import argparse
 import xml.etree.ElementTree as ET
-from joblib import Parallel,delayed
 
 # petrarch.py
 ##
@@ -171,26 +170,6 @@ def get_issues(SentenceText):
 
     return issues
 
-
-"""
-def do_parallel_coding(event_dict,out_file):
-    time1 = time.time()
-    ev = do_coding(event_dict,out_file)
-    time2 = time.time()
-    time5 = time2-time1
-    time3 = time.time()
-    events =  Parallel(n_jobs = 1)(delayed(do_coding)({a[0]:a[1]},None) for a in event_dict.items())
-    time4 = time.time()
-    print(time4-time3, time5)
-    exit()
-    
-    returns = {}
-    for i in events:
-        item = i.items()[0]
-        returns.setdefault(item[0],{})
-        returns[item[0]].update(item[1])
-    return returns
-"""
 
 def do_coding(event_dict, out_file):
     """

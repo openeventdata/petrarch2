@@ -243,6 +243,11 @@ def do_coding(event_dict, out_file):
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
+                #if not "GUYANA" in SentenceText.upper():
+                #    continue
+                
+                #if not "EXIST" in SentenceID: # and not  "NEST_2" in SentenceID:
+                #   continue
                 
                 disc = check_discards(SentenceText)
                 #if not "TEST_8" in SentenceID:
@@ -269,7 +274,7 @@ def do_coding(event_dict, out_file):
 
                 if out_file:
                     sentence.print_to_file(sentence.tree,file = file)
-                
+
                 
                 del(sentence)
                 times+=code_time

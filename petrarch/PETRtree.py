@@ -513,7 +513,7 @@ class NounPhrase(Phrase):
                     meaning = child.get_meaning()
                     if meaning and isinstance(meaning[0][1],basestring):
                         VPcodes += child.get_theme()
-        
+
 
             i += 1
             option = -1
@@ -1114,8 +1114,6 @@ class VerbPhrase(Phrase):
         
         match = self.match_pattern()
         if match:
-            #print("\t\t",match)
-            self.sentence.metadata[id(self)] = [meaning, match]
             active, passive  = utilities.convert_code(match['code'])
             self.code = active
         if passive and not active:
@@ -1468,6 +1466,7 @@ class Sentence:
                                     valid.append((source,target,code))
     
         return valid
+
 
 
     def print_to_file(self,root,file = ""):

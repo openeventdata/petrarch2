@@ -19,4 +19,3 @@ the relationship between verb codes.
 CoreNLP parsing abilities have been depracated in Petrarch, due to the difficulty of
 maintaining these across different OSs and systems. Instead we recommend other options
 in the README file.
-

@@ -91,6 +91,15 @@ def test_noun_meaning4():
     assert phrase.get_head()[0] == "REBELS"
     assert phrase.get_head()[1] == phrase
 
+def test_noun_meaning5():
+    parse = "(S (NP (NP (DT THE ) (NNP US ) (NN COMMANDER ) ) (PP (IN IN ) (NP (NNP IRAQ ) ) ) ) )"
+
+    test = ptree.Sentence(parse,"The US commander in Iraq", "081315")
+
+    phrase = test.tree.children[0]
+    test.tree.print_to_stdout("")
+    assert phrase.get_meaning() == ['USAMIL']
+    assert phrase.get_head()[0] == "COMMANDER"
 
 def test_date_check():
     parse = "(S (NP (NNP CARL ) (NN XVI ) (NNP GUSTAF ) ) )"

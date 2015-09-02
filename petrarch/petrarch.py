@@ -221,7 +221,10 @@ def do_coding(event_dict, out_file):
 
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
-                
+                #if not ("PMATCH" in SentenceID):
+                #    continue
+                #if not "Petraeus" in SentenceText:
+                #    continue
                 disc = check_discards(SentenceText)
                 if disc[0] > 0:
                     if disc[0] == 1:
@@ -239,9 +242,9 @@ def do_coding(event_dict, out_file):
                 
                 t1 = time.time()
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
-                coded_events = sentence.get_events()
+                coded_events , meta = sentence.get_events()
                 code_time = time.time()-t1
-
+                event_dict[key]['meta']['verbs'] = meta 
 
                 if out_file:
                     sentence.print_to_file(sentence.tree,file = file)
@@ -256,7 +259,10 @@ def do_coding(event_dict, out_file):
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":
+                    time1 = time.time()
                     event_issues = get_issues(SentenceText)
+                    time2 = time.time()
+                    print(time2-time1)
                     if event_issues:
                         event_dict[key]['sents'][sent]['issues'] = event_issues
 
@@ -280,7 +286,7 @@ def do_coding(event_dict, out_file):
     if out_file:
         close_tex(file)
     
-    """
+
     print("\nSummary:")
     print(
         "Stories read:",
@@ -297,7 +303,6 @@ def do_coding(event_dict, out_file):
         "  Sentences without events:",
         NEmpty)
     print("Average Coding time = ", times/sents if sents else 0)
-    """
     return event_dict
 
 

@@ -1122,11 +1122,10 @@ Russia is conducting military exercises in Alaska
 
 <Sentence date = "20150609" id ="PMATCH_0" source = "AFP" sentence = "True">
 <Text>
-He oversaw the deployment of military forces in the region
+The US Secretary of state wants to help iSrael
 </Text>
 <Parse>
-(ROOT (S (NP (PRP he)) (VP (VBD oversaw) (NP (NP (DT the) (NN deployment)) (PP (IN of) (NP (JJ security) (NNS forces)))) (PP (IN in) (NP (DT the) (NN region))))))
-
+(ROOT (S (NP (NP (DT The) (NNP US) (NN secretary)) (PP (IN of) (NP (NN state)))) (VP (VBZ wants) (S (VP (TO to) (VP (VB help) (NP (NN israel))))))))
 
 </Parse>
 </Sentence>
@@ -1139,10 +1138,7 @@ Government forces clash with tunisian rioters in the downtown square
 <Parse>
 (S (NP (JJ SYRIAN) (NNP FORCES)) (VP (VB CLASH) (PP (IN WITH) (NP (NNP RIOTERS))) (PP (IN IN) (NP (DT THE) (JJ EGYPTIAN) (NNP SQUARE)))))
 </Parse>
-</Sentence>AFP0808020840_2
-
-
-(ROOT (S (NP (NP (DT The) (NNP US)) (, ,) (NP (NNP Russia)) (, ,) (CC and) (NP (NNP Switzerland))) (VP (VBD met) (NP-TMP (NN yesterday)))))
+</Sentence>
 
 
 <Sentence date = "20150609" id ="COOP_0" source = "AFP" sentence = "True">

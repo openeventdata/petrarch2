@@ -943,7 +943,7 @@ def read_verb_dictionary(verb_path):
                 path = path.setdefault(verb,{})
                 path = path.setdefault(source,{})
                 ev2 = ev2[1:-1]
-            path[ev2[0]] = answer
+            path[ev2[0]] = [answer,line]
 
         else:
             # Add synonyms

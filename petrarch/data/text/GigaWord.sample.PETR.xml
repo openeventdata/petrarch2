@@ -137,31 +137,7 @@ Beijing for the Friday opening of the Olympic Games, seeking to mend ties with
 China frayed by an initial threat to boycott the ceremony. 
 </Text>
 <Parse>
-((S
-(NP (NP (DT The) (NN statement)) 
-(PP (IN by) 
-(NP (DT the) (JJ French) (NN presidency)))) 
-(VP (VBZ comes) (SBAR 
-(NP (DT a) (NN day)) (IN before) (S 
-(NP (NNP Sarkozy)) 
-(VP (VBZ heads) 
-(PP (TO to) 
-(NP (NNP Beijing))) 
-(PP (IN for) 
-(NP (NP (DT the) (NNP Friday) (NN opening)) 
-(PP (IN of) 
-(NP (DT the) (NNP Olympic) (NNPS Games))))) (, ,) (S 
-(VP (VBG seeking) 
-(PP (TO to) 
-(NP (NP (JJ mend) (NNS ties)) 
-(PP (IN with) 
-(NP (NNP China))) 
-(VP (VBN frayed) 
-(PP (IN by) 
-(NP (DT an) (JJ initial) (NN threat) (S 
-(VP (TO to) 
-(VP (VB boycott) 
-(NP (DT the) (NN ceremony)))))))))))))))) (. .)))
+(ROOT (S (NP (NP (DT The) (NN statement)) (PP (IN by) (NP (DT the) (JJ French) (NN presidency)))) (VP (VBZ comes) (SBAR (NP (DT a) (NN day)) (IN before) (S (NP (NNP Sarkozy)) (VP (VBZ heads) (PP (TO to) (NP (NP (NNP Beijing)) (PP (IN for) (NP (DT the) (NNP Friday) (NN opening))) (PP (IN of) (NP (DT the) (NNP Olympic) (NNPS Games))) (, ,) (VP (VBG seeking) (S (VP (TO to) (VP (VB mend) (NP (NNS ties)) (PP (IN with) (NP (NP (NNP China)) (VP (VBN frayed) (PP (IN by) (NP (DT an) (JJ initial) (NN threat)))))))))) (PP (TO to) (NP (NP (NN boycott)) (NP (DT the) (NN ceremony)))))))))) (. .)))
 </Parse>
 </Sentence>
 
@@ -1090,7 +1066,7 @@ Obama has agreed to lift the sanctions on Iran
 
 
 
-<Sentence date = "20150609" id ="VERB_7" source = "AFP" sentence = "True">
+<Sentence date = "20150609" id ="VERB_8" source = "AFP" sentence = "True">
 <Text>
 The United States will supply arms to Israel
 </Text>

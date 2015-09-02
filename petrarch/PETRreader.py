@@ -607,6 +607,7 @@ def read_issue_list(issue_path):
     </ISSUE>
 
     """
+    PETRglobals.IssueList = {}
     logger = logging.getLogger('petr_log')
     logger.info("Reading " + PETRglobals.IssueFileName)
     open_FIN(issue_path, "issues")
@@ -678,7 +679,12 @@ def read_issue_list(issue_path):
                 ka += 1
 
         for item in forms:
-            PETRglobals.IssueList.append(tuple([' ' + item + ' ', codeindex]))
+            segs = item.split()+['#']
+            path = PETRglobals.IssueList
+            while not segs == ['#']:
+                path = path.setdefault(segs[0],{})
+                segs = segs[1:]
+            path[segs[0]] = codeindex
         line = read_FIN_line()
     close_FIN()
 

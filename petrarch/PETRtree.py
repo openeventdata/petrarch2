@@ -783,12 +783,18 @@ class VerbPhrase(Phrase):
             returns: [tuple]
                      list of resolved event tuples
             """
+            returns = []
             first,second,third = [up,"",""]
             if not (up or c) :
                 return [event]
             if not isinstance(event,tuple):
                 second = event
                 third = c
+                if passive:
+                    for item in first:
+                        e2 = ([second],item,passive)
+                        self.sentence.metadata[id(e2)] = [event,meta,7]
+                        returns.append(e2)
             elif event[1] == 'passive':
                 first = event[0]
                 third = utilities.combine_code(c,event[2])
@@ -807,14 +813,15 @@ class VerbPhrase(Phrase):
                 second = event[1]
                 third = utilities.combine_code(c,event[2])
             e = (first,second,third)
-            self.sentence.metadata[id(e)] = [event,meta ,2]
-            return [e]
+            self.sentence.metadata[id(e)] = [event,c,meta ,2]
+            return returns + [e]
 
         events = []
-        if self.check_passive() or passive:
+        up = self.get_upper()
+        if self.check_passive() or (passive and not c):
             # Check for source in preps
             source_options = []
-            target_options = self.get_upper()
+            target_options = up
             for child in self.children:
                 if isinstance(child,PrepPhrase):
                     if child.get_prep() in ["BY","FROM","IN"]:
@@ -831,11 +838,9 @@ class VerbPhrase(Phrase):
                     e = (source_options, i ,c if self.check_passive() else passive)
                     events.append(e)
                     self.sentence.metadata[id(e)] = [None,e,meta,3]
-                if self.check_passive():
                     self.meaning = events
                     return events
     
-        up = self.get_upper()
         up = "" if up in ['',[],[""],["~"],["~~"]] else up
         low,neg = self.get_lower()
         if not low:
@@ -871,7 +876,6 @@ class VerbPhrase(Phrase):
                                 events.append(local)
                         else:
                             events += resolve_events(event)
-
         maps = []
         for i in events:
             evs = self.match_transform(i)
@@ -1329,7 +1333,6 @@ class VerbPhrase(Phrase):
             return reroute(path, o2 = match_prep)
 
         def reroute(subpath, o1 = match_noun, o2 = match_noun, o3 = match_prep, o4 = match_noun, exit = 1):
-            
                 if '-' in subpath:
                     match = o1(subpath['-'])
                     if match:

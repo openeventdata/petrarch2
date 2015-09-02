@@ -148,13 +148,14 @@ def get_issues(SentenceText):
 
     <14.02.28> stops coding and sets the issues to zero if it finds *any*
     ignore phrase
-    """
+    
 
     sent = SentenceText.upper()  # case insensitive matching
     issues = []
 
     for target in PETRglobals.IssueList:
         if target[0] in sent:  # found the issue phrase
+            print(target)
             code = PETRglobals.IssueCodes[target[1]]
             if code[0] == '~':  # ignore code, so bail
                 return []
@@ -167,8 +168,45 @@ def get_issues(SentenceText):
                 ka += 1
             if ka == len(issues):  # didn't find the code, so add it
                 issues.append([code, 1])
-
+    print(issues,SentenceText)
     return issues
+
+
+
+    """
+        
+    
+    def recurse(words,path,length):
+        if words and words[0] in path:
+            return recurse(words[1:],path[words[0]],length+1)
+        elif '#' in path:
+            return path['#'],length
+        return False
+        
+    sent = SentenceText.upper().split()  # case insensitive matching
+    issues = []
+
+    index = 0
+    while index < len(sent):
+        match = recurse(sent[index:],PETRglobals.IssueList,0)
+        if match:
+            index += match[1]
+            code = PETRglobals.IssueCodes[match[0]]
+            if code[0] == '~':  # ignore code, so bail
+                return []
+            ka = 0
+            gotcode = False
+            while ka < len(issues):
+                if code == issues[ka][0]:
+                    issues[ka][1] += 1
+                    break
+                ka += 1
+            if ka == len(issues):  # didn't find the code, so add it
+                issues.append([code, 1])
+        else:
+            index += 1
+    return issues
+
 
 
 def do_coding(event_dict, out_file):
@@ -199,7 +237,7 @@ def do_coding(event_dict, out_file):
         prev_code = []
 
         SkipStory = False
-        #print('\n\nProcessing {}'.format(key))
+        print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
 
@@ -211,20 +249,20 @@ def do_coding(event_dict, out_file):
                             'sents'][sent]['config'].items():
                         change_Config_Options(config)
 
-
                 SentenceID = '{}_{}'.format(key, sent)
                 SentenceText = event_dict[key]['sents'][sent]['content']
                 SentenceDate = event_dict[key]['sents'][sent][
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
-
+                
+                #if not "VERB_4" in SentenceID:
+                #    continue
+                #if not "Sarkozy" in SentenceText:
+                #    continue
+                print("\t\t",SentenceID)
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
-                #if not ("PMATCH" in SentenceID):
-                #    continue
-                #if not "Petraeus" in SentenceText:
-                #    continue
                 disc = check_discards(SentenceText)
                 if disc[0] > 0:
                     if disc[0] == 1:
@@ -244,7 +282,7 @@ def do_coding(event_dict, out_file):
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
                 coded_events , meta = sentence.get_events()
                 code_time = time.time()-t1
-                event_dict[key]['meta']['verbs'] = meta 
+                event_dict[key]['meta']['verbs'] = meta
 
                 if out_file:
                     sentence.print_to_file(sentence.tree,file = file)
@@ -259,10 +297,7 @@ def do_coding(event_dict, out_file):
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                 if coded_events and PETRglobals.IssueFileName != "":
-                    time1 = time.time()
                     event_issues = get_issues(SentenceText)
-                    time2 = time.time()
-                    print(time2-time1)
                     if event_issues:
                         event_dict[key]['sents'][sent]['issues'] = event_issues
 

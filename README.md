@@ -3,9 +3,9 @@ PETRARCH
 
 Code for the new Python Engine for Text Resolution And Related Coding Hierarchy (PETRARCH) 
 event data coder. The coder now has all of the functions from the older TABARI coder 
-and the new CAMEO.verbpatterns.140609.txt dictionary incorporates both parser-based matching 
-and extensive synonym sets. The program coded 60,000 AFP sentences from the GigaWord corpus 
-without crashing, using the included dictionaries.
+and the new CAMEO.2.0.txt verb dictionary incorporates more syntactic information and is far
+simpler than the previous version.
+
 
 For more information, please visit the (work-in-progress)
 [documentation](http://petrarch.readthedocs.org/en/latest/#).
@@ -19,12 +19,7 @@ There's also a RESTful wrapper around PETRARCH and CoreNLP named
 to explore those options before trying to use PETRARCH as a stand-alone.
 
 ##Installing
-
-It is now possible to install the program. It is highly recommended that you
-install within a virtual environment. This is alpha software, so things will
-change moving forward. Seriously, install in a virtual environment.
-
-To install (you're in a virtual environment, right?):
+If you do decide you want to work with Petrarch as a standalone program, it is possible to install:
 
 1) Clone the repo
 
@@ -47,7 +42,8 @@ You can get more information using:
 There was a time where Stanford CoreNLP was incorporated directly into Petrarch, but due
 to operating system differences that we don't want to deal with, this is no longer the case.
 We recommend [this dockerized API](http://github.com/chilland/ccnlp) if you need to incorporate
-a CoreNLP parse into a script, or the Stanford website has a nice [web app](http://nlp.stanford.edu:8080/corenlp/), where if you select the "Pretty Print," output option, it'll give you the 
+a CoreNLP parse into a script, or the Stanford website has a nice [web app](http://nlp.stanford.edu:8080/corenlp/),
+ where if you select the "Pretty Print," output option, it'll give you the 
 syntactic parse in Treebank form. Or if you're not looking to edit Petrarch itself and just
 use its functionality, [hypnos](https://github.com/caerusassociates/hypnos) is an easier option.
 

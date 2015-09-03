@@ -57,8 +57,7 @@ For more information on event data as well as event data related research see: h
 
 Installing
 ----------
-
-
+If you do decide you want to work with Petrarch as a standalone program, it is possible to install:
 
 1) Clone the repo
 
@@ -78,26 +77,18 @@ You can get more information using:
 
 **StanfordNLP:**
 
-If you plan on using StanfordNLP for parsing within the program you will also
-need to download that program. PETRARCH uses StanfordNLP 3.2.0, which can be
-obtained from `Stanford <http://www-nlp.stanford.edu/software/stanford-corenlp-full-2013-06-20.zip>`_. 
-PETRARCH's default configuration file assumes that this is unzipped and located
-in the user's home directory in a directory named ``stanford-corenlp/``, e.g., ``~/stanford-corenlp``.
-
-The program is stable enough that it is probably useable. The main thing that's
-going to change are the underlying dictionaries and some organization of the
-code. It's not *that* likely that there will be large changes in the API. 
+See the README about this.
 
 Running
 -------
 
 Currently, you can run PETRARCH using the following command if installed:
 
-``petrarch parse -i <INPUT FILE> -o <OUTPUT FILE>``
+``petrarch batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
 
 If not installed:
 
-``python petrarch.py parse -i data/text/GigaWord.sample.PETR.xml -o test_output.txt``
+``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
 
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.
@@ -105,7 +96,6 @@ FILE>`` flag, but the program will default to using ``PETR_config.ini``.
 When you run the program, a ``PETRARCH.log`` file will be opened in the current
 working directory. This file will contain general information, e.g., which
 files are being opened, and error messages.
-
 
 Logged Warnings
 ---------------
@@ -116,7 +106,9 @@ Unexpected conditions where the program encountered a potentially fatal error ar
 
 The one common error -- not included in those counts -- is the ``Dateline`` pattern, which is a particular pattern in the parse tree that occurs when the parsed material starts with a dateline such as "Beirut:'' or "Beijing (Xinhua News Agency):" rather than the actual start of the sentence. We probably aren't catching all dateline errors with this pattern but it gets a lot of them, and if you are seeing frequent occurrences of this warning you need to modify your pre-filters to remove the datelines.
 
-The remaining errors are due to very odd sentence constructions which either have confused CoreNLP so that the phrase structure is incorrect, or otherwise were not anticipated in the PETRARCH processing. Almost all of these occur in the translation from the Treebank format to PETRARCH's internal representation, so if you are looking through the PETRARCH code it should be easy to track down exactly where these are occurring based on the text of the warning. If you would like to modify the program to work around these, we would welcome additions to the code, but at present the set of such cases is sufficiently rare in the texts we are working with that this is not a priority for us.
+The remaining errors are due to very odd sentence constructions which either have confused CoreNLP so that the phrase structure is incorrect, or otherwise were not anticipated in the PETRARCH processing. Some of this
+    can be fixed if brought to our attention, but some of it is on the side of CoreNLP, which we aren't
+    even going to attempt to touch.
 
 Contents:
 ---------

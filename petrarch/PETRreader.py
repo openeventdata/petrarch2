@@ -50,19 +50,7 @@ except ImportError:
 import PETRglobals
 import utilities
 
-"""
-CONVERTING TABARI DICTIONARIES TO PETRARCH FORMAT
 
-1. The ';' comment delimiter no longer works: replace it with '#"
-
-2. Lines beginning with '#' and '<' are considered comments and are skipped.
-   If using '<', make this a one-line XML comment: <!-- ... -->.
-   [The system currently doesn't recognize multi-line XML comments but this may
-   change in the future.]
-
-3. Final underscores are no longer needed since PETR does not do stemming.
-
-"""
 
 
 # ================== STRINGS ================== #
@@ -497,23 +485,6 @@ def read_discard_list(discard_path):
     BASKETBALL
     BATSMAN  # MleH 14 Jul 2009
     BATSMEN  # MleH 12 Jul 2009
-
-    logger = logging.getLogger('petr_log')
-    logger.info("Reading " + PETRglobals.DiscardFileName)
-    open_FIN(discard_path, "discard")
-
-    line = read_FIN_line()
-    while len(line) > 0:  # loop through the file
-        if '#' in line:
-            line = line[:line.find('#')]
-        targ = line.strip()
-        if targ.startswith('+'):
-            targ = '+ ' + targ[1:]
-        else:
-            targ = ' ' + targ
-        PETRglobals.DiscardList.append(targ.upper())  # case insensitive match
-        line = read_FIN_line()
-    close_FIN()
 
 
     """

@@ -2,8 +2,8 @@ PETRARCH Dictionary Formats
 ===========================
 
 There are five separate input dictionaries or lists that PETRACH makes use of:
-the verb dictionary, the actor dictionary, the agent dictionary, the discard
-list, and the issues list. The following sections describe these files in
+the verb dictionary, the actor dictionary, the agent dictionary, the issues dictionary,
+and the discard list. The following sections describe these files in
 greater detail. In addition to this documentation, which is intended for individuals 
 planning to work on dictionaries, the source code contains internal documentation on
 how the dictionary information is stored by the program.
@@ -12,6 +12,7 @@ The PETRARCH dictionaries are generally derived from the earlier TABARI dictiona
 and information on those formats can be found in the TABARI manual: 
 
 `http://eventdata.parusanalytics.com/tabari.dir/TABARI.0.8.4b2.manual.pdf <http://eventdata.parusanalytics.com/tabari.dir/TABARI.0.8.4b2.manual.pdf>`_
+
 
 General Rules for dictionaries
 ------------------------------
@@ -37,12 +38,80 @@ is not a priority at the moment. We trust you can cope within these limits.
 
 Blank lines and lines with only whitespace are also skipped.
 
+Storage in Memory
+-----------------
+When the dictionaries are read by the program, they are read into memories as prefix trees,
+i.e. Tries. This makes searching the stored dictionaries very efficient during the parse, but
+adds to the memory overhead and can be somewhat confusing if you don't know what you're working
+with. This data structure stores each word at a node, and following a path in the tree will lead
+to a pattern. Let's take a small part of the discard list as an example:
+
+::
+    WORLD BOXING ASSOCIATION
+    WORLD BOXING COUNCIL
+    WORLD CUP
+
+
+These three entries would be stored in the following Trie:
+
+::
+                PETRglobals.DiscardList
+                            |
+                            |
+                           WORLD
+                            /\
+                   ________/  \_________
+                  |                     |
+                BOXING                 CUP
+                  /\                    |
+             ____/  \______             #
+            |              |
+          COUNCIL     ASSOCIATION
+            |              |
+            #              #
+
+
+Note that all patterns are terminated with a hash sign. This is to signify that there is
+a pattern that ends here. If no hash sign is present during a matching, then that would be
+an incomplete match. For the Issue and Actor/Agent dictionaries, the hash sign then links
+to a storage container with the information associated with the entry.
+
+The Trie is the general principle underlying all of the dictionary storage in Petrarch. The
+Verb dictionary storage has its own quirks due to the increased complexity of patterns present,
+but it is still fundamentally a Trie. That will be discussed in the verb section.
+
+
 
 Verb Dictionary
 ---------------
 
-The verb dictionary consists of a set of synsets followed by a series of verb 
+The verb dictionary file consists of a set of synsets followed by a series of verb
 synonyms and patterns.
+
+
+**Synsets:**
+
+Synonym sets (synsets) are labelled with a string beginning with & and defined using
+the label followed by a series of lines beginning with ``+`` containing words or phrases.
+The phrases are interpreted as requiring consecutive words; the words can be separated 
+with underscores (they are converted to spaces). Synset phrases can
+only contain words, not ``$``, ``+``, ``%`` or ``^`` tokens.
+ Synsets be used anywhere in a
+pattern that a word or phrase can be used. A synset must be defined before it is used:  
+a pattern containing an undefined synset will be ignored.
+
+Regular plurals are generated automatically  by adding 'S' to the root, adding 'IES' if the root ends in 'Y', and added 'ES' if the root ends in 'SS'.  Plurals are not created when [1]_
+
+.. [1] The method for handling irregular plurals is currently different for the verbs and agents dictionaries: these will be reconciled in the future, probably using the agents syntax. 
+
+* The phrase ends with ``_``. 
+
+* The label ends with ``_``, in which case plurals are not generated for any of
+  the phrases; this is typically used for synonym sets that do not involve nouns
+        
+The ``_`` is dropped in both cases. Irregular plurals do not have a special syntax; 
+just enter these as additional synonyms.
+
 
 **Verb Synonym Blocks and Patterns:**
 
@@ -64,15 +133,12 @@ will be used for all other verbs unless these have their own code. If no code is
 present, this defaults to the null code "---"  which indicates that the isolated verb 
 does not generate an event. The null code also can be used as a secondary code.	
 
-This is followed by a set of patterns -- these begin with '-' -- which generally 
-follow the same syntax as TABARI patterns (see Chapter 5 of the TABARI manual). The pattern set is terminated with a  blank line.
 
 **Multiple-word verbs**
 
 Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
-connecting the words with an underscore (these must be consecutive) and putting a '+'
-in front of the word in the 
-phrase that is going to be identified as a verb.
+connecting the words with an underscore and putting a '+'
+in front of the word in the phrase that is going to be identified as a verb.
 If there is no {...}, regular 
 forms are constructed for the word designated by '+'; otherwise all of the irregular 
 forms are given in {...}. If you can't figure out which part of the phrase is the 
@@ -90,35 +156,18 @@ Example:
     WIRE_+TAP {WIRE_+TAPS WIRE_+TAPPED  WIRE_+TAPPING }
 
 
+A note on the current state of Petrarch's ability to handle compound verbs: The syntax
+parser we use (Stanford CoreNLP) often has trouble dealing with pre-compounded verbs, i.e.
+those where the extra stuff comes before the verb, and because Petrarch relies so heavily on
+this parser, meanings are sometimes missed. Post-compound verbs don't share this problem, and
+are more frequently parsed correctly.
 
 
-**Synsets:**
-
-Synonym sets (synsets) are labelled with a string beginning with & and defined using
-the label followed by a series of lines beginning with ``+`` containing words or phrases.
-The phrases are interpreted as requiring consecutive words; the words can be separated 
-with underscores (they are converted to spaces). Synset phrases can
-only contain words, not ``$``, ``+``, ``%`` or ``^`` tokens.
- Synsets be used anywhere in a
-pattern that a word or phrase can be used. A synset must be defined before it is used:  
-a pattern containing an undefined synset will be ignored -- but those definitions can 
-occur anywhere in the file.
-
-Regular plurals are generated automatically  by adding 'S' to the root, adding 'IES' if the root ends in 'Y', and added 'ES' if the root ends in 'SS'.  Plurals are not created when [1]_
-
-.. [1] The method for handling irregular plurals is currently different for the verbs and agents dictionaries: these will be reconciled in the future, probably using the agents syntax. 
-
-* The phrase ends with ``_``. 
-
-* The label ends with ``_``, in which case plurals are not generated for any of
-  the phrases; this is typically used for synonym sets that do not involve nouns
-        
-The ``_`` is dropped in both cases. Irregular plurals do not have a special syntax; 
-just enter these as additional synonyms.
 
 ** Patterns **
-
-The patterns in Petrarch's dictionaries also contain some syntactic annotation. Pattern lines begin with a
+This is followed by a set of patterns -- these begin with '-' -- which are based roughly on
+the syntax from TABARI patterns, but the patterns in Petrarch's dictionaries also contain
+some syntactic annotation. Pattern lines begin with a
 -, and are followed by a five-part pattern:
 
 ::
@@ -139,11 +188,23 @@ element is a noun, or a braced noun phrase.
 After these comes the CAMEO code in brackets. Make sure there is a space before the open brace.
 Then, a comment with the intended word to be matched is often included.
 
+Note that these patterns do not contain other verbs. This is different from TABARI, and even earlier
+versions of Petrarch. This is to simplify the verbs dictionary, and make the pattern matching
+faster and more effective.
+
+** Combinations **
+Petrarch handles many verb-verb interactions automatically through its reformatting of CAMEO's semantic
+heirarchy (See utilities.convert_code for more). For instance, if it were parsing the phrase
+ " A will [help B]", it would code "to help B" first, then the phrase would become "A will [_ B 0x0040]".
+And then since help=0x0040 is a subcategory of will=0x3000, then it just adds them together,
+ending with the code [A B 0x3040]. This code is translated back into CAMEO for the final output,
+yielding [A B 033]. This process works for most instances where the idea of the phrase as a whole
+is a combination of the ideas of its children.
 
 ** Transformations **
 
-Since patterns don't include verb-verb interactions, and sometimes these aren't represented in the
-ontology, it is possible to specify what happens when one verb finds that it is acting on another verb.
+Sometimes these verb-vertb interactions aren't represented in the
+ontology. It is possible to specify what happens when one verb finds that it is acting on another verb.
 Say you wanted to convert phrases of the form "A said A will attack B" into " A threatens B."
 You would say
 
@@ -154,8 +215,69 @@ You would say
 This is effectively a postfix notational system, and every line starts with a ~.
 The first element is the topmost source actor, the last element is the topmost verb (the verbs in the patterns
 are converted to codes, so synonyms also match). The inner parenthetical has the same format, with the
-first element being the lower source, the second the lower target, and the third the lower verb. 
+first element being the lower source, the second the lower target, and the third the lower verb. It
+is possible to replace letter variables with a period '.' to represent "non-specified actor", or with
+an underscore '_' to specify "non-present actor." Verbs can also be replaced with "Q" to mean "any verb."
 
+These transformations are sometimes necessary, but most cases can be handled by the combination process.
+
+
+** Storage in Memory **
+The verb dictionary, when stored into memory, has three subdictionaries: words, patterns, and transformations.
+
+The words portion contains the base verbs. They are stored as VERB--STUFF BEFORE--#--STUFF AFTER--#--INFO. For
+most verbs (i.e. those that are not compounds), The entry just goes VERB -- # -- # -- INFO.
+
+The transformation contains almost a literal transcription of the pattern, ordered
+VERB1--SOURCE1--VERB2--SOURCE2--TARGET2--INFO.
+
+The verb patterns in memory have extra annotative symbols after every word to indicate the type of
+word that comes next. The very first word encountered is always a noun. Then it follows a series of rules
+that specify what comes next:
+
+  * Comma ',' = The next word is the same type as the previous one
+  * Asterisk '*' = The first half of the pattern is over, move to the second half
+  * Hash sign '#' = The pattern is over
+  * Pipe '|' = The next word is a preposition
+  * Dash '-' = The next word is a specifier is a noun or extension of noun phrase
+
+This means that when searching, we only have to check 5 cases, rather than compare to all remaining patterns.
+As an example, consider these three example entries under 'request':
+
+::
+
+    * HELP
+    * {FINANCIAL HELP}
+    * HELP (AGAINST REVOLT)
+
+They would be stored as
+
+::
+
+                            PETRglobals.VerbDict['patterns']['REQUEST']
+                                                |
+                                                |
+                                               '*'
+                                                |
+                                              HELP
+                                              / | \
+                                  _'|'_______/  |  \_______ '-' __
+                                 |             '#'                |
+                                 |                                |
+                                 |                           FINANCIAL
+                              AGAINST                             |
+                                 |                                |
+                                 |                               '#'
+                                '-'
+                                 |
+                               REVOLT
+                                 |
+                                '#'
+
+
+
+Note that "Financial Help" is stored as "Help Financial," because "Help" is the head of the phrase
+and is thus much easier to find, and once we've found that we can then look for "Financial."
 
 
 Actor Dictionary

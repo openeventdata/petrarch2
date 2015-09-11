@@ -7,7 +7,7 @@ and the new CAMEO.2.0.txt verb dictionary incorporates more syntactic informatio
 simpler than the previous version.
 
 
-For more information, please visit the (work-in-progress)
+For more information, please read the Petrarch2.pdf file in this directory and visit the (work-in-progress)
 [documentation](http://petrarch.readthedocs.org/en/latest/#).
 ##First, a note.
 

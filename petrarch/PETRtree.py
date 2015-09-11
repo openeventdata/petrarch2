@@ -163,6 +163,21 @@ class Phrase:
                [Agent codes] x [Actor codes]
         
         """
+        
+        
+        codes = set()
+        mix = lambda a, b : a + b if not b in a else a
+        actors = actors if actors else ['~']
+        for ag in agents:
+            if ag == '~PPL' and len(agents) > 1:
+                continue
+            actors = map( lambda a : mix( a, ag[1:]), actors)
+        
+        return filter(lambda a : a not in ['','~','~~',None],actors)
+        
+        
+        
+        
         codes = set()
         for act in (actors if actors else ['~']):
             for ag in (agents if agents else ['~']) :
@@ -325,13 +340,14 @@ class NounPhrase(Phrase):
         text_children = []
         PPcodes = []
         VPcodes = []
+        NPcodes = []
         codes = []
         
         for child in self.children:
             if isinstance(child,NounPhrase):
                 value = child.get_text()
                 text_children += value[0].split()
-                PPcodes += value[1]
+                NPcodes += value[1]
             elif child.label[:2] in ["JJ","DT","NN"]:
                 text_children += child.get_text().split()
             
@@ -341,6 +357,7 @@ class NounPhrase(Phrase):
                     PPcodes += child.get_meaning()
                 else:
                     text_children += child.get_text().split()
+    
             elif child.label == "VP":
                 m = child.get_meaning()
                 if m and isinstance(m[0][1],basestring):
@@ -408,19 +425,23 @@ class NounPhrase(Phrase):
             index += 1
             
         
-        
         actorcodes,agentcodes = self.resolve_codes(codes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
+        NPactor, NPagent = self.resolve_codes(NPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
         if not actorcodes:
-            actorcodes += PPactor
+            actorcodes += NPactor
             if not actorcodes:
-                actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
+                actorcodes += PPactor
+                if not actorcodes:
+                    actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
         
         if not agentcodes:
-            agentcodes += PPagent
+            agentcodes += NPagent
             if not agentcodes:
-                agentcodes += VPagent
+                agentcodes += PPagent
+                if not agentcodes:
+                    agentcodes += VPagent
 
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
@@ -713,6 +734,8 @@ class VerbPhrase(Phrase):
         information in the VerbPhrase.
         """
         m = self.get_meaning()
+        if isinstance(m[0],basestring):
+            return [m[0]]
         if m[0][1] == 'passive':
             return m[0][0]
         return [m[0][1]]
@@ -801,7 +824,7 @@ class VerbPhrase(Phrase):
                 if up:
                     returns = []
                     for source in up:
-                        e = (first,second,third)
+                        e = (first,source,third)
                         self.sentence.metadata[id(e)] = [event,up,1]
                         returns.append(e)
                     return returns
@@ -865,7 +888,8 @@ class VerbPhrase(Phrase):
         for item in lower:
             sents += item
         
-        if sents:
+        if sents and not events:  # Only if nothing else has been found do we look at lower NP's?
+                                  # This decreases our coding frequency, but removes many false positives
             for event in sents:
                 if isinstance(event,tuple) and (event[1] or event[2]):
                     for ev in resolve_events(event):
@@ -983,10 +1007,10 @@ class VerbPhrase(Phrase):
                     Actor codes of spec-VP
         """
         self.get_upper = self.return_upper
-        
         for child in self.parent.children:
             if isinstance(child, NounPhrase) and not child.get_meaning() == ["~"]:
                 self.upper = child.get_meaning()
+                
                 return self.upper
         return []
 
@@ -1153,6 +1177,7 @@ class VerbPhrase(Phrase):
         match = self.match_pattern()
         if match:
             meta.append(match['line'])
+            print(match)
             active, passive  = utilities.convert_code(match['code'])
             self.code = active
         if passive and not active:
@@ -1497,40 +1522,43 @@ class Sentence:
         meta = {}
         #print(events)
         valid = []
-        for sent in events:
-            for event in sent:
-                if event[1] == 'passive':
-                    event = (event[0],None,event[2])
-                if isinstance(event,tuple) and isinstance(event[1],basestring) :
-                    
-                    code = utilities.convert_code(event[2],0)
-                    if event[0] and event[1] and code :
-                        for source in event[0]:
-                            valid.append((source,event[1],code))
-                            #print(self.get_metadata(event))
-                            #try:
-                            meta[(source,event[1],code)] = self.get_metadata(event)
-                            #except:
-                            #    print("ERROR",event,id(event))
-                            #    print(self.metadata)
-                    elif (not require_dyad) and event[0] and code and not event[1]:
-                        for source in event[0]:
-                            valid.append((source,"---",code))
-                    elif (not require_dyad) and event[1] and code and not event[0]:
-                        valid.append(("---",event[1],code))
-                    
-                    
-                    # If there are multiple actors in a cooperation scenario, code their cooperation as well
-                    if len(event[0]) > 1 and (not event[1]) and code and code[:2] in ["03","04","05","06"]:
-                        for source in event[0]:
-                            for target in event[0]:
-                                if not source == target:
-                                    valid.append((source,target,code))
-    
-        self.events = valid
-        self.get_events = self.return_events
-        return valid , meta
-
+        try:
+            for sent in events:
+                for event in sent:
+                    if event[1] == 'passive':
+                        event = (event[0],None,event[2])
+                    if isinstance(event,tuple) and isinstance(event[1],basestring) :
+                        
+                        code = utilities.convert_code(event[2],0)
+                        if event[0] and event[1] and code :
+                            for source in event[0]:
+                                valid.append((source.replace('~','---'),event[1].replace('~','---'),code))
+                                #print(self.get_metadata(event))
+                                #try:
+                                meta[(source.replace('~','---'),event[1].replace('~','---'),code)] = self.get_metadata(event)
+                                #except:
+                                #    print("ERROR",event,id(event))
+                                #    print(self.metadata)
+                        elif (not require_dyad) and event[0] and code and not event[1]:
+                            for source in event[0]:
+                                valid.append((source.replace('~','---'),"---",code))
+                        elif (not require_dyad) and event[1] and code and not event[0]:
+                            valid.append(("---",event[1].replace('~','---'),code))
+                        
+                        
+                        # If there are multiple actors in a cooperation scenario, code their cooperation as well
+                        if len(event[0]) > 1 and (not event[1]) and code and code[:2] in ["03","04","05","06"]:
+                            for source in event[0]:
+                                for target in event[0]:
+                                    if not source == target:
+                                        valid.append((source.replace('~','---'),target.replace('~','---'),code))
+        
+            self.events = list(set(valid))
+            self.get_events = self.return_events
+            return valid , meta
+        except Exception as e:
+            print("Error in parsing:",e)
+            return None, None
 
 
     def print_to_file(self,root,file = ""):
@@ -1539,7 +1567,7 @@ class Sentence:
         print_tree() on the tree to print all of it
         """
         print("""   
-                    \\resizebox{\\textwidth}{250}{%
+                    \\resizebox{\\textwidth}{250pt}{%
                     \\begin{tikzpicture}
                     \\Tree""", file=file, end=" ")
 

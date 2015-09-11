@@ -14,6 +14,10 @@
 #			  Charlottesville, VA, 22901 U.S.A.
 #			  http://eventdata.parusanalytics.com
 #
+#
+#             Clayton Norris
+#             Caerus Associates/ University of Chicago
+#
 # GitHub repository: https://github.com/openeventdata/petrarch
 #
 # Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
@@ -159,7 +163,6 @@ def parse_Config(config_path):
                     line = fpar.readline()
                 fpar.close()
 
-#		print "pc",PETRglobals.TextFileList
 
         if parser.has_option('Dictionaries', 'issuefile_name'):
             PETRglobals.IssueFileName = parser.get(
@@ -668,6 +671,23 @@ def read_issue_list(issue_path):
 
 # ================== VERB DICTIONARY INPUT ================== #
 
+
+
+def make_plural_noun(noun):
+   
+    """ Create the plural of a synonym noun st """
+    
+    if noun[-1] == '_' or noun[0] == '{':
+        return None
+    if 'Y' == noun[-1]:
+        return noun[:-1] + 'IES'
+    elif 'S' == noun[-1]:
+        return noun[:-1] + 'ES'
+    else:
+        return noun + 'S'
+
+
+
 def read_verb_dictionary(verb_path):
 
     """
@@ -676,7 +696,7 @@ def read_verb_dictionary(verb_path):
     Verb storage:  
     
         Storage sequence:
-            
+        
                 Upper Noun phrases
                     |
                 Upper prepositional phrases
@@ -685,7 +705,6 @@ def read_verb_dictionary(verb_path):
                     |
                 Lower prepositional phrases
                     #
-                    
                     
         - symbol acts as extender, indicating the noun phrase is longer
         , symbol acts as delimiter between several selected options
@@ -707,15 +726,20 @@ def read_verb_dictionary(verb_path):
     
         segs = line.split()
         #print(line)
-        syns = filter(lambda a: a.startswith('&') or '&' in a[:3], segs)
+        syns = filter(lambda a: a.startswith('&'), segs)
         lines = []
         if syns:
             set = syns[0].replace("{","").replace("}","").replace("(","").replace(")","")
             if set in synsets:
-                lines = map(lambda a: line.replace(set,a,1), synsets[set])
-                return reduce(lambda a,b : a + b, map(resolve_synset,lines), [] )
+                for word in synsets[set]:
+                    #print(word)
+                    lines += resolve_synset(line.replace(set,word,1))
+                    plural = make_plural_noun(word)
+                    if plural :
+                        lines+=resolve_synset(line.replace(set,plural,1))
+                return lines
             else:
-                print(set)
+                print("Undefined synset", set)
         return [line]
     
     
@@ -807,6 +831,7 @@ def read_verb_dictionary(verb_path):
                 continue
             dict_entry = {}
             pattern = line[1:].split("#")[0]
+            #print(line)
             for pat in resolve_synset(pattern):
             
                 segs = pat.split("*")

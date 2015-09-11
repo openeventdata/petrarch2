@@ -114,8 +114,6 @@ def check_discards(SentenceText):
        0 : no matches
        1 : simple match
        2 : story match [+ prefix]
-
-
     """
     sent = SentenceText.upper().split()  # case insensitive matching
     size = len(sent)
@@ -149,33 +147,7 @@ def get_issues(SentenceText):
     <14.02.28> stops coding and sets the issues to zero if it finds *any*
     ignore phrase
     
-
-    sent = SentenceText.upper()  # case insensitive matching
-    issues = []
-
-    for target in PETRglobals.IssueList:
-        if target[0] in sent:  # found the issue phrase
-            print(target)
-            code = PETRglobals.IssueCodes[target[1]]
-            if code[0] == '~':  # ignore code, so bail
-                return []
-            ka = 0
-            gotcode = False
-            while ka < len(issues):
-                if code == issues[ka][0]:
-                    issues[ka][1] += 1
-                    break
-                ka += 1
-            if ka == len(issues):  # didn't find the code, so add it
-                issues.append([code, 1])
-    print(issues,SentenceText)
-    return issues
-
-
-
     """
-        
-    
     def recurse(words,path,length):
         if words and words[0] in path:
             return recurse(words[1:],path[words[0]],length+1)
@@ -240,7 +212,8 @@ def do_coding(event_dict, out_file):
         print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
-
+        if NSent > 40:
+            break
         for sent in val['sents']:
             NSent += 1
             if 'parsed' in event_dict[key]['sents'][sent]:
@@ -256,7 +229,7 @@ def do_coding(event_dict, out_file):
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
                 
-                #if not "VERB_4" in SentenceID:
+                #if not "SYNSET" in SentenceID:
                 #    continue
                 #if not "Sarkozy" in SentenceText:
                 #    continue

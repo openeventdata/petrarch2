@@ -1358,7 +1358,7 @@ class VerbPhrase(Phrase):
                     subpath = path[prep]
                     match = reroute(subpath,lambda a : match_noun(a,item.children[1])
                                              if len(item.children) > 1 else
-                                            lambda a: return False
+                                            lambda a: False
                     , match_prep)
                     if match:
                         return match

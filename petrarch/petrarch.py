@@ -212,8 +212,6 @@ def do_coding(event_dict, out_file):
         print('\n\nProcessing {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
-        if NSent > 40:
-            break
         for sent in val['sents']:
             NSent += 1
             if 'parsed' in event_dict[key]['sents'][sent]:

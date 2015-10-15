@@ -1298,6 +1298,8 @@ class VerbPhrase(Phrase):
 
         def match_phrase(path,phrase):
             # Having matched the head of the phrase, this matches the full noun phrase, if specified
+            if not phrase:
+                return False
             for item in filter(lambda b: b.text in path,phrase.children):
                 subpath = path[item.text]
                 match = reroute(subpath,lambda a: match_phrase(a,item.head_phrase))
@@ -1311,9 +1313,11 @@ class VerbPhrase(Phrase):
         def match_noun(path,phrase = self if not self.check_passive() else self.get_S(),preplimit = 0):
             # Matches a noun or head of noun phrase
             noun_phrases = []
+            if not phrase:
+                return False
             if preplimit:
                 for sib in phrase.children:
-                    if isinstance(sib,PrepPhrase) and sib.get_prep() in ["BY","FROM"]:
+                    if isinstance(sib,PrepPhrase) and len(sib.children) > 1 and sib.get_prep() in ["BY","FROM"] :
                         noun_phrases.append(sib.children[1])
             else:
                 for child in phrase.children:
@@ -1352,7 +1356,10 @@ class VerbPhrase(Phrase):
                 prep = item.children[0].text
                 if prep in path:
                     subpath = path[prep]
-                    match = reroute(subpath,lambda a : match_noun(a,item.children[1]), match_prep)
+                    match = reroute(subpath,lambda a : match_noun(a,item.children[1])
+                                             if len(item.children) > 1 else
+                                            lambda a: return False
+                    , match_prep)
                     if match:
                         return match
             return reroute(path, o2 = match_prep)

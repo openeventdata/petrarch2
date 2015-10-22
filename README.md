@@ -1,7 +1,7 @@
 PETRARCH
 ========
 
-[![Docs](http://petrarch2.readthedocs.org/en/latest/?badge=latest)]
+[![Documentation Status](https://readthedocs.org/projects/petrarch2/badge/?version=latest)](http://petrarch2.readthedocs.org/en/latest/?badge=latest)
 
 Code for the new Python Engine for Text Resolution And Related Coding Hierarchy (PETRARCH) 
 event data coder. The coder now has all of the functions from the older TABARI coder 

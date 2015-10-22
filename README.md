@@ -1,6 +1,8 @@
 PETRARCH
 ========
 
+[![Docs](http://petrarch2.readthedocs.org/en/latest/?badge=latest)]
+
 Code for the new Python Engine for Text Resolution And Related Coding Hierarchy (PETRARCH) 
 event data coder. The coder now has all of the functions from the older TABARI coder 
 and the new CAMEO.2.0.txt verb dictionary incorporates more syntactic information and is far

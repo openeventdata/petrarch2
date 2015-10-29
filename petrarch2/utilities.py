@@ -36,57 +36,57 @@ from __future__ import unicode_literals
 
 import os
 import logging
-import corenlp
+#import corenlp
 import dateutil.parser
 import PETRglobals
 from collections import defaultdict, Counter
 
 
 
-
-def stanford_parse(event_dict):
-    logger = logging.getLogger('petr_log')
-    # What is dead can never die...
-    print("\nSetting up StanfordNLP. The program isn't dead. Promise.")
-    logger.info('Setting up StanfordNLP')
-    core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
-                                   properties=_get_data('data/config/',
-                                                        'petrarch.properties'),
-                                   memory='2g')
-    total = len(list(event_dict.keys()))
-    print(
-        "Stanford setup complete. Starting parse of {} stories...".format(total))
-    logger.info(
-        'Stanford setup complete. Starting parse of {} stories.'.format(total))
-    for i, key in enumerate(event_dict.keys()):
-        if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
-            print('Parse is {}% complete...'.format((i / float(total)) * 100))
-        for sent in event_dict[key]['sents']:
-            logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
-            sent_dict = event_dict[key]['sents'][sent]
-
-            if len(sent_dict['content']) > 512 or len(
-                    sent_dict['content']) < 64:
-                logger.warning(
-                    '\tText length wrong. Either too long or too short.')
-                pass
-            else:
-                try:
-                    stanford_result = core.raw_parse(sent_dict['content'])
-                    s_parsetree = stanford_result['sentences'][0]['parsetree']
-                    if 'coref' in stanford_result:
-                        sent_dict['coref'] = stanford_result['coref']
-
-                    # TODO: To go backwards you'd do str.replace(' ) ', ')')
-                    sent_dict['parsed'] = _format_parsed_str(s_parsetree)
-                except Exception as e:
-                    print('Something went wrong. ¯\_(ツ)_/¯. See log file.')
-                    logger.warning(
-                        'Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
-    print('Done with StanfordNLP parse...\n\n')
-    logger.info('Done with StanfordNLP parse.')
-
-    return event_dict
+# Deprecated. Use hypnos instead.
+# def stanford_parse(event_dict):
+#     logger = logging.getLogger('petr_log')
+#     # What is dead can never die...
+#     print("\nSetting up StanfordNLP. The program isn't dead. Promise.")
+#     logger.info('Setting up StanfordNLP')
+#     core = corenlp.StanfordCoreNLP(PETRglobals.stanfordnlp,
+#                                    properties=_get_data('data/config/',
+#                                                         'petrarch.properties'),
+#                                    memory='2g')
+#     total = len(list(event_dict.keys()))
+#     print(
+#         "Stanford setup complete. Starting parse of {} stories...".format(total))
+#     logger.info(
+#         'Stanford setup complete. Starting parse of {} stories.'.format(total))
+#     for i, key in enumerate(event_dict.keys()):
+#         if (i / float(total)) * 100 in [10.0, 25.0, 50, 75.0]:
+#             print('Parse is {}% complete...'.format((i / float(total)) * 100))
+#         for sent in event_dict[key]['sents']:
+#             logger.info('StanfordNLP parsing {}_{}...'.format(key, sent))
+#             sent_dict = event_dict[key]['sents'][sent]
+#
+#             if len(sent_dict['content']) > 512 or len(
+#                     sent_dict['content']) < 64:
+#                 logger.warning(
+#                     '\tText length wrong. Either too long or too short.')
+#                 pass
+#             else:
+#                 try:
+#                     stanford_result = core.raw_parse(sent_dict['content'])
+#                     s_parsetree = stanford_result['sentences'][0]['parsetree']
+#                     if 'coref' in stanford_result:
+#                         sent_dict['coref'] = stanford_result['coref']
+#
+#                     # TODO: To go backwards you'd do str.replace(' ) ', ')')
+#                     sent_dict['parsed'] = _format_parsed_str(s_parsetree)
+#                 except Exception as e:
+#                     print('Something went wrong. ¯\_(ツ)_/¯. See log file.')
+#                     logger.warning(
+#                         'Error on {}_{}. ¯\_(ツ)_/¯. {}'.format(key, sent, e))
+#     print('Done with StanfordNLP parse...\n\n')
+#     logger.info('Done with StanfordNLP parse.')
+#
+#     return event_dict
 
 
 
@@ -206,19 +206,19 @@ def init_logger(logger_filename):
 def combine_code(selfcode,to_add):
     """
     Combines two verb codes, part of the verb interaction framework
-    
-    
+
+
     Parameters
     ----------
     selfcode,to_add: ints
                      Upper and lower verb codes, respectively
-                     
+
     Returns
     -------
     combined value
-    
+
     """
-    
+
     if to_add < 0:
         return to_add + selfcode
     if selfcode >= 0x1000 and to_add >= 0x1000:
@@ -232,7 +232,7 @@ def combine_code(selfcode,to_add):
 
 def code_to_string(events):
     """
-    Converts an event into a string, replacing the integer codes with strings 
+    Converts an event into a string, replacing the integer codes with strings
     representing their value in hex
     """
     retstr= ""
@@ -247,7 +247,7 @@ def code_to_string(events):
 
             if isinstance(low,tuple):
                 low = "("+ev_to_string(low)+")"
-            
+
             return up + " " + low + " " + hex(c)
         for ev in events:
             #print(ev)
@@ -265,7 +265,7 @@ def code_to_string(events):
 def convert_code(code,forward = 1):
     """
     Convert a verb code between CAMEO and the Petrarch internal coding ontology.
-    
+
                 New coding scheme:
 
             0                0          0                       0
@@ -284,18 +284,18 @@ def convert_code(code,forward = 1):
             						    				        D Release
             							     		            E Int'l Involvement
             						   						    F D-escalation
-         
+
     In the first column, higher numbers take priority. i.e. “Say + Intend” is just “Intend” or “Intend + Consult” is just Consult
-    
-    
+
+
     Parameters
     ----------
     code: string or int, depending on forward
           Code to be converted
-          
+
     forward: boolean
              Direction of conversion, True = CAMEO -> PICO
-             
+
 
     Returns
     -------
@@ -304,7 +304,7 @@ def convert_code(code,forward = 1):
                           The two parts of the code [XXX:XXX], converted to the new system. The first is an inherent
                           active meaning, the second is an inherent passive meaning. Both are not always present,
                           most codes just have the active.
-                        
+
     """
 
 
@@ -319,7 +319,7 @@ def convert_code(code,forward = 1):
                         "018"    :     0x1004  ,
                         "019"    :     0x1005  ,
 
-    
+
                         "020"    :     0x2000  ,         #  Appeal
                         "021"    :     0x2070  ,
                         "0211"   :     0x2075  ,
@@ -347,8 +347,8 @@ def convert_code(code,forward = 1):
                         "026"    :     0x2010  ,
                         "027"    :     0x2020  ,
                         "028"    :     0x2030  ,
-                        
-                        
+
+
                         "030"    :     0x3000  ,         #  Intend
                         "031"    :     0x3070  ,
                         "0311"   :     0x3075  ,
@@ -377,7 +377,7 @@ def convert_code(code,forward = 1):
                         "037"    :     0x3020  ,
                         "038"    :     0x3230  ,
                         "039"    :     0x3030  ,
-                        
+
                         "040"    :     0xB000  ,         #  Consult
                         "041"    :     0xB001  ,
                         "042"    :     0xB002  ,
@@ -385,8 +385,8 @@ def convert_code(code,forward = 1):
                         "044"    :     0xB010  ,
                         "045"    :     0xB030  ,
                         "046"    :     0xB010  ,
-                        
-                        
+
+
                         "050"    :     0x0080   ,        # Diplomatic Coop
                         "051"    :     0x0081   ,
                         "052"    :     0x0082   ,
@@ -395,7 +395,7 @@ def convert_code(code,forward = 1):
                         "055"    :     0x0085   ,
                         "056"    :     0x0086   ,
                         "057"    :     0x0087   ,
-                        
+
                         "060"    :     0x0070   ,        # Material Coop
                         "061"    :     0x0075   ,
                         "062"    :     0x0076   ,
@@ -408,7 +408,7 @@ def convert_code(code,forward = 1):
                         "073"    :     0x0047   ,
                         "074"    :     0x0049   ,
                         "075"    :     0x004E   ,
-                    
+
                         "080"    :     0x0200  ,         #  Yield
                         "081"    :     0x020B  ,
                         "0811"   :     0x0203  ,
@@ -435,13 +435,13 @@ def convert_code(code,forward = 1):
                         "0873"   :     0x02C6  ,
                         "0874"   :     0x02C2  ,
                         "08"     :     0x0200  ,
-                        
+
                         "090"    :     0xA000  ,         #  Investigate
                         "091"    :     0xA001  ,
                         "092"    :     0xA002  ,
                         "093"    :     0xA003  ,
                         "094"    :     0xA004  ,
-                        
+
                         "100"    :     0x4000  ,         #  Demand
                         "101"    :     0x4070  ,
                         "1011"   :     0x4075  ,
@@ -470,7 +470,7 @@ def convert_code(code,forward = 1):
                         "107"    :     0x4020  ,
                         "108"    :     0x4030  ,
 
-                        
+
                         "110"    :     0x7000  ,         #  Disapprove
                         "111"    :     0x7001  ,
                         "112"    :     0x70a0  ,
@@ -483,8 +483,8 @@ def convert_code(code,forward = 1):
                         "114"    :     0x7003  ,
                         "115"    :     0x7008  ,
                         "116"    :     0x7005  ,
-                        
-                        
+
+
                         "120"    :   -0xFFFF   ,         #  Reject
                         "121"    :   -0xFFFF + 0x0070 ,
                         "1211"   :   -0xFFFF + 0x0075 ,
@@ -511,7 +511,7 @@ def convert_code(code,forward = 1):
                         "127"    :   -0xFFFF + 0x0020 ,
                         "128"    :   -0xFFFF + 0x0002 ,
                         "129"    :   -0xFFFF + 0x0001 ,
-              
+
                         "130"    :     0x6000  ,         #  Threaten
                         "131"    :     0x6100 ,
                         "1311"   :     0x6140  ,
@@ -534,17 +534,17 @@ def convert_code(code,forward = 1):
                         "1384"   :     0x60A4  ,
                         "1385"   :     0x60B0  ,
                         "139"    :     0x6005  ,
-                        
-                        
+
+
                         "140"    :     0x5000   ,         #  Protest
                         "145"    :     0x50A0   ,
-                       
+
                         "150"    :     0x8000   ,         #  Exhibit Force Posture
                         "151"    :     0x8001   ,
                         "152"    :     0x8002   ,
                         "153"    :     0x8003   ,
                         "154"    :     0x8004   ,
-                        
+
                         "160"    :     0x0100   ,         #  Reduce Relations
                         "161"    :     0x0180   ,
                         "162"    :     0x0140   ,
@@ -558,7 +558,7 @@ def convert_code(code,forward = 1):
                         "1661"   :     0x0159   ,
                         "1662"   :     0x015A   ,
                         "1663"   :     0x015E   ,
-                        
+
                         "170"    :     0x9000    ,         #  Coerce
                         "171"    :     0x9010    ,
                         "1711"   :     0x9011    ,
@@ -571,7 +571,7 @@ def convert_code(code,forward = 1):
                         "173"    :     0x9020    ,
                         "174"    :     0x9030    ,
                         "175"    :     0x9040    ,
-                        
+
                         "180"    :     0x0090    ,         #  Assault
                         "181"    :     0x0091    ,
                         "182"    :     0x0092    ,
@@ -587,8 +587,8 @@ def convert_code(code,forward = 1):
                         "184"    :     0x009C    ,
                         "185"    :     0x009D    ,
                         "186"    :     0x009E    ,
-                        
-                        
+
+
                         "190"    :     0x00A0    ,         #  Fight
                         "191"    :     0x00A1    ,
                         "192"    :     0x00A2    ,
@@ -598,16 +598,16 @@ def convert_code(code,forward = 1):
                         "1951"   :     0x00A6    ,
                         "1952"   :     0x00A7    ,
                         "196"    :     0x00A8    ,
-                       
+
                         "200"    :     0x00B0    ,         #  Use Unconventional Mass Violence
                         "---"    : 0              }
-    
+
     if forward:
         passive = False
         active = code.split(":")
         passive = active[1] if len(active) > 1 else "---"
         active = active[0] if active[0] else "---"
-        
+
         if active in cat:
             active = cat[active]
         else:
@@ -618,15 +618,15 @@ def convert_code(code,forward = 1):
             passive = cat[passive[:2]+"0"]
 
         return active, passive
-        
 
-        
+
+
     else:
         reverse = dict(map(lambda a : (a[1],a[0]) , cat.items())  + # Other weird quirks
                 [   (0x30a0,"138"),   # Want to attack
-                 
+
                 ])
         if code and code in reverse:
             return reverse[code]
-        
+
         return 0 # hex(code)

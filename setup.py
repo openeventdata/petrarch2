@@ -1,7 +1,11 @@
 from setuptools import setup
 
+with open('requirements.txt', 'r') as f:
+        required = f.read().splitlines()
+
 setup(
     name='petrarch2',
+    install_requires=required,
     entry_points={
         'console_scripts': ['petrarch2 = petrarch2.petrarch2:main']},
     version='1.0.0',

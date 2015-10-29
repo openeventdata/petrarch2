@@ -1,5 +1,5 @@
-from petrarch import petrarch, PETRglobals, PETRreader, utilities
-from petrarch import PETRtree as ptree
+from petrarch2 import petrarch2, PETRglobals, PETRreader, utilities
+from petrarch2 import PETRtree as ptree
 
 
 config = petrarch.utilities._get_data('data/config/', 'PETR_config.ini')
@@ -38,7 +38,7 @@ def test_noun_meaning1():
     phrase = test.tree.children[0]
 
     head, headphrase = phrase.get_head()
-    
+
     assert head== "STATE"
     assert headphrase == phrase
     assert phrase.get_meaning() == ["IMGMUSISI"]
@@ -52,7 +52,7 @@ def test_noun_meaning2():
     phrase = test.tree.children[0]
 
     head, headphrase = phrase.get_head()
-    
+
     assert head== "ORGANIZATION"
     assert headphrase == phrase
     assert phrase.get_meaning() == ["IGOWSTNAT"]
@@ -64,7 +64,7 @@ def test_noun_meaning3():
     test = ptree.Sentence(parse,"Barack Obama and Vladimir Putin", "081315")
 
     phrase = test.tree.children[0]
-    
+
     assert sorted(phrase.get_meaning()) == sorted(["USAGOV","RUSGOV"])
 
 
@@ -74,7 +74,7 @@ def test_prepmeaning():
     test = ptree.Sentence(parse,"to the market", "081315")
 
     phrase = test.tree.children[0]
-    
+
     assert phrase.get_meaning() == ['TUR']
     assert phrase.head == "MARKET"
     assert phrase.get_prep() == "TO"
@@ -86,7 +86,7 @@ def test_noun_meaning4():
     test = ptree.Sentence(parse,"The rebels from Syria", "081315")
 
     phrase = test.tree.children[0]
-    
+
     assert phrase.get_meaning() == ['SYRREB']
     assert phrase.get_head()[0] == "REBELS"
     assert phrase.get_head()[1] == phrase
@@ -159,7 +159,7 @@ def test_simple():
     text = "Germany invaded France"
     parse = "(ROOT (S (NP (NNP Germany)) (VP (VBD invaded) (NP (NNP France)))))"
     parsed = utilities._format_parsed_str(parse)
-    
+
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
 

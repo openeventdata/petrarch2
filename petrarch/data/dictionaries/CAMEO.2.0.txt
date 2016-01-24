@@ -3724,7 +3724,7 @@ TRAP {TRAPS TRAPPING TRAPPED }
 SOUND  # ms 18 Dec 2007
 VOCALISE 
 VOICE  # OY 11 Mar 2006
-- * CONCERN (OVER)                                    (OVER)        # VOICE
+- * CONCERN (OVER)                                    [012]         # VOICE
 - * CONCERN                                           [012]         # VOICE
 - * CONCERN                                           [012]         # VOICE
 - * ALARM                                             [012]         # VOICE

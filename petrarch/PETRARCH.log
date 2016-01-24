@@ -1,8 +1,11 @@
-INFO 2015-07-09 14:14:17,988: Running
-INFO 2015-07-09 14:14:17,988: Using default config file.
-INFO 2015-07-09 14:14:17,989: Reading CAMEO.verbpatterns.150430.txt
-INFO 2015-07-09 14:14:18,810: Reading Phoenix.agents.txt
+INFO 2016-01-24 17:15:08,316: Running
+INFO 2016-01-24 17:15:08,316: Using default config file.
+INFO 2016-01-24 17:15:08,317: Reading CAMEO.2.0.txt
+INFO 2016-01-24 17:15:10,328: Reading Phoenix.agents.txt
 
-WARNING 2015-07-09 14:14:18,849: Codes are required for agents in .agents file ; line skipped
-INFO 2015-07-09 14:14:18,854: Reading Phoenix.discards.txt
-INFO 2015-07-09 14:14:18,858: Reading Phoenix.IssueCoding.txt
+WARNING 2016-01-24 17:15:10,350: Codes are required for agents in .agents file ; line skipped
+INFO 2016-01-24 17:15:10,354: Reading Phoenix.discards.txt
+INFO 2016-01-24 17:15:10,357: Reading Phoenix.IssueCoding.txt
+INFO 2016-01-24 17:15:10,419: 	Sentence discard.   1994
+INFO 2016-01-24 17:15:10,426: 	Sentence discard.   FRENCH PLAYING 1994
+INFO 2016-01-24 17:15:10,426: 	Sentence discard.   1994

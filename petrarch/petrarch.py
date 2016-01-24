@@ -227,11 +227,7 @@ def do_coding(event_dict, out_file):
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
                 
-                #if not "SYNSET" in SentenceID:
-                #    continue
-                #if not "Sarkozy" in SentenceText:
-                #    continue
-                print("\t\t",SentenceID)
+                print("\n\n\t\t",SentenceID)
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 disc = check_discards(SentenceText)
@@ -251,7 +247,9 @@ def do_coding(event_dict, out_file):
                 
                 t1 = time.time()
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
+                print(sentence.txt)
                 coded_events , meta = sentence.get_events()
+                print(meta)
                 code_time = time.time()-t1
                 event_dict[key]['meta']['verbs'] = meta
 

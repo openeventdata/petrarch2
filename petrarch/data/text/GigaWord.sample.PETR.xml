@@ -790,7 +790,7 @@ There were 10 Russian soldiers killed in Ukraine today.
 <Text>
 Boko Haram has launched many similar attacks during its six-year campaign for a strict Islamic state in northeastern Nigeria.</Text>
 <Parse>
-(ROOT (S (NP (DT The) (JJ Islamic) (NN state)) (VP (VBZ has) (VP (VBN launched) (NP (JJ many) (JJ similar) (NNS attacks)) (PP (IN during) (NP (NP (PRP$ its) (JJ six-year) (NN campaign)) (PP (IN for) (NP (NP (DT a) (JJ strict) (JJ Islamic) (NN state)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria))))))))) (. .)))
+(ROOT (S (NP (NN BOKO) (NN HARAM)) (VP (VBZ has) (VP (VBN launched) (NP (JJ many) (JJ similar) (NNS attacks)) (PP (IN during) (NP (NP (PRP$ its) (JJ six-year) (NN campaign)) (PP (IN for) (NP (NP (DT a) (JJ strict) (JJ Islamic) (NN state)) (PP (IN in) (NP (JJ northeastern) (NNP Nigeria))))))))) (. .)))
 </Parse>
 </Sentence>
 

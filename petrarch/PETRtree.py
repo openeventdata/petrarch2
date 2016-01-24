@@ -343,6 +343,8 @@ class NounPhrase(Phrase):
         NPcodes = []
         codes = []
         
+        matched_txt = []
+        
         for child in self.children:
             if isinstance(child,NounPhrase):
                 value = child.get_text()
@@ -395,18 +397,16 @@ class NounPhrase(Phrase):
         def recurse(path, words, length,so_far= ""):
             
             if words and  words[0] in path:
-                match = recurse(path[words[0]],words[1:],length + 1 , so_far + words[0])
+                match = recurse(path[words[0]],words[1:],length + 1 , so_far + " " + words[0])
                 if match:
                     return match
             if '#' in path:
                 if isinstance(path["#"],list):
-            
                     code = self.check_date(path['#'])
                     if not code is None:
-                        
-                        return [code] , length
+                        return [code] , so_far, length
                 else:
-                    return [path['#']], length
+                    return [path['#']], so_far, length
             return False
         
         index = 0
@@ -414,178 +414,24 @@ class NounPhrase(Phrase):
             match = recurse(PETRglobals.ActorDict,text_children[index:],0)
             if match:
                 codes += match[0]
-                index += match[1]
+                index += match[2]
+                matched_txt += [match[1]]
                 continue
 
             match = recurse(PETRglobals.AgentDict,text_children[index:],0)
             if match:
                 codes += match[0]
-                index += match[1]
+                index += match[2]
+                matched_txt += [match[1]]
                 continue
             index += 1
             
-        
-        actorcodes,agentcodes = self.resolve_codes(codes)
-        PPactor, PPagent = self.resolve_codes(PPcodes)
-        NPactor, NPagent = self.resolve_codes(NPcodes)
-        VPactor, VPagent = self.resolve_codes(VPcodes)
-        if not actorcodes:
-            actorcodes += NPactor
-            if not actorcodes:
-                actorcodes += PPactor
-                if not actorcodes:
-                    actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
-        
-        if not agentcodes:
-            agentcodes += NPagent
-            if not agentcodes:
-                agentcodes += PPagent
-                if not agentcodes:
-                    agentcodes += VPagent
-
-        
-        self.meaning = self.mix_codes(agentcodes,actorcodes)
-        self.get_meaning = self.return_meaning
-        return self.meaning
-
-
-    def _get_meaning(self):
-        """
-        Combine the meanings of the children of this node to find the actor code.
-        Priority is given to word-level children, then to NP-level children,
-        then Prepositional phrases, then Verb phrases.
-        
-        Word level children are matched against the Actor and Agent dictionaries.
-        
-        Parameters
-        -----------
-        self: NounPhrase object that called the method.
-        
-        Returns
-        -------
-        self.meaning: [string]
-                      Actor coding of the subtree rooted by this noun phrase, also set as attribute
-        
-        """
-        
-        self.get_meaning = self.return_meaning
-        dict_entry = ("",-1)
-        dicts = (PETRglobals.ActorDict, PETRglobals.AgentDict)
-        match_in_progress = {}
-        codes = []
-        NPcodes = []
-        PPcodes = []
-        VPcodes = []
-        i = 0
-        option = -1
-        pathleft = [({},i,-1)]
-        
-        APMprint = True
-        while i < len(self.children):
-            child = self.children[i]
-            if match_in_progress != {} :
-                if child.text in match_in_progress and not option == 2:
-                    pathleft.append((match_in_progress,i,2))
-                    match_in_progress = match_in_progress[child.text]
-                elif "#" in match_in_progress:
-                    match = match_in_progress['#']
-                    if isinstance(match,list): # We've matched from the actor dictionary
-                        code = self.check_date(match)
-                        if not code is None:
-                            codes.append(code)
-                    else:                           # We've matchd from the agent dictionary
-                        codes.append(match_in_progress['#'])
-                    match_in_progress = {}
-                    option = -1
-                    continue
-                else:
-                    p = pathleft.pop()
-                    if option == 1:
-                        i = p[1] + 1
-                    else:
-                        i = p[1]
-                    match_in_progress = p[0]
-                    option = p[2]
-                    continue
-                
-            else:
-                if child.label[:2] in ["NN","JJ","DT"] and not child.color:
-                    text = child.text
-                    if (not option >= 0) and text in PETRglobals.ActorDict:
-                        dict_entry = (text,0)
-                    elif text in PETRglobals.AgentDict and not option == 1:
-                        dict_entry = (text,1)
-                    try:
-                        match_in_progress = dicts[dict_entry[1]][dict_entry[0]]
-                        pathleft.append(({},i,dict_entry[1]))
-                        dict_entry = None
-                    except:
-                        if False:
-                            print("No match")
-                elif child.label == "NP" and not child.color:
-                    m = child.get_meaning()
-                    if not m == "":
-                        NPcodes+= m
-                elif child.label == "PP":
-                    m = child.get_meaning()
-                    if not m == None:
-                        PPcodes += m
-                elif child.label == "PRP":
-                    # Find antecedent
-                    not_found = True
-                    level = self.parent
-                    reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
-                    local = True
-                    while not_found and level.parent:
-                        if level.label.startswith("NP") and reflexive: #Intensive, ignore
-                            break
-                        if local and level.label in ["S","SBAR"]:
-                            local = False
-                            level=level.parent
-                            continue
-                        
-                        if (not local) or (reflexive and local):
-                            for child in level.parent.children:
-                                if isinstance(child,NounPhrase) and not child.get_meaning() == "~" :  # Do we just want to pick the first?
-                                    not_found = False
-                                    codes += child.get_meaning()
-                                    break
-
-                        level = level.parent
-                elif child.label == "VP":
-                    meaning = child.get_meaning()
-                    if meaning and isinstance(meaning[0][1],basestring):
-                        VPcodes += child.get_theme()
-
-
-            i += 1
-            option = -1
-            if(i >= len(self.children) and not match_in_progress == {}):
-                if "#" in match_in_progress:
-                    match = match_in_progress['#']
-                    if isinstance(match,list):
-                        code = self.check_date(match)
-                        if not code is None:
-                            codes.append(code)
-                    else:
-                        codes.append(match)
-                
-                else:
-                    
-                
-                    p = pathleft.pop()
-                    match_in_progress = p[0]
-                    option = p[2]
-                    if option == 1:
-                        i = p[1] + 1
-                    else:
-                        i= p[1]
-                    
             
         
+        
         actorcodes,agentcodes = self.resolve_codes(codes)
-        NPactor, NPagent = self.resolve_codes(NPcodes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
+        NPactor, NPagent = self.resolve_codes(NPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
         if not actorcodes:
             actorcodes += NPactor
@@ -600,12 +446,13 @@ class NounPhrase(Phrase):
                 agentcodes += PPagent
                 if not agentcodes:
                     agentcodes += VPagent
-                    
+
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
-
+        self.get_meaning = self.return_meaning
+        if matched_txt:
+            self.sentence.metadata['nouns'] += [(matched_txt,self.meaning)]
         return self.meaning
-
 
 
 
@@ -1414,6 +1261,45 @@ class Sentence:
     get_events: Extracts events from sentence tree
     
     print_tree: Prints tree to a LaTeX file
+    
+    
+    
+    
+    Metadata
+    --------
+    
+    The sentence will return with a "metadata" dict. This has two parts.
+    
+        - sent.metadata['nouns'] will be a list of pairs of the form
+                
+                    ( [Words that were coded], [Codes produced])
+                
+                Each list in the tuple usually only has one element, but sometimes multiple can occur
+                
+        - The other elements of sent.metadata have the key as the event, and
+                the value as a list of lists. Each element of the value list contains
+                some information about verbs that combined to form that event. The first
+                element usually contains the primary verb and pattern that was matched on, and the latter
+                elements are helping verbs that were combined with it.
+        
+        
+        For example, the metadata for the sentence 
+            
+                 BOKO HARAM HAS LAUNCHED MANY SIMILAR ATTACKS DURING ITS SIX-YEAR CAMPAIGN FOR A STRICT ISLAMIC STATE IN NORTHEASTERN NIGERIA .
+                 
+                 
+        Looks like:
+        
+         {
+            (u'NGAREB', u'NGAMUS', u'190'): [[u'LAUNCHED', '- * ATTACKS [190]'],
+                                             [u'HAS']],
+            
+            u'nouns':                        [([u'BOKO HARAM'], [u'NGAREB']),
+                                              ([u'NIGERIA'], [u'NGA']),
+                                              ([u'ISLAMIC'], [u'NGAMUS'])]}
+         }
+    
+    
     """
     def __init__(self, parse, text, date):
         self.treestr = parse.replace(')', ' )')
@@ -1424,11 +1310,11 @@ class Sentence:
         self.date = date
         self.longlat = (-1,-1)
         self.verbs = []
+        self.txt = ""
         self.tree = self.str_to_tree(parse.strip())
-        self.txt = text
         self.verb_analysis = {}
         self.events = []
-        self.metadata = {}
+        self.metadata = {'nouns': [] }
     
     
     def str_to_tree(self,str):
@@ -1465,6 +1351,7 @@ class Sentence:
                     new = Phrase(lab, self.date, self)
                     if lab == "EX":
                         existentials.append(new)
+                    
                 new.parent = level_stack[-1]
                 new.index = len(level_stack[-1].children)
                 level_stack[-1].children.append(new)
@@ -1476,6 +1363,7 @@ class Sentence:
                     break
             else:
                 level_stack[-1].text = element
+                self.txt += " " +element
     
         for element in existentials:
             try:
@@ -1498,7 +1386,7 @@ class Sentence:
         #if not meta_total:
         #    print(entry,self.txt)
         #    exit()
-        return meta_total[::-1]
+        return map(lambda a:  a[-2] if len(a) > 1 else a[0], meta_total[::-1])
     
     
     def return_events(self):
@@ -1526,7 +1414,7 @@ class Sentence:
         """
         
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
-        meta = {}
+        meta = {'nouns' : self.metadata['nouns'] }
         #print(events)
         valid = []
         try:
@@ -1537,18 +1425,16 @@ class Sentence:
                     if isinstance(event,tuple) and isinstance(event[1],basestring) :
                         
                         code = utilities.convert_code(event[2],0)
+                        print('checking event', event, hex(event[2]))
                         if event[0] and event[1] and code :
                             for source in event[0]:
                                 valid.append((source.replace('~','---'),event[1].replace('~','---'),code))
-                                #print(self.get_metadata(event))
-                                #try:
-                                meta[(source.replace('~','---'),event[1].replace('~','---'),code)] = self.get_metadata(event)
-                                #except:
-                                #    print("ERROR",event,id(event))
-                                #    print(self.metadata)
+                                meta[(source.replace('~','---'),event[1].replace('~','---'),code)] =  self.get_metadata(event)
+    
                         elif (not require_dyad) and event[0] and code and not event[1]:
                             for source in event[0]:
                                 valid.append((source.replace('~','---'),"---",code))
+    
                         elif (not require_dyad) and event[1] and code and not event[0]:
                             valid.append(("---",event[1].replace('~','---'),code))
                         

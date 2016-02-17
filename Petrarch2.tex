@@ -29,14 +29,15 @@
 \begin{document}
 \maketitle
 Petrarch 2 is the fourth generation of a series of Event-Data coders stemming from research by 
-Phillip Schrodt. Each iteration has brought new functionality and usability, and this is no exception.
+Phillip Schrodt\footnote{Schrodt, 2001}. Each iteration has brought new functionality and usability \footnote{Schrodt, 2012}, and this is no exception.
 Petrarch 2 takes much of the power of the original Petrarch's dictionaries and redirects it 
-into a faster and smarter core logic. Instead of viewing a sentence as 
-a list of words, Petrarch 2 (henceforth referred to as Petrarch) now views the sentence on the syntactic level. It 
+into a faster and smarter core logic. Earlier iterations handled sentences 
+largely as a list of words, incorporating some syntactic information here and 
+there. Petrarch 2 (henceforth referred to as Petrarch) now views the sentence entirely on the syntactic level. It 
 receives the syntactic parse of a sentence from the Stanford CoreNLP 
 software, and stores this data as a tree structure of linked nodes, 
 where each node is a Phrase object. Prepositional, noun, and verb phrases each 
-have their own version of the Phrase object, which deals with the logic 
+have their own version of this Phrase class, which deals with the logic 
 particular to those kinds of phrases. Since this is an event coder, the core of 
 the logic focuses around the verbs: who is acting, who is being acted on, and 
 what is happening. The theory behind this new structure and its logic is founded 
@@ -45,21 +46,22 @@ in Generative Grammar, Information Theory, and Lambda-Calculus Semantics.
 \section{Tree structure}
 In an attempt to take advantage of all the syntactic information provided to us 
 by the Stanford Parse, Petrarch implements the sentence coding in such a way that 
-the syntax tree is apparent in the data structure and the logic. It's a pretty simple tree 
+the syntax tree is apparent in the data structure and the logic. It's a simple tree 
 structure, with every phrase or word being its own node, with pointers to the 
 parent node and the set of children nodes\footnote{The relationship between nodes 
-is frequently described using terms of familial relation, most frequently, ``parent'' and ``child''}. 
-The phrases are stored as objects of the ``Phrase" 
+is frequently described using terms of familial relation (most frequently, ``parent'' and ``child''), or direction (``above'' meaning ``closer to the 
+root,'' and ``below'' meaning ``closer to word-level.'')}. 
+The syntactic phrases are stored as nested objects of the ``Phrase" 
 class, which has three subclasses ``NounPhrase," ``VerbPhrase," and ``PrepPhrase." 
 If a phrase doesn't fall under one of these categories, it is just kept as a 
 ``Phrase," though if eventually enough reason can be shown to add another type (adjective phrases, for example),
 it an be done so easily. Each of these phrase types has several methods unique to it 
 and its own version of a $get\_meaning()$ method, which is what determines the 
-actor coding of a node from the meaning of its children. The simplicity of this approach in comparison 
+coding of a node from the meaning of its children. The simplicity of this recursive approach in comparison 
 with the expensive list-based pattern matching from previous versions of Petrarch yields a 
 significant speed improvement, 
-and the theoretically-grounded tree-based semantic searching yields a more  
-solidified understanding of the relationships between nouns and verbs. 
+and the theoretically-grounded tree-based semantic searching takes advantage of 
+the relationships between nouns and verbs encoded in the syntax tree. 
 \subsection{Syntax trees}
 Let's start with a short linguistics lesson. Every sentence in English (and most languages) is made up of several ``constituents''. A constituent can be a single 
 word or a whole phrase (which is a constituent of constituents), but the defining 
@@ -69,19 +71,19 @@ Constituents of a sentence are associated hierarchically (hence the phrasal cons
 is in a syntax tree. There is an example of a syntax tree and how it is used in 
 the parse at the end of this document. 
 
-The CoreNLP software on which Petrarch relies 
+The CoreNLP software on which Petrarch relies for syntactic parsing
 uses the Penn Treebank II \footnote{\url{https://www.cis.upenn.edu/~treebank/}} syntax notation, which can differ slightly from canonical 
 generative grammar labeling, but for our purposes they are equally useful. 
-Constituents have specific type, depending on what their head and distribution 
-is. The cases we care most about in this program are Noun, Verb, and 
-Prepositional phrases. Heads, in this case, are the single word that a phrase 
-reduces to, both semantically and syntactically. They can be predictably located 
+Constituents have specific type, depending on their ``head'' and distribution. The cases we care most about in this program are Noun, Verb, and 
+Prepositional phrases. Heads, in this case, are effectively the single word that a phrase 
+can be reduced to, both semantically and syntactically. They can be predictably located 
 by navigating the syntax tree, so Petrarch relies on the idea of phrasal headedness 
 for much of its speed. A head of a phrase can be formalized as the lowest word-level constituent
-to which there is an unbroken path of phrase-level similarly-typed constituents from the phrase 
-node. Basically, to find the head of an NP, you follow the path of NP's down the 
+to which there is an unbroken path of phrase-level similarly-typed constituents from the phrase's root 
+node. Basically, to find the head of an NP (Noun Phrase), you follow the path of NP's down the 
 tree until you find a Noun. If there's ever a choice of which path to take, in English you will
-take the rightmost.   
+take the rightmost\footnote{Many theories of syntax dictate that any node can have at most two children, which would 
+never yield a situation where you have several choices, but CoreNLP does not follow this binary branching restriction}.
 
  \section{Flow}
 The core logic of the semantic parsing is based on the notion that each node in the 
@@ -90,9 +92,7 @@ of its children. That means that in moving up the tree and going from word-level
 sentence-level, words and meanings get combined until you have one noun phrase 
 meaning and one verb phrase meaning. The meaning of the verb phrase is what captures 
 most of the meaning of the sentence, and accounts for all the relevant nouns and 
-verbs below it. When we use the terms ``above'' and ``below,'' we are referring 
-to ancestral relations in the syntax tree: ``above'' means ``closer to the 
-root,'' and ``below'' means ``closer to word-level.''
+verbs below it. 
 
 Because of the recursive nature of the meaning determination, one call to 
 $get\_meaning()$ from the upper most verb phrase will cause a domino effect that 
@@ -110,7 +110,7 @@ abstracted to follow these steps:
   \item Identify how verbs interact with the noun phrases in their subject 
   position.
   \item Resolve verb+verb interactions.
-  \item Return the coding of the uppermost VerbPhrase using CAMEO\footnote{\url{http://eventdata.parusanalytics.com/cameo.dir/CAMEO.09b6.pdf}} verb and actor codes, if it satisfies the 
+  \item Return the coding of the uppermost VerbPhrase using CAMEO\footnote{\url{http://eventdata.parusanalytics.com/cameo.dir/CAMEO.09b6.pdf}}\footnote{Schrodt et al. 2008} verb and actor codes, if it satisfies the 
   conditions specified by the user
 \end{enumerate}
 \section{Classes and class-specific flow}
@@ -142,7 +142,8 @@ Since Petrarch currently has no concept of number or gender, it sometimes makes 
 in instances where the pronoun reference depends on the characteristics of the 
 nouns in the sentence. Such is the case differentiating \textit{Obama told Hillary 
 that he should run for President again} from \textit{Obama told Hillary that she should run
-for President again}.
+for President again}. Both of these would be interpreted by Petrarch as  \textit{Obama told Hillary that Hillary should run
+for President again}
 
 \subsection{Prepositional Phrases}
 The $get\_meaning()$ method of PrepPhrase objects returns the meaning of their 
@@ -169,7 +170,7 @@ However, if
 a VP has a VP as a child, it returns the meaning of only that phrase, as well as looking 
 for some sort of negation word. The only 
 VP's with VP children are modals (could, might, will, etc.) or helping verbs (has, is, 
-do, etc.)\footnote{If it seems like a verb would have another verb phrase as a child, but it does not fall into one of these categories,
+do, etc.)\footnote{If it intuitively seems like a verb would have another verb phrase as a child, but it does not fall into one of these categories,
 it most likely takes a sentence as a child, rather than a verb phrase. }. These won't have other NP, or PP children that are relevant to 
 this verb, but can have ``not'' as a child, so this is where negation is 
 flagged.
@@ -181,7 +182,7 @@ this would actually be necessary, but the option is there for consistency's sake
 Post-verb noun phrases \item Post-verb prepositional phrases \end{enumerate}
 
 The process from this point differs for active and passive verbs, but only in 
-where each search takes place. Active verbs look for (1) at the closest S-level above the verb, i.e. the 
+where each search takes place. Active verbs look for (1) at the closest S-level (Sentence node) above the verb, i.e. the 
 nearest point where there will be an NP specifier. It first finds this level via 
 the $get\_S()$ method, and looks to see if the head of the NP specifier is part 
 of a pattern. If a head is found and there is more to the pattern's noun phrase,
@@ -197,7 +198,7 @@ if necessary by the same methods it matched child NP's.
 
 For passive verbs, the process for prepositions is exactly the same. However, it 
 looks for (1) inside the NP's of child PP's with the preposition ``by,'' ``from,'' or 
-``in,''. This is simply a specific case to deal with how English deals with the 
+``in,''. If no such phrase is found, the verb is left without a subject. This is simply a specific case to deal with how English deals with the 
 party that is performing the action in a passive sentence. (3) is found in the 
 same place that (1) is found in the active sentences. 
 
@@ -215,7 +216,7 @@ monument.
                     
                     
    \vspace{10mm}                 
-      \newpage              
+           
 \item The monument was destroyed by protesters. 
 %\vspace{10mm}
 
@@ -266,7 +267,7 @@ a sentence like ``A says it will attack B,'' but what you're looking to code is 
 \subsubsection{$is\_valid()$}
 This method is used to catch a consistent mistake that happens in CoreNLP when a 
 past participle is used as an adjective in front of a noun, but is instead coded 
-as a verb.
+as a verb. 
 
 \subsection{Event extraction}
 One call to the $get\_meaning()$ method of the uppermost VP will cause the rest 
@@ -292,7 +293,8 @@ The patterns in the dictionaries should now follow a few simple rules:
   \item The intended pattern should contain exactly one verb: the verb being 
   matched
   \item The pattern entries should be minimal, i.e. the smallest 
-  amount of information necessary to capture the intended phrases.
+  amount of information necessary to capture the intended phrases. This is just 
+  to keep the dictionary small but effective.
   \item The pattern has up to four parts: Pre-verb nouns, Pre-verb Prepositions,
   Post-verb nouns, Post-verb prepositions. 
 \end{enumerate}
@@ -301,7 +303,7 @@ the parser with more syntactic information:
 \begin{itemize}
   \item Unmarked words are nouns or particles. These nouns are phrase heads.
   \item \{Bracketed phrases\} are for specifying things that can't be covered by 
-  a single noun. The last word in the brackets should be the head. 
+  a single noun, e.g. (necessary) adjectives, complex nouns, etc.. The last word in the brackets should be the head. 
   \item Prepositional phrases are (in parentheses). The first word is the 
   preposition, the rest is considered as nouns are.
   \item Note that these prepositional markers can be combined (with \{Noun Phrases\})
@@ -328,7 +330,9 @@ most part they follow the descriptions here, but some top-level codes have uniqu
 which don't follow these specifically. Notice that not all 
 combinations refer to CAMEO codes. This is intentional, and means that if we 
 wanted to code things beyond CAMEO we could. The strength of this is 
-predictability and the possibility of semantic addition.
+predictability and the possibility of semantic addition. When returning the 
+event code, Petrarch converts back to CAMEO for the sake of 
+reverse compatibility.
 
 \vspace{12mm}
 \begin{tabular}{llll}
@@ -381,7 +385,7 @@ Petrarch would code this sentence as \textit{ISR PSEGZA 112} with the following 
                       
                     \Tree [.S  [.NP  [.\color{red}{+ISR} [.NNP {\bf ISRAEL}  ]  ] ] 
 [.VP  [.{\it \color{red}{ISR} \color{blue}{PSEGZA} \color{black}{ 112}} [.VBD {\bf SAID}  ] [.SBAR  [.S  [.NP  [.{} [.DT {\bf A}  ] [.JJ {\bf MORTAR}  ] [.NN {\bf BOMB}  ]  ] ] 
-[.VP  [.{\it \color{blue}{PSEGZA} \color{orange}{ISR} \color{black}{190}} [.VBD {\bf WAS}  ] [.VP  [.{\it \color{blue}{PSEGZA} \color{orange}{ISR} \color{black}{190}} [.VBN {\bf FIRED}  ] [.PP  [.IN {\bf AT}  ] [.NP  [.\color{orange}{+ISR} [.PRP {\bf IT}  ]  ] ] 
+[.VP  [.{\it \color{blue}{PSEGZA} \color{orange}{ISR} \color{black}{190}} [.VBD {\bf WAS}  ] [.VP  [.{\it \color{blue}{PSEGZA} \color{orange}{ISR} \color{black}{190}} [.VBN {\bf LAUNCHED}  ] [.PP  [.IN {\bf AT}  ] [.NP  [.\color{orange}{+ISR} [.PRP {\bf IT}  ]  ] ] 
  ] [.PP  [.IN {\bf FROM}  ] [.NP  [.\color{blue}{+PSEGZA} [.NP  [.{\color{blue}{+PSEGZA}} [.DT {\bf THE}  ] [.NNP {\bf GAZA}  ] [.NNP {\bf STRIP}  ]  ] ] 
 [.PP  [.IN {\bf ON}  ] [.NP  [.NNP {\bf TUESDAY}  ]  ] ] 
   ] ] 
@@ -392,9 +396,11 @@ Petrarch would code this sentence as \textit{ISR PSEGZA 112} with the following 
 [.. {\bf .}  ]  ]   \end{tikzpicture}
 
 The color coding shows where the actor codes come from. The significant steps taken in this parse involve the verbs ``said'' and 
-``fired,'' and the pronoun ``it.'' The pronoun coreference follows the 
+``flaunched,'' and the pronoun ``it.'' The pronoun coreference follows the 
 non-reflexive matching process described above. When Petrarch is analyzing 
-``fired,'' it \begin{enumerate} \item Identifies the verb as passive 
+``launched,'' it \begin{enumerate} 
+\item Identifies the verb as passive 
+\item Finds the patterns for this verb
 \item Finds the target under the prepositional phrase with ``it'' 
 \item Identifies the antecedent of  ``it'' to be ``ISR''  
 \item Finds the source under the prepositional phrase with ``from''
@@ -407,6 +413,23 @@ Then, the analysis of ``said'' follows the process:
   = a b 112
   \item Transforms this into \textit{ISR PSEGZA 112}.
 \end{enumerate}
+
+\section{Works Cited}
+\begin{thebibliography}{9}
+
+\bibitem{lamport94}
+Schrodt, Philip A. 2001. "Automated Coding of International Event Data Using Sparse Pars-
+ing Techniques." Paper presented at the International Studies Association, Chicago, 21-24 February 2001.
+
+\bibitem{lamport94}
+Schrodt, Philip A. 2012. "Precedents, Progress and Prospects in Political Event Data." Inter-
+national Interactions 38(5):546–569.
+
+\bibitem{lamport94}
+Schrodt, Philip A., Omur Yilmaz, Deborah J. Gerner and Dennis Hermrick. 2008. "Coding Sub-State Actors using the CAMEO (Conflict and Mediation Event Observations) Actor Coding Framework." International Studies Association, San Francisco, March 2008.
+
+
+\end{thebibliography}
 
 
 \end{document}  

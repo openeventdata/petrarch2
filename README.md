@@ -1,6 +1,8 @@
 PETRARCH
 ========
 
+[![Join the chat at https://gitter.im/openeventdata/petrarch2](https://badges.gitter.im/openeventdata/petrarch2.svg)](https://gitter.im/openeventdata/petrarch2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Documentation Status](https://readthedocs.org/projects/petrarch2/badge/?version=latest)](http://petrarch2.readthedocs.org/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/openeventdata/petrarch2.svg?branch=master)](https://travis-ci.org/openeventdata/petrarch2)
 

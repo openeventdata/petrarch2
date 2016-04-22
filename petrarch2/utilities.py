@@ -27,7 +27,10 @@
 # Report bugs to: john.b30@gmail.com
 #
 # REVISION HISTORY:
-# Summer-14:	Initial version
+#    Summer-14:	Initial version
+#    April 2016 - added extract_phrases() 
+
+# pas 16.04.22: print() statements commented-out with '# --' were used in the debugging and can probably be removed
 # ------------------------------------------------------------------------
 
 
@@ -97,6 +100,124 @@ def parse_to_text(parse):
         r += " " + item
     return r
 
+
+def extract_phrases(sent_dict,sent_id):
+    """  
+    Text extraction for PETRglobals.WriteActorText and PETRglobals.WriteEventText 
+
+    Parameters
+    ----------
+
+    story_dict: Dictionary.
+                Story-level dictionary as stored in the main event-holding dictionary within PETRARCH.
+
+    story_id: String.
+                Unique StoryID in standard PETRARCH format.
+
+    Returns
+    -------
+
+    text_dict: Dictionary indexed by event 3-tuple.
+               List of texts in the order  [source_actor, target_actor, event]
+    """
+
+    def get_text_phrase(phst):
+        """ find the words in original sentence text corresponding to the string phst, putting in ... when the words
+            are not consecutive and < wd > for elements not recognized, which are usually actor codes or synonym sets. """
+        phlist = phst.split(' ')  
+        curloc = 0
+        lcphst = ''
+        for wd in phlist:
+            newloc = ucont.find(wd,curloc)
+            if newloc >= 0:
+                if lcphst and newloc > curloc + 1: # add elipses if words are not consecutive
+                    lcphst += ' ...'
+                curloc = newloc + len(wd)
+                lcphst += ' ' + content[newloc:curloc]
+            else:
+                lcphst += ' <' + wd + '>'  # use <...> for elements not recognized
+# --        print('   GTP:',lcphst)
+        return lcphst.strip()    
+    
+    def get_actor_phrase(code,typest):
+        if code.startswith('---'):
+            code = '~' + code[3:]
+        noun_list = []
+        for ca in sent_dict['meta_2']['nouns']:  # make (text, code) tuples from any sets of compounds
+            if len(ca[1]) == 1:
+                noun_list.append(ca)
+            else:
+                for ka in range(len(ca[1])):
+                    if ca < len(ca[0]):   
+                        noun_list.append((ca[0][ka],ca[1][ka]))
+                    else:
+                        noun_list.append((ca[0][-1],ca[1][ka]))  # appears this can occur if the same string, e.g. "MINISTER" applies to multiple codes
+                                            
+# --        print(' -- ',noun_list)
+        for ca in noun_list:
+            if code in ca[1]:
+# --                print(' -- match:',code, ca)
+                tarst = ''
+                for st in ca[0]:
+                    tarst += st
+# --                print(typest + ' text:',tarst)
+                return get_text_phrase(tarst[1:])
+        else:
+            print(typest + ' text not found')
+            logger.info('ut.EP {} text not found'.format(sent_id, typest))
+            return '---'
+
+    def get_event_phrase(verb_list):
+        phst = ''
+        words = ''
+        for st in verb_list:
+# --            print('   GEP1:',st)
+            if isinstance(st,basestring):  # handles those  ~ a (a b Q) SAY = a b Q cases I haven't figured out yet [pas 16.04.20]
+                continue
+            if len(st) > 1:
+                if '[' in st[1]:  # create a phrase for a pattern
+                    sta = st[1][1:st[1].find('[')].strip()
+                    words = sta.replace('*',st[0])
+                    words = words.replace('(','')
+                    words = words.replace(')','')
+                elif isinstance(st[1],tuple):   # create phrase based on a tuple patterns
+                    words = st[0]
+                    for tp in st[1:]:
+                        words += ' ' + tp[0] 
+                        if len(tp[1]) > 0:
+                            words += ' ' + tp[1][0]
+                        else:
+                            words += ' ---'
+                else:
+                    words = str(st)
+            else:
+                if st[0]:   # in very rare circumstances, st[0] == None
+                    words = st[0]
+            phst = words + ' ' + phst
+# --        print('   GEP2:',phst)
+        return get_text_phrase(phst)
+               
+    logger = logging.getLogger('petr_log')
+    text_dict = {}  # returns texts in lists indexed by evt
+# --    print('EP1:',sent_dict['content'])
+# --    print('EP2:',sent_dict['meta_2'])
+    content = sent_dict['content']
+    ucont = sent_dict['content'].upper()
+    keylist = list(sent_dict['meta_2'].keys())
+    if len(keylist) < 2:
+        logger.info('ut.EP {} len(keylist) < 2 {}'.format(sent_id, keylist))
+    for evt in keylist:
+        if evt == 'nouns':
+            continue
+    #    print('EP3:',evt)
+        text_dict[evt] = ['','','']
+        if PETRglobals.WriteActorText :
+            text_dict[evt][0] = get_actor_phrase(evt[0],'Source')
+            text_dict[evt][1] = get_actor_phrase(evt[1],'Target')
+        if PETRglobals.WriteEventText :
+            text_dict[evt][2] = get_event_phrase(sent_dict['meta_2'][evt])
+    return text_dict
+
 def story_filter(story_dict, story_id):
     """
     One-a-story filter for the events. There can only be only one unique
@@ -126,9 +247,18 @@ def story_filter(story_dict, story_id):
         sent_dict = story_dict['sents'][sent]
         sent_id = '{}_{}'.format(story_id, sent)
         if 'events' in sent_dict:
+            """print('ut:SF1',sent,'\n',story_dict['sents'][sent])
+            print('ut:SF2',sent,'\n',story_dict['meta'])
+            print('ut:SF3',sent,'\n',story_dict['sents'][sent]['meta_2'])"""
+            if  PETRglobals.WriteActorText or PETRglobals.WriteEventText:
+                text_dict = extract_phrases(story_dict['sents'][sent],sent_id)
+            else:
+                text_dict = {}
+
             events = story_dict['sents'][sent]['events']
             for event in events:
                 # do not print unresolved agents
+#                print('##',event)
                 try:
                     alist = [story_date]
                     alist.extend(event)
@@ -145,6 +275,12 @@ def story_filter(story_dict, story_id):
                     # out
                     filtered[event_tuple]['ids'] = []
                     filtered[event_tuple]['ids'].append(sent_id)
+                    if event_tuple[1:] in text_dict:  # log an error here if we can't find a non-null case?
+                        if PETRglobals.WriteActorText :
+                            filtered[event_tuple]['actortext'] = text_dict[event_tuple[1:]][:2]
+                        if PETRglobals.WriteEventText :
+                            filtered[event_tuple]['eventtext'] = text_dict[event_tuple[1:]][2]
+
                 except IndexError:
                     pass
         else:

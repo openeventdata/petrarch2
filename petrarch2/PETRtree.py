@@ -8,6 +8,7 @@ import PETRglobals
 import PETRreader
 import time
 import utilities
+import types
 
 
 
@@ -28,8 +29,9 @@ import utilities
 #   Revision history:
 #       July 2015 - Created
 #       August 2015 - First release
+#       April 2016 - Bugs causing crashes in very low frequency cases corrected 
 
-
+# pas 16.04.22: print() statements commented-out with '# --' were used in the debugging and can probably be removed
 
 class Phrase:
     """
@@ -131,6 +133,7 @@ class Phrase:
                     List of actor codes
         
         """
+# --        print('Prc-entry') # --
         if not codes:
             return [],[]
         
@@ -271,7 +274,9 @@ class NounPhrase(Phrase):
         text = ""
         for child in self.children:
             if isinstance(child,PrepPhrase):
+# --                  print('NPgt-276:',child.get_text())  # --
                 m = self.resolve_codes(child.get_meaning())
+# --                print('NPgt-277:')  # --
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
@@ -342,7 +347,8 @@ class NounPhrase(Phrase):
         VPcodes = []
         NPcodes = []
         codes = []
-        
+ # --         print('NPgm-0:',self.get_text())  # --
+      
         matched_txt = []
         
         for child in self.children:
@@ -355,6 +361,7 @@ class NounPhrase(Phrase):
             
             elif child.label == "PP":
                 m = self.resolve_codes(child.get_meaning())
+# --                  print('gm-1:',m)  # --
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
@@ -368,8 +375,7 @@ class NounPhrase(Phrase):
                         VPcodes += child.get_theme()
                     else:
                         pass
-                        # We could add the subtree here, but there shouldn't be
-                        # any codes with VP components
+                        # We could add the subtree here, but there shouldn't be any codes with VP components
             elif child.label == "PRP":
                 # Find antecedent
                 not_found = True
@@ -386,10 +392,12 @@ class NounPhrase(Phrase):
                     
                     if (not local) or (reflexive and local):
                         for child in level.parent.children:
-                            if isinstance(child,NounPhrase) and not child.get_meaning() == "~" :  # Do we just want to pick the first?
-                                not_found = False
-                                codes += child.get_meaning()
-                                break
+                            if isinstance(child,NounPhrase): 
+# --                                  print('gm-394:',child.get_text())  # --
+                                if not child.get_meaning() == "~" :  # Do we just want to pick the first?
+                                    not_found = False
+                                    codes += child.get_meaning()
+                                    break
 
                     level = level.parent
                     
@@ -490,11 +498,25 @@ class PrepPhrase(Phrase):
         """
         Return the meaning of the non-preposition constituent, and store the
         preposition.
+        
+        Note: pas 16.04.22
+        Add this len() > 0 check to get around a very rare (about 0.001% of LN sentences) cases where a (PP (PRP structure
+        caused an infinite recursion between NounPhrase.get_meaning() and PrepPhrase.get_meaning() in circumstances where
+        self.children[1].get_text() gave an empty string. This solves the problem but I'm not completely confident this is 
+        the right place to trap it: in the process of debugging I noticed that there were cases where this recursion 
+        seemed to go a lot deeper than necessary, continuing with the same string, on some non-empty strings, though it 
+        did not crash.  
         """
+# --          print('PPgm-entry')  # --
         self.prep = self.children[0].text
-        if len(self.children) > 1 and not self.children[1].color:
-            
-            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""
+        if len(self.children) > 1 and not self.children[1].color:            
+            if isinstance(self.children[1],NounPhrase) and len(self.children[1].get_text()[0]) > 0: # see note above
+# --                  print('PPgm-503',self.children[1].get_text())  # --
+                self.meaning = self.children[1].get_meaning() 
+            else:
+                self.meaning =  ""
+#            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""  # code prior to the correction
+# --            print('PPgm-2',self.meaning)  # --
             self.head = self.children[1].get_head()[0]
             
         return self.meaning
@@ -542,6 +564,9 @@ class VerbPhrase(Phrase):
         self.valid = self.is_valid()
         self.S  = None
     
+# --      def __getitem__(self, key):   # 16.04.21 Added during debugging; may not be needed # --  
+# --          return self.data[key]
+
     def is_valid(self):
         """
         This method is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
@@ -781,6 +806,7 @@ class VerbPhrase(Phrase):
         self.passive: boolean
                       Whether or not it is passive
         """
+# --          print('cp-entry')
         self.check_passive = self.return_passive
         if True:
             if self.children[0].label in ["VBD","VBN"]:
@@ -804,6 +830,7 @@ class VerbPhrase(Phrase):
 
 
     def return_S(self):
+# --          print('rS-entry')
         return self.S
 
     def get_S(self):
@@ -822,6 +849,7 @@ class VerbPhrase(Phrase):
         level: VerbPhrase object
                Lowest non-TO S-level phrase object above the verb
         """
+# --          print('gS-entry')
         self.get_S = self.return_S
         not_found = True
         level = self
@@ -899,7 +927,11 @@ class VerbPhrase(Phrase):
 
         events  = []
         
-        negated = (lower and self.children[1].text) == "NOT"
+        if len(self.children) > 1:
+            negated = (lower and self.children[1].text) == "NOT" 
+        else:
+            negated = False
+            
         for item in lower:
             
             if negated:
@@ -1021,10 +1053,14 @@ class VerbPhrase(Phrase):
                     except:
                         pass
         
+# --          print('++1')
         match = self.match_pattern()
+# --          print('++2')
         if match:
+# --              print('++4',match)
+# --              print('++3',match['line'])
             meta.append(match['line'])
-            print(match)
+# --              print(match)
             active, passive  = utilities.convert_code(match['code'])
             self.code = active
         if passive and not active:
@@ -1145,20 +1181,23 @@ class VerbPhrase(Phrase):
 
         def match_phrase(path,phrase):
             # Having matched the head of the phrase, this matches the full noun phrase, if specified
+# --              print('mph-entry')
             if not phrase:
+# --                  print('mph-False')
                 return False
             for item in filter(lambda b: b.text in path,phrase.children):
                 subpath = path[item.text]
+# --                  print('mph-rr-1')
                 match = reroute(subpath,lambda a: match_phrase(a,item.head_phrase))
                 if match:
                     item.color = True
                     return match
-        
-            
+# --              print('mph-reroute')                    
             return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
         
         def match_noun(path,phrase = self if not self.check_passive() else self.get_S(),preplimit = 0):
             # Matches a noun or head of noun phrase
+# --              print('mn-entry')
             noun_phrases = []
             if not phrase:
                 return False
@@ -1188,52 +1227,77 @@ class VerbPhrase(Phrase):
 
                     # Then check the other siblings
                     match = reroute(subpath,(lambda a : match_phrase(a,item.head_phrase))
-                            if isinstance(item,NounPhrase) else None )
+                            if isinstance(item,NounPhrase) else None ) # pas 16.04.21: Trapped None by having reroute return False
                     if match:
                         headphrase.children[-1].color = True
                         return match
             if '^' in path:
                 phrase.color = True
+# --                  print('mn-reroute1')
                 return reroute(path['^'], lambda a: match_phrase(a,phrase.head_phrase))
+# --              print('mn-reroute2')
             return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
 
         def match_prep(path,phrase=self):
             # Matches preposition
+# --              print('mp-entry')
             for item in filter(lambda b: isinstance(b,PrepPhrase),phrase.children):
                 prep = item.children[0].text
                 if prep in path:
                     subpath = path[prep]
-                    match = reroute(subpath,lambda a : match_noun(a,item.children[1])
-                                             if len(item.children) > 1 else
-                                            lambda a: False
-                    , match_prep)
+# --                      print('mp-reroute1')                    
+                    match = reroute(subpath,
+                                    lambda a : match_noun(a,item.children[1])if len(item.children) > 1 else False,
+                                    match_prep)
                     if match:
+# --                        print('mp-False')
                         return match
+# --              print('mp-reroute2')                    
             return reroute(path, o2 = match_prep)
 
         def reroute(subpath, o1 = match_noun, o2 = match_noun, o3 = match_prep, o4 = match_noun, exit = 1):
+# --                  print('rr-entry:') # ,subpath
+                if not o1:  # match_noun() can call reroute() with o1 == None; guessing returning False is the appropriate response pas 16.04.21
+                    return False
                 if '-' in subpath:
+                    """print('rr-- entry') # --  
+                    print('rr--:',subpath['-'])
+                    print('rr--1:',o1(subpath['-']))"""
                     match = o1(subpath['-'])
+                    """if isinstance(match,types.FunctionType): # --  
+                        print('rr--: match is function')
+                    else:
+                        print('rr--: match is not a function')                        
+                    print('rr--2',match)"""
                     if match:
+# --                          print('rr-- match')
                         return match
                         
                 if ',' in subpath:
+# --                      print('rr-,')
                     match = o2(subpath[','])
                     if match:
                         return match
     
                 if '|' in subpath:
+# --                      print('rr-|')
                     match = o3(subpath['|'])
                     if match:
                         return match
                 
                 if '*' in subpath:
+# --                      print('rr-*')
+                    #print('rr-*:',subpath['*'])
                     match = o4(subpath['*'])
+# --                      print('rr-*2',match)
                     if match:
                         return match
                 
                 if '#' in subpath and exit:
+# --                      print('rr-#')
                     return subpath['#']
+                    
+# --                  print('rr-False')
                 return False
         
         # Match pattern
@@ -1415,7 +1479,7 @@ class Sentence:
         
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
         meta = {'nouns' : self.metadata['nouns'] }
-        #print(events)
+#        print('GF1',events)
         valid = []
         try:
             for sent in events:
@@ -1454,9 +1518,9 @@ class Sentence:
             return None, None
 
 
-    def print_to_file(self,root,file = ""):
-        """
-        Prints a LaTeX representation of the tree to a file, calls the recursive method
+    '''def print_to_file(self,root,file = ""):
+
+        """Prints a LaTeX representation of the tree to a file, calls the recursive method
         print_tree() on the tree to print all of it
         """
         print("""   
@@ -1468,8 +1532,15 @@ class Sentence:
         print("\\end{tikzpicture}}\n\n", file=file)
         print("EVENTS: ",self.get_events(), file = file)
         print("\\\\\nTEXT: ", self.txt, file=file)
-        print("\\newpage",file=file)
+        print("\\newpage",file=file)'''
     
+    def print_to_file(self,root,file = ""):
+        """
+        Simplified version of the above for GF
+        """
+        print("EVENTS: ",self.get_events(), file = file)
+        txtstrg = self.txt.encode('ascii', 'ignore').decode('ascii')  # <16.03.29> For now, just zap the unicode
+        print("TEXT: ", txtstrg, file=file)
     
     def print_tree(self, root, indent="", f=""):
         """

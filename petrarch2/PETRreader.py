@@ -183,6 +183,7 @@ def parse_Config(config_path):
         PETRglobals.StoponError = get_config_boolean('stop_on_error')
         PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
         PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
+        PETRglobals.WriteEventText = get_config_boolean('write_event_text')
 
         if parser.has_option(
                 'Options', 'require_dyad'):  # this one defaults to True
@@ -2064,7 +2065,7 @@ def read_xml_input(filepaths, parsed=False):
                     entry_id, sent_id = story.attrib['id'].split('_')
 
                     text = story.find('Text').text
-                    text = text.replace('\n', '').replace('  ', '')
+                    text = text.replace('\n', ' ').replace('  ', ' ')
                     sent_dict = {'content': text, 'parsed': parsed_content}
                     meta_content = {'date': story.attrib['date'],
                                     'source': story.attrib['source']}
@@ -2074,7 +2075,7 @@ def read_xml_input(filepaths, parsed=False):
                     entry_id = story.attrib['id']
 
                     text = story.find('Text').text
-                    text = text.replace('\n', '').replace('  ', '')
+                    text = text.replace('\n', ' ').replace('  ', ' ')
                     split_sents = _sentence_segmenter(text)
                     # TODO Make the number of sents a setting
                     sent_dict = {}

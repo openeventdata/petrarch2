@@ -26,8 +26,14 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import PETRglobals  # global variables
 import utilities
+import codecs
 
+def get_actor_text(meta_strg):
+    """ Extracts the source and target strings from the meta string. """
+    pass
+    
 
 def write_events(event_dict, output_file):
     """
@@ -53,8 +59,10 @@ def write_events(event_dict, output_file):
         story_dict = event_dict[key]
         if not story_dict['sents']:
             continue    # skip cases eliminated by story-level discard
+#        print('WE1',story_dict)
         story_output = []
         filtered_events = utilities.story_filter(story_dict, key)
+#        print('WE2',filtered_events)
         if 'source' in story_dict['meta']:
             StorySource = story_dict['meta']['source']
         else:
@@ -97,20 +105,34 @@ def write_events(event_dict, output_file):
 
             if url:
                 event_str += '\t{}\t{}\t{}'.format(ids, url, StorySource)
-                story_output.append(event_str)
             else:
                 event_str += '\t{}\t{}'.format(ids, StorySource)
-                story_output.append(event_str)
+                
+            if PETRglobals.WriteActorText :
+                if 'actortext' in filtered_events[event]:
+                    event_str += '\t{}\t{}'.format(filtered_events[event]['actortext'][0],filtered_events[event]['actortext'][1])
+                else:
+                    event_str += '\t---\t---'
+            if PETRglobals.WriteEventText :
+                if 'eventtext' in filtered_events[event]:
+                    event_str += '\t{}'.format(filtered_events[event]['eventtext'])
+                else:
+                    event_str += '\t---'
+                
+            story_output.append(event_str)
 
         story_events = '\n'.join(story_output)
         event_output.append(story_events)
 
     # Filter out blank lines
     event_output = [event for event in event_output if event]
-    final_event_str = '\n'.join(event_output)
-    #if output_file:
-    #    with open(output_file, 'w') as f:
-    #,        f.write(final_event_str)
+    if output_file:
+        f = codecs.open(output_file, encoding='utf-8', mode = 'w')
+        for str in event_output:
+#             field = str.split('\t')  # debugging
+#            f.write(field[5] + '\n')
+            f.write(str + '\n')
+        f.close()
 
 
 def pipe_output(event_dict):

@@ -118,6 +118,11 @@ def write_events(event_dict, output_file):
                     event_str += '\t{}'.format(filtered_events[event]['eventtext'])
                 else:
                     event_str += '\t---'
+            if PETRglobals.WriteActorRoot :
+                if 'actorroot' in filtered_events[event]:
+                    event_str += '\t{}\t{}'.format(filtered_events[event]['actorroot'][0],filtered_events[event]['actorroot'][1])
+                else:
+                    event_str += '\t---\t---'
                 
             story_output.append(event_str)
 

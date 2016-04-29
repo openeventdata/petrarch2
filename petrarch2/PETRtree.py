@@ -10,6 +10,8 @@ import time
 import utilities
 import types
 
+# -- from inspect import getouterframes, currentframe  # -- # used to track the levels of recursion
+
 
 
 #   PETRtree.py
@@ -133,7 +135,7 @@ class Phrase:
                     List of actor codes
         
         """
-# --        print('Prc-entry') # --
+# --        print('Prc-entry',len(getouterframes(currentframe(1))),codes) # --
         if not codes:
             return [],[]
         
@@ -142,6 +144,10 @@ class Phrase:
         for code in codes:
             if not code:
                 continue
+            """if isinstance(code,tuple):
+                actorcodes.append(code)
+            else:
+                agentcodes.append(code)"""
             if code.startswith("~"):
                 agentcodes.append(code)
             else:
@@ -168,20 +174,24 @@ class Phrase:
         """
         
         
+# --        print('mc-entry',actors,agents)
         codes = set()
         mix = lambda a, b : a + b if not b in a else a
         actors = actors if actors else ['~']
         for ag in agents:
             if ag == '~PPL' and len(agents) > 1:
                 continue
+#            actors = map( lambda a : mix( a[0], ag[1:]), actors)
             actors = map( lambda a : mix( a, ag[1:]), actors)
         
+# --        print('mc-1',actors)
         return filter(lambda a : a not in ['','~','~~',None],actors)
         
         
         
-        
+        # 16.04.25 hmmm, this is either a construct of utterly phenomenal subtlety or else we never hit this code...
         codes = set()
+        print('WTF-1')
         for act in (actors if actors else ['~']):
             for ag in (agents if agents else ['~']) :
                 if ag == "~PPL" and len(agents) > 1:
@@ -274,9 +284,7 @@ class NounPhrase(Phrase):
         text = ""
         for child in self.children:
             if isinstance(child,PrepPhrase):
-# --                  print('NPgt-276:',child.get_text())  # --
                 m = self.resolve_codes(child.get_meaning())
-# --                print('NPgt-277:')  # --
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
@@ -335,18 +343,39 @@ class NounPhrase(Phrase):
                     return code
         except Exception as e:
             #print(e)
-            return code
-        
+            return code        
 
         return code
 
 
     def get_meaning(self):
+
+        def recurse(path, words, length,so_far= ""):
+            
+# --            print('NPgm-rec-lev:',len(getouterframes(currentframe(1))))  # --
+            
+            if words and words[0] in path:
+                match = recurse(path[words[0]],words[1:],length + 1 , so_far + " " + words[0])
+                if match:
+                    return match
+            if '#' in path:
+                if isinstance(path["#"],list):
+                    code = self.check_date(path['#'])
+                    if not code is None:
+                        """print('NPgm-rec-1:',code)  # --
+                        print('NPgm-rec-1.1:',path['#'][-1])"""
+                        return [code] , so_far, length, [path['#'][-1]]   # 16.04.25 this branch always resolves to an actor; path['#'][-1] is the root string
+                else:
+# --                    print('NPgm-rec-2:',path['#'])
+                    return [path['#']], so_far, length   # 16.04.25 this branch always resolves to an agent
+            return False
+
         text_children = []
         PPcodes = []
         VPcodes = []
         NPcodes = []
         codes = []
+        roots = []
  # --         print('NPgm-0:',self.get_text())  # --
       
         matched_txt = []
@@ -393,7 +422,6 @@ class NounPhrase(Phrase):
                     if (not local) or (reflexive and local):
                         for child in level.parent.children:
                             if isinstance(child,NounPhrase): 
-# --                                  print('gm-394:',child.get_text())  # --
                                 if not child.get_meaning() == "~" :  # Do we just want to pick the first?
                                     not_found = False
                                     codes += child.get_meaning()
@@ -401,48 +429,42 @@ class NounPhrase(Phrase):
 
                     level = level.parent
                     
-        
-        def recurse(path, words, length,so_far= ""):
-            
-            if words and  words[0] in path:
-                match = recurse(path[words[0]],words[1:],length + 1 , so_far + " " + words[0])
-                if match:
-                    return match
-            if '#' in path:
-                if isinstance(path["#"],list):
-                    code = self.check_date(path['#'])
-                    if not code is None:
-                        return [code] , so_far, length
-                else:
-                    return [path['#']], so_far, length
-            return False
-        
+                
+        # check whether there are codes in the noun Phrase
         index = 0
         while index < len(text_children):
-            match = recurse(PETRglobals.ActorDict,text_children[index:],0)
+            match = recurse(PETRglobals.ActorDict,text_children[index:],0)  # checking for actors
             if match:
+# --                print('NPgm-m-1:',match)
                 codes += match[0]
+                roots += match[3]
                 index += match[2]
                 matched_txt += [match[1]]
+# --                print('NPgm-1:',matched_txt)
                 continue
 
-            match = recurse(PETRglobals.AgentDict,text_children[index:],0)
+            match = recurse(PETRglobals.AgentDict,text_children[index:],0)  # checking for agents
             if match:
+# --                print('NPgm-2.0:',roots)
                 codes += match[0]
+                roots += [['~']]
                 index += match[2]
                 matched_txt += [match[1]]
+                """print('NPgm-2:',matched_txt) # --
+                print('NPgm-2.1:',roots)"""
                 continue
             index += 1
-            
-            
-        
-        
+                        
+        """print('NPgm-m-lev:',len(getouterframes(currentframe(1))))   # --            
+        print('NPgm-m-codes:',codes)
+        print('NPgm-m-roots:',roots)"""
+        # combine the actor/agent codes
         actorcodes,agentcodes = self.resolve_codes(codes)
         PPactor, PPagent = self.resolve_codes(PPcodes)
         NPactor, NPagent = self.resolve_codes(NPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
         if not actorcodes:
-            actorcodes += NPactor
+            actorcodes += NPactor  # don't really need += here, right? pas 16.04.26
             if not actorcodes:
                 actorcodes += PPactor
                 if not actorcodes:
@@ -455,11 +477,17 @@ class NounPhrase(Phrase):
                 if not agentcodes:
                     agentcodes += VPagent
 
+        """if len(actorcodes) > 0:
+            print('NPgm-m-actorcodes:',actorcodes)
+            print('NPgm-m-roots     :',roots)"""
         
         self.meaning = self.mix_codes(agentcodes,actorcodes)
         self.get_meaning = self.return_meaning
+        """print('NPgm-3:',self.meaning)
+        print('NPgm-4:',matched_txt)"""
         if matched_txt:
-            self.sentence.metadata['nouns'] += [(matched_txt,self.meaning)]
+            self.sentence.metadata['nouns'] += [(matched_txt,self.meaning, roots[:len(matched_txt)])] 
+#        self.sentence.print_nouns('NPgm-5:') # --
         return self.meaning
 
 
@@ -507,11 +535,11 @@ class PrepPhrase(Phrase):
         seemed to go a lot deeper than necessary, continuing with the same string, on some non-empty strings, though it 
         did not crash.  
         """
-# --          print('PPgm-entry')  # --
+# --        print('PPgm-entry')  # --
         self.prep = self.children[0].text
         if len(self.children) > 1 and not self.children[1].color:            
             if isinstance(self.children[1],NounPhrase) and len(self.children[1].get_text()[0]) > 0: # see note above
-# --                  print('PPgm-503',self.children[1].get_text())  # --
+# --                print('PPgm-503',self.children[1].get_text())  # --
                 self.meaning = self.children[1].get_meaning() 
             else:
                 self.meaning =  ""
@@ -564,9 +592,6 @@ class VerbPhrase(Phrase):
         self.valid = self.is_valid()
         self.S  = None
     
-# --      def __getitem__(self, key):   # 16.04.21 Added during debugging; may not be needed # --  
-# --          return self.data[key]
-
     def is_valid(self):
         """
         This method is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
@@ -1260,15 +1285,7 @@ class VerbPhrase(Phrase):
                 if not o1:  # match_noun() can call reroute() with o1 == None; guessing returning False is the appropriate response pas 16.04.21
                     return False
                 if '-' in subpath:
-                    """print('rr-- entry') # --  
-                    print('rr--:',subpath['-'])
-                    print('rr--1:',o1(subpath['-']))"""
                     match = o1(subpath['-'])
-                    """if isinstance(match,types.FunctionType): # --  
-                        print('rr--: match is function')
-                    else:
-                        print('rr--: match is not a function')                        
-                    print('rr--2',match)"""
                     if match:
 # --                          print('rr-- match')
                         return match
@@ -1287,9 +1304,7 @@ class VerbPhrase(Phrase):
                 
                 if '*' in subpath:
 # --                      print('rr-*')
-                    #print('rr-*:',subpath['*'])
                     match = o4(subpath['*'])
-# --                      print('rr-*2',match)
                     if match:
                         return match
                 
@@ -1437,6 +1452,13 @@ class Sentence:
         return root
 
 
+    def print_nouns(self,label):  # --    
+        """ Debugging print """
+        print(label)
+        for la in self.metadata['nouns']:
+            print('    ',la)
+
+
     def get_metadata(self, entry):
     
         metadict = self.metadata
@@ -1479,7 +1501,9 @@ class Sentence:
         
         events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
         meta = {'nouns' : self.metadata['nouns'] }
-#        print('GF1',events)
+        """print('GF1',events) # --  
+# --        print('GF2',meta) # --  
+        self.print_nouns('GF2') # -- """ 
         valid = []
         try:
             for sent in events:
@@ -1512,6 +1536,7 @@ class Sentence:
         
             self.events = list(set(valid))
             self.get_events = self.return_events
+# --            print('GF3',valid,'\nGF4',meta) # --  
             return valid , meta
         except Exception as e:
             print("Error in parsing:",e)

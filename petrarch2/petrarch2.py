@@ -250,7 +250,7 @@ def do_coding(event_dict, out_file):
                 t1 = time.time()
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
                 print(sentence.txt)
-                coded_events , meta = sentence.get_events()
+                coded_events , meta = sentence.get_events()  # this is the entry point into the processing in PETRtree
 #                print(meta)
                 code_time = time.time()-t1
                 event_dict[key]['meta']['verbs'] = meta
@@ -267,7 +267,20 @@ def do_coding(event_dict, out_file):
                 
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
-                    event_dict[key]['sents'][sent]['meta_2'] = meta  # pas 16.04.20 this field is used by the actor and event text extraction routines
+                    event_dict[key]['sents'][sent]['meta'] = meta  
+# --                    print('+++',event_dict[key]['sents'][sent])  # --
+                    if  PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot :
+                        text_dict = utilities.extract_phrases(event_dict[key]['sents'][sent],SentenceID)
+                        if text_dict:
+                            event_dict[key]['sents'][sent]['meta']['actortext'] = {}
+                            event_dict[key]['sents'][sent]['meta']['eventtext'] = {}
+                            event_dict[key]['sents'][sent]['meta']['actorroot'] = {}
+# --                            print('DC1:',text_dict) # --
+                            for evt in coded_events:
+                                event_dict[key]['sents'][sent]['meta']['actortext'][evt] = text_dict[evt][:2]
+                                event_dict[key]['sents'][sent]['meta']['eventtext'][evt] = text_dict[evt][2]
+                                event_dict[key]['sents'][sent]['meta']['actorroot'][evt] = text_dict[evt][3:5]
+
                 if coded_events and PETRglobals.IssueFileName != "":
                     event_issues = get_issues(SentenceText)
                     if event_issues:
@@ -310,6 +323,7 @@ def do_coding(event_dict, out_file):
         "  Sentences without events:",
         NEmpty)
     print("Average Coding time = ", times/sents if sents else 0)
+# --    print('DC-exit:',event_dict)
     return event_dict
 
 

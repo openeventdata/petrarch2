@@ -1333,6 +1333,7 @@ CONSTRUCT
 CREATE 
 DESIGN 
 DEVISE 
+GYMBLE
 ENGINEER  
 ERECT 
 FASHION 
@@ -1871,10 +1872,7 @@ SHOW {SHOWS SHOWING SHOWED SHOWN }  # SHAN  8/5/93
 ---  EXPERIENCE   [---]  ---
 EXPERIENCE 
 LIVE 
-UNDERGO 
-UNDERGOES 
-UNDERGONE 
-UNDERWENT 
+UNDERGO {UNDERGOES UNDERGONE UNDERWENT} 
 
 
 
@@ -2080,8 +2078,6 @@ HIDE {HIDES HIDING HID HIDDEN }
 ---  HURL   [---]  ---
 CAST 
 HURL 
-THREW 
-THROW  
 THROW {THROWS THROWING THREW THROWN }
 - * DOUBT                                             [012]         # CAST
 - * BALLOT                                            [014]         # CAST
@@ -2126,7 +2122,7 @@ DISCOUNT
 DISREGARD 
 FLOUT 
 IGNORE 
-SCOF AT 
++SCOFF_AT {+SCOFFS_AT +SCOFFED_AT +SCOFFING_AT }
 - * {POLITICAL TRUISM}                                [---]         # DEFY
 - * ALLEGATION                                        [010]         # DISCOUNT
 - * CRITICISM                                         [016]         # DEFY
@@ -2341,7 +2337,6 @@ RESERVE
 SAVE 
 SPARE 
 SUSTAIN 
-UPHOLD 
 UPHOLD {UPHOLDS UPHOLDING UPHELD }  # OY 09 Oct 2006
 - * SILENCE                                           [011]         # MAINTAIN
 - * UP {REFORM DRIVE}                                 [024]         # KEEP
@@ -2370,9 +2365,7 @@ UPHOLD {UPHOLDS UPHOLDING UPHELD }  # OY 09 Oct 2006
 ---  MAKE   [---]  ---
 CAUSE 
 INDUCE 
-MADE   # HUX 10/7/97
-MAKE 
-MAKING 
+MAKE {MAKES MADE MAKING}  
 - * VENTURE (WITH VISIT)                              VISIT)[042:043]  # MAKE
 - * PROGRESS (ON &CEASEFIRE)                          [014]         # MAKE
 - * CONTRIBUTION (TO FORCE)                           [0334]        # MAKE
@@ -3242,11 +3235,8 @@ VOID
 
 
 ---  RE_ADMIT   [---]  ---
-RE-ADMIT
-RE-ADMITS
-RE-ADMITTED
-RE-ADMITTING
-READMIT
+RE-ADMIT {RE-ADMITS RE-ADMITTED RE-ADMITTING}
+READMIT {READMITS READMITTED READMITTING}
 
 
 
@@ -3263,7 +3253,6 @@ RE-ESTABLISH # NS 11 Feb 2002
 RE-OPEN
 REESTABLISH  # shan   8/12/93
 REINSTATE  # lrp 22 Apr 2005
-REINSTATE [050] 
 REOPEN
 RESTORE 
 - * &TREATY                                           [030:030]     # REESTABLISH
@@ -3542,6 +3531,7 @@ DISMANTLE
 DISMEMBER 
 DISSECT 
 DIVIDE 
+LOP {LOPPING LOPS LOPPED }
 PARTITION 
 SEPARATE 
 SEVER 
@@ -3579,20 +3569,6 @@ SPLIT {SPLITS SPLITTING }
 - * &PKO                                              [1661]        # CUT
 - * OBSERVER (ON BORDER)                              [1662]        # CUT
 - * DOWN                                              [194]         # CUT
-
-
-
-
----  SEVER   [---]  ---
-CUT
-LOP {LOPPING LOPS LOPPED }
-SEVER  # HUX 10/3/97
-- * {DIPLOMATIC TIES}                                 [161]         # SEVER
-- * RELATIONS                                         [161]         # SEVER
-- * CONTACT                                           [161]         # SEVER
-- * TIES                                              [161]         # SEVER, CUT
-- * &NEGOTIATION                                      [164]         # SEVER
-
 
 
 
@@ -6401,8 +6377,7 @@ LEAD {LEADS LEADING LED }
 MANAGE 
 MONITOR [090] 
 ORDER [100]
-OVERSAW 
-OVERSEE {OVERSEES OVERSEEING OVERSEEN }  # tb 25 Ja 2007
+OVERSEE {OVERSEES OVERSEEING OVERSEEN OVERSAW}  # tb 25 Ja 2007
 PRESCRIBE 
 REGULATE 
 RULE 
@@ -7837,10 +7812,8 @@ RIOT
 GARNER 
 MARSHAL {MARSHALS MARSHALLING MARSHALLED }
 MOBILISE 
-MOBILIZE 
 MOBILIZE   # sha  11/22/93
 MUSTER 
-RALLIED 
 RALLY {RALLIES RALLIED RALLYING}
 SUMMON [040] 
 - * SUPPORTERS                                        [022]         # MOBILISE

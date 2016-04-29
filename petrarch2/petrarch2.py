@@ -67,6 +67,7 @@ def get_version():
 
 def open_tex(filename):
     file = open(filename,'w')
+    '''file.write('Run time: ',
     print("""
 \\documentclass[11pt]{article}
 \\usepackage{tikz-qtree}
@@ -92,7 +93,7 @@ def open_tex(filename):
 \\date{}
 
 \\begin{document}
-""", file = file)
+""", file = file)'''
 
     return file
 
@@ -100,6 +101,7 @@ def open_tex(filename):
 
 def close_tex(file):
 
+    return
     print("\n\\end{document})",file=file)
 
 
@@ -209,7 +211,7 @@ def do_coding(event_dict, out_file):
         prev_code = []
 
         SkipStory = False
-        print('\n\nProcessing {}'.format(key))
+        print('\n\nProcessing story {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
         StorySource = 'TEMP'
         for sent in val['sents']:
@@ -227,7 +229,7 @@ def do_coding(event_dict, out_file):
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
                 
-                print("\n\n\t\t",SentenceID)
+                print("\n",SentenceID)
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 disc = check_discards(SentenceText)
@@ -248,8 +250,8 @@ def do_coding(event_dict, out_file):
                 t1 = time.time()
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
                 print(sentence.txt)
-                coded_events , meta = sentence.get_events()
-                print(meta)
+                coded_events , meta = sentence.get_events()  # this is the entry point into the processing in PETRtree
+#                print(meta)
                 code_time = time.time()-t1
                 event_dict[key]['meta']['verbs'] = meta
 
@@ -260,11 +262,25 @@ def do_coding(event_dict, out_file):
                 del(sentence)
                 times+=code_time
                 sents += 1
-                print('\t\t',code_time)
+                #print('\t\t',code_time)
                 
                 
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
+                    event_dict[key]['sents'][sent]['meta'] = meta  
+# --                    print('+++',event_dict[key]['sents'][sent])  # --
+                    if  PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot :
+                        text_dict = utilities.extract_phrases(event_dict[key]['sents'][sent],SentenceID)
+                        if text_dict:
+                            event_dict[key]['sents'][sent]['meta']['actortext'] = {}
+                            event_dict[key]['sents'][sent]['meta']['eventtext'] = {}
+                            event_dict[key]['sents'][sent]['meta']['actorroot'] = {}
+# --                            print('DC1:',text_dict) # --
+                            for evt in coded_events:
+                                event_dict[key]['sents'][sent]['meta']['actortext'][evt] = text_dict[evt][:2]
+                                event_dict[key]['sents'][sent]['meta']['eventtext'][evt] = text_dict[evt][2]
+                                event_dict[key]['sents'][sent]['meta']['actorroot'][evt] = text_dict[evt][3:5]
+
                 if coded_events and PETRglobals.IssueFileName != "":
                     event_issues = get_issues(SentenceText)
                     if event_issues:
@@ -307,6 +323,7 @@ def do_coding(event_dict, out_file):
         "  Sentences without events:",
         NEmpty)
     print("Average Coding time = ", times/sents if sents else 0)
+# --    print('DC-exit:',event_dict)
     return event_dict
 
 
@@ -323,10 +340,10 @@ PETRARCH
                                      description=__description__)
 
     sub_parse = aparse.add_subparsers(dest='command_name')
-    parse_command = sub_parse.add_parser('parse', help=""" DEPRACATED Command to run the
+    parse_command = sub_parse.add_parser('parse', help=""" DEPRECATED Command to run the
                                          PETRARCH parser. Do not use unless you've used it before. If you need to 
                                          process unparsed text, see the README""",
-                                         description="""DEPRACATED Command to run the
+                                         description="""DEPRECATED Command to run the
                                          PETRARCH parser. Do not use unless you've used it before.If you need to 
                                          process unparsed text, see the README""")
     parse_command.add_argument('-i', '--inputs',
@@ -418,7 +435,7 @@ def main():
             run(paths, out, cli_args.parsed)
 
         else:
-            run(paths, out , True)
+            run(paths, out , True)  ## <===
 
         print("Coding time:", time.time() - start_time)
 
@@ -457,15 +474,17 @@ def read_dictionaries(validation=False):
 
 
 def run(filepaths, out_file, s_parsed):
+    # this is the routine called from main()
     events = PETRreader.read_xml_input(filepaths, s_parsed)
     if not s_parsed:
         events = utilities.stanford_parse(events)
     updated_events = do_coding(events, out_file)
-    PETRwriter.write_events(updated_events, out_file)
+    PETRwriter.write_events(updated_events, 'evts.' + out_file)
 
 
 def run_pipeline(data, out_file=None, config=None, write_output=True,
                  parsed=False):
+    # this is called externally
     utilities.init_logger('PETRARCH.log')
     logger = logging.getLogger('petr_log')
     if config:

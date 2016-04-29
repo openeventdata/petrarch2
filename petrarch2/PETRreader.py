@@ -183,6 +183,7 @@ def parse_Config(config_path):
         PETRglobals.StoponError = get_config_boolean('stop_on_error')
         PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
         PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
+        PETRglobals.WriteEventText = get_config_boolean('write_event_text')
 
         if parser.has_option(
                 'Options', 'require_dyad'):  # this one defaults to True
@@ -961,7 +962,7 @@ def read_verb_dictionary(verb_path):
             stem = words[0]
             if "_" in stem:
                 # We're dealing with a compound verb
-                #print(stem)
+#                print(stem)
                 segs = stem.split('+')
                 front = segs[0].split('_')
                 back = segs[1].split('_')[1:]
@@ -1746,6 +1747,9 @@ def dstr_to_ordate(datestring):
 
 
 def read_actor_dictionary(actorfile):
+    """ This is a simple dictionary of dictionaries indexed on the words in the actor string. The final node has the 
+        key '#' and contains codes with their date restrictions and, optionally, the root phrase in the case
+        of synonyms. """
 
     open_FIN(actorfile, "actor")
 
@@ -1767,8 +1771,10 @@ def read_actor_dictionary(actorfile):
         else:
             if line[0] == '+':  # Synonym
                 actor = line[1:].replace("_", ' ').split()
-            else:  # Base verb
-                # add previous verb entry to dictionary:
+            else:  # Base actor
+                # add previous actor entry to dictionary:
+                if PETRglobals.WriteActorRoot and len(current_acts) > 0:  # store the root phrase if we're only to use it
+                    datelist.append(current_acts[0])
                 for targ in current_acts:
                     list = PETRglobals.ActorDict
                     while targ != []:
@@ -1782,7 +1788,7 @@ def read_actor_dictionary(actorfile):
                         targ = targ[1:]
                     list["#"] = datelist
 
-                datelist = []
+                datelist = []  # reset for the new actor
                 current_acts = []
                 actor = line.replace("_", ' ').split()
                 if actor[-1][-1] == ']':
@@ -1801,8 +1807,11 @@ def read_actor_dictionary(actorfile):
 
         line = read_FIN_line().strip()
 
-    # for j,k in sorted(PETRglobals.ActorDict.items()):
-    #    print(j,'\t\t',k.keys())
+    """for j,k in sorted(PETRglobals.ActorDict.items()):
+        print(j,'\t\t',k.keys())
+        print(j,'\t\t',k)"""
+#    exit()
+
 
 
 
@@ -2064,7 +2073,7 @@ def read_xml_input(filepaths, parsed=False):
                     entry_id, sent_id = story.attrib['id'].split('_')
 
                     text = story.find('Text').text
-                    text = text.replace('\n', '').replace('  ', '')
+                    text = text.replace('\n', ' ').replace('  ', ' ')
                     sent_dict = {'content': text, 'parsed': parsed_content}
                     meta_content = {'date': story.attrib['date'],
                                     'source': story.attrib['source']}
@@ -2074,7 +2083,7 @@ def read_xml_input(filepaths, parsed=False):
                     entry_id = story.attrib['id']
 
                     text = story.find('Text').text
-                    text = text.replace('\n', '').replace('  ', '')
+                    text = text.replace('\n', ' ').replace('  ', ' ')
                     split_sents = _sentence_segmenter(text)
                     # TODO Make the number of sents a setting
                     sent_dict = {}

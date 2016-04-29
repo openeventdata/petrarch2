@@ -58,8 +58,9 @@ RequireDyad = True  # Events require a non-null source and target
 StoponError = False  # Raise stop exception on errors rather than recovering
 
 # OUTPUT OPTIONS
-WriteActorRoot = False  # Include actor root in event record
+WriteActorRoot = False  # Include actor root in event record :: currently not implemented
 WriteActorText = False  # Include actor text in event record
+WriteEventText = False  # Include event text in event record
 
 RunTimeString = ''  # used in error and debugging files -- just set it once
 

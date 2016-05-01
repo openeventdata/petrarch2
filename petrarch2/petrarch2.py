@@ -253,7 +253,10 @@ def do_coding(event_dict, out_file):
                 coded_events , meta = sentence.get_events()  # this is the entry point into the processing in PETRtree
 #                print(meta)
                 code_time = time.time()-t1
-                event_dict[key]['meta']['verbs'] = meta
+                event_dict[key]['meta']['verbs'] = meta # 16.04.30 pas: we're using the key value 'meta' at two very different
+                                                        # levels of event_dict -- see the code about ten lines below -- and 
+                                                        # this is potentially confusing, so it probably would be useful to  
+                                                        # change one of those 
 
                 if out_file:
                     sentence.print_to_file(sentence.tree,file = file)
@@ -268,18 +271,22 @@ def do_coding(event_dict, out_file):
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                     event_dict[key]['sents'][sent]['meta'] = meta  
-# --                    print('+++',event_dict[key]['sents'][sent])  # --
+                    """print('DC-events:', coded_events) # --
+                    print('DC-meta:', meta) # --
+                    print('+++',event_dict[key]['sents'][sent])  # --"""
                     if  PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot :
                         text_dict = utilities.extract_phrases(event_dict[key]['sents'][sent],SentenceID)
+# --                        print('DC-td1:',text_dict) # --
                         if text_dict:
                             event_dict[key]['sents'][sent]['meta']['actortext'] = {}
                             event_dict[key]['sents'][sent]['meta']['eventtext'] = {}
                             event_dict[key]['sents'][sent]['meta']['actorroot'] = {}
 # --                            print('DC1:',text_dict) # --
                             for evt in coded_events:
-                                event_dict[key]['sents'][sent]['meta']['actortext'][evt] = text_dict[evt][:2]
-                                event_dict[key]['sents'][sent]['meta']['eventtext'][evt] = text_dict[evt][2]
-                                event_dict[key]['sents'][sent]['meta']['actorroot'][evt] = text_dict[evt][3:5]
+                                if evt in text_dict: # 16.04.30 pas bypasses problems with expansion of compounds 
+                                    event_dict[key]['sents'][sent]['meta']['actortext'][evt] = text_dict[evt][:2]
+                                    event_dict[key]['sents'][sent]['meta']['eventtext'][evt] = text_dict[evt][2]
+                                    event_dict[key]['sents'][sent]['meta']['actorroot'][evt] = text_dict[evt][3:5]
 
                 if coded_events and PETRglobals.IssueFileName != "":
                     event_issues = get_issues(SentenceText)

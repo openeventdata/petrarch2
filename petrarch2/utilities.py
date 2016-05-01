@@ -27,8 +27,8 @@
 # Report bugs to: john.b30@gmail.com
 #
 # REVISION HISTORY:
-#    Summer-14:	Initial version
-#    April 2016 - added extract_phrases() 
+#    Summer-14:	 Initial version
+#    April 2016: added extract_phrases() 
 
 # pas 16.04.22: print() statements commented-out with '# --' were used in the debugging and can probably be removed
 # ------------------------------------------------------------------------
@@ -141,6 +141,7 @@ def extract_phrases(sent_dict,sent_id):
     
     def get_noun_list():
         """ Make (text, code, root) tuples from any sets of compounds """
+# --        print('gnl: ',sent_dict['meta']['nouns'])
         noun_list = []
         for ca in sent_dict['meta']['nouns']:  # 
             if len(ca[1]) == 1:
@@ -148,7 +149,7 @@ def extract_phrases(sent_dict,sent_id):
             else:
                 for ka in range(len(ca[1])):
                     #noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
-                    if ca < len(ca[0]):   
+                    if ka < len(ca[0]):   
                         noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
                     else:
                         noun_list.append((ca[0][-1],ca[1][ka],ca[2][-1]))  # appears this can occur if the same string, e.g. "MINISTER" applies to multiple codes
@@ -170,19 +171,19 @@ def extract_phrases(sent_dict,sent_id):
 # --                print(typest + ' text:',tarst)
                 return get_text_phrase(tarst[1:])
         else:
-            print(typest + ' text not found')
             logger.info('ut.EP {} text not found'.format(sent_id, typest))
+            print('ut.EP {} text not found'.format(sent_id, typest))
             return '---'
 
     def get_actor_root(code):
         if code.startswith('---'):
             return '---'
         noun_list = get_noun_list()                                            
-        print(' ** ',noun_list)
+# --        print(' ** ',noun_list)
         for ca in noun_list:
-            print('===',ca)
+# --            print('===',ca)  # --
             if code in ca[1]:
-                print(' -- match:',code, ca)
+# --                print(' -- match:',code, ca)   # --
                 if len(ca) > 2 and ca[2] != '~':
                         phrst = ''
                         for li in ca[2]:
@@ -194,7 +195,7 @@ def extract_phrases(sent_dict,sent_id):
                         return phrst.replace(' ~','').strip()
                         
                 else:
-                    print(' -- -- \'---\'')
+# --                    print(' -- -- \'---\'')
                     return '---'
         else:
             return '---'
@@ -239,6 +240,7 @@ def extract_phrases(sent_dict,sent_id):
     keylist = list(sent_dict['meta'].keys())
     if len(keylist) < 2:
         logger.info('ut.EP {} len(keylist) < 2 {}'.format(sent_id, keylist))
+        print('ut.EP {} len(keylist) < 2 {}'.format(sent_id, keylist))
     for evt in keylist:
         if evt == 'nouns':
             continue
@@ -284,8 +286,9 @@ def story_filter(story_dict, story_id):
         sent_id = '{}_{}'.format(story_id, sent)
         if 'events' in sent_dict:
             """print('ut:SF1',sent,'\n',story_dict['sents'][sent])
-            print('ut:SF2',sent,'\n',story_dict['meta'])
-            print('ut:SF3',sent,'\n',story_dict['sents'][sent]['meta'])"""
+            print('ut:SF2: ',story_dict['meta'])
+            print('ut:SF3: ',story_dict['sents'][sent]['meta'])
+            print('ut:SF4: ',story_dict['sents'][sent]['events'])"""
             """if  PETRglobals.WriteActorText or PETRglobals.WriteEventText:  # this is the old call before this was moved out to do_coding()
                 text_dict = extract_phrases(story_dict['sents'][sent],sent_id)
             else:
@@ -309,7 +312,7 @@ def story_filter(story_dict, story_id):
                     filtered[event_tuple]['ids'] = []
                     filtered[event_tuple]['ids'].append(sent_id)
 #                    if event_tuple[1:] in text_dict:  # log an error here if we can't find a non-null case?
-                    if 'actortext' in sent_dict['meta']:  # 16.04.29 this is a revised version of the above test: it catches cases where extract_phrases() returns a null
+                    if 'actortext' in sent_dict['meta'] and event_tuple[1:] in sent_dict['meta']['actortext']:  # 16.04.29 this is a revised version of the above test: it catches cases where extract_phrases() returns a null
                         if PETRglobals.WriteActorText :
                             filtered[event_tuple]['actortext'] = sent_dict['meta']['actortext'][event_tuple[1:]]
                         if PETRglobals.WriteEventText :

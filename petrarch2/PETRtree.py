@@ -117,6 +117,20 @@ class Phrase:
         
         return text
     
+    def get_parse_text(self):
+        if self.color:
+            return ""
+        text = self.text
+        for child in self.children:
+            if isinstance(child,NounPhrase):
+                text += "(NP " + child.get_text()[0] + ")"
+            elif isinstance(child,VerbPhrase):
+                text += "(VP " + child.get_text() + ")"
+            else:
+                text += "(XP " + child.get_text() + ")"
+        
+        return text
+
     def resolve_codes(self,codes):
         """
         Method that divides a list of mixed codes into actor and agent codes
@@ -144,10 +158,6 @@ class Phrase:
         for code in codes:
             if not code:
                 continue
-            """if isinstance(code,tuple):
-                actorcodes.append(code)
-            else:
-                agentcodes.append(code)"""
             if code.startswith("~"):
                 agentcodes.append(code)
             else:
@@ -681,6 +691,8 @@ class VerbPhrase(Phrase):
                 List of events coded by the subtree rooted in this phrase.
         
         """
+        sphr = self.get_S()
+
         time1 = time.time()
         self.get_meaning = self.return_meaning
         
@@ -1533,6 +1545,10 @@ class Sentence:
                                 for target in event[0]:
                                     if not source == target:
                                         valid.append((source.replace('~','---'),target.replace('~','---'),code))
+# --                                        print('VPge-1:',self.get_metadata(event))
+# --                                        meta[(source.replace('~','---'),target.replace('~','---'),code)] =  self.get_metadata(event)
+                                            # something equivalent to the above needs to be added since the duplicated events
+                                            # aren't going into 'meta'
         
             self.events = list(set(valid))
             self.get_events = self.return_events

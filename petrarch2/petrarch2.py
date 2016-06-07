@@ -151,10 +151,10 @@ def get_issues(SentenceText):
     
     """
     def recurse(words,path,length):
-        if words and words[0] in path:
-            return recurse(words[1:],path[words[0]],length+1)
-        elif '#' in path:
+        if '#' in path:  # <16.06.06 pas> Swapped the ordering if these checks since otherwise it crashes when '#' is a "word" in the text
             return path['#'],length
+        elif words and words[0] in path:
+            return recurse(words[1:],path[words[0]],length+1)
         return False
         
     sent = SentenceText.upper().split()  # case insensitive matching

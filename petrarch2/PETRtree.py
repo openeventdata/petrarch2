@@ -386,7 +386,7 @@ class NounPhrase(Phrase):
         NPcodes = []
         codes = []
         roots = []
- # --         print('NPgm-0:',self.get_text())  # --
+# --        print('NPgm-0:',self.get_text())  # --
       
         matched_txt = []
         
@@ -400,7 +400,7 @@ class NounPhrase(Phrase):
             
             elif child.label == "PP":
                 m = self.resolve_codes(child.get_meaning())
-# --                  print('gm-1:',m)  # --
+# --                print('gm-1:',m)  # --
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
@@ -417,6 +417,7 @@ class NounPhrase(Phrase):
                         # We could add the subtree here, but there shouldn't be any codes with VP components
             elif child.label == "PRP":
                 # Find antecedent
+# --                print('NPgm-1:',child.text)  # --
                 not_found = True
                 level = self.parent
                 reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
@@ -431,8 +432,20 @@ class NounPhrase(Phrase):
                     
                     if (not local) or (reflexive and local):
                         for child in level.parent.children:
-                            if isinstance(child,NounPhrase): 
-                                if not child.get_meaning() == "~" :  # Do we just want to pick the first?
+# --                            print('NPgm-2:',child.text)  # --
+                            """ 
+                            <16.06.06 pas> child.text check added to eliminate an infinite recursion between 
+                            NounPhrase.get_meaning() and PrepPhrase.get_meaning() that occurred when 
+                            self.children[1].get_text() gave an empty string in structures such as 
+                                (PP (IN by) (NP (NNP Steven) (NNP Spielberg) (PRP himself)))
+                                (PP (IN by) (NP (PRP himself)))  
+                            
+                            Original code -- including the comment -- was 
+                                 if not child.get_meaning() == "~" :  # Do we just want to pick the first?
+                            """ 
+
+                            if isinstance(child,NounPhrase):
+                                if child.text and not child.get_meaning() == "~" :  
                                     not_found = False
                                     codes += child.get_meaning()
                                     break
@@ -536,25 +549,13 @@ class PrepPhrase(Phrase):
         """
         Return the meaning of the non-preposition constituent, and store the
         preposition.
-        
-        Note: pas 16.04.22
-        Add this len() > 0 check to get around a very rare (about 0.001% of LN sentences) cases where a (PP (PRP structure
-        caused an infinite recursion between NounPhrase.get_meaning() and PrepPhrase.get_meaning() in circumstances where
-        self.children[1].get_text() gave an empty string. This solves the problem but I'm not completely confident this is 
-        the right place to trap it: in the process of debugging I noticed that there were cases where this recursion 
-        seemed to go a lot deeper than necessary, continuing with the same string, on some non-empty strings, though it 
-        did not crash.  
         """
-# --        print('PPgm-entry')  # --
         self.prep = self.children[0].text
+#--        print('PPgm-entry', self.prep)  # --
+#--        print('PPgm-1', self.children)  # --
         if len(self.children) > 1 and not self.children[1].color:            
-            if isinstance(self.children[1],NounPhrase) and len(self.children[1].get_text()[0]) > 0: # see note above
-# --                print('PPgm-503',self.children[1].get_text())  # --
-                self.meaning = self.children[1].get_meaning() 
-            else:
-                self.meaning =  ""
-#            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""  # code prior to the correction
-# --            print('PPgm-2',self.meaning)  # --
+            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""  # code prior to the correction
+# --                print('PPgm-2',self.meaning)  # --
             self.head = self.children[1].get_head()[0]
             
         return self.meaning

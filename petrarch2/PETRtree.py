@@ -149,7 +149,6 @@ class Phrase:
                     List of actor codes
         
         """
-# --        print('Prc-entry',len(getouterframes(currentframe(1))),codes) # --
         if not codes:
             return [],[]
         
@@ -201,7 +200,7 @@ class Phrase:
         
         # 16.04.25 hmmm, this is either a construct of utterly phenomenal subtlety or else we never hit this code...
         codes = set()
-        print('WTF-1')
+# --        print('WTF-1')
         for act in (actors if actors else ['~']):
             for ag in (agents if agents else ['~']) :
                 if ag == "~PPL" and len(agents) > 1:
@@ -294,12 +293,14 @@ class NounPhrase(Phrase):
         text = ""
         for child in self.children:
             if isinstance(child,PrepPhrase):
+# --                print('NPgt-PP:',child.text)  # --
                 m = self.resolve_codes(child.get_meaning())
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
                     text += " " + child.get_text()
             if isinstance(child,NounPhrase):
+# --                print('NPgt-NP:',child.text)  # --
                 value = child.get_text()
                 text += value[0]
                 PPcodes += value[1]
@@ -320,6 +321,61 @@ class NounPhrase(Phrase):
         -------
         code: string
               The code corresponding to how the actor should be coded given the date
+              
+                   
+        Note <16.06.10 pas> 
+        -------------------
+        In a very small set of cases involving a reflexive PRP inside a PP, the system can get into an infinite 
+        recursion where it first backs up a couple levels from the (PP, then this call to child.get_meaning() drops 
+        back down to the same point via the two child invocations in NounPhrase.get_meaning()
+        
+                    elif child.label == "PP":
+                        m = self.resolve_codes(child.get_meaning())
+                        
+        and in PrepPhrase.get_meaning()
+        
+                    self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""  
+       
+        which takes one back to the same point at one deeper level of recursion. These structures occurred about five times
+        in a 20M sentence corpus, and I couldn't find any fix that didn't break something else, so I just trapped it 
+        here. 
+        
+        There are a bunch of commented-out debugging prints remaining from this futile pursuit that could presumably be
+        removed at some point.
+        
+        The full record for one of the offending cases is:
+        
+        <Sentence date = "20150824" id ="e35ef55a-fa30-4c34-baae-965dea33d8d8_3" source = "ANOTHER INFINITE RECURSION" sentence = "True">
+        <Text>
+        He started out at the bottom of the Hollywood rung, directed his own movie and managed to get noticed by Steven
+        Spielberg himself to nab a tiny role in 1998s Saving Private Ryan .
+        </Text>
+        <Parse>
+        (ROOT (S (S (NP (PRP He)) 
+        (VP (VBD started) (PRT (RP out)) 
+        (PP (IN at) 
+        (NP (NP (DT the) (NN bottom)) 
+        (PP (IN of) (NP (DT the) (NNP Hollywood) )))))) 
+        (VP (VBD rung)) 
+        (, ,) 
+        (S (VP 
+        (VP (VBD directed) (NP (PRP$ his) (JJ own) (NN movie))) (CC and) 
+        (VP (VBD managed) (S 
+        (VP (TO to) 
+        (VP (VB get) 
+            (VP (VBN noticed) 
+            (PP (IN by) 
+                (NP (NNP Steven) (NNP Spielberg) (PRP himself))
+            ) 
+            (S  (VP (TO to)  (VP (VB nab) 
+                    (NP (NP (DT a) (JJ tiny) (NN role)) 
+                    (PP (IN in) 
+                        (NP (NP (NNS 1998s))  (VP (VBG Saving)  (NP (JJ Private) (NNP Ryan))
+                    )))))))))))))) 
+        (. .))) 
+        </Parse>
+        </Sentence>
+
         """
         
         code = None
@@ -372,11 +428,11 @@ class NounPhrase(Phrase):
                 if isinstance(path["#"],list):
                     code = self.check_date(path['#'])
                     if not code is None:
-                        """print('NPgm-rec-1:',code)  # --
-                        print('NPgm-rec-1.1:',path['#'][-1])"""
+                        print('NPgm-rec-1:',code)  # --
+                        print('NPgm-rec-1.1:',path['#'][-1])
                         return [code] , so_far, length, [path['#'][-1]]   # 16.04.25 this branch always resolves to an actor; path['#'][-1] is the root string
                 else:
-# --                    print('NPgm-rec-2:',path['#'])
+                    print('NPgm-rec-2:',path['#'])
                     return [path['#']], so_far, length   # 16.04.25 this branch always resolves to an agent
             return False
 
@@ -386,12 +442,13 @@ class NounPhrase(Phrase):
         NPcodes = []
         codes = []
         roots = []
- # --         print('NPgm-0:',self.get_text())  # --
+# --        print('NPgm-0:')  # --
       
         matched_txt = []
         
         for child in self.children:
             if isinstance(child,NounPhrase):
+# --                print('NPgm-NP:',child.text)  # --
                 value = child.get_text()
                 text_children += value[0].split()
                 NPcodes += value[1]
@@ -400,7 +457,7 @@ class NounPhrase(Phrase):
             
             elif child.label == "PP":
                 m = self.resolve_codes(child.get_meaning())
-# --                  print('gm-1:',m)  # --
+# --                print('NPgm-PP:',m)  # --
                 if m[0]:
                     PPcodes += child.get_meaning()
                 else:
@@ -417,22 +474,31 @@ class NounPhrase(Phrase):
                         # We could add the subtree here, but there shouldn't be any codes with VP components
             elif child.label == "PRP":
                 # Find antecedent
+# --                print('NPgm-PRP:',child.text)  # --
                 not_found = True
                 level = self.parent
-                reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
                 local = True
+                reflexive = child.text.endswith("SELF") or child.text.endswith("SELVES")
                 while not_found and level.parent:
                     if level.label.startswith("NP") and reflexive: #Intensive, ignore
+# --                        print('NPgm-1: Mk1')  # --
                         break
                     if local and level.label in ["S","SBAR"]:
+# --                        print('NPgm-1: Mk2')  # --
                         local = False
-                        level=level.parent
+                        level = level.parent
                         continue
                     
                     if (not local) or (reflexive and local):
+# --                        print('NPgm-1: Mk3')  # --
                         for child in level.parent.children:
-                            if isinstance(child,NounPhrase): 
-                                if not child.get_meaning() == "~" :  # Do we just want to pick the first?
+                            if isinstance(child,NounPhrase):
+                                try:
+                                    cgm = child.get_meaning() # see <16.06.10> note above
+                                except:
+                                    break 
+# --                                print('NPgm-1: Mk4',isinstance(child,NounPhrase),"'" + child.text + "'")  # --
+                                if not cgm == "~" :  
                                     not_found = False
                                     codes += child.get_meaning()
                                     break
@@ -536,24 +602,14 @@ class PrepPhrase(Phrase):
         """
         Return the meaning of the non-preposition constituent, and store the
         preposition.
-        
-        Note: pas 16.04.22
-        Add this len() > 0 check to get around a very rare (about 0.001% of LN sentences) cases where a (PP (PRP structure
-        caused an infinite recursion between NounPhrase.get_meaning() and PrepPhrase.get_meaning() in circumstances where
-        self.children[1].get_text() gave an empty string. This solves the problem but I'm not completely confident this is 
-        the right place to trap it: in the process of debugging I noticed that there were cases where this recursion 
-        seemed to go a lot deeper than necessary, continuing with the same string, on some non-empty strings, though it 
-        did not crash.  
         """
-# --        print('PPgm-entry')  # --
         self.prep = self.children[0].text
-        if len(self.children) > 1 and not self.children[1].color:            
-            if isinstance(self.children[1],NounPhrase) and len(self.children[1].get_text()[0]) > 0: # see note above
-# --                print('PPgm-503',self.children[1].get_text())  # --
-                self.meaning = self.children[1].get_meaning() 
-            else:
-                self.meaning =  ""
-#            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else ""  # code prior to the correction
+        '''print('PPgm-entry', self.prep)  # --
+        print('PPgm-1') 
+        for ka, ch in enumerate(self.children):
+            print('   ',ka,ch.text,ch) # --'''
+        if len(self.children) > 1 and not self.children[1].color:
+            self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else "" 
 # --            print('PPgm-2',self.meaning)  # --
             self.head = self.children[1].get_head()[0]
             
@@ -1461,6 +1517,8 @@ class Sentence:
                 element.parent.convert_existential()
             except:
                 pass
+        """with open('scr.tree.txt','w') as f:
+            self.print_tree(root, "", f)""" # debug
         return root
 
 
@@ -1581,14 +1639,14 @@ class Sentence:
         """
         print("EVENTS: ",self.get_events(), file = file)
         txtstrg = self.txt.encode('ascii', 'ignore').decode('ascii')  # <16.03.29> For now, just zap the unicode
-        print("TEXT: ", txtstrg, file=file)
+        print("TEXT: ", txtstrg, file=file)  
     
     def print_tree(self, root, indent="", f=""):
         """
         This prints a LaTeX formatted document of the tree. Calls on each of the children as well.
         """
         print("[."+root.label.replace("$",""),("{\\bf "+root.text+"}" if not root.text == "" else "") ,file = f,end = " ")
-        if root.label in ["NP"]:
+        """if root.label in ["NP"]:
             m = root.get_meaning()
             k = ""
             for i in m:
@@ -1596,7 +1654,7 @@ class Sentence:
             print("[.{" + k + "}", file=f, end=" ")
         elif root.label in ["VP"]:
             m = root.get_meaning()
-            print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")
+            print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")"""
         
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)

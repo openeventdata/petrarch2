@@ -9,6 +9,7 @@ import PETRreader
 import time
 import utilities
 import types
+import logging
 
 # -- from inspect import getouterframes, currentframe  # -- # used to track the levels of recursion
 
@@ -118,6 +119,8 @@ class Phrase:
         return text
     
     def get_parse_text(self):
+        """ This is a fairly specific debugging function: to recover the original parse, 
+            use indented_parse_print(self, level=0) or get_parse_string(self) """
         if self.color:
             return ""
         text = self.text
@@ -129,6 +132,24 @@ class Phrase:
             else:
                 text += "(XP " + child.get_text() + ")"
         
+        return text
+
+    def indented_parse_print(self, level=0):
+        """ recursive print of labeled phrase elements and children with line feeds and indentation """
+        print('  ' * level + '(' + self.label + ' ' + self.text,end='')
+        for child in self.children:
+            child.indented_parse_print(level+1)
+            print('  ' * level + ')')
+
+    def get_parse_string(self):
+        """ recursive rendering of labelled phrase element and children as a string: 
+            when called from ROOT it returns the original input string """
+        text = '(' + self.label
+        if self.text:
+            text += ' ' + self.text
+        for child in self.children:
+            text += ' ' + child.get_parse_string()
+            text += ')'
         return text
 
     def resolve_codes(self,codes):
@@ -181,8 +202,7 @@ class Phrase:
                [Agent codes] x [Actor codes]
         
         """
-        
-        
+                
 # --        print('mc-entry',actors,agents)
         codes = set()
         mix = lambda a, b : a + b if not b in a else a
@@ -428,11 +448,11 @@ class NounPhrase(Phrase):
                 if isinstance(path["#"],list):
                     code = self.check_date(path['#'])
                     if not code is None:
-                        print('NPgm-rec-1:',code)  # --
-                        print('NPgm-rec-1.1:',path['#'][-1])
+# --                         print('NPgm-rec-1:',code)  # -- 
+# --                         print('NPgm-rec-1.1:',path['#'][-1])
                         return [code] , so_far, length, [path['#'][-1]]   # 16.04.25 this branch always resolves to an actor; path['#'][-1] is the root string
                 else:
-                    print('NPgm-rec-2:',path['#'])
+# --                    print('NPgm-rec-2:',path['#'])
                     return [path['#']], so_far, length   # 16.04.25 this branch always resolves to an agent
             return False
 
@@ -531,11 +551,19 @@ class NounPhrase(Phrase):
                 continue
             index += 1
                         
-        """print('NPgm-m-lev:',len(getouterframes(currentframe(1))))   # --            
-        print('NPgm-m-codes:',codes)
+        """print('NPgm-m-codes:',codes)
         print('NPgm-m-roots:',roots)"""
         # combine the actor/agent codes
         actorcodes,agentcodes = self.resolve_codes(codes)
+        txtstrg = self.get_text()[0]
+        """print('NPgm-m-actorcodes:',actorcodes)
+        print('NPgm-m-roots     :',roots)
+        print('NPgm-m-text      :',txtstrg, len(txtstrg.split()))"""
+        if not actorcodes and PETRglobals.NullActors:
+            if PETRglobals.NewActorLength and len(txtstrg.split()) < PETRglobals.NewActorLength:
+                actorcodes = ['*' + str(self.sentence.actoridx) + '*']
+                self.sentence.actoridx += 1
+                matched_txt += [txtstrg]
         PPactor, PPagent = self.resolve_codes(PPcodes)
         NPactor, NPagent = self.resolve_codes(NPcodes)
         VPactor, VPagent = self.resolve_codes(VPcodes)
@@ -544,7 +572,7 @@ class NounPhrase(Phrase):
             if not actorcodes:
                 actorcodes += PPactor
                 if not actorcodes:
-                    actorcodes += VPactor                # Do we want to pull meanings from verb phrases? Could be risky
+                    actorcodes += VPactor                # CN: Do we want to pull meanings from verb phrases? Could be risky
         
         if not agentcodes:
             agentcodes += NPagent
@@ -604,10 +632,6 @@ class PrepPhrase(Phrase):
         preposition.
         """
         self.prep = self.children[0].text
-        '''print('PPgm-entry', self.prep)  # --
-        print('PPgm-1') 
-        for ka, ch in enumerate(self.children):
-            print('   ',ka,ch.text,ch) # --'''
         if len(self.children) > 1 and not self.children[1].color:
             self.meaning = self.children[1].get_meaning() if isinstance(self.children[1],NounPhrase) else "" 
 # --            print('PPgm-2',self.meaning)  # --
@@ -658,6 +682,7 @@ class VerbPhrase(Phrase):
         self.valid = self.is_valid()
         self.S  = None
     
+        
     def is_valid(self):
         """
         This method is largely to overcome frequently made Stanford errors, where phrases like "exiled dissidents" were
@@ -747,12 +772,18 @@ class VerbPhrase(Phrase):
                 List of events coded by the subtree rooted in this phrase.
         
         """
-        sphr = self.get_S()
 
         time1 = time.time()
         self.get_meaning = self.return_meaning
         
         c, passive,meta = self.get_code()
+        """print('VP-gm-0:',self.get_text())
+        print('VP-gm-1:',c, meta)"""
+        if c:
+            curparse = '==CODED=='
+        else:
+            curparse = self.get_parse_string()
+            
         s_options = filter(lambda a: a.label in "SBAR",self.children)
 
         def resolve_events(event):
@@ -835,7 +866,7 @@ class VerbPhrase(Phrase):
             low = ""
         if neg:
             c = 0
-        
+            
         if isinstance(low,list):
             for event in low:
                 events += resolve_events(event)
@@ -865,7 +896,14 @@ class VerbPhrase(Phrase):
                                 events.append(local)
                         else:
                             events += resolve_events(event)
-        maps = []
+# --        print('@@-1',events)
+        if events and isinstance(events[0],tuple):
+# --            print('@@-2',events[0])            
+            if events[0][0] and events[0][1] and not events[0][2]:
+                utilities.nulllist.append((curparse, events[0]))
+# --                print('@@-3',utilities.nulllist)            
+                
+        maps = []  
         for i in events:
             evs = self.match_transform(i)
             if isinstance(evs,tuple):
@@ -1011,7 +1049,7 @@ class VerbPhrase(Phrase):
         
         """
     
-        self.get_lower = self.return_lower
+#        self.get_lower = self.return_lower
         
         lower = []
         v_options = filter(lambda a: (isinstance(a,VerbPhrase) and a.is_valid()),self.children)
@@ -1101,7 +1139,7 @@ class VerbPhrase(Phrase):
                 Code described by this verb, best read in hex
         """
         
-        self.get_code = self.return_code
+#        self.get_code = self.return_code
         meta = []
         dict = PETRglobals.VerbDict['verbs']
         if 'AND' in map(lambda a: a.text, self.children):
@@ -1274,18 +1312,14 @@ class VerbPhrase(Phrase):
 
         def match_phrase(path,phrase):
             # Having matched the head of the phrase, this matches the full noun phrase, if specified
-# --              print('mph-entry')
             if not phrase:
-# --                  print('mph-False')
                 return False
             for item in filter(lambda b: b.text in path,phrase.children):
                 subpath = path[item.text]
-# --                  print('mph-rr-1')
                 match = reroute(subpath,lambda a: match_phrase(a,item.head_phrase))
                 if match:
                     item.color = True
                     return match
-# --              print('mph-reroute')                    
             return reroute(path,lambda a: match_phrase(a,phrase.head_phrase))
         
         def match_noun(path,phrase = self if not self.check_passive() else self.get_S(),preplimit = 0):
@@ -1456,12 +1490,17 @@ class Sentence:
         self.actor = ""
         self.date = date
         self.longlat = (-1,-1)
-        self.verbs = []
+        self.verbs = []  # 16.06.23: nice, but is this actually used anywhere?
         self.txt = ""
         self.tree = self.str_to_tree(parse.strip())
         self.verb_analysis = {}
         self.events = []
         self.metadata = {'nouns': [] }
+        if PETRglobals.NullVerbs or PETRglobals.NullActors:  
+#            self.metadata['nulls'] = [] # is this still needed?
+            self.actoridx = 1  # index for null actors
+            
+#--         print('si:==>',self.tree.get_parse_string())  # -- debug
     
     
     def str_to_tree(self,str):
@@ -1517,16 +1556,18 @@ class Sentence:
                 element.parent.convert_existential()
             except:
                 pass
-        """with open('scr.tree.txt','w') as f:
-            self.print_tree(root, "", f)""" # debug
         return root
 
 
     def print_nouns(self,label):  # --    
         """ Debugging print """
+        logger = logging.getLogger('petr_log')
+        logger.info(self.txt)
+        logger.info(self.events)
         print(label)
         for la in self.metadata['nouns']:
             print('    ',la)
+            logger.info('    ' + str(la))
 
 
     def get_metadata(self, entry):
@@ -1539,9 +1580,6 @@ class Sentence:
             store = metadict[id(next)]
             meta_total.append(store)
             next = store[0]
-        #if not meta_total:
-        #    print(entry,self.txt)
-        #    exit()
         return map(lambda a:  a[-2] if len(a) > 1 else a[0], meta_total[::-1])
     
     
@@ -1569,11 +1607,21 @@ class Sentence:
         
         """
         
-        events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))
-        meta = {'nouns' : self.metadata['nouns'] }
+        """for ch in self.verbs:
+            print('==',ch.label, ch.get_text())            
+        for ch in self.tree.children:
+            print('--',ch.label, ch.get_text())"""
+        if PETRglobals.NullVerbs or PETRglobals.NullActors:
+            utilities.nulllist = []
+        events = map(lambda a : a.get_meaning(), filter(lambda b: b.label in "SVP" , self.tree.children))  # which is to say, label is (S or (VP
         """print('GF1',events) # --  
-# --        print('GF2',meta) # --  
-        self.print_nouns('GF2') # -- """ 
+        self.print_nouns('GF2') # -- """
+        if PETRglobals.NullVerbs:
+            meta = {'nouns' : self.metadata['nouns'] ,'nulls' : utilities.nulllist }
+            return [] , meta
+        else:
+            meta = {'nouns' : self.metadata['nouns'] }
+
         valid = []
         try:
             for sent in events:
@@ -1610,9 +1658,9 @@ class Sentence:
         
             self.events = list(set(valid))
             self.get_events = self.return_events
-# --            print('GF3',valid,'\nGF4',meta) # --  
+#--            print('GF3',valid,'\nGF4',meta) # --  
             return valid , meta
-        except Exception as e:
+        except Exception as e:  # 16.06.27 pas: need to log this, and also figure out where it comes from
             print("Error in parsing:",e)
             return None, None
 
@@ -1631,22 +1679,17 @@ class Sentence:
         print("\\end{tikzpicture}}\n\n", file=file)
         print("EVENTS: ",self.get_events(), file = file)
         print("\\\\\nTEXT: ", self.txt, file=file)
-        print("\\newpage",file=file)'''
+        print("\\newpage",file=file)
     
-    def print_to_file(self,root,file = ""):
-        """
-        Simplified version of the above for GF
-        """
-        print("EVENTS: ",self.get_events(), file = file)
-        txtstrg = self.txt.encode('ascii', 'ignore').decode('ascii')  # <16.03.29> For now, just zap the unicode
-        print("TEXT: ", txtstrg, file=file)  
     
     def print_tree(self, root, indent="", f=""):
         """
         This prints a LaTeX formatted document of the tree. Calls on each of the children as well.
+        <16.06.26 pas: Note that this shows the information derived from calling get_meaning on various elements
+                       of the tree; it does not simply show the tree itself. <>
         """
         print("[."+root.label.replace("$",""),("{\\bf "+root.text+"}" if not root.text == "" else "") ,file = f,end = " ")
-        """if root.label in ["NP"]:
+        if root.label in ["NP"]:
             m = root.get_meaning()
             k = ""
             for i in m:
@@ -1654,11 +1697,11 @@ class Sentence:
             print("[.{" + k + "}", file=f, end=" ")
         elif root.label in ["VP"]:
             m = root.get_meaning()
-            print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")"""
+            print("[.{\it "+utilities.code_to_string(m)+"}",file = f,end = " ")
         
         for child in  root.children:
                 self.print_tree(child,indent+"\t",f)
         if root.label in ["NP","VP"]:
             print(" ] ]",file = f,end=" \n")
         else:
-            print(" ]", file=f, end=" ")
+            print(" ]", file=f, end=" ")'''

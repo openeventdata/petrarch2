@@ -1,9 +1,11 @@
 from petrarch2 import petrarch2, PETRglobals, PETRreader, utilities
 from petrarch2 import PETRtree as ptree
+import sys
 
 
 config = petrarch2.utilities._get_data('data/config/', 'PETR_config.ini')
 print("reading config")
+sys.stdout.write('Mk1\n')
 petrarch2.PETRreader.parse_Config(config)
 print("reading dicts")
 petrarch2.read_dictionaries()
@@ -12,7 +14,7 @@ petrarch2.read_dictionaries()
 
 
 def test_version():
-    assert petrarch2.get_version() == "1.0.0"
+    assert petrarch2.get_version() == "1.2.0"
 
 
 def test_read():
@@ -120,6 +122,7 @@ def test_date_check():
 def test_personal1():
     parse = "(S (NP (NNP Obama ) ) (VP (VBD said ) (SBAR (S (NP (PRP he ) ) (VP (VBD was ) (ADJP (VBN tired ) ) ) ) ) ) ) ".upper()
 
+    print('This is a test')
     test = ptree.Sentence(parse,"Obama said he was tired",PETRreader.dstr_to_ordate("20150813"))
     phrase = test.tree.children[1].children[1].children[0].children[0]
     assert phrase.get_meaning() == ["USAGOV"]

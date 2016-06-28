@@ -60,7 +60,7 @@ import PETRtree
 # ========================== VALIDATION FUNCTIONS ========================== #
 
 def get_version():
-    return "1.0.0"
+    return "1.2.0"
 
 
 # ========================== OUTPUT/ANALYSIS FUNCTIONS ========================== #
@@ -200,8 +200,8 @@ def do_coding(event_dict, out_file):
     NDiscardSent = 0
     NDiscardStory = 0
 
-    if out_file:
-        file = open_tex(out_file)
+    """if out_file:  # <16.06.18 pas> disable for now
+        file = open_tex(out_file)"""
 
     logger = logging.getLogger('petr_log')
     times = 0
@@ -251,16 +251,22 @@ def do_coding(event_dict, out_file):
                 sentence = PETRtree.Sentence(treestr,SentenceText,Date)
                 print(sentence.txt)
                 coded_events , meta = sentence.get_events()  # this is the entry point into the processing in PETRtree
-#                print(meta)
                 code_time = time.time()-t1
-                event_dict[key]['meta']['verbs'] = meta # 16.04.30 pas: we're using the key value 'meta' at two very different
+                if PETRglobals.NullVerbs or PETRglobals.NullActors:
+                    event_dict[key]['meta'] = meta
+                    event_dict[key]['text'] = sentence.txt                    
+                elif PETRglobals.NullActors:
+                    event_dict[key]['events'] = coded_events
+                    coded_events = None   # skips additional processing
+                    event_dict[key]['text'] = sentence.txt                    
+                else:
+                    event_dict[key]['meta']['verbs'] = meta # 16.04.30 pas: we're using the key value 'meta' at two very different
                                                         # levels of event_dict -- see the code about ten lines below -- and 
                                                         # this is potentially confusing, so it probably would be useful to  
                                                         # change one of those 
 
-                if out_file:
-                    sentence.print_to_file(sentence.tree,file = file)
-
+                """if out_file: # <16.06.18 pas> This isn't doing anything useful right now, just flipping bits on the hard drive, so I'm disabling it  
+                    sentence.print_to_file(sentence.tree,file = file)"""
                 
                 del(sentence)
                 times+=code_time
@@ -310,8 +316,8 @@ def do_coding(event_dict, out_file):
             event_dict[key]['sents'] = None
 
 
-    if out_file:
-        close_tex(file)
+    """if out_file:  # <16.06.18 pas> disable for now
+        close_tex(file)"""
     
 
     print("\nSummary:")
@@ -347,6 +353,7 @@ PETRARCH
                                      description=__description__)
 
     sub_parse = aparse.add_subparsers(dest='command_name')
+
     parse_command = sub_parse.add_parser('parse', help=""" DEPRECATED Command to run the
                                          PETRARCH parser. Do not use unless you've used it before. If you need to 
                                          process unparsed text, see the README""",
@@ -389,6 +396,19 @@ PETRARCH
                                data/text/Gigaword.sample.PETR.xml""",
                                required=False)
 
+    nulloptions = aparse.add_mutually_exclusive_group()
+
+    nulloptions.add_argument('-na', '--nullactors',
+                               help="""Find noun phrases which are associated with a verb generating  an event but are
+                                not in the dictionary; an integer giving the maximum number of words follows the command. 
+                                Does not generate events. """,
+                               required=False)
+
+    nulloptions.add_argument('-nv', '--nullverbs',
+                               help="""Find verb phrases which have source and  
+                               targets but are not in the dictionary. Does not generate events. """,
+                               required=False, action="store_true")
+    
     args = aparse.parse_args()
     return args
 
@@ -396,14 +416,17 @@ PETRARCH
 def main():
 
     cli_args = parse_cli_args()
+    """print(cli_args)
+    sys.exit()"""
     utilities.init_logger('PETRARCH.log')
     logger = logging.getLogger('petr_log')
 
     PETRglobals.RunTimeString = time.asctime()
 
 
-    if cli_args.command_name == 'parse' or cli_args.command_name == 'batch':
+    if cli_args.command_name == 'parse' or cli_args.command_name == 'batch':  # 16.06.27: no longer needed, right?
 
+        print(cli_args)
         if cli_args.config:
             print('Using user-specified config: {}'.format(cli_args.config))
             logger.info(
@@ -413,6 +436,16 @@ def main():
             logger.info('Using default config file.')
             PETRreader.parse_Config(utilities._get_data('data/config/',
                                                         'PETR_config.ini'))
+
+        if cli_args.nullverbs:
+            print('Coding in null verbs mode; no events will be generated')
+            logger.info('Coding in null verbs mode; no events will be generated')
+            PETRglobals.NullVerbs  = True  # Only get verb phrases that are not in the dictionary but are associated with coded noun phrases
+        elif cli_args.nullactors:
+            print('Coding in null actors mode; no events will be generated')
+            logger.info('Coding in null verbs mode; no events will be generated')
+            PETRglobals.NullActors = True  # Only get actor phrases that are not in the dictionary but associated with coded verb phrases
+            PETRglobals.NewActorLength = int(cli_args.nullactors)
 
         read_dictionaries()
         start_time = time.time()
@@ -486,7 +519,12 @@ def run(filepaths, out_file, s_parsed):
     if not s_parsed:
         events = utilities.stanford_parse(events)
     updated_events = do_coding(events, out_file)
-    PETRwriter.write_events(updated_events, 'evts.' + out_file)
+    if PETRglobals.NullVerbs:
+        PETRwriter.write_nullverbs(updated_events, 'nullverbs.' + out_file)
+    elif PETRglobals.NullActors:
+        PETRwriter.write_nullactors(updated_events, 'nullactors.' + out_file)
+    else:
+        PETRwriter.write_events(updated_events, 'evts.' + out_file)
 
 
 def run_pipeline(data, out_file=None, config=None, write_output=True,

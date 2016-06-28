@@ -29,7 +29,7 @@
 \begin{document}
 \maketitle
 Petrarch 2 is the fourth generation of a series of Event-Data coders stemming from research by 
-Phillip Schrodt\footnote{Schrodt, 2001}. Each iteration has brought new functionality and usability \footnote{Schrodt, 2012}, and this is no exception.
+Philip Schrodt and his collaborators.\footnote{Schrodt and Gerner, 1994; \texttt{http://eventdata.parusanalytics.com/KEDS.history.html}} Each iteration has brought new functionality and usability\footnote{Schrodt, 2012; Beieler et al 2016}, and this is no exception.
 Petrarch 2 takes much of the power of the original Petrarch's dictionaries and redirects it 
 into a faster and smarter core logic. Earlier iterations handled sentences 
 largely as a list of words, incorporating some syntactic information here and 
@@ -110,7 +110,7 @@ abstracted to follow these steps:
   \item Identify how verbs interact with the noun phrases in their subject 
   position.
   \item Resolve verb+verb interactions.
-  \item Return the coding of the uppermost VerbPhrase using CAMEO\footnote{\url{http://eventdata.parusanalytics.com/cameo.dir/CAMEO.09b6.pdf}}\footnote{Schrodt et al. 2008} verb and actor codes, if it satisfies the 
+  \item Return the coding of the uppermost VerbPhrase using CAMEO\footnote{\url{http://eventdata.parusanalytics.com/cameo.dir/CAMEO.09b6.pdf}}\footnote{Schrodt, Gerner and Yilmaz } verb and actor codes, if it satisfies the 
   conditions specified by the user
 \end{enumerate}
 \section{Classes and class-specific flow}
@@ -414,19 +414,149 @@ Then, the analysis of ``said'' follows the process:
   \item Transforms this into \textit{ISR PSEGZA 112}.
 \end{enumerate}
 
+\section{New options for Identifying actors and verb phrases\\{\normalsize Philip Schrodt, Parus Analytics LLC (\texttt{schrodt735@gmail.com}) \\Last update: 28 June 2016}}
+
+Since Clayton's work in Summer-2015, I've added some additional new options in conjunction with various projects. As PETRARCH still doesn't really have a manual, I'll use this document to, well, document those.
+
+\subsection{\texttt{--nullverbs} and \texttt{--nullactors}: Identifying verb and noun phrases which are not in the dictionaries}
+
+These are complementary command line options intended for use in dictionary development:
+
+\begin{itemize}
+\item \texttt{--nullverbs} (or \texttt{-nv}) produces a file of verb phrases which have a valid source and target but which are not in the dictionary 
+\item  \texttt{--nullactors} (or \texttt{-na}) produces a file of noun phrases which are associated with a codable verb phrase but which are not in the dictionary 
+\end{itemize}
+
+In other words,  \texttt{--nullverbs} shows unrecorded actions that are occurring between known actors, and  \texttt{--nullactors} shows unrecorded actors that are engaging in known behaviors. With both options, no events are generated and instead the output file is a series of JSON records which can be read as Python dictionaries: examples are given below.  
+
+These options come \textit{before} the \texttt{batch} or text{parse} command. Only one of the two options can be used in a given run.\footnote{otherwise you are simply producing a list of all sentences that don't generate a complete event, which can be done just by removing the sentences in the event list from the complete corpus.}
+
+\subsubsection{\texttt{--nullverbs}}
+
+\noindent \textbf{Command example: }
+
+\texttt{python petrarch2.py -nv batch -i nullverb.test.txt -o test\_output.txt}
+
+\bigskip
+
+\noindent \textbf{Output example:}
+\begin{verbatim}
+{
+"id": "11077096-26e7-4f4b-8636-eca78311f2d0",
+"sentence": "TOKYO HAS ASKED THE CHINESE AUTHORITIES TO CLARIFY THOSE ISSUES 
+             BUT BEIJING HAS NOT YET STRAIGHTENED THEM OUT , HE SAID , ADDING 
+             THAT JAPAN WOULD CONTINUE TO TALK TO CHINA ABOUT THIS .",
+"phrase": "HAS NOT YET STRAIGHTENED THEM OUT ",
+"parse": "(VP (VBZ HAS) (RB NOT) (ADVP (RB YET)) (VP (VBD STRAIGHTENED) 
+          (NP (PRP THEM)) (PRT (RP OUT)))",
+"source": "CHN", "target": "JPN"
+}
+
+\end{verbatim}
+
+\noindent \textbf{Implementation notes:}
+	\begin{itemize}
+		\setlength{\itemsep}{4pt}
+		\item In a typical news story, verb phrases are deeply nested, so it is not uncommon for the phrase to extend to the end of the story. In order to identify what a human coder would consider the relevant verb and information immediately following it, the phrase is truncated at the first \texttt{`(S'} following the \texttt{`(VP'} which marks the beginning of the phrase. This rule can be modified in the routine \texttt{PETRWriter.write\_nullverbs()}: the entire parse string is available to this routine and truncation is only done during the output procedure.
+		\item  \texttt{"phrase"} in the output gives this phrase without any markup;  \texttt{"parse"} shows the phrase with the original Treebank markup
+		\item  \texttt{"source"} and   \texttt{"target"} show the codes for the source and target associated with this phrase; these can be agent codes.
+	\end{itemize}
+
+
+\subsubsection{\texttt{--nullactors}}
+
+Command example: \\ \texttt{python petrarch2.py -na 8 batch -i nullactor.test.txt -o test\_output.txt}
+
+\bigskip
+
+\noindent Output example:
+\begin{verbatim}
+{
+"id": "11077096-26e7-4f4b-8636-eca78311f2d0",
+"sentence": " Tokyo has asked the Chinese authorities to clarify those 
+           issues but Beijing has not yet straightened them out, he said, 
+           adding that Japan would continue to talk to China about this . ",
+"source": "Tokyo [JPN]",
+"target": "this",
+"evtcode": "010",
+"evttext": "would ... talk",
+}
+{
+"id": "NULL-11077096-26e7-4f4b-8636-eca78311f2d0",
+"sentence": "Winterfell has asked the Lannister families to clarify those 
+            issues but  Beijing has not yet straightened them out, he said, 
+            adding that Japan would continue to talk to China about this . ",
+"source": "Winterfell",
+"target": "the Lannister families",
+"evtcode": "020",
+"evttext": "has asked",
+}
+
+\end{verbatim}
+
+\noindent \textbf{Implementation notes:}
+	\begin{itemize}
+		\setlength{\itemsep}{4pt}
+		\item The required integer following the command sets the \texttt{new\_actor\_length} \\parameter---the maximum number of words that a new actor can have---and overrides any settings in the \texttt{config.ini} file. Large values of this will give add a lot of extended noun phrases that probably aren't named-entities into the output; small values run the risk that a named entity preceded by several adjectives---e.g. \textit{``The beleaguered Japanese Prime Minister Shinzo Abe''}---will be missed. So, adjust this value based on your source texts, experience, and post-filtering programs.
+		\item If a source or target is in the dictionary, the phrase will be followed by the code in brackets \texttt{[\ldots]}
+		\item  \texttt{"evtcode"} is the CAMEO code for the verb phrase; \texttt{"evttext"} is the text which generated this code.
+		\item  The actors not in the dictionary are assigned temporary codes of the form \texttt{"*i*"} where $i$ is an integer. These will show up in agent code such as  \texttt{"*4*GOV"} (instead of \texttt{"- - -GOV"}) and in the source and target markers in the verb text, e.g. \texttt{"<*2*> ... contradicted by <*3*>"}. See Section \ref{sssec:writeeventtext} on the construction of event texts.
+	\end{itemize}
+
+\subsection{Extracting text used in coding: \texttt{write\_actor\_text},  \texttt{write\_actor\_text} and \texttt{write\_event\_text} configuration options}
+
+These three options in the configure file are used to try to extract the text which generated an event code: they are not flawless\footnote{Yeah, right, unlike the rest of the system. But in particular, compound nouns will often generate problems: this is on the GitHub Issues list.}  but work most of the time.
+
+In the output, anything in angle-brackets \texttt{<\ldots>} corresponds to something in the matched text that couldn't be found in the original text. This is usually due to one or more of the following:
+
+	\begin{itemize}
+		\setlength{\itemsep}{4pt}
+		\item A verb pattern which contained a synonym set, in which case the synonym set name is used, e.g. \texttt{mobilized <\&MILITARY>}
+		\item A verb pattern which contained a source (\$) or target (+) token, in which case the code for the actor is used , e.g. \texttt{<---REB> ... overwhelmed <---COP>}
+		\item The system couldn't find text that was, for some reason, duplicated in the system---there are still a few bugs here---in which case it puts what it is looking for in the brackets
+		\item  Situations where Stanford Core NLP has taken a word apart, e.g. ``\texttt{didn't}'' converts to \texttt{DID N'T}
+	\end{itemize}
+
+
+Ellipses \texttt{\ldots} indicate words were skipped over in a multi-word phrase.
+
+\bigskip
+
+The texts are added to the end of the event record as tab-delimited fields in the order \texttt{[actor\_text, event\_text, actor\_root]} : the code for this can be changed in  \texttt{PETRWriter.write\_events()}.
+
+\subsubsection{\texttt{write\_actor\_root:}}
+
+ If True, the event record will include the text of the actor root:  The root is the text at the head of the actor synonym set in the dictionary. Default is False
+
+\subsubsection{\texttt{write\_actor\_text:}}
+
+ If True, the event record will include include the complete text of the noun phrase that was used to identify the actor.  Default is False
+
+\subsubsection{\texttt{write\_event\_text:}} \label{sssec:writeeventtext}
+
+If True, the event record will include include the complete text of the verb phrase that was used to identify the event: this is supposed to be the text that was used to generate the event and that worked most of the time.  Items in \texttt{<\ldots>} indicate actors or synonyms sets in the verb patterns.  Default is False
+
+\section{Additional updates on the project\\{\normalsize Philip Schrodt, Parus Analytics LLC (\texttt{schrodt735@gmail.com}) \\Last update: 28 June 2016}}
+
+PETRARCH and various ancillary programs are now supported in part by the U.S. National Science Foundation Resource Implementations for Data Intensive Research in the Social Behavioral and Economic Sciences (RIDIR) Program through a grant titled ``
+Modernizing Political Event Data for Big Data Social Science Research.''  The lead institution is the University of Texas at Dallas (PI: Patrick Brandt) with additional participation by investigators at the University of Oklahoma, University of Minnesota, University of Delaware,  and John Jay College, with roughly equal participation by political science and computer science departments.
+
+The kickoff for the project was early December 2015 and the grant will provide three to four years of funding. The project still doesn't have a name, logo or t-shirts, or even a web site, but we will provide this information as it becomes available. At present, the GitHub site for the project remains \texttt{https://github.com/openeventdata}
+
 \section{Works Cited}
 \begin{thebibliography}{9}
 
 \bibitem{lamport94}
-Schrodt, Philip A. 2001. "Automated Coding of International Event Data Using Sparse Pars-
-ing Techniques." Paper presented at the International Studies Association, Chicago, 21-24 February 2001.
+Beieler, John , Patrick Brandt, Andrew Halterman, Philip Schrodt and Erin Simpson. 2016. Generating Political Event Data in Near Real Time: Opportunities and Challenges.'' In  Michael Alvarez, ed. \textit{Computational Social Science: Discovery and Prediction.} Cambridge: Cambridge University Press.
 
 \bibitem{lamport94}
-Schrodt, Philip A. 2012. "Precedents, Progress and Prospects in Political Event Data." Inter-
-national Interactions 38(5):546â€“569.
+Schrodt, Philip A. and Deborah J. Gerner. 1994. Validity Assessment of a Machine-Coded Event Data Set for the Middle East, 1982-1992. \textit{American Journal of Political Science} 38:825-854. 
 
 \bibitem{lamport94}
-Schrodt, Philip A., Omur Yilmaz, Deborah J. Gerner and Dennis Hermrick. 2008. "Coding Sub-State Actors using the CAMEO (Conflict and Mediation Event Observations) Actor Coding Framework." International Studies Association, San Francisco, March 2008.
+Schrodt, Philip A. 2012. "Precedents, Progress and Prospects in Political Event Data." \textit{International Interactions} 38(5):546-€“569.
+
+\bibitem{lamport94}
+Schrodt, Philip A.,  Deborah J. Gerner and and \"{O}m\"{u}r Yilmaz. 2008. Conflict and Mediation Event Observations (CAMEO): An Event Data Framework for a Post Cold War World. In Jacob Bercovitch and Scott Gartner. \textit{International Conflict Mediation: New Approaches and Findings}. New York: Routledge.
 
 
 \end{thebibliography}

@@ -29,6 +29,7 @@ from __future__ import unicode_literals
 import PETRglobals  # global variables
 import utilities
 import codecs
+import json
 
 def get_actor_text(meta_strg):
     """ Extracts the source and target strings from the meta string. """
@@ -138,6 +139,128 @@ def write_events(event_dict, output_file):
 #            f.write(field[5] + '\n')
             f.write(str + '\n')
         f.close()
+
+def write_nullverbs(event_dict, output_file):
+    """
+    Formats and writes the null verb data to a file as a set of lines in a JSON format.
+
+    Parameters
+    ----------
+
+    event_dict: Dictionary.
+                The main event-holding dictionary within PETRARCH.
+
+
+    output_file: String.
+                    Filepath to which events should be written.
+    """
+    
+    def get_actor_list(item):
+        """ Resolves the various ways an actor could be in here """
+        if isinstance(item,list):
+            return item
+        elif isinstance(item,tuple):
+            return item[0]
+        else:
+            return [item]
+
+    
+    event_output = []
+    for key, value in event_dict.iteritems():
+        if not 'nulls' in value['meta']:
+#            print('Error:',value['meta'])  # log this and figure out where it is coming from <later: it occurs for discard sentences >
+            continue
+        for tup in value['meta']['nulls']:
+            if not isinstance(tup[0],int):
+                srclst = get_actor_list(tup[1][0])
+                tarlst = get_actor_list(tup[1][1])
+                jsonout = { 'id': key,
+                            'sentence': value['text'], # <16.06.28 pas> With a little more work we could get the upper/lower                             
+                            'source': ', '.join(srclst),  # case version -- see corresponding code in write_nullactors() -- but
+                            'target': ', '.join(tarlst) } # hoping to refactor 'meta' and this will do for now.
+                if jsonout['target'] == 'passive':
+                    continue
+                if '(S' in tup[0]:
+                     parstr = tup[0][:tup[0].index('(S')]
+                else:
+                     parstr = tup[0]
+                jsonout['parse'] = parstr
+                phrstr = ''
+                for ist in parstr.split(' '):
+                    if ')' in ist:
+                        phrstr += ist[:ist.index(')')] + ' ' 
+                jsonout['phrase'] = phrstr
+            
+                event_output.append(jsonout)
+                          
+    
+    if output_file:
+        f = codecs.open(output_file, encoding='utf-8', mode = 'w')
+        for dct in event_output:
+            f.write('{\n')
+            for key in ['id','sentence','phrase','parse']:
+                f.write('"' + key + '": "' + dct[key] + '",\n')
+            f.write('"source": "' + dct['source'] + 
+                    '", "target": "' + dct['target'] +'"\n}\n')
+
+def write_nullactors(event_dict, output_file):
+    """
+    Formats and writes the null actor data to a file as a set of lines in a JSON format.
+
+    Parameters
+    ----------
+
+    event_dict: Dictionary.
+                The main event-holding dictionary within PETRARCH.
+
+
+    output_file: String.
+                    Filepath to which events should be written.
+    """
+    
+    global hasnull
+
+    def get_actor_text(evt, txt, index):
+        """ Adds code when actor is in dictionary; also checks for presence of null actor """
+        global hasnull
+        text = txt[index]
+        if evt[index].startswith('*') and evt[index].endswith('*'):
+            if txt[index]:  # system occasionally generates null strings -- of course... -- so might as well skip these
+                hasnull = True
+        else:
+            text += ' [' + evt[index] + ']'
+        return text
+    
+    event_output = []
+    for key, value in event_dict.iteritems():
+        if not value['sents']:
+            continue
+        for sent in value['sents']:
+             if 'meta' in value['sents'][sent]:
+                if 'actortext' not in value['sents'][sent]['meta']:
+                    continue
+                for evt,txt in value['sents'][sent]['meta']['actortext'].iteritems(): # <16.06.26 pas > stop the madness!!! -- we're 5 levels deep here, which is as bad as TABARI. This needs refactoring!
+                    hasnull = False
+                    jsonout = { 'id': key,
+                                'sentence': value['sents'][sent]['content'],
+                                'source': get_actor_text(evt, txt, 0),  
+                                'target': get_actor_text(evt, txt, 1),
+                                'evtcode' : evt[2],
+                                'evttext' : ''
+                               }
+                    if hasnull:
+                        if evt in value['sents'][sent]['meta']['eventtext']:
+                            jsonout['evttext'] = value['sents'][sent]['meta']['eventtext'][evt]
+            
+                        event_output.append(jsonout)                          
+    
+    if output_file:
+        f = codecs.open(output_file, encoding='utf-8', mode = 'w')
+        for dct in event_output:
+            f.write('{\n')
+            for key in ['id','sentence','source', 'target','evtcode','evttext']:
+                f.write('"' + key + '": "' + dct[key] + '",\n')
+            f.write('}\n')
 
 
 def pipe_output(event_dict):

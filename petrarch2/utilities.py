@@ -44,6 +44,9 @@ import dateutil.parser
 import PETRglobals
 from collections import defaultdict, Counter
 
+nulllist = []  # used when PETRglobals.NullVerbs == True
+""" <16.06.27 pas> This might be better placed in PETRtree but I'm leaving it here so that it is clear it is a global. 
+    Someone who can better grok recursion than I might also be able to eliminate the need for it."""
 
 
 # Deprecated. Use hypnos instead.
@@ -149,10 +152,13 @@ def extract_phrases(sent_dict,sent_id):
             else:
                 for ka in range(len(ca[1])):
                     #noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
-                    if ka < len(ca[0]):   
-                        noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
-                    else:
-                        noun_list.append((ca[0][-1],ca[1][ka],ca[2][-1]))  # appears this can occur if the same string, e.g. "MINISTER" applies to multiple codes
+                    try:
+                        if ka < len(ca[0]):   
+                            noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
+                        else:
+                            noun_list.append((ca[0][-1],ca[1][ka],ca[2][-1]))  # appears this can occur if the same string, e.g. "MINISTER" applies to multiple codes
+                    except:
+                        pass  # 16.06.27 occasionally fails due to lists not being same length, so just do nothing
                     
         return noun_list                                 
 
@@ -433,8 +439,6 @@ def code_to_string(events):
     except Exception as e:
         print(e)
         return str(events)
-
-
 
 
 def convert_code(code,forward = 1):

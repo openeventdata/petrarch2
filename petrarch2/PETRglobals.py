@@ -51,6 +51,10 @@ IssueFileName = ""  # issues list
 # element followed by attribute and content pairs for XML line
 AttributeList = []
 
+# NULL CODING OPTIONS
+NullVerbs  = False  # Only get verb phrases that are not in the dictionary but are associated with coded noun phrases
+NullActors = False  # Only get actor phrases that are not in the dictionary but associated with coded verb phrases
+
 # CODING OPTIONS
 # Defaults are more or less equivalent to TABARI
 NewActorLength = 0  # Maximum length for new actors extracted from noun phrases
@@ -58,7 +62,7 @@ RequireDyad = True  # Events require a non-null source and target
 StoponError = False  # Raise stop exception on errors rather than recovering
 
 # OUTPUT OPTIONS
-WriteActorRoot = False  # Include actor root in event record :: currently not implemented
+WriteActorRoot = False  # Include actor root in event record
 WriteActorText = False  # Include actor text in event record
 WriteEventText = False  # Include event text in event record
 

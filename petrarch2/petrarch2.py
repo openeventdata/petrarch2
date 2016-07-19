@@ -7,10 +7,8 @@ import os
 import sys
 import glob
 import time
-import types
 import logging
 import argparse
-import xml.etree.ElementTree as ET
 
 # petrarch.py
 ##
@@ -66,8 +64,8 @@ def get_version():
 # ========================== OUTPUT/ANALYSIS FUNCTIONS ========================== #
 
 def open_tex(filename):
-    file = open(filename,'w')
-    '''file.write('Run time: ',
+    fname = open(filename, 'w')
+    '''fname.write('Run time: ',
     print("""
 \\documentclass[11pt]{article}
 \\usepackage{tikz-qtree}
@@ -82,7 +80,7 @@ def open_tex(filename):
             colorlinks=true,
             pdftitle=My Document
             pdfauthor=My Good Self
-           ]{hyperref} 
+           ]{hyperref}
     \\usepackage{thumbpdf}
 \\else
     \\usepackage{graphicx}       % to include graphics
@@ -93,17 +91,15 @@ def open_tex(filename):
 \\date{}
 
 \\begin{document}
-""", file = file)'''
+""", file = fname)'''
 
-    return file
+    return fname
 
 
-
-def close_tex(file):
+def close_tex(fname):
 
     return
-    print("\n\\end{document})",file=file)
-
+    print("\n\\end{document})", file=fname)
 
 
 # ========================== PRIMARY CODING FUNCTIONS ====================== #
@@ -148,21 +144,21 @@ def get_issues(SentenceText):
 
     <14.02.28> stops coding and sets the issues to zero if it finds *any*
     ignore phrase
-    
+
     """
-    def recurse(words,path,length):
+    def recurse(words, path, length):
         if '#' in path:  # <16.06.06 pas> Swapped the ordering if these checks since otherwise it crashes when '#' is a "word" in the text
-            return path['#'],length
+            return path['#'], length
         elif words and words[0] in path:
-            return recurse(words[1:],path[words[0]],length+1)
+            return recurse(words[1:], path[words[0]], length + 1)
         return False
-        
+
     sent = SentenceText.upper().split()  # case insensitive matching
     issues = []
 
     index = 0
     while index < len(sent):
-        match = recurse(sent[index:],PETRglobals.IssueList,0)
+        match = recurse(sent[index:], PETRglobals.IssueList, 0)
         if match:
             index += match[1]
             code = PETRglobals.IssueCodes[match[0]]
@@ -180,7 +176,6 @@ def get_issues(SentenceText):
         else:
             index += 1
     return issues
-
 
 
 def do_coding(event_dict, out_file):
@@ -228,8 +223,8 @@ def do_coding(event_dict, out_file):
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
                 SentenceSource = 'TEMP'
-                
-                print("\n",SentenceID)
+
+                print("\n", SentenceID)
                 parsed = event_dict[key]['sents'][sent]['parsed']
                 treestr = parsed
                 disc = check_discards(SentenceText)
@@ -245,54 +240,62 @@ def do_coding(event_dict, out_file):
                         SkipStory = True
                         NDiscardStory += 1
                         break
-                
-                
+
                 t1 = time.time()
-                sentence = PETRtree.Sentence(treestr,SentenceText,Date)
+                sentence = PETRtree.Sentence(treestr, SentenceText, Date)
                 print(sentence.txt)
-                coded_events , meta = sentence.get_events()  # this is the entry point into the processing in PETRtree
-                code_time = time.time()-t1
+                # this is the entry point into the processing in PETRtree
+                coded_events, meta = sentence.get_events()
+                code_time = time.time() - t1
                 if PETRglobals.NullVerbs or PETRglobals.NullActors:
                     event_dict[key]['meta'] = meta
-                    event_dict[key]['text'] = sentence.txt                    
+                    event_dict[key]['text'] = sentence.txt
                 elif PETRglobals.NullActors:
                     event_dict[key]['events'] = coded_events
                     coded_events = None   # skips additional processing
-                    event_dict[key]['text'] = sentence.txt                    
+                    event_dict[key]['text'] = sentence.txt
                 else:
-                    event_dict[key]['meta']['verbs'] = meta # 16.04.30 pas: we're using the key value 'meta' at two very different
-                                                        # levels of event_dict -- see the code about ten lines below -- and 
-                                                        # this is potentially confusing, so it probably would be useful to  
-                                                        # change one of those 
+                    # 16.04.30 pas: we're using the key value 'meta' at two
+                    # very different
+                    event_dict[key]['meta']['verbs'] = meta
+                    # levels of event_dict -- see the code about ten lines below -- and
+                    # this is potentially confusing, so it probably would be useful to
+                    # change one of those
 
-                """if out_file: # <16.06.18 pas> This isn't doing anything useful right now, just flipping bits on the hard drive, so I'm disabling it  
+                """if out_file: # <16.06.18 pas> This isn't doing anything useful right now, just flipping bits on the hard drive, so I'm disabling it
                     sentence.print_to_file(sentence.tree,file = file)"""
-                
+
                 del(sentence)
-                times+=code_time
+                times += code_time
                 sents += 1
-                #print('\t\t',code_time)
-                
-                
+                # print('\t\t',code_time)
+
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
-                    event_dict[key]['sents'][sent]['meta'] = meta  
+                    event_dict[key]['sents'][sent]['meta'] = meta
                     """print('DC-events:', coded_events) # --
                     print('DC-meta:', meta) # --
                     print('+++',event_dict[key]['sents'][sent])  # --"""
-                    if  PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot :
-                        text_dict = utilities.extract_phrases(event_dict[key]['sents'][sent],SentenceID)
+                    if PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot:
+                        text_dict = utilities.extract_phrases(
+                            event_dict[key]['sents'][sent], SentenceID)
 # --                        print('DC-td1:',text_dict) # --
                         if text_dict:
-                            event_dict[key]['sents'][sent]['meta']['actortext'] = {}
-                            event_dict[key]['sents'][sent]['meta']['eventtext'] = {}
-                            event_dict[key]['sents'][sent]['meta']['actorroot'] = {}
+                            event_dict[key]['sents'][sent][
+                                'meta']['actortext'] = {}
+                            event_dict[key]['sents'][sent][
+                                'meta']['eventtext'] = {}
+                            event_dict[key]['sents'][sent][
+                                'meta']['actorroot'] = {}
 # --                            print('DC1:',text_dict) # --
                             for evt in coded_events:
-                                if evt in text_dict: # 16.04.30 pas bypasses problems with expansion of compounds 
-                                    event_dict[key]['sents'][sent]['meta']['actortext'][evt] = text_dict[evt][:2]
-                                    event_dict[key]['sents'][sent]['meta']['eventtext'][evt] = text_dict[evt][2]
-                                    event_dict[key]['sents'][sent]['meta']['actorroot'][evt] = text_dict[evt][3:5]
+                                if evt in text_dict:  # 16.04.30 pas bypasses problems with expansion of compounds
+                                    event_dict[key]['sents'][sent]['meta'][
+                                        'actortext'][evt] = text_dict[evt][:2]
+                                    event_dict[key]['sents'][sent]['meta'][
+                                        'eventtext'][evt] = text_dict[evt][2]
+                                    event_dict[key]['sents'][sent]['meta'][
+                                        'actorroot'][evt] = text_dict[evt][3:5]
 
                 if coded_events and PETRglobals.IssueFileName != "":
                     event_issues = get_issues(SentenceText)
@@ -315,10 +318,8 @@ def do_coding(event_dict, out_file):
         if SkipStory:
             event_dict[key]['sents'] = None
 
-
     """if out_file:  # <16.06.18 pas> disable for now
         close_tex(file)"""
-    
 
     print("\nSummary:")
     print(
@@ -335,12 +336,9 @@ def do_coding(event_dict, out_file):
         NDiscardStory,
         "  Sentences without events:",
         NEmpty)
-    print("Average Coding time = ", times/sents if sents else 0)
+    print("Average Coding time = ", times / sents if sents else 0)
 # --    print('DC-exit:',event_dict)
     return event_dict
-
-
-
 
 
 def parse_cli_args():
@@ -355,10 +353,10 @@ PETRARCH
     sub_parse = aparse.add_subparsers(dest='command_name')
 
     parse_command = sub_parse.add_parser('parse', help=""" DEPRECATED Command to run the
-                                         PETRARCH parser. Do not use unless you've used it before. If you need to 
+                                         PETRARCH parser. Do not use unless you've used it before. If you need to
                                          process unparsed text, see the README""",
                                          description="""DEPRECATED Command to run the
-                                         PETRARCH parser. Do not use unless you've used it before.If you need to 
+                                         PETRARCH parser. Do not use unless you've used it before.If you need to
                                          process unparsed text, see the README""")
     parse_command.add_argument('-i', '--inputs',
                                help='File, or directory of files, to parse.',
@@ -373,8 +371,7 @@ PETRARCH
                                help="""Filepath for the PETRARCH configuration
                                file. Defaults to PETR_config.ini""",
                                required=False)
-    
-    
+
     batch_command = sub_parse.add_parser('batch', help="""Command to run a batch
                                          process from parsed files specified by
                                          an optional config file.""",
@@ -385,30 +382,32 @@ PETRARCH
                                help="""Filepath for the PETRARCH configuration
                                file. Defaults to PETR_config.ini""",
                                required=False)
-                               
+
     batch_command.add_argument('-i', '--inputs',
-                               help="""Filepath for the input XML file. Defaults to 
+                               help="""Filepath for the input XML file. Defaults to
                                data/text/Gigaword.sample.PETR.xml""",
                                required=False)
-                               
+
     batch_command.add_argument('-o', '--outputs',
-                               help="""Filepath for the input XML file. Defaults to 
+                               help="""Filepath for the input XML file. Defaults to
                                data/text/Gigaword.sample.PETR.xml""",
                                required=False)
 
     nulloptions = aparse.add_mutually_exclusive_group()
 
-    nulloptions.add_argument('-na', '--nullactors',
-                               help="""Find noun phrases which are associated with a verb generating  an event but are
-                                not in the dictionary; an integer giving the maximum number of words follows the command. 
+    nulloptions.add_argument(
+        '-na',
+        '--nullactors',
+        help="""Find noun phrases which are associated with a verb generating  an event but are
+                                not in the dictionary; an integer giving the maximum number of words follows the command.
                                 Does not generate events. """,
-                               required=False)
+        required=False)
 
     nulloptions.add_argument('-nv', '--nullverbs',
-                               help="""Find verb phrases which have source and  
+                             help="""Find verb phrases which have source and
                                targets but are not in the dictionary. Does not generate events. """,
-                               required=False, action="store_true")
-    
+                             required=False, action="store_true")
+
     args = aparse.parse_args()
     return args
 
@@ -422,7 +421,6 @@ def main():
     logger = logging.getLogger('petr_log')
 
     PETRglobals.RunTimeString = time.asctime()
-
 
     if cli_args.command_name == 'parse' or cli_args.command_name == 'batch':  # 16.06.27: no longer needed, right?
 
@@ -439,12 +437,18 @@ def main():
 
         if cli_args.nullverbs:
             print('Coding in null verbs mode; no events will be generated')
-            logger.info('Coding in null verbs mode; no events will be generated')
-            PETRglobals.NullVerbs  = True  # Only get verb phrases that are not in the dictionary but are associated with coded noun phrases
+            logger.info(
+                'Coding in null verbs mode; no events will be generated')
+            # Only get verb phrases that are not in the dictionary but are
+            # associated with coded noun phrases
+            PETRglobals.NullVerbs = True
         elif cli_args.nullactors:
             print('Coding in null actors mode; no events will be generated')
-            logger.info('Coding in null verbs mode; no events will be generated')
-            PETRglobals.NullActors = True  # Only get actor phrases that are not in the dictionary but associated with coded verb phrases
+            logger.info(
+                'Coding in null verbs mode; no events will be generated')
+            # Only get actor phrases that are not in the dictionary but
+            # associated with coded verb phrases
+            PETRglobals.NullActors = True
             PETRglobals.NewActorLength = int(cli_args.nullactors)
 
         read_dictionaries()
@@ -466,16 +470,16 @@ def main():
                     cli_args.inputs +
                     '" could not be located\nPlease enter a valid directory or file of source texts.')
                 sys.exit()
-        
-        out = "" #PETRglobals.EventFileName
+
+        out = ""  # PETRglobals.EventFileName
         if cli_args.outputs:
-                out = cli_args.outputs
-             
+            out = cli_args.outputs
+
         if cli_args.command_name == 'parse':
             run(paths, out, cli_args.parsed)
 
         else:
-            run(paths, out , True)  ## <===
+            run(paths, out, True)  # <===
 
         print("Coding time:", time.time() - start_time)
 
@@ -484,13 +488,12 @@ def main():
 
 def read_dictionaries(validation=False):
 
-
     print('Verb dictionary:', PETRglobals.VerbFileName)
     verb_path = utilities._get_data(
         'data/dictionaries',
         PETRglobals.VerbFileName)
     PETRreader.read_verb_dictionary(verb_path)
-    
+
     print('Actor dictionaries:', PETRglobals.ActorFileList)
     for actdict in PETRglobals.ActorFileList:
         actor_path = utilities._get_data('data/dictionaries', actdict)
@@ -538,8 +541,11 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
         PETRreader.parse_Config(config)
     else:
         logger.info('Using default config file.')
-        logger.info('Config path: {}'.format(utilities._get_data('data/config/',
-                                                                 'PETR_config.ini')))
+        logger.info(
+            'Config path: {}'.format(
+                utilities._get_data(
+                    'data/config/',
+                    'PETR_config.ini')))
         PETRreader.parse_Config(utilities._get_data('data/config/',
                                                     'PETR_config.ini'))
 

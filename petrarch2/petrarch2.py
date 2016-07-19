@@ -209,7 +209,7 @@ def do_coding(event_dict):
             NSent += 1
             if 'parsed' in event_dict[key]['sents'][sent]:
                 if 'config' in val['sents'][sent]:
-                    for _id, config in event_dict[key]['sents'][sent]['config'].items():
+                    for _, config in event_dict[key]['sents'][sent]['config'].items():
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
@@ -504,7 +504,7 @@ def run(filepaths, out_file, s_parsed):
     events = PETRreader.read_xml_input(filepaths, s_parsed)
     if not s_parsed:
         events = utilities.stanford_parse(events)
-    updated_events = do_coding(events, out_file)
+    updated_events = do_coding(events)
     if PETRglobals.NullVerbs:
         PETRwriter.write_nullverbs(updated_events, 'nullverbs.' + out_file)
     elif PETRglobals.NullActors:
@@ -538,10 +538,10 @@ def run_pipeline(data, out_file=None, config=None, write_output=True,
     events = PETRreader.read_pipeline_input(data)
     if parsed:
         logger.info('Hitting do_coding')
-        updated_events = do_coding(events, None)
+        updated_events = do_coding(events)
     else:
         events = utilities.stanford_parse(events)
-        updated_events = do_coding(events, None)
+        updated_events = do_coding(events)
     if not write_output:
         output_events = PETRwriter.pipe_output(updated_events)
         return output_events

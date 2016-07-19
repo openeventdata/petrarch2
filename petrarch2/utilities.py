@@ -28,7 +28,7 @@
 #
 # REVISION HISTORY:
 #    Summer-14:	 Initial version
-#    April 2016: added extract_phrases() 
+#    April 2016: added extract_phrases()
 
 # pas 16.04.22: print() statements commented-out with '# --' were used in the debugging and can probably be removed
 # ------------------------------------------------------------------------
@@ -45,7 +45,7 @@ import PETRglobals
 from collections import defaultdict, Counter
 
 nulllist = []  # used when PETRglobals.NullVerbs == True
-""" <16.06.27 pas> This might be better placed in PETRtree but I'm leaving it here so that it is clear it is a global. 
+""" <16.06.27 pas> This might be better placed in PETRtree but I'm leaving it here so that it is clear it is a global.
     Someone who can better grok recursion than I might also be able to eliminate the need for it."""
 
 
@@ -95,18 +95,17 @@ nulllist = []  # used when PETRglobals.NullVerbs == True
 #     return event_dict
 
 
-
 def parse_to_text(parse):
-    x = filter(lambda a : not a.startswith("("), parse.replace(")","").split())
+    x = filter(lambda a: not a.startswith("("), parse.replace(")", "").split())
     r = "" + x[0]
     for item in x[1:]:
         r += " " + item
     return r
 
 
-def extract_phrases(sent_dict,sent_id):
-    """  
-    Text extraction for PETRglobals.WriteActorText and PETRglobals.WriteEventText 
+def extract_phrases(sent_dict, sent_id):
+    """
+    Text extraction for PETRglobals.WriteActorText and PETRglobals.WriteEventText
 
     Parameters
     ----------
@@ -127,81 +126,85 @@ def extract_phrases(sent_dict,sent_id):
     def get_text_phrase(phst):
         """ find the words in original sentence text corresponding to the string phst, putting in ... when the words
             are not consecutive and < wd > for elements not recognized, which are usually actor codes or synonym sets. """
-        phlist = phst.split(' ')  
+        phlist = phst.split(' ')
         curloc = 0
         lcphst = ''
         for wd in phlist:
-            newloc = ucont.find(wd,curloc)
+            newloc = ucont.find(wd, curloc)
             if newloc >= 0:
-                if lcphst and newloc > curloc + 1: # add elipses if words are not consecutive
+                if lcphst and newloc > curloc + 1:  # add elipses if words are not consecutive
                     lcphst += ' ...'
                 curloc = newloc + len(wd)
                 lcphst += ' ' + content[newloc:curloc]
             else:
                 lcphst += ' <' + wd + '>'  # use <...> for elements not recognized
 # --        print('   GTP:',lcphst)
-        return lcphst.strip()    
-    
+        return lcphst.strip()
+
     def get_noun_list():
         """ Make (text, code, root) tuples from any sets of compounds """
 # --        print('gnl: ',sent_dict['meta']['nouns'])
         noun_list = []
-        for ca in sent_dict['meta']['nouns']:  # 
+        for ca in sent_dict['meta']['nouns']:  #
             if len(ca[1]) == 1:
                 noun_list.append(ca)
             else:
                 for ka in range(len(ca[1])):
-                    #noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
+                    # noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
                     try:
-                        if ka < len(ca[0]):   
-                            noun_list.append((ca[0][ka],ca[1][ka],ca[2][ka]))
+                        if ka < len(ca[0]):
+                            noun_list.append((ca[0][ka], ca[1][ka], ca[2][ka]))
                         else:
-                            noun_list.append((ca[0][-1],ca[1][ka],ca[2][-1]))  # appears this can occur if the same string, e.g. "MINISTER" applies to multiple codes
+                            # appears this can occur if the same string, e.g.
+                            # "MINISTER" applies to multiple codes
+                            noun_list.append((ca[0][-1], ca[1][ka], ca[2][-1]))
                     except:
                         pass  # 16.06.27 occasionally fails due to lists not being same length, so just do nothing
-                    
-        return noun_list                                 
 
-    def get_actor_phrase(code,typest):
+        return noun_list
+
+    def get_actor_phrase(code, typest):
         if code.startswith('---'):
             code = '~' + code[3:]
         noun_list = get_noun_list()
-                                            
+
 # --        print(' -- ',noun_list)
         for ca in noun_list:
             if code in ca[1]:
-# --                print(' -- match:',code, ca)
+                # --                print(' -- match:',code, ca)
                 tarst = ''
                 for st in ca[0]:
                     tarst += st
 # --                print(typest + ' text:',tarst)
                 return get_text_phrase(tarst[1:])
         else:
-            logger.info('ut.EP {} text not found'.format(sent_id, typest))
-            print('ut.EP {} text not found'.format(sent_id, typest))
+            logger.info('ut.EP {} text not found. {}'.format(sent_id, typest))
+            print('ut.EP {} text not found. {}'.format(sent_id, typest))
             return '---'
 
     def get_actor_root(code):
         if code.startswith('---'):
             return '---'
-        noun_list = get_noun_list()                                            
+        noun_list = get_noun_list()
 # --        print(' ** ',noun_list)
         for ca in noun_list:
-# --            print('===',ca)  # --
+            # --            print('===',ca)  # --
             if code in ca[1]:
-# --                print(' -- match:',code, ca)   # --
+                # --                print(' -- match:',code, ca)   # --
                 if len(ca) > 2 and ca[2] != '~':
-                        phrst = ''
-                        for li in ca[2]:
-                            if isinstance(li,list):  # 16.04.28 pas I am not happy with this contigency: things should be stored in just one format, but don't have time to resolve this at the moment
-                                phrst += ' ' + ' '.join(li)
-                            else:
-                                phrst += ' ' + li
-                                                    
-                        return phrst.replace(' ~','').strip()
-                        
+                    phrst = ''
+                    for li in ca[2]:
+                        if isinstance(
+                                li,
+                                list):  # 16.04.28 pas I am not happy with this contigency: things should be stored in just one format, but don't have time to resolve this at the moment
+                            phrst += ' ' + ' '.join(li)
+                        else:
+                            phrst += ' ' + li
+
+                    return phrst.replace(' ~', '').strip()
+
                 else:
-# --                    print(' -- -- \'---\'')
+                    # --                    print(' -- -- \'---\'')
                     return '---'
         else:
             return '---'
@@ -210,19 +213,21 @@ def extract_phrases(sent_dict,sent_id):
         phst = ''
         words = ''
         for st in verb_list:
-# --            print('   GEP1:',st)
-            if isinstance(st,basestring):  # handles those  ~ a (a b Q) SAY = a b Q cases I haven't figured out yet [pas 16.04.20]
+            # --            print('   GEP1:',st)
+            if isinstance(
+                    st,
+                    basestring):  # handles those  ~ a (a b Q) SAY = a b Q cases I haven't figured out yet [pas 16.04.20]
                 continue
             if len(st) > 1:
                 if '[' in st[1]:  # create a phrase for a pattern
                     sta = st[1][1:st[1].find('[')].strip()
-                    words = sta.replace('*',st[0])
-                    words = words.replace('(','')
-                    words = words.replace(')','')
-                elif isinstance(st[1],tuple):   # create phrase based on a tuple patterns
+                    words = sta.replace('*', st[0])
+                    words = words.replace('(', '')
+                    words = words.replace(')', '')
+                elif isinstance(st[1], tuple):   # create phrase based on a tuple patterns
                     words = st[0]
                     for tp in st[1:]:
-                        words += ' ' + tp[0] 
+                        words += ' ' + tp[0]
                         if len(tp[1]) > 0:
                             words += ' ' + tp[1][0]
                         else:
@@ -236,7 +241,7 @@ def extract_phrases(sent_dict,sent_id):
                 phst = words + ' ' + phst
 # --            print('   GEP2:',phst)
         return get_text_phrase(phst)
-               
+
     logger = logging.getLogger('petr_log')
     text_dict = {}  # returns texts in lists indexed by evt
     """print('EP1:',sent_dict['content']) # --
@@ -251,16 +256,17 @@ def extract_phrases(sent_dict,sent_id):
         if evt == 'nouns':
             continue
 # --        print('EP3:',evt)
-        text_dict[evt] = ['','','','','']
-        if PETRglobals.WriteActorText :
-            text_dict[evt][0] = get_actor_phrase(evt[0],'Source')
-            text_dict[evt][1] = get_actor_phrase(evt[1],'Target')
-        if PETRglobals.WriteEventText :
+        text_dict[evt] = ['', '', '', '', '']
+        if PETRglobals.WriteActorText:
+            text_dict[evt][0] = get_actor_phrase(evt[0], 'Source')
+            text_dict[evt][1] = get_actor_phrase(evt[1], 'Target')
+        if PETRglobals.WriteEventText:
             text_dict[evt][2] = get_event_phrase(sent_dict['meta'][evt])
-        if PETRglobals.WriteActorRoot :
-            text_dict[evt][3] = get_actor_root(evt[0]) # 'SRC-ROOT' 
-            text_dict[evt][4] = get_actor_root(evt[1]) # 'TAR-ROOT'
+        if PETRglobals.WriteActorRoot:
+            text_dict[evt][3] = get_actor_root(evt[0])  # 'SRC-ROOT'
+            text_dict[evt][4] = get_actor_root(evt[1])  # 'TAR-ROOT'
     return text_dict
+
 
 def story_filter(story_dict, story_id):
     """
@@ -314,17 +320,23 @@ def story_filter(story_dict, story_id):
                             filtered[event_tuple]['issues'][
                                 issue[0]] += issue[1]
 
-                    # Will keep track of this info, but not necessarily write it out
+                    # Will keep track of this info, but not necessarily write
+                    # it out
                     filtered[event_tuple]['ids'] = []
                     filtered[event_tuple]['ids'].append(sent_id)
-#                    if event_tuple[1:] in text_dict:  # log an error here if we can't find a non-null case?
-                    if 'actortext' in sent_dict['meta'] and event_tuple[1:] in sent_dict['meta']['actortext']:  # 16.04.29 this is a revised version of the above test: it catches cases where extract_phrases() returns a null
-                        if PETRglobals.WriteActorText :
-                            filtered[event_tuple]['actortext'] = sent_dict['meta']['actortext'][event_tuple[1:]]
-                        if PETRglobals.WriteEventText :
-                            filtered[event_tuple]['eventtext'] = sent_dict['meta']['eventtext'][event_tuple[1:]]
-                        if PETRglobals.WriteActorRoot :
-                            filtered[event_tuple]['actorroot'] = sent_dict['meta']['actorroot'][event_tuple[1:]]
+# if event_tuple[1:] in text_dict:  # log an error here if we can't find a
+# non-null case?
+                    if 'actortext' in sent_dict['meta'] and event_tuple[1:] in sent_dict['meta'][
+                            'actortext']:  # 16.04.29 this is a revised version of the above test: it catches cases where extract_phrases() returns a null
+                        if PETRglobals.WriteActorText:
+                            filtered[event_tuple]['actortext'] = sent_dict[
+                                'meta']['actortext'][event_tuple[1:]]
+                        if PETRglobals.WriteEventText:
+                            filtered[event_tuple]['eventtext'] = sent_dict[
+                                'meta']['eventtext'][event_tuple[1:]]
+                        if PETRglobals.WriteActorRoot:
+                            filtered[event_tuple]['actorroot'] = sent_dict[
+                                'meta']['actorroot'][event_tuple[1:]]
 
                 except IndexError:  # 16.04.29 pas it would be helpful to log an error here...
                     pass
@@ -383,8 +395,7 @@ def init_logger(logger_filename):
     logger.info('Running')
 
 
-
-def combine_code(selfcode,to_add):
+def combine_code(selfcode, to_add):
     """
     Combines two verb codes, part of the verb interaction framework
 
@@ -410,29 +421,28 @@ def combine_code(selfcode,to_add):
     return selfcode + to_add
 
 
-
 def code_to_string(events):
     """
     Converts an event into a string, replacing the integer codes with strings
     representing their value in hex
     """
-    retstr= ""
+    retstr = ""
     try:
         def ev_to_string(ev):
             local = ""
-            if isinstance(ev,basestring):
+            if isinstance(ev, basestring):
                 return ev
             up = str(ev[0])
             low = ev[1]
             c = ev[2]
 
-            if isinstance(low,tuple):
-                low = "("+ev_to_string(low)+")"
+            if isinstance(low, tuple):
+                low = "(" + ev_to_string(low) + ")"
 
             return up + " " + low + " " + hex(c)
         for ev in events:
-            #print(ev)
-            retstr += ev_to_string(ev) +" , "
+            # print(ev)
+            retstr += ev_to_string(ev) + " , "
 
         return retstr[:-3]
 
@@ -441,7 +451,7 @@ def code_to_string(events):
         return str(events)
 
 
-def convert_code(code,forward = 1):
+def convert_code(code, forward=1):
     """
     Convert a verb code between CAMEO and the Petrarch internal coding ontology.
 
@@ -459,10 +469,10 @@ def convert_code(code,forward = 1):
             9 Coerce                    9 Assault	            9 Peacekeeping
             A Investigate               A Fight		        	A Intelligence
             B Consult  		       		B Mass violence			B Admin. Sanctions
-            						    			            C Dissent
-            						    				        D Release
-            							     		            E Int'l Involvement
-            						   						    F D-escalation
+                                                                                            C Dissent
+                                                                                                D Release
+                                                                                            E Int'l Involvement
+                                                                                                            F D-escalation
 
     In the first column, higher numbers take priority. i.e. “Say + Intend” is just “Intend” or “Intend + Consult” is just Consult
 
@@ -486,300 +496,301 @@ def convert_code(code,forward = 1):
 
     """
 
-
-    cat = {             "010"    :     0x1000 ,         #  Make Public Statement
-                        "011"    :     0x1000 - 0xFFFF ,
-                        "012"    :     0x100C  ,
-                        "013"    :     0x1001  ,
-                        "014"    :     0x1002  ,
-                        "015"    :     0x10a0  ,
-                        "016"    :     0x10a0 - 0xFFFF ,
-                        "017"    :     0x1003  ,
-                        "018"    :     0x1004  ,
-                        "019"    :     0x1005  ,
-
-
-                        "020"    :     0x2000  ,         #  Appeal
-                        "021"    :     0x2070  ,
-                        "0211"   :     0x2075  ,
-                        "0212"   :     0x2076  ,
-                        "0213"   :     0x2078  ,
-                        "0214"   :     0x207A  ,
-                        "022"    :     0x2080  ,
-                        "023"    :     0x2040  ,
-                        "0231"   :     0x2045  ,
-                        "0232"   :     0x2046  ,
-                        "0233"   :     0x2047  ,
-                        "0234"   :     0x2049  ,
-                        "024"    :     0x2060  ,
-                        "0241"   :     0x2061  ,
-                        "0242"   :     0x2062  ,
-                        "0243"   :     0x2063  ,
-                        "0244"   :     0x2064  ,
-                        "025"    :     0x2200  ,
-                        "0251"   :     0x220B  ,
-                        "0252"   :     0x220C  ,
-                        "0253"   :     0x220D  ,
-                        "0254"   :     0x2205  ,
-                        "0255"   :     0x220E  ,
-                        "0256"   :     0x220F  ,
-                        "026"    :     0x2010  ,
-                        "027"    :     0x2020  ,
-                        "028"    :     0x2030  ,
+    cat = {"010": 0x1000,  # Make Public Statement
+           "011": 0x1000 - 0xFFFF,
+           "012": 0x100C,
+           "013": 0x1001,
+           "014": 0x1002,
+           "015": 0x10a0,
+           "016": 0x10a0 - 0xFFFF,
+           "017": 0x1003,
+           "018": 0x1004,
+           "019": 0x1005,
 
 
-                        "030"    :     0x3000  ,         #  Intend
-                        "031"    :     0x3070  ,
-                        "0311"   :     0x3075  ,
-                        "0312"   :     0x3076  ,
-                        "0313"   :     0x3078  ,
-                        "0314"   :     0x307A  ,
-                        "032"    :     0x3080  ,
-                        "033"    :     0x3040  ,
-                        "0331"   :     0x3045  ,
-                        "0332"   :     0x3046  ,
-                        "0333"   :     0x3047  ,
-                        "0334"   :     0x3049  ,
-                        "034"    :     0x3060  ,
-                        "0341"   :     0x3061  ,
-                        "0342"   :     0x3062  ,
-                        "0343"   :     0x3063  ,
-                        "0344"   :     0x3064  ,
-                        "035"    :     0x3200  ,
-                        "0351"   :     0x320B  ,
-                        "0352"   :     0x320C  ,
-                        "0353"   :     0x320D  ,
-                        "0354"   :     0x3205  ,
-                        "0355"   :     0x320E  ,
-                        "0356"   :     0x320F  ,
-                        "036"    :     0x3010  ,
-                        "037"    :     0x3020  ,
-                        "038"    :     0x3230  ,
-                        "039"    :     0x3030  ,
-
-                        "040"    :     0xB000  ,         #  Consult
-                        "041"    :     0xB001  ,
-                        "042"    :     0xB002  ,
-                        "043"    :     0xB003  ,
-                        "044"    :     0xB010  ,
-                        "045"    :     0xB030  ,
-                        "046"    :     0xB010  ,
+           "020": 0x2000,  # Appeal
+           "021": 0x2070,
+           "0211": 0x2075,
+           "0212": 0x2076,
+           "0213": 0x2078,
+           "0214": 0x207A,
+           "022": 0x2080,
+           "023": 0x2040,
+           "0231": 0x2045,
+           "0232": 0x2046,
+           "0233": 0x2047,
+           "0234": 0x2049,
+           "024": 0x2060,
+           "0241": 0x2061,
+           "0242": 0x2062,
+           "0243": 0x2063,
+           "0244": 0x2064,
+           "025": 0x2200,
+           "0251": 0x220B,
+           "0252": 0x220C,
+           "0253": 0x220D,
+           "0254": 0x2205,
+           "0255": 0x220E,
+           "0256": 0x220F,
+           "026": 0x2010,
+           "027": 0x2020,
+           "028": 0x2030,
 
 
-                        "050"    :     0x0080   ,        # Diplomatic Coop
-                        "051"    :     0x0081   ,
-                        "052"    :     0x0082   ,
-                        "053"    :     0x0083   ,
-                        "054"    :     0x0084   ,
-                        "055"    :     0x0085   ,
-                        "056"    :     0x0086   ,
-                        "057"    :     0x0087   ,
+           "030": 0x3000,  # Intend
+           "031": 0x3070,
+           "0311": 0x3075,
+           "0312": 0x3076,
+           "0313": 0x3078,
+           "0314": 0x307A,
+           "032": 0x3080,
+           "033": 0x3040,
+           "0331": 0x3045,
+           "0332": 0x3046,
+           "0333": 0x3047,
+           "0334": 0x3049,
+           "034": 0x3060,
+           "0341": 0x3061,
+           "0342": 0x3062,
+           "0343": 0x3063,
+           "0344": 0x3064,
+           "035": 0x3200,
+           "0351": 0x320B,
+           "0352": 0x320C,
+           "0353": 0x320D,
+           "0354": 0x3205,
+           "0355": 0x320E,
+           "0356": 0x320F,
+           "036": 0x3010,
+           "037": 0x3020,
+           "038": 0x3230,
+           "039": 0x3030,
 
-                        "060"    :     0x0070   ,        # Material Coop
-                        "061"    :     0x0075   ,
-                        "062"    :     0x0076   ,
-                        "063"    :     0x0078   ,
-                        "064"    :     0x007A   ,
-
-                        "070"    :     0x0040   ,        # Provide Aid
-                        "071"    :     0x0045   ,
-                        "072"    :     0x0046   ,
-                        "073"    :     0x0047   ,
-                        "074"    :     0x0049   ,
-                        "075"    :     0x004E   ,
-
-                        "080"    :     0x0200  ,         #  Yield
-                        "081"    :     0x020B  ,
-                        "0811"   :     0x0203  ,
-                        "0812"   :     0x0201  ,
-                        "0813"   :     0x0204  ,
-                        "0814"   :     0x0206  ,
-                        "082"    :     0x020C  ,
-                        "083"    :     0x0260  ,
-                        "0831"   :     0x0261  ,
-                        "0832"   :     0x0262  ,
-                        "0833"   :     0x0263  ,
-                        "0834"   :     0x0264  ,
-                        "084"    :     0x0250  ,
-                        "0841"   :     0x020C  ,
-                        "0842"   :     0x020C  ,
-                        "085"    :     0x0205  ,
-                        "086"    :     0x020E  ,
-                        "0861"   :     0x0209  ,
-                        "0862"   :     0x020A  ,
-                        "0863"   :     0x0207  ,
-                        "087"    :     0x02C0  ,
-                        "0871"   :     0x02C9  ,
-                        "0872"   :     0x02C1  ,
-                        "0873"   :     0x02C6  ,
-                        "0874"   :     0x02C2  ,
-                        "08"     :     0x0200  ,
-
-                        "090"    :     0xA000  ,         #  Investigate
-                        "091"    :     0xA001  ,
-                        "092"    :     0xA002  ,
-                        "093"    :     0xA003  ,
-                        "094"    :     0xA004  ,
-
-                        "100"    :     0x4000  ,         #  Demand
-                        "101"    :     0x4070  ,
-                        "1011"   :     0x4075  ,
-                        "1012"   :     0x4076  ,
-                        "1013"   :     0x4078  ,
-                        "1014"   :     0x407A  ,
-                        "102"    :     0x4080  ,
-                        "103"    :     0x4040  ,
-                        "1031"   :     0x4045  ,
-                        "1032"   :     0x4046  ,
-                        "1033"   :     0x4047  ,
-                        "1034"   :     0x4049  ,
-                        "104"    :     0x4060  ,
-                        "1041"   :     0x4061  ,
-                        "1042"   :     0x4062  ,
-                        "1043"   :     0x4063  ,
-                        "1044"   :     0x4064  ,
-                        "105"    :     0x4200  ,
-                        "1051"   :     0x420B  ,
-                        "1052"   :     0x420C  ,
-                        "1053"   :     0x420D  ,
-                        "1054"   :     0x4205  ,
-                        "1055"   :     0x420E  ,
-                        "1056"   :     0x420F  ,
-                        "106"    :     0x4010  ,
-                        "107"    :     0x4020  ,
-                        "108"    :     0x4030  ,
+           "040": 0xB000,  # Consult
+           "041": 0xB001,
+           "042": 0xB002,
+           "043": 0xB003,
+           "044": 0xB010,
+           "045": 0xB030,
+           "046": 0xB010,
 
 
-                        "110"    :     0x7000  ,         #  Disapprove
-                        "111"    :     0x7001  ,
-                        "112"    :     0x70a0  ,
-                        "1121"   :     0x70a1  ,
-                        "1122"   :     0x70a2  ,
-                        "1123"   :     0x70a3  ,
-                        "1124"   :     0x70a4  ,
-                        "1125"   :     0x70a5  ,
-                        "113"    :     0x7002  ,
-                        "114"    :     0x7003  ,
-                        "115"    :     0x7008  ,
-                        "116"    :     0x7005  ,
+           "050": 0x0080,        # Diplomatic Coop
+           "051": 0x0081,
+           "052": 0x0082,
+           "053": 0x0083,
+           "054": 0x0084,
+           "055": 0x0085,
+           "056": 0x0086,
+           "057": 0x0087,
+
+           "060": 0x0070,        # Material Coop
+           "061": 0x0075,
+           "062": 0x0076,
+           "063": 0x0078,
+           "064": 0x007A,
+
+           "070": 0x0040,        # Provide Aid
+           "071": 0x0045,
+           "072": 0x0046,
+           "073": 0x0047,
+           "074": 0x0049,
+           "075": 0x004E,
+
+           "080": 0x0200,  # Yield
+           "081": 0x020B,
+           "0811": 0x0203,
+           "0812": 0x0201,
+           "0813": 0x0204,
+           "0814": 0x0206,
+           "082": 0x020C,
+           "083": 0x0260,
+           "0831": 0x0261,
+           "0832": 0x0262,
+           "0833": 0x0263,
+           "0834": 0x0264,
+           "084": 0x0250,
+           "0841": 0x020C,
+           "0842": 0x020C,
+           "085": 0x0205,
+           "086": 0x020E,
+           "0861": 0x0209,
+           "0862": 0x020A,
+           "0863": 0x0207,
+           "087": 0x02C0,
+           "0871": 0x02C9,
+           "0872": 0x02C1,
+           "0873": 0x02C6,
+           "0874": 0x02C2,
+           "08": 0x0200,
+
+           "090": 0xA000,  # Investigate
+           "091": 0xA001,
+           "092": 0xA002,
+           "093": 0xA003,
+           "094": 0xA004,
+
+           "100": 0x4000,  # Demand
+           "101": 0x4070,
+           "1011": 0x4075,
+           "1012": 0x4076,
+           "1013": 0x4078,
+           "1014": 0x407A,
+           "102": 0x4080,
+           "103": 0x4040,
+           "1031": 0x4045,
+           "1032": 0x4046,
+           "1033": 0x4047,
+           "1034": 0x4049,
+           "104": 0x4060,
+           "1041": 0x4061,
+           "1042": 0x4062,
+           "1043": 0x4063,
+           "1044": 0x4064,
+           "105": 0x4200,
+           "1051": 0x420B,
+           "1052": 0x420C,
+           "1053": 0x420D,
+           "1054": 0x4205,
+           "1055": 0x420E,
+           "1056": 0x420F,
+           "106": 0x4010,
+           "107": 0x4020,
+           "108": 0x4030,
 
 
-                        "120"    :   -0xFFFF   ,         #  Reject
-                        "121"    :   -0xFFFF + 0x0070 ,
-                        "1211"   :   -0xFFFF + 0x0075 ,
-                        "1212"   :   -0xFFFF + 0x0076 ,
-                        "122"    :   -0xFFFF + 0x2040 + 0x300 ,      # The 0x300 mask makes these not code
-                        "1221"   :   -0xFFFF + 0x2045 + 0x300,       # from "refuse to request aid", but rather
-                        "1222"   :   -0xFFFF + 0x2046 + 0x300,       # be a thing of their own while retaining
-                        "1223"   :   -0xFFFF + 0x2047 + 0x300,       # the features of the meaning.
-                        "1224"   :   -0xFFFF + 0x2049 + 0x300,
-                        "123"    :   -0xFFFF + 0x2060 + 0x300,
-                        "1231"   :   -0xFFFF + 0x2061 + 0x300,
-                        "1232"   :   -0xFFFF + 0x2062 + 0x300,
-                        "1233"   :   -0xFFFF + 0x2063 + 0x300,
-                        "1234"   :   -0xFFFF + 0x2064 + 0x300,
-                        "124"    :   -0xFFFF + 0x0200 ,
-                        "1241"   :   -0xFFFF + 0x020B ,
-                        "1242"   :   -0xFFFF + 0x020C ,
-                        "1243"   :   -0xFFFF + 0x020D ,
-                        "1244"   :   -0xFFFF + 0x0205 ,
-                        "1245"   :   -0xFFFF + 0x020E ,
-                        "1246"   :   -0xFFFF + 0x02C0 ,
-                        "125"    :   -0xFFFF + 0x0010 ,
-                        "126"    :   -0xFFFF + 0x0030 ,
-                        "127"    :   -0xFFFF + 0x0020 ,
-                        "128"    :   -0xFFFF + 0x0002 ,
-                        "129"    :   -0xFFFF + 0x0001 ,
-
-                        "130"    :     0x6000  ,         #  Threaten
-                        "131"    :     0x6100 ,
-                        "1311"   :     0x6140  ,
-                        "1312"   :     0x6105  ,
-                        "1313"   :     0x6180  ,
-                        "132"    :     0x600B  ,
-                        "1321"   :     0x6003  ,
-                        "1322"   :     0x6001  ,
-                        "1323"   :     0x6004  ,
-                        "1324"   :     0x6006  ,
-                        "133"    :     0x600C  ,
-                        "134"    :     0x6010  ,
-                        "135"    :     0x6030  ,
-                        "136"    :     0x600E  ,
-                        "137"    :     0x6004  ,
-                        "138"    :     0x60A0  ,
-                        "1381"   :     0x60A1  ,
-                        "1382"   :     0x60A2  ,
-                        "1383"   :     0x60A3  ,
-                        "1384"   :     0x60A4  ,
-                        "1385"   :     0x60B0  ,
-                        "139"    :     0x6005  ,
+           "110": 0x7000,  # Disapprove
+           "111": 0x7001,
+           "112": 0x70a0,
+           "1121": 0x70a1,
+           "1122": 0x70a2,
+           "1123": 0x70a3,
+           "1124": 0x70a4,
+           "1125": 0x70a5,
+           "113": 0x7002,
+           "114": 0x7003,
+           "115": 0x7008,
+           "116": 0x7005,
 
 
-                        "140"    :     0x5000   ,         #  Protest
-                        "145"    :     0x50A0   ,
+           "120": -0xFFFF,  # Reject
+           "121": -0xFFFF + 0x0070,
+           "1211": -0xFFFF + 0x0075,
+           "1212": -0xFFFF + 0x0076,
+           "122": -0xFFFF + 0x2040 + 0x300,      # The 0x300 mask makes these not code
+           # from "refuse to request aid", but rather
+           "1221": -0xFFFF + 0x2045 + 0x300,
+           "1222": -0xFFFF + 0x2046 + 0x300,       # be a thing of their own while retaining
+           # the features of the meaning.
+           "1223": -0xFFFF + 0x2047 + 0x300,
+           "1224": -0xFFFF + 0x2049 + 0x300,
+           "123": -0xFFFF + 0x2060 + 0x300,
+           "1231": -0xFFFF + 0x2061 + 0x300,
+           "1232": -0xFFFF + 0x2062 + 0x300,
+           "1233": -0xFFFF + 0x2063 + 0x300,
+           "1234": -0xFFFF + 0x2064 + 0x300,
+           "124": -0xFFFF + 0x0200,
+           "1241": -0xFFFF + 0x020B,
+           "1242": -0xFFFF + 0x020C,
+           "1243": -0xFFFF + 0x020D,
+           "1244": -0xFFFF + 0x0205,
+           "1245": -0xFFFF + 0x020E,
+           "1246": -0xFFFF + 0x02C0,
+           "125": -0xFFFF + 0x0010,
+           "126": -0xFFFF + 0x0030,
+           "127": -0xFFFF + 0x0020,
+           "128": -0xFFFF + 0x0002,
+           "129": -0xFFFF + 0x0001,
 
-                        "150"    :     0x8000   ,         #  Exhibit Force Posture
-                        "151"    :     0x8001   ,
-                        "152"    :     0x8002   ,
-                        "153"    :     0x8003   ,
-                        "154"    :     0x8004   ,
-
-                        "160"    :     0x0100   ,         #  Reduce Relations
-                        "161"    :     0x0180   ,
-                        "162"    :     0x0140   ,
-                        "1621"   :     0x0145   ,
-                        "1622"   :     0x0146   ,
-                        "1623"   :     0x0147   ,
-                        "163"    :     0x000B   ,
-                        "164"    :     0x0110   ,
-                        "165"    :     0x0130   ,
-                        "166"    :     0x0150   ,
-                        "1661"   :     0x0159   ,
-                        "1662"   :     0x015A   ,
-                        "1663"   :     0x015E   ,
-
-                        "170"    :     0x9000    ,         #  Coerce
-                        "171"    :     0x9010    ,
-                        "1711"   :     0x9011    ,
-                        "1712"   :     0x9012    ,
-                        "172"    :     0x900B    ,
-                        "1721"   :     0x9003    ,
-                        "1722"   :     0x9001    ,
-                        "1723"   :     0x9004    ,
-                        "1724"   :     0x9006    ,
-                        "173"    :     0x9020    ,
-                        "174"    :     0x9030    ,
-                        "175"    :     0x9040    ,
-
-                        "180"    :     0x0090    ,         #  Assault
-                        "181"    :     0x0091    ,
-                        "182"    :     0x0092    ,
-                        "1821"   :     0x0093    ,
-                        "1822"   :     0x0094    ,
-                        "1823"   :     0x0095    ,
-                        "1824"   :     0x0096    ,
-                        "183"    :     0x0097    ,
-                        "1831"   :     0x0098    ,
-                        "1832"   :     0x0099    ,
-                        "1833"   :     0x009A    ,
-                        "1834"   :     0x009B    ,
-                        "184"    :     0x009C    ,
-                        "185"    :     0x009D    ,
-                        "186"    :     0x009E    ,
+           "130": 0x6000,  # Threaten
+           "131": 0x6100,
+           "1311": 0x6140,
+           "1312": 0x6105,
+           "1313": 0x6180,
+           "132": 0x600B,
+           "1321": 0x6003,
+           "1322": 0x6001,
+           "1323": 0x6004,
+           "1324": 0x6006,
+           "133": 0x600C,
+           "134": 0x6010,
+           "135": 0x6030,
+           "136": 0x600E,
+           "137": 0x6004,
+           "138": 0x60A0,
+           "1381": 0x60A1,
+           "1382": 0x60A2,
+           "1383": 0x60A3,
+           "1384": 0x60A4,
+           "1385": 0x60B0,
+           "139": 0x6005,
 
 
-                        "190"    :     0x00A0    ,         #  Fight
-                        "191"    :     0x00A1    ,
-                        "192"    :     0x00A2    ,
-                        "193"    :     0x00A3    ,
-                        "194"    :     0x00A4    ,
-                        "195"    :     0x00A5    ,
-                        "1951"   :     0x00A6    ,
-                        "1952"   :     0x00A7    ,
-                        "196"    :     0x00A8    ,
+           "140": 0x5000,  # Protest
+           "145": 0x50A0,
 
-                        "200"    :     0x00B0    ,         #  Use Unconventional Mass Violence
-                        "---"    : 0              }
+           "150": 0x8000,  # Exhibit Force Posture
+           "151": 0x8001,
+           "152": 0x8002,
+           "153": 0x8003,
+           "154": 0x8004,
+
+           "160": 0x0100,  # Reduce Relations
+           "161": 0x0180,
+           "162": 0x0140,
+           "1621": 0x0145,
+           "1622": 0x0146,
+           "1623": 0x0147,
+           "163": 0x000B,
+           "164": 0x0110,
+           "165": 0x0130,
+           "166": 0x0150,
+           "1661": 0x0159,
+           "1662": 0x015A,
+           "1663": 0x015E,
+
+           "170": 0x9000,  # Coerce
+           "171": 0x9010,
+           "1711": 0x9011,
+           "1712": 0x9012,
+           "172": 0x900B,
+           "1721": 0x9003,
+           "1722": 0x9001,
+           "1723": 0x9004,
+           "1724": 0x9006,
+           "173": 0x9020,
+           "174": 0x9030,
+           "175": 0x9040,
+
+           "180": 0x0090,  # Assault
+           "181": 0x0091,
+           "182": 0x0092,
+           "1821": 0x0093,
+           "1822": 0x0094,
+           "1823": 0x0095,
+           "1824": 0x0096,
+           "183": 0x0097,
+           "1831": 0x0098,
+           "1832": 0x0099,
+           "1833": 0x009A,
+           "1834": 0x009B,
+           "184": 0x009C,
+           "185": 0x009D,
+           "186": 0x009E,
+
+
+           "190": 0x00A0,  # Fight
+           "191": 0x00A1,
+           "192": 0x00A2,
+           "193": 0x00A3,
+           "194": 0x00A4,
+           "195": 0x00A5,
+           "1951": 0x00A6,
+           "1952": 0x00A7,
+           "196": 0x00A8,
+
+           "200": 0x00B0,  # Use Unconventional Mass Violence
+           "---": 0}
 
     if forward:
         passive = False
@@ -790,22 +801,20 @@ def convert_code(code,forward = 1):
         if active in cat:
             active = cat[active]
         else:
-            active = cat[active[:2]+"0"]
+            active = cat[active[:2] + "0"]
         if passive in cat:
             passive = cat[passive]
         else:
-            passive = cat[passive[:2]+"0"]
+            passive = cat[passive[:2] + "0"]
 
         return active, passive
 
-
-
     else:
-        reverse = dict(map(lambda a : (a[1],a[0]) , cat.items())  + # Other weird quirks
-                [   (0x30a0,"138"),   # Want to attack
+        reverse = dict(map(lambda a: (a[1], a[0]), cat.items()) +  # Other weird quirks
+                       [(0x30a0, "138"),   # Want to attack
 
-                ])
+                        ])
         if code and code in reverse:
             return reverse[code]
 
-        return 0 # hex(code)
+        return 0  # hex(code)

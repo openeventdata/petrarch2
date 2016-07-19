@@ -166,7 +166,7 @@ def test_simple():
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
 
-    return_dict = petrarch2.do_coding(dict,None)
+    return_dict = petrarch2.do_coding(dict)
     print(return_dict)
     assert return_dict['test123']['sents']['0']['events'] == [('DEU','FRA','192')]
 
@@ -179,7 +179,7 @@ def test_simple2():
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
 
-    return_dict = petrarch2.do_coding(dict,None)
+    return_dict = petrarch2.do_coding(dict)
     print(return_dict)
     assert return_dict['test123']['sents']['0']['events'] == [('DEU','FRA','173')]
 
@@ -211,7 +211,7 @@ def test_complex1():
 
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
                 u'meta': {u'date': u'20010101'}}}
-    return_dict = petrarch2.do_coding(dict,None)
+    return_dict = petrarch2.do_coding(dict)
     print(return_dict)
     assert return_dict['test123']['sents']['0']['events'] == [('TUNJUD','NGAEDU','173')]
 

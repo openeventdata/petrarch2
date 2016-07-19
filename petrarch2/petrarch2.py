@@ -114,7 +114,7 @@ def check_discards(SentenceText):
        2 : story match [+ prefix]
     """
     sent = SentenceText.upper().split()  # case insensitive matching
-    size = len(sent)
+    #size = len(sent)
     level = PETRglobals.DiscardList
     depart_index = [0]
     discardPhrase = ""
@@ -165,7 +165,7 @@ def get_issues(SentenceText):
             if code[0] == '~':  # ignore code, so bail
                 return []
             ka = 0
-            gotcode = False
+            #gotcode = False
             while ka < len(issues):
                 if code == issues[ka][0]:
                     issues[ka][1] += 1
@@ -178,7 +178,7 @@ def get_issues(SentenceText):
     return issues
 
 
-def do_coding(event_dict, out_file):
+def do_coding(event_dict):
     """
     Main coding loop Note that entering any character other than 'Enter' at the
     prompt will stop the program: this is deliberate.
@@ -195,9 +195,6 @@ def do_coding(event_dict, out_file):
     NDiscardSent = 0
     NDiscardStory = 0
 
-    """if out_file:  # <16.06.18 pas> disable for now
-        file = open_tex(out_file)"""
-
     logger = logging.getLogger('petr_log')
     times = 0
     sents = 0
@@ -208,13 +205,11 @@ def do_coding(event_dict, out_file):
         SkipStory = False
         print('\n\nProcessing story {}'.format(key))
         StoryDate = event_dict[key]['meta']['date']
-        StorySource = 'TEMP'
         for sent in val['sents']:
             NSent += 1
             if 'parsed' in event_dict[key]['sents'][sent]:
                 if 'config' in val['sents'][sent]:
-                    for id, config in event_dict[key][
-                            'sents'][sent]['config'].items():
+                    for _id, config in event_dict[key]['sents'][sent]['config'].items():
                         change_Config_Options(config)
 
                 SentenceID = '{}_{}'.format(key, sent)
@@ -222,7 +217,6 @@ def do_coding(event_dict, out_file):
                 SentenceDate = event_dict[key]['sents'][sent][
                     'date'] if 'date' in event_dict[key]['sents'][sent] else StoryDate
                 Date = PETRreader.dstr_to_ordate(SentenceDate)
-                SentenceSource = 'TEMP'
 
                 print("\n", SentenceID)
                 parsed = event_dict[key]['sents'][sent]['parsed']
@@ -262,9 +256,6 @@ def do_coding(event_dict, out_file):
                     # this is potentially confusing, so it probably would be useful to
                     # change one of those
 
-                """if out_file: # <16.06.18 pas> This isn't doing anything useful right now, just flipping bits on the hard drive, so I'm disabling it
-                    sentence.print_to_file(sentence.tree,file = file)"""
-
                 del(sentence)
                 times += code_time
                 sents += 1
@@ -273,12 +264,11 @@ def do_coding(event_dict, out_file):
                 if coded_events:
                     event_dict[key]['sents'][sent]['events'] = coded_events
                     event_dict[key]['sents'][sent]['meta'] = meta
-                    """print('DC-events:', coded_events) # --
-                    print('DC-meta:', meta) # --
-                    print('+++',event_dict[key]['sents'][sent])  # --"""
+                    #print('DC-events:', coded_events) # --
+                    #print('DC-meta:', meta) # --
+                    #print('+++',event_dict[key]['sents'][sent])  # --
                     if PETRglobals.WriteActorText or PETRglobals.WriteEventText or PETRglobals.WriteActorRoot:
-                        text_dict = utilities.extract_phrases(
-                            event_dict[key]['sents'][sent], SentenceID)
+                        text_dict = utilities.extract_phrases(event_dict[key]['sents'][sent], SentenceID)
 # --                        print('DC-td1:',text_dict) # --
                         if text_dict:
                             event_dict[key]['sents'][sent][
@@ -311,15 +301,11 @@ def do_coding(event_dict, out_file):
                 if len(coded_events) == 0:
                     NEmpty += 1
             else:
-                logger.info(
-                    '{} has no parse information. Passing.'.format(SentenceID))
+                logger.info('{} has no parse information. Passing.'.format(SentenceID))
                 pass
 
         if SkipStory:
             event_dict[key]['sents'] = None
-
-    """if out_file:  # <16.06.18 pas> disable for now
-        close_tex(file)"""
 
     print("\nSummary:")
     print(
@@ -413,10 +399,7 @@ PETRARCH
 
 
 def main():
-
     cli_args = parse_cli_args()
-    """print(cli_args)
-    sys.exit()"""
     utilities.init_logger('PETRARCH.log')
     logger = logging.getLogger('petr_log')
 

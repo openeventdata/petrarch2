@@ -180,10 +180,12 @@ def parse_Config(config_path):
                 raise
         print("new_actor_length =", PETRglobals.NewActorLength)
 
-        PETRglobals.StoponError = get_config_boolean('stop_on_error')
+        PETRglobals.StoponError    = get_config_boolean('stop_on_error')
         PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
         PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
         PETRglobals.WriteEventText = get_config_boolean('write_event_text')
+        PETRglobals.NullVerbs  = get_config_boolean('null_verbs')
+        PETRglobals.NullActors = get_config_boolean('null_actors')
 
         if parser.has_option(
                 'Options', 'require_dyad'):  # this one defaults to True

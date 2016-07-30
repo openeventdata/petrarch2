@@ -423,8 +423,9 @@ Since Clayton's work in Summer-2015, I've added some additional new options in c
 These are complementary command line options intended for use in dictionary development:
 
 \begin{itemize}
-\item \texttt{--nullverbs} (or \texttt{-nv}) produces a file of verb phrases which have a valid source and target but which are not in the dictionary 
-\item  \texttt{--nullactors} (or \texttt{-na}) produces a file of noun phrases which are associated with a codable verb phrase but which are not in the dictionary 
+\item \texttt{--nullverbs} (or \texttt{-nv}) produces a file of verb phrases which have a valid source and target but which are not in the dictionary. This can also be invoked using the option \texttt{null\_verbs  = True} in the  \textit{config.ini} file.
+\item  \texttt{--nullactors} (or \texttt{-na}) produces a file of noun phrases which are associated with a codable verb phrase but which are not in the dictionary.  This can also be invoked using the option \texttt{null\_actors  = True} and setting \texttt{new\_actor\_length} \textgreater 0 in the  \textit{config.ini} file.
+
 \end{itemize}
 
 In other words,  \texttt{--nullverbs} shows unrecorded actions that are occurring between known actors, and  \texttt{--nullactors} shows unrecorded actors that are engaging in known behaviors. With both options, no events are generated and instead the output file is a series of JSON records which can be read as Python dictionaries: examples are given below.  
@@ -497,7 +498,7 @@ Command example: \\ \texttt{python petrarch2.py -na 8 batch -i nullactor.test.tx
 \noindent \textbf{Implementation notes:}
 	\begin{itemize}
 		\setlength{\itemsep}{4pt}
-		\item The required integer following the command sets the \texttt{new\_actor\_length} \\parameter---the maximum number of words that a new actor can have---and overrides any settings in the \texttt{config.ini} file. Large values of this will give add a lot of extended noun phrases that probably aren't named-entities into the output; small values run the risk that a named entity preceded by several adjectives---e.g. \textit{``The beleaguered Japanese Prime Minister Shinzo Abe''}---will be missed. So, adjust this value based on your source texts, experience, and post-filtering programs.
+		\item If set in the command line, the required integer following the command sets the \texttt{new\_actor\_length} parameter---the maximum number of words that a new actor can have---and overrides any settings in the \texttt{config.ini} file (if set in the \texttt{config.ini} file, that value will be used). Large values of this will give add a lot of extended noun phrases that probably aren't named-entities into the output; small values run the risk that a named entity preceded by several adjectives---e.g. \textit{``The beleaguered Japanese Prime Minister Shinzo Abe''}---will be missed. So, adjust this value based on your source texts, experience, and post-filtering programs: values of 4 to 8 will usually work for typical English-language names.
 		\item If a source or target is in the dictionary, the phrase will be followed by the code in brackets \texttt{[\ldots]}
 		\item  \texttt{"evtcode"} is the CAMEO code for the verb phrase; \texttt{"evttext"} is the text which generated this code.
 		\item  The actors not in the dictionary are assigned temporary codes of the form \texttt{"*i*"} where $i$ is an integer. These will show up in agent code such as  \texttt{"*4*GOV"} (instead of \texttt{"- - -GOV"}) and in the source and target markers in the verb text, e.g. \texttt{"<*2*> ... contradicted by <*3*>"}. See Section \ref{sssec:writeeventtext} on the construction of event texts.

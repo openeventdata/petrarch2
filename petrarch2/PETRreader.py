@@ -1749,7 +1749,17 @@ def dstr_to_ordate(datestring):
 def read_actor_dictionary(actorfile):
     """ This is a simple dictionary of dictionaries indexed on the words in the actor string. The final node has the
         key '#' and contains codes with their date restrictions and, optionally, the root phrase in the case
-        of synonyms. """
+        of synonyms. 
+
+        Example: 
+
+        UFFE_ELLEMANN_JENSEN_  [IGOEUREEC 820701-821231][IGOEUREEC 870701-871231] # president of the CoEU from DENMARK# IGOrulers.txt
+        
+        the actor above is stored as:
+
+        {u'UFFE': {u'ELLEMANN': {u'JENSEN': {u'#': [(u'IGOEUREEC', [u'820701', u'821231']), (u'IGOEUREEC', [u'870701', u'871231'])]}}}}
+
+        """
 
     open_FIN(actorfile, "actor")
 
@@ -1791,26 +1801,36 @@ def read_actor_dictionary(actorfile):
 
                 datelist = []  # reset for the new actor
                 current_acts = []
-                actor = line.replace("_", ' ').split()
-                if actor[-1][-1] == ']':
-                    data = actor[-1][1:-1].split()
-                    code = data[0]
-                    try:
-                        if '-' in data[1]:
-                            dates = data[1].split('-')
-                        else:
-                            dates = [data[1][1:]]
-                    except:
-                        dates = []
-                    datelist.append((code, dates))
-                    actor.pop()
+                temp = line.split('\t')
+                if len(temp)>1:
+                    datestring = temp[1].strip().replace("\n","").split(']')
+                    for i in range(len(datestring)):
+                        if len(datestring[i])==0:
+                            continue
+
+                        data = datestring[i][datestring[i].find('[')+1:].split()
+                        code = data[0].replace(']','')
+
+                        try:
+                            date = data[1].replace(']','')
+                            if '-' in date:
+                                dates = date.split('-')
+                            else:
+                                dates = [date]
+                        except:
+                            dates = []
+
+                        datelist.append((code, dates))
+
+                #print(datelist) 
+                actor = temp[0].replace("_", ' ').split()
             current_acts.append(actor)
 
         line = read_FIN_line().strip()
 
-    """for j,k in sorted(PETRglobals.ActorDict.items()):
+    '''for j,k in sorted(PETRglobals.ActorDict.items()):
         print(j,'\t\t',k.keys())
-        print(j,'\t\t',k)"""
+        print(j,'\t\t',k)'''
 #    exit()
 
 

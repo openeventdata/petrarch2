@@ -1802,6 +1802,8 @@ def read_actor_dictionary(actorfile):
                 datelist = []  # reset for the new actor
                 current_acts = []
                 temp = line.split('\t')
+                if len(temp)==1:
+                    temp = line.split("  ")
                 if len(temp)>1:
                     datestring = temp[1].strip().replace("\n","").split(']')
                     for i in range(len(datestring)):

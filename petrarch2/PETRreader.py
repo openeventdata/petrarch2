@@ -720,10 +720,27 @@ def read_verb_dictionary(verb_path):
     syn = 1
 
     def resolve_synset(line):
+        '''
+        this method resolve synset in the verb pattern recursively
 
+        ===output===:
+            a list of resolved patterns
+
+        ===example===:
+            * &SECURITY (OVER {&WEAPON ATTACK})                 [151]
+    
+        First the function resolves synset SECURITY. For each word and its plural in SECURITY, the function resolves
+        synset WEAPON.
+        The output is:
+            * SECURITY (OVER {FLAMETHROWER ATTACK})                 [151]
+            * SECURITIES (OVER {FLAMETHROWER ATTACK})                 [151]
+            * SECURITY (OVER {FLAMETHROWERS ATTACK})                 [151]
+            * SECURITIES (OVER {FLAMETHROWERS ATTACK})                 [151]
+            ......
+        '''
         segs = line.split()
         # print(line)
-        syns = filter(lambda a: a.startswith('&'), segs)
+        syns = filter(lambda a: '&' in a, segs)
         lines = []
         if syns:
             set = syns[0].replace(
@@ -734,7 +751,12 @@ def read_verb_dictionary(verb_path):
             if set in synsets:
                 for word in synsets[set]:
                     # print(word)
-                    lines += resolve_synset(line.replace(set, word, 1))
+                    if '_' in word[-1]:
+                        baseword = word[0:-1]
+                    else:
+                        baseword = word
+                    lines += resolve_synset(line.replace(set, baseword, 1))#resolve synset recursively
+
                     plural = make_plural_noun(word)
                     if plural:
                         lines += resolve_synset(line.replace(set, plural, 1))
@@ -744,6 +766,15 @@ def read_verb_dictionary(verb_path):
         return [line]
 
     def resolve_patseg(segment):
+        '''
+        This method resolves prepositional phrase or noun phrase in the verb pattern
+
+        ===Output===:
+            nps: noun phrases are stored in the following format:
+                1. single word noun phrase is stored as a string
+                2. multi-word noun phrase is stored as a tuple (head, modifier list)
+            prep_pats: prepositional phrases are stored as a tuple (preposition, noun phrase)
+        '''
         prepphrase = 0
         nounphrase = 0
         nps = []
@@ -811,26 +842,27 @@ def read_verb_dictionary(verb_path):
             prep_pats.append((p, pnps))
         return nps, prep_pats
 
+
     for line in file:
         if line.startswith("<!"):
             record_patterns = 0
             continue
         elif line.startswith("####### VERB PATTERNS #######"):
             syn = 0
+
         if not line.strip():
             continue
-        if line.startswith("---"):
+
+        if line.startswith("---"):#read block information
             segs = line.split()
             block_meaning = segs[1]
             block_code = segs[2]
-        elif line.startswith("-"):
+        elif line.startswith("-"):#read verb pattern
             if not record_patterns:
                 continue
-            dict_entry = {}
             pattern = line[1:].split("#")[0]
             # print(line)
             for pat in resolve_synset(pattern):
-
                 segs = pat.split("*")
 
                 pre = segs[0].split()
@@ -842,7 +874,7 @@ def read_verb_dictionary(verb_path):
                 path = PETRglobals.VerbDict[
                     'phrases'].setdefault(block_meaning, {})
                 if not pre == ([], []):
-                    if pre[0]:
+                    if pre[0]: # pre-verb noun phrase
                         count = 1
 
                         for noun in pre[0]:
@@ -860,7 +892,7 @@ def read_verb_dictionary(verb_path):
                                 pre[0]) else path
                             count += 1
 
-                    if pre[1]:
+                    if pre[1]: #pre-verb prepositional phrase
                         path = path.setdefault("|", {})
                         for phrase in pre[1]:
                             head = phrase[0]
@@ -884,8 +916,9 @@ def read_verb_dictionary(verb_path):
 
                 if not post == ([], []):
                     path = path.setdefault('*', {})
-                    if post[0]:
+                    if post[0]: # post-verb noun phrase
                         count = 1
+                                        
                         for noun in post[0]:
                             if not isinstance(noun, tuple):
                                 path = path.setdefault(noun, {})
@@ -897,11 +930,10 @@ def read_verb_dictionary(verb_path):
                                     path = path.setdefault("-", {})
                                     path = path.setdefault(element, {})
 
-                            path = path.setdefault(
-                                ",", {}) if not count == len(
-                                post[0]) else path
+                            path = path.setdefault(",", {}) if not count == len(post[0]) else path
+                            count += 1
 
-                    if post[1]:
+                    if post[1]: #post-verb prepositional phrase
                         for phrase in post[1]:
                             head = phrase[0]
                             path = path.setdefault("|", {})
@@ -918,23 +950,29 @@ def read_verb_dictionary(verb_path):
                                     for element in noun[1]:
                                         path = path.setdefault("-", {})
                                         path = path.setdefault(element, {})
-                                path = path.setdefault(
-                                    ",", {}) if not count == len(
-                                    phrase[1]) else path
+                                path = path.setdefault(",", {}) if not count == len(phrase[1]) else path
                                 count += 1
 
                 path["#"] = {'code': code[1:-1], 'line': line[:-1]}
-        elif syn and line.startswith("&"):
+        elif syn and line.startswith("&"): #read SYNONYM SETS block information
             block_meaning = line.strip()
-        elif syn and line.startswith("+"):
+        elif syn and line.startswith("+"): #read SYNONYM SETS
             term = line.strip()[1:]
-            if "_" in term:
-                if len(term.replace("_", " ").split()) > 1:
-                    term = "{" + term.replace("_", " ") + "}"
+            
+            if "_" in term[-1] and "_" in term[:-1]:
+                temp = term[:-1]
+                if len(temp.replace("_", " ").split()) > 1:
+                    temp = "{" + temp.replace("_", " ") + "_}"
                 else:
-                    term = term.replace("_", " ")
-            synsets[block_meaning] = synsets.setdefault(
-                block_meaning, []) + [term]
+                    temp = term
+            elif "_" not in term[-1] and "_" in term:
+                temp = term
+                if len(temp.replace("_", " ").split()) > 1:
+                    temp = "{" + temp.replace("_", " ") + "}"
+            else:
+                temp = term
+            
+            synsets[block_meaning] = synsets.setdefault(block_meaning, []) + [temp]
         elif line.startswith("~"):
             # VERB TRANSFORMATION
             p = line[1:].replace("(", "").replace(")", "")
@@ -979,8 +1017,7 @@ def read_verb_dictionary(verb_path):
 
             if not (len(words) > 1 or '{' in word):
 
-                if stem.endswith("S") or stem.endswith(
-                        "X") or stem.endswith("Z"):
+                if stem.endswith("S") or stem.endswith("X") or stem.endswith("Z"):
                     words.append(stem + "ES")
                 elif stem.endswith("Y"):
                     words.append(stem[:-1] + "IES")

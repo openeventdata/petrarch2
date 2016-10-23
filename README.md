@@ -57,11 +57,18 @@ use its functionality, [hypnos](https://github.com/caerusassociates/hypnos) is a
 
 Currently, you can run PETRARCH using the following command if installed:
 
-``petrarch batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
+``petrarch2 batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
 
 If not installed:
 
-``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
+``python petrarch2.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
+
+You can see a sample of the input/output by running (assuming you're in the
+PETRARCH2 directory):
+
+``petrarch2 batch -i ./petrarch2/data/text/GigaWord.sample.PETR.xml -o test.txt``
+
+This will return a file named `evts.test.txt`.
 
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.

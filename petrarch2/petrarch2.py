@@ -328,12 +328,12 @@ def do_coding(event_dict):
 
 
 def parse_cli_args():
-    """Function to parse the command-line arguments for PETRARCH."""
+    """Function to parse the command-line arguments for PETRARCH2."""
     __description__ = """
-PETRARCH
-(https://openeventdata.github.io/) (v. 0.01)
+PETRARCH2
+(https://openeventdata.github.io/) (v. 1.0.0)
     """
-    aparse = argparse.ArgumentParser(prog='petrarch',
+    aparse = argparse.ArgumentParser(prog='petrarch2',
                                      description=__description__)
 
     sub_parse = aparse.add_subparsers(dest='command_name')
@@ -383,7 +383,7 @@ PETRARCH
 
     nulloptions.add_argument(
         '-na',
-        '--nullactors',
+        '--nullactors', action='store_true', default=False,
         help="""Find noun phrases which are associated with a verb generating  an event but are
                                 not in the dictionary; an integer giving the maximum number of words follows the command.
                                 Does not generate events. """,
@@ -392,7 +392,7 @@ PETRARCH
     nulloptions.add_argument('-nv', '--nullverbs',
                              help="""Find verb phrases which have source and
                                targets but are not in the dictionary. Does not generate events. """,
-                             required=False, action="store_true")
+                             required=False, action="store_true", default=False)
 
     args = aparse.parse_args()
     return args
@@ -405,66 +405,64 @@ def main():
 
     PETRglobals.RunTimeString = time.asctime()
 
-    if cli_args.command_name == 'parse' or cli_args.command_name == 'batch':  # 16.06.27: no longer needed, right?
+    print(cli_args)
+    if cli_args.config:
+        print('Using user-specified config: {}'.format(cli_args.config))
+        logger.info(
+            'Using user-specified config: {}'.format(cli_args.config))
+        PETRreader.parse_Config(cli_args.config)
+    else:
+        logger.info('Using default config file.')
+        PETRreader.parse_Config(utilities._get_data('data/config/',
+                                                    'PETR_config.ini'))
 
-        print(cli_args)
-        if cli_args.config:
-            print('Using user-specified config: {}'.format(cli_args.config))
-            logger.info(
-                'Using user-specified config: {}'.format(cli_args.config))
-            PETRreader.parse_Config(cli_args.config)
-        else:
-            logger.info('Using default config file.')
-            PETRreader.parse_Config(utilities._get_data('data/config/',
-                                                        'PETR_config.ini'))
+    if cli_args.nullverbs:
+        print('Coding in null verbs mode; no events will be generated')
+        logger.info(
+            'Coding in null verbs mode; no events will be generated')
+        # Only get verb phrases that are not in the dictionary but are
+        # associated with coded noun phrases
+        PETRglobals.NullVerbs = True
+    elif cli_args.nullactors:
+        print('Coding in null actors mode; no events will be generated')
+        logger.info(
+            'Coding in null verbs mode; no events will be generated')
+        # Only get actor phrases that are not in the dictionary but
+        # associated with coded verb phrases
+        PETRglobals.NullActors = True
+        PETRglobals.NewActorLength = int(cli_args.nullactors)
 
-        if cli_args.nullverbs:
-            print('Coding in null verbs mode; no events will be generated')
-            logger.info(
-                'Coding in null verbs mode; no events will be generated')
-            # Only get verb phrases that are not in the dictionary but are
-            # associated with coded noun phrases
-            PETRglobals.NullVerbs = True
-        elif cli_args.nullactors:
-            print('Coding in null actors mode; no events will be generated')
-            logger.info(
-                'Coding in null verbs mode; no events will be generated')
-            # Only get actor phrases that are not in the dictionary but
-            # associated with coded verb phrases
-            PETRglobals.NullActors = True
-            PETRglobals.NewActorLength = int(cli_args.nullactors)
+    read_dictionaries()
+    start_time = time.time()
+    print('\n\n')
 
-        read_dictionaries()
-        start_time = time.time()
-        print('\n\n')
-
-        paths = PETRglobals.TextFileList
-        if cli_args.inputs:
-            if os.path.isdir(cli_args.inputs):
-                if cli_args.inputs[-1] != '/':
-                    paths = glob.glob(cli_args.inputs + '/*.xml')
-                else:
-                    paths = glob.glob(cli_args.inputs + '*.xml')
-            elif os.path.isfile(cli_args.inputs):
-                paths = [cli_args.inputs]
+    paths = PETRglobals.TextFileList
+    if cli_args.inputs:
+        if os.path.isdir(cli_args.inputs):
+            if cli_args.inputs[-1] != '/':
+                paths = glob.glob(cli_args.inputs + '/*.xml')
             else:
-                print(
-                    '\nFatal runtime error:\n"' +
-                    cli_args.inputs +
-                    '" could not be located\nPlease enter a valid directory or file of source texts.')
-                sys.exit()
-
-        out = ""  # PETRglobals.EventFileName
-        if cli_args.outputs:
-            out = cli_args.outputs
-
-        if cli_args.command_name == 'parse':
-            run(paths, out, cli_args.parsed)
-
+                paths = glob.glob(cli_args.inputs + '*.xml')
+        elif os.path.isfile(cli_args.inputs):
+            paths = [cli_args.inputs]
         else:
-            run(paths, out, True)  # <===
+            print(
+                '\nFatal runtime error:\n"' +
+                cli_args.inputs +
+                '" could not be located\nPlease enter a valid directory or file of source texts.')
+            sys.exit()
 
-        print("Coding time:", time.time() - start_time)
+    out = ""  # PETRglobals.EventFileName
+    if cli_args.outputs:
+        out = cli_args.outputs
+
+    if cli_args.command_name == 'parse':
+        run(paths, out, cli_args.parsed)
+
+    else:
+        run(paths, out, True)  # <===
+
+    print("Coding time:", time.time() - start_time)
 
     print("Finished")
 

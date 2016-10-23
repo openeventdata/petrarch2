@@ -179,10 +179,12 @@ def parse_Config(config_path):
                 raise
         print("new_actor_length =", PETRglobals.NewActorLength)
 
-        PETRglobals.StoponError = get_config_boolean('stop_on_error')
+        PETRglobals.StoponError    = get_config_boolean('stop_on_error')
         PETRglobals.WriteActorRoot = get_config_boolean('write_actor_root')
         PETRglobals.WriteActorText = get_config_boolean('write_actor_text')
         PETRglobals.WriteEventText = get_config_boolean('write_event_text')
+        PETRglobals.NullVerbs  = get_config_boolean('null_verbs')
+        PETRglobals.NullActors = get_config_boolean('null_actors')
 
         if parser.has_option(
                 'Options', 'require_dyad'):  # this one defaults to True
@@ -718,10 +720,27 @@ def read_verb_dictionary(verb_path):
     syn = 1
 
     def resolve_synset(line):
+        '''
+        this method resolve synset in the verb pattern recursively
 
+        ===output===:
+            a list of resolved patterns
+
+        ===example===:
+            * &SECURITY (OVER {&WEAPON ATTACK})                 [151]
+    
+        First the function resolves synset SECURITY. For each word and its plural in SECURITY, the function resolves
+        synset WEAPON.
+        The output is:
+            * SECURITY (OVER {FLAMETHROWER ATTACK})                 [151]
+            * SECURITIES (OVER {FLAMETHROWER ATTACK})                 [151]
+            * SECURITY (OVER {FLAMETHROWERS ATTACK})                 [151]
+            * SECURITIES (OVER {FLAMETHROWERS ATTACK})                 [151]
+            ......
+        '''
         segs = line.split()
         # print(line)
-        syns = filter(lambda a: a.startswith('&'), segs)
+        syns = filter(lambda a: '&' in a, segs)
         lines = []
         if syns:
             set = syns[0].replace(
@@ -732,7 +751,12 @@ def read_verb_dictionary(verb_path):
             if set in synsets:
                 for word in synsets[set]:
                     # print(word)
-                    lines += resolve_synset(line.replace(set, word, 1))
+                    if '_' in word[-1]:
+                        baseword = word[0:-1]
+                    else:
+                        baseword = word
+                    lines += resolve_synset(line.replace(set, baseword, 1))#resolve synset recursively
+
                     plural = make_plural_noun(word)
                     if plural:
                         lines += resolve_synset(line.replace(set, plural, 1))
@@ -742,6 +766,15 @@ def read_verb_dictionary(verb_path):
         return [line]
 
     def resolve_patseg(segment):
+        '''
+        This method resolves prepositional phrase or noun phrase in the verb pattern
+
+        ===Output===:
+            nps: noun phrases are stored in the following format:
+                1. single word noun phrase is stored as a string
+                2. multi-word noun phrase is stored as a tuple (head, modifier list)
+            prep_pats: prepositional phrases are stored as a tuple (preposition, noun phrase)
+        '''
         prepphrase = 0
         nounphrase = 0
         nps = []
@@ -809,26 +842,27 @@ def read_verb_dictionary(verb_path):
             prep_pats.append((p, pnps))
         return nps, prep_pats
 
+
     for line in file:
         if line.startswith("<!"):
             record_patterns = 0
             continue
         elif line.startswith("####### VERB PATTERNS #######"):
             syn = 0
+
         if not line.strip():
             continue
-        if line.startswith("---"):
+
+        if line.startswith("---"):#read block information
             segs = line.split()
             block_meaning = segs[1]
             block_code = segs[2]
-        elif line.startswith("-"):
+        elif line.startswith("-"):#read verb pattern
             if not record_patterns:
                 continue
-            dict_entry = {}
             pattern = line[1:].split("#")[0]
             # print(line)
             for pat in resolve_synset(pattern):
-
                 segs = pat.split("*")
 
                 pre = segs[0].split()
@@ -840,7 +874,7 @@ def read_verb_dictionary(verb_path):
                 path = PETRglobals.VerbDict[
                     'phrases'].setdefault(block_meaning, {})
                 if not pre == ([], []):
-                    if pre[0]:
+                    if pre[0]: # pre-verb noun phrase
                         count = 1
 
                         for noun in pre[0]:
@@ -858,7 +892,7 @@ def read_verb_dictionary(verb_path):
                                 pre[0]) else path
                             count += 1
 
-                    if pre[1]:
+                    if pre[1]: #pre-verb prepositional phrase
                         path = path.setdefault("|", {})
                         for phrase in pre[1]:
                             head = phrase[0]
@@ -882,8 +916,9 @@ def read_verb_dictionary(verb_path):
 
                 if not post == ([], []):
                     path = path.setdefault('*', {})
-                    if post[0]:
+                    if post[0]: # post-verb noun phrase
                         count = 1
+                                        
                         for noun in post[0]:
                             if not isinstance(noun, tuple):
                                 path = path.setdefault(noun, {})
@@ -895,11 +930,10 @@ def read_verb_dictionary(verb_path):
                                     path = path.setdefault("-", {})
                                     path = path.setdefault(element, {})
 
-                            path = path.setdefault(
-                                ",", {}) if not count == len(
-                                post[0]) else path
+                            path = path.setdefault(",", {}) if not count == len(post[0]) else path
+                            count += 1
 
-                    if post[1]:
+                    if post[1]: #post-verb prepositional phrase
                         for phrase in post[1]:
                             head = phrase[0]
                             path = path.setdefault("|", {})
@@ -916,23 +950,29 @@ def read_verb_dictionary(verb_path):
                                     for element in noun[1]:
                                         path = path.setdefault("-", {})
                                         path = path.setdefault(element, {})
-                                path = path.setdefault(
-                                    ",", {}) if not count == len(
-                                    phrase[1]) else path
+                                path = path.setdefault(",", {}) if not count == len(phrase[1]) else path
                                 count += 1
 
                 path["#"] = {'code': code[1:-1], 'line': line[:-1]}
-        elif syn and line.startswith("&"):
+        elif syn and line.startswith("&"): #read SYNONYM SETS block information
             block_meaning = line.strip()
-        elif syn and line.startswith("+"):
+        elif syn and line.startswith("+"): #read SYNONYM SETS
             term = line.strip()[1:]
-            if "_" in term:
-                if len(term.replace("_", " ").split()) > 1:
-                    term = "{" + term.replace("_", " ") + "}"
+            
+            if "_" in term[-1] and "_" in term[:-1]:
+                temp = term[:-1]
+                if len(temp.replace("_", " ").split()) > 1:
+                    temp = "{" + temp.replace("_", " ") + "_}"
                 else:
-                    term = term.replace("_", " ")
-            synsets[block_meaning] = synsets.setdefault(
-                block_meaning, []) + [term]
+                    temp = term
+            elif "_" not in term[-1] and "_" in term:
+                temp = term
+                if len(temp.replace("_", " ").split()) > 1:
+                    temp = "{" + temp.replace("_", " ") + "}"
+            else:
+                temp = term
+            
+            synsets[block_meaning] = synsets.setdefault(block_meaning, []) + [temp]
         elif line.startswith("~"):
             # VERB TRANSFORMATION
             p = line[1:].replace("(", "").replace(")", "")
@@ -977,8 +1017,7 @@ def read_verb_dictionary(verb_path):
 
             if not (len(words) > 1 or '{' in word):
 
-                if stem.endswith("S") or stem.endswith(
-                        "X") or stem.endswith("Z"):
+                if stem.endswith("S") or stem.endswith("X") or stem.endswith("Z"):
                     words.append(stem + "ES")
                 elif stem.endswith("Y"):
                     words.append(stem[:-1] + "IES")
@@ -1747,7 +1786,17 @@ def dstr_to_ordate(datestring):
 def read_actor_dictionary(actorfile):
     """ This is a simple dictionary of dictionaries indexed on the words in the actor string. The final node has the
         key '#' and contains codes with their date restrictions and, optionally, the root phrase in the case
-        of synonyms. """
+        of synonyms. 
+
+        Example: 
+
+        UFFE_ELLEMANN_JENSEN_  [IGOEUREEC 820701-821231][IGOEUREEC 870701-871231] # president of the CoEU from DENMARK# IGOrulers.txt
+        
+        the actor above is stored as:
+
+        {u'UFFE': {u'ELLEMANN': {u'JENSEN': {u'#': [(u'IGOEUREEC', [u'820701', u'821231']), (u'IGOEUREEC', [u'870701', u'871231'])]}}}}
+
+        """
 
     open_FIN(actorfile, "actor")
 
@@ -1789,26 +1838,38 @@ def read_actor_dictionary(actorfile):
 
                 datelist = []  # reset for the new actor
                 current_acts = []
-                actor = line.replace("_", ' ').split()
-                if actor[-1][-1] == ']':
-                    data = actor[-1][1:-1].split()
-                    code = data[0]
-                    try:
-                        if '-' in data[1]:
-                            dates = data[1].split('-')
-                        else:
-                            dates = [data[1][1:]]
-                    except:
-                        dates = []
-                    datelist.append((code, dates))
-                    actor.pop()
+                temp = line.split('\t')
+                if len(temp)==1:
+                    temp = line.split("  ")
+                if len(temp)>1:
+                    datestring = temp[1].strip().replace("\n","").split(']')
+                    for i in range(len(datestring)):
+                        if len(datestring[i])==0:
+                            continue
+
+                        data = datestring[i][datestring[i].find('[')+1:].split()
+                        code = data[0].replace(']','')
+
+                        try:
+                            date = data[1].replace(']','')
+                            if '-' in date:
+                                dates = date.split('-')
+                            else:
+                                dates = [date]
+                        except:
+                            dates = []
+
+                        datelist.append((code, dates))
+
+                #print(datelist) 
+                actor = temp[0].replace("_", ' ').split()
             current_acts.append(actor)
 
         line = read_FIN_line().strip()
 
-    """for j,k in sorted(PETRglobals.ActorDict.items()):
+    '''for j,k in sorted(PETRglobals.ActorDict.items()):
         print(j,'\t\t',k.keys())
-        print(j,'\t\t',k)"""
+        print(j,'\t\t',k)'''
 #    exit()
 
 

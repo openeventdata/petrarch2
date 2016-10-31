@@ -29,8 +29,6 @@ Everything after this symbol and before the next newline will be ignored by the 
 	
 	something I want # followed by a Python-like comment
 
- 
-
 The program is *not* set up to handle clever variations like nested comments,  multiple 
 comments on a line, or non-comment information in multi-line comments: yes, we are
 perfectly capable of writing code that could handle these contingencies, but it 
@@ -46,7 +44,8 @@ adds to the memory overhead and can be somewhat confusing if you don't know what
 with. This data structure stores each word at a node, and following a path in the tree will lead
 to a pattern. Let's take a small part of the discard list as an example:
 
-::
+.. code-block:: none
+
     WORLD BOXING ASSOCIATION
     WORLD BOXING COUNCIL
     WORLD CUP
@@ -54,7 +53,8 @@ to a pattern. Let's take a small part of the discard list as an example:
 
 These three entries would be stored in the following Trie:
 
-::
+.. code-block:: none
+
                 PETRglobals.DiscardList
                             |
                             |
@@ -95,14 +95,13 @@ Synonym sets (synsets) are labelled with a string beginning with & and defined u
 the label followed by a series of lines beginning with ``+`` containing words or phrases.
 The phrases are interpreted as requiring consecutive words; the words can be separated 
 with underscores (they are converted to spaces). Synset phrases can
-only contain words, not ``$``, ``+``, ``%`` or ``^`` tokens.
- Synsets be used anywhere in a
-pattern that a word or phrase can be used. A synset must be defined before it is used:  
-a pattern containing an undefined synset will be ignored.
+only contain words, not ``$``, ``+``, ``%`` or ``^`` tokens. Synsets can be used anywhere in a pattern that a word or phrase can be used. A synset must be defined before it is used: a pattern containing an undefined synset will be ignored.
 
-Regular plurals are generated automatically  by adding 'S' to the root, adding 'IES' if the root ends in 'Y', and added 'ES' if the root ends in 'SS'.  Plurals are not created when [1]_
-
-.. [1] The method for handling irregular plurals is currently different for the verbs and agents dictionaries: these will be reconciled in the future, probably using the agents syntax. 
+Regular plurals are generated automatically  by adding 'S' to the root, adding 'IES' if the root ends in 'Y', and added 'ES' if the root ends in 'SS'.
+The method for handling irregular plurals is currently different for the verbs
+and agents dictionaries: these will be reconciled in the future, probably using
+the agents syntax.
+Plurals are not created when:
 
 * The phrase ends with ``_``. 
 
@@ -118,8 +117,8 @@ just enter these as additional synonyms.
 A verb synonym block is a set of verbs which are synonymous (or close enough) with 
 respect to the patterns. The program automatically generates the regular forms of the 
 verb if it is regular (and, implicitly, English); otherwise the irregular forms can be 
-specified in {...} following the primary verb. An optional code for the isolated verb 
-can	follow in [...].  
+specified in ``{...}`` following the primary verb. An optional code for the isolated verb 
+can	follow in ``[...]``.  
 
 The verb block begins with a comment of the form 
 
@@ -127,10 +126,10 @@ The verb block begins with a comment of the form
 
 --- <GENERAL DESCRIPTION> [<CODE>] ---
 
-where the "---" signals the beginning of a new block. The code in [...] is the 
+where the ``---`` signals the beginning of a new block. The code in ``[...]`` is the 
 primary code -- typically a two-digit+0 cue-category code -- for the block, and this 
 will be used for all other verbs unless these have their own code. If no code is 
-present, this defaults to the null code "---"  which indicates that the isolated verb 
+present, this defaults to the null code ``---`` which indicates that the isolated verb 
 does not generate an event. The null code also can be used as a secondary code.	
 
 
@@ -139,9 +138,9 @@ does not generate an event. The null code also can be used as a secondary code.
 Multiple-word "verbs" such as "CONDON OFF", "WIRE TAP" and "BEEF UP" are entered by
 connecting the words with an underscore and putting a '+'
 in front of the word in the phrase that is going to be identified as a verb.
-If there is no {...}, regular 
+If there is no ``{...}``, regular 
 forms are constructed for the word designated by '+'; otherwise all of the irregular 
-forms are given in {...}. If you can't figure out which part of the phrase is the 
+forms are given in ``{...}``. If you can't figure out which part of the phrase is the 
 verb, the phrase you are looking at is probably a noun, not a verb. Multi-word verbs 
 are treated in patterns just as single-word verbs are treated.
 
@@ -164,8 +163,9 @@ are more frequently parsed correctly.
 
 
 
-** Patterns **
-This is followed by a set of patterns -- these begin with '-' -- which are based roughly on
+**Patterns**
+
+This is followed by a set of patterns -- these begin with ``-`` -- which are based roughly on
 the syntax from TABARI patterns, but the patterns in Petrarch's dictionaries also contain
 some syntactic annotation. Pattern lines begin with a
 -, and are followed by a five-part pattern:
@@ -176,7 +176,7 @@ some syntactic annotation. Pattern lines begin with a
 
 Any of these can be left empty. Singular nouns are left bare, and should be the "head" of the phrase
 they are a member of, e.g. the head of "Much-needed financial aid" would be "aid." If multiple nouns or
-adjectives are needed, then that phrase is put in braces as in {FINANCIAL AID}, where the last word is the
+adjectives are needed, then that phrase is put in braces as in ``{FINANCIAL AID}``, where the last word is the
 head. Prepositional phrases are put in parentheses where the first element is the preposition, and the second
 element is a noun, or a braced noun phrase.
 
@@ -192,16 +192,20 @@ Note that these patterns do not contain other verbs. This is different from TABA
 versions of Petrarch. This is to simplify the verbs dictionary, and make the pattern matching
 faster and more effective.
 
-** Combinations **
+**Combinations**
+
 Petrarch handles many verb-verb interactions automatically through its reformatting of CAMEO's semantic
 heirarchy (See utilities.convert_code for more). For instance, if it were parsing the phrase
- " A will [help B]", it would code "to help B" first, then the phrase would become "A will [_ B 0x0040]".
-And then since help=0x0040 is a subcategory of will=0x3000, then it just adds them together,
-ending with the code [A B 0x3040]. This code is translated back into CAMEO for the final output,
-yielding [A B 033]. This process works for most instances where the idea of the phrase as a whole
+
+" A will [help B]"
+ 
+it would code "to help B" first, then the phrase would become "A will [_ B 0x0040]".
+And then since ``help=0x0040`` is a subcategory of ``will=0x3000``, then it just adds them together,
+ending with the code ``[A B 0x3040]``. This code is translated back into CAMEO for the final output,
+yielding ``[A B 033]``. This process works for most instances where the idea of the phrase as a whole
 is a combination of the ideas of its children.
 
-** Transformations **
+**Transformations**
 
 Sometimes these verb-vertb interactions aren't represented in the
 ontology. It is possible to specify what happens when one verb finds that it is acting on another verb.
@@ -217,19 +221,20 @@ The first element is the topmost source actor, the last element is the topmost v
 are converted to codes, so synonyms also match). The inner parenthetical has the same format, with the
 first element being the lower source, the second the lower target, and the third the lower verb. It
 is possible to replace letter variables with a period '.' to represent "non-specified actor", or with
-an underscore '_' to specify "non-present actor." Verbs can also be replaced with "Q" to mean "any verb."
+an underscore ``_`` to specify "non-present actor." Verbs can also be replaced with "Q" to mean "any verb."
 
 These transformations are sometimes necessary, but most cases can be handled by the combination process.
 
 
-** Storage in Memory **
+**Storage in Memory**
+
 The verb dictionary, when stored into memory, has three subdictionaries: words, patterns, and transformations.
 
-The words portion contains the base verbs. They are stored as VERB--STUFF BEFORE--#--STUFF AFTER--#--INFO. For
-most verbs (i.e. those that are not compounds), The entry just goes VERB -- # -- # -- INFO.
+The words portion contains the base verbs. They are stored as ``VERB--STUFF BEFORE--#--STUFF AFTER--#--INFO``. For
+most verbs (i.e. those that are not compounds), The entry just goes ``VERB -- # -- # -- INFO``.
 
 The transformation contains almost a literal transcription of the pattern, ordered
-VERB1--SOURCE1--VERB2--SOURCE2--TARGET2--INFO.
+``VERB1--SOURCE1--VERB2--SOURCE2--TARGET2--INFO``.
 
 The verb patterns in memory have extra annotative symbols after every word to indicate the type of
 word that comes next. The very first word encountered is always a noun. Then it follows a series of rules
@@ -394,11 +399,11 @@ for organizations, e.g. ``NGO~``)
 Regular plurals -- those formed by adding 'S' to the root, adding 'IES' if the
 root ends in 'Y', and added 'ES' if the root ends in 'SS' -- are generated automatically
 
-If the plural has some other form, it follows the root inside {...}  [1]_
+If the plural has some other form, it follows the root inside ``{...}``  [1]_
 
 If a plural should not be formed -- that is, the root is only singular or only
 plural, or the singular and plural have the same form (e.g. "police"), use a null
-string inside {}.
+string inside ``{}``.
 
 If there is more than one form of the plural -- "attorneys general" and "attorneys
 generals" are both in use -- just make a second entry with one of the plural forms
@@ -422,7 +427,7 @@ and used in the form
         CONGRESS!PERSON! [~LEG}
         !MINIST!_OF_INTERNAL_AFFAIRS
 
-The marker for the substitution set is of the form !...! and is followed by an =
+The marker for the substitution set is of the form ``!...!`` and is followed by an =
 and a comma-delimited list; spaces are stripped from the elements of the list so
 these can be added for clarity. Every item in the list is substituted for the marker,
 with no additional plural formation, so the first construction would generate
@@ -460,9 +465,10 @@ with no additional plural formation, so the first construction would generate
 Discard List
 ------------
 
-The discard list is used to identify sentences that should not be coded, for example sports events and historical chronologies.[2]_ If the string, prefixed with ' ', is found in the ``<Text>...</Text>`` sentence, the
-sentence is not coded. Prefixing the string with a '+' means the entire story is not
-coded with the string is found. If the string ends with '_', the matched string must also end with
+The discard list is used to identify sentences that should not be coded, for example sports events and historical chronologies. [2]_
+If the string, prefixed with ``' '``, is found in the ``<Text>...</Text>`` sentence, the
+sentence is not coded. Prefixing the string with a ``+`` means the entire story is not
+coded with the string is found. If the string ends with ``_``, the matched string must also end with
 a blank or punctuation mark; otherwise it is treated as a stem. The matching is not
 case sensitive.
 
@@ -503,7 +509,7 @@ The optional ``Issues`` dictionary is used to do simple string matching and retu
 
         ``<string> [<code>]``
 
-For purposes of matching, a ' ' is added to the beginning and end of the string: at
+For purposes of matching, a ``' '`` is added to the beginning and end of the string: at
 present there are no wild cards, though that is easily added.
 
 The following expansions can be used (these apply to the string that follows up to

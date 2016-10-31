@@ -7,12 +7,15 @@
 Introduction
 ============
 
-A Python Engine for Text Resolution And Related Coding Hierarchy.
+A Python Engine for Text Resolution And Related Coding Hierarchy part 2.
+This is the documentation for PETRARCH2, though PETRARCH is used throughtout
+this documentation as interchangeable with PETRARCH2. The difference between
+the programs lies in the coding engine rather than the API; more details can be
+seen in the `Comparison <status.html>`_.
 
 
     One of my students put it this way: "Francesco Petrarch was Kayne West. He jumps up on stage, says 
-    'Yo, welcome to the Renaissance, bitches!' And then drops the mike." <br\>
-    Dorsey Armstrong <br\>
+    'Yo, welcome to the Renaissance, bitches!' And then drops the mike." -- Dorsey Armstrong
     *Great Minds of the Medieval World* (Great Courses Series), lecture 20
 
 PETRARCH is a natural language processing tool for machine-coding events data.
@@ -21,10 +24,10 @@ from which 'whom-did-what-to-whom' relations are extracted.
 
 PETRARCH is the next-generation successor to the `TABARI
 <http://eventdata.parusanalytics.com/software.dir/tabari.html>`_ event-data
-coding software. More information about the key differences between PETRARCH
-and TABARI can be be found `here <current.html>`_ .
+coding software. A description of the differences between TABARI and
+PETRARCH-generation software is available `here <tabari_vs_petrarch.html>`_.
 
-This software is MIT Licensed (MIT) Copyright &copy; 2014 Open Event Data Alliance
+This software is MIT Licensed (MIT) Copyright 2014 Open Event Data Alliance
 
 
 Events Data
@@ -59,12 +62,8 @@ Installing
 ----------
 If you do decide you want to work with Petrarch as a standalone program, it is possible to install:
 
-1) Clone the repo
 
-  - For example, download the zip file into ``~/Downloads``.
-  - This will put the repo into something like ``~/Downloads/petrarch``.
-
-2) Run ``pip install -e ~/Downloads/petrarch``
+1) Run ``pip install git+https://github.com/openeventdata/petrarch2.git``
 
 
 This will install the program with a command-line hook. You can now run the program using:
@@ -90,6 +89,14 @@ If not installed:
 
 ``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
 
+You can see a sample of the input/output by running (assuming you're in the
+PETRARCH2 directory):
+
+``petrarch2 batch -i ./petrarch2/data/text/GigaWord.sample.PETR.xml -o
+test.txt``
+
+This will return a file named `evts.test.txt`.
+
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.
 
@@ -106,9 +113,7 @@ Unexpected conditions where the program encountered a potentially fatal error ar
 
 The one common error -- not included in those counts -- is the ``Dateline`` pattern, which is a particular pattern in the parse tree that occurs when the parsed material starts with a dateline such as "Beirut:'' or "Beijing (Xinhua News Agency):" rather than the actual start of the sentence. We probably aren't catching all dateline errors with this pattern but it gets a lot of them, and if you are seeing frequent occurrences of this warning you need to modify your pre-filters to remove the datelines.
 
-The remaining errors are due to very odd sentence constructions which either have confused CoreNLP so that the phrase structure is incorrect, or otherwise were not anticipated in the PETRARCH processing. Some of this
-    can be fixed if brought to our attention, but some of it is on the side of CoreNLP, which we aren't
-    even going to attempt to touch.
+The remaining errors are due to very odd sentence constructions which either have confused CoreNLP so that the phrase structure is incorrect, or otherwise were not anticipated it the PETRARCH processing. Some of this can be fixed if brought to our attention, but some of it is on the side of CoreNLP, which we aren't even going to attempt to touch.
 
 Contents:
 ---------
@@ -117,7 +122,7 @@ Contents:
    :maxdepth: 2
 
    status.rst
-   petrarch.rst
+   petrarch2.rst
    dictionaries.rst
    inputs.rst
    contributing.rst

@@ -58,8 +58,6 @@ the text in the entry is from a single sentence or a block of sentences, such
 as from the lead paragraph of a news story. Finally, the ``source`` attribute
 indicates what source the material came from, such as Agence-France Presse.
 
-,
-
 **General record fields:**
 
 All of these tags should occur on their own lines.

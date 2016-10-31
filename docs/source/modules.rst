@@ -1,10 +1,10 @@
 PETRARCH Package
 ========================
 
-:mod:`petrarch` Module
+:mod:`petrarch2` Module
 ----------------------
                 
-.. automodule:: petrarch
+.. automodule:: petrarch2
     :members:
     :undoc-members:
     :show-inheritance:

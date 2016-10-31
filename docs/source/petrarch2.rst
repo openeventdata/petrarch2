@@ -1,5 +1,5 @@
-PETRARCH
-========
+PETRARCH2
+=========
 
 This page contains some general notes about PETRARCH such as how the data is
 stored internally, how the configuration file is organized, and an outline of
@@ -24,6 +24,7 @@ Command Line Interface
   ``-c``, configuration will be read from that file; default config file is  ``PETR_config.ini``.
 
 ``parse``
+  **NOTE:** This command is deprecated in PETRARCH2.
   Run the PETRARCH parser specifying files in the command line
   
 

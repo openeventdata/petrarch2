@@ -1,5 +1,6 @@
-Status of the program 1-September-2015
+PETRARCH2 v. PETRARCH
 ======================================
+
 PETRARCH has been totally redone. The logic now more strongly follows the tree structure
 provided to us by the TreeBank parse.
 

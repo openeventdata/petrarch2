@@ -25,7 +25,8 @@ from which 'whom-did-what-to-whom' relations are extracted.
 
 PETRARCH is the next-generation successor to the `TABARI
 <http://eventdata.parusanalytics.com/software.dir/tabari.html>`_ event-data
-coding software. 
+coding software. A description of the differences between TABARI and
+PETRARCH-generation software is available `here <tabari_vs_petrarch.html>`_.
 
 This software is MIT Licensed (MIT) Copyright 2014 Open Event Data Alliance
 

@@ -15,8 +15,7 @@ seen in the `Comparison <status.html>`_.
 
 
     One of my students put it this way: "Francesco Petrarch was Kayne West. He jumps up on stage, says 
-    'Yo, welcome to the Renaissance, bitches!' And then drops the mike." <br\>
-    Dorsey Armstrong <br\>
+    'Yo, welcome to the Renaissance, bitches!' And then drops the mike." -- Dorsey Armstrong
     *Great Minds of the Medieval World* (Great Courses Series), lecture 20
 
 PETRARCH is a natural language processing tool for machine-coding events data.
@@ -90,13 +89,20 @@ If not installed:
 
 ``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
 
+You can see a sample of the input/output by running (assuming you're in the
+PETRARCH2 directory):
+
+``petrarch2 batch -i ./petrarch2/data/text/GigaWord.sample.PETR.xml -o
+test.txt``
+
+This will return a file named `evts.test.txt`.
+
 There's also the option to specify a configuration file using the ``-c <CONFIG
 FILE>`` flag, but the program will default to using ``PETR_config.ini``.
 
 When you run the program, a ``PETRARCH.log`` file will be opened in the current
 working directory. This file will contain general information, e.g., which
 files are being opened, and error messages.
-
 
 Logged Warnings
 ---------------

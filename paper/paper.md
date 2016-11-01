@@ -28,7 +28,20 @@
   # Summary
 
   The PETRARCH2 coding program implements a new coding algorithm, based on a
-  syntactic constiuency parse, to extract who-did-what-to-whom events from
+  syntactic constiuency parse, to extract who-did-what-to-whom political event data from
   structured news stories. Events are coded according to the CAMEO [@cameo] coding
   ontology. This software improves upon previous-generation coding software
-  such as TABARI [@tabari].
+  such as TABARI [@tabari] by using a deep Treebank parse rather than shallow 
+  parsing.
+
+  At the level of assigning codes, PETRARCH2 is largely dictionary based, working from extensive 
+  dictionaries of verb phrases to identify the type of event, and noun phrases to
+  identify both the actor (generally a proper noun such as the name of a country or
+  leader) and agent (generally a common noun identifying a role such as "police" or
+  "protesters"). These dictionaries incorporate the synonym sets from WordNet, are
+  open source, and are included in the distribution.
+
+  PETRARCH2 has primarily been run using Treebank output from the Stanford CoreNLP
+  system. It can be integrated with other software on the https://github.com/openeventdata/ site
+  to handle either continuous near-real-time coding or batch coding, as well as 
+  auxiliary programs for geolocation and simple deduplication. 

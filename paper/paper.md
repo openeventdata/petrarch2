@@ -6,7 +6,7 @@
     - computational linguistics
   authors:
    - name: Clayton Norris
-     orcid: 0000-0002-3957-2474
+     orcid: 0000-0001-5907-757X
      affiliation: 1
    - name: Philip Schrodt
      orcid: 0000-0003-3495-4198
@@ -15,7 +15,7 @@
      orcid: 0000-0001-7811-4399
      affiliation: 3
   affiliations:
-   - name: 
+   - name: University of Chicago
      index: 1
    - name: Parus Analytics
      index: 2
@@ -31,7 +31,7 @@
   syntactic constiuency parse, to extract who-did-what-to-whom political event data from
   structured news stories. Events are coded according to the CAMEO [@cameo] coding
   ontology. This software improves upon previous-generation coding software
-  such as TABARI [@tabari] by using a deep Treebank parse rather than shallow 
+  such as TABARI [@tabari] by using a deep syntactic parse rather than shallow 
   parsing.
 
   At the level of assigning codes, PETRARCH2 is largely dictionary based, working from extensive 

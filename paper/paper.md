@@ -21,14 +21,14 @@
      index: 2
    - name: Human Language Technology Center of Excellence<br />Johns Hopkins University
      index: 3
-  date: 23 October 2016
+  date: 1 November 2016
   bibliography: paper.bib
   ---
 
   # Summary
 
   The PETRARCH2 coding program implements a new coding algorithm, based on a
-  syntactic constiuency parse, to extract who-did-what-to-whom political event data from
+  syntactic constituency parse, to extract who-did-what-to-whom political event data from
   structured news stories. Events are coded according to the CAMEO [@cameo] coding
   ontology. This software improves upon previous-generation coding software
   such as TABARI [@tabari] by using a deep syntactic parse rather than shallow 
@@ -45,3 +45,5 @@
   system. It can be integrated with other software on the https://github.com/openeventdata/ site
   to handle either continuous near-real-time coding or batch coding, as well as 
   auxiliary programs for geolocation and simple deduplication. 
+
+  # References

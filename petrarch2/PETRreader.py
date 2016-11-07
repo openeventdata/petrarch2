@@ -1804,16 +1804,21 @@ def read_actor_dictionary(actorfile):
     current_acts = []
     datelist = []
     while len(line) > 0:
+        #print(line)
         if line[0] == '[':  # Date
             data = line[1:-1].split()
             code = data[0]
-            try:
-                if '-' in data[1]:
-                    dates = data[1].split('-')
-                else:
-                    dates = [data[1]]
-            except:
+            if len(data)==1:
                 dates = []
+            else:
+                try:
+                    datetemp = ("").join(data[1:])
+                    if '-' in datetemp:
+                        dates = datetemp.split('-')
+                    else:
+                        dates = [datetemp]
+                except:
+                    dates = []
             datelist.append((code, dates))
         else:
             if line[0] == '+':  # Synonym
@@ -1824,46 +1829,69 @@ def read_actor_dictionary(actorfile):
                         current_acts) > 0:  # store the root phrase if we're only to use it
                     datelist.append(current_acts[0])
                 for targ in current_acts:
-                    list = PETRglobals.ActorDict
+                    actordict = PETRglobals.ActorDict
                     while targ != []:
                         if targ[0] in [' ', '']:
                             targ = targ[1:]
                             continue
-                        if not isinstance(list, dict):
-                            print("BADNESS", list)
+                        if not isinstance(actordict, dict):
+                            print("BADNESS", actordict)
                             exit()
-                        list = list.setdefault(targ[0], {})
+
+                        if targ[0] not in actordict:
+                            actordict = actordict.setdefault(targ[0], {})
+                        else:
+                            actordict = actordict[targ[0]]
                         targ = targ[1:]
-                    list["#"] = datelist
+                    if "#" not in actordict:
+                        actordict["#"] = []
+
+                    actordict["#"].extend(datelist)
 
                 datelist = []  # reset for the new actor
                 current_acts = []
                 temp = line.split('\t')
                 if len(temp)==1:
-                    temp = line.split("  ")
-                if len(temp)>1:
-                    datestring = temp[1].strip().replace("\n","").split(']')
-                    for i in range(len(datestring)):
-                        if len(datestring[i])==0:
-                            continue
+                    temp = line.split()
 
-                        data = datestring[i][datestring[i].find('[')+1:].split()
-                        code = data[0].replace(']','')
+                if len(temp)==1:
+                    actortemp = line
+                    datetemp = ""
+                elif len(temp)==2:
+                    actortemp = temp[0]
+                    datetemp = temp[1]
+                elif len(temp)>2:
+                    if line.find('[')==-1:
+                        actortemp = line
+                        datetemp = ""
+                    else:
+                        actortemp = line[0:line.find('[')]
+                        datetemp = line[line.find('['):]
 
-                        try:
-                            date = data[1].replace(']','')
-                            if '-' in date:
-                                dates = date.split('-')
-                            else:
-                                dates = [date]
-                        except:
-                            dates = []
+                datestring = datetemp.strip().replace("\n","").split(']')
+                for i in range(len(datestring)):
+                    if len(datestring[i])==0:
+                        continue
 
-                        datelist.append((code, dates))
+                    data = datestring[i][datestring[i].find('[')+1:].split()
+                    code = data[0].replace(']','')
 
-                #print(datelist) 
-                actor = temp[0].replace("_", ' ').split()
+                    try:
+                        date = data[1].replace(']','')
+                        if '-' in date:
+                            dates = date.split('-')
+                        else:
+                            dates = [date]
+                    except:
+                        dates = []
+
+                    datelist.append((code, dates))
+
+                actor = actortemp.replace("_", ' ').split()
+
+
             current_acts.append(actor)
+            
 
         line = read_FIN_line().strip()
 

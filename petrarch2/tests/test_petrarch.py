@@ -20,6 +20,34 @@ def test_version():
 def test_read():
     assert "RUSSIA" in PETRglobals.ActorDict
 
+def test_actorDict_read():
+    #actorDict1 is an example that "CROATIA" appears multiple times in the dictionary, we should store all codes
+    actorDict1 = {u'#': [(u'YUGHRV', [u'<910625']), (u'HRVUNR', [u'911008', u'920115']), (u'HRV', [u'>920115']), (u'HRV', [])]}
+    
+    #actorDict2 is an example of multiple codes in one line
+    #UFFE_ELLEMANN_JENSEN_ [IGOEUREEC 820701-821231][IGOEUREEC 870701-871231] # president of the CoEU 
+    actorDict2 = {u'ELLEMANN': {u'JENSEN': {u'#': [(u'IGOEUREEC', [u'820701', u'821231']), (u'IGOEUREEC', [u'870701', u'871231'])]}}}
+    
+    #actorDict3 is an example of extra space in the date
+    #+EL_SISI_
+    #[EGYMIL 770101-120812]
+    #[EGYGOVMIL 120812-140326]
+    #[EGYGOV > 140608]
+    #[EGYELI]
+    actorDict3 = {u'#': [(u'EGYMIL', [u'770101', u'120812']), (u'EGYGOVMIL', [u'120812', u'140326']), (u'EGYGOV', [u'>140608']), (u'EGYELI', [])]}
+
+    #actorDict4-6 are examples that phrase and code is separated by different whitespace characters
+    actorDict4 = {u'HARAM': {u'#': [(u'NGAREB', [])]}} #one space
+    actorDict5 = {u'INC': {u'#': [(u'MNCUSA', [])]}} #two space
+    actorDict6 = {u'#': [(u'KIR', [])]} #one tab
+
+    assert PETRglobals.ActorDict['CROATIA'] == actorDict1
+    assert PETRglobals.ActorDict['UFFE'] == actorDict2
+    assert PETRglobals.ActorDict['EL']['SISI'] == actorDict3
+    assert PETRglobals.ActorDict['BOKO'] == actorDict4
+    assert PETRglobals.ActorDict['SOLARWINDS'] == actorDict5
+    assert PETRglobals.ActorDict['KIRIBATI'] == actorDict6
+
 
 ###################################
 #

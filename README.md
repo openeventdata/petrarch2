@@ -31,16 +31,34 @@ That said, there are a variety of situations -- most notably those where you hav
 stories -- where you will, in fact, want to run PETRARCH in a batch mode rather than as part of a pipeline.
 If you are in this situation, see the section "Processing stories outside the pipeline."
 
+##Does this work?
+
 As with all open source projects, you are probably wondering whether this code really works "in the wild" 
 or merely just on enough cases to satisfy our overlords before we went on to something else. On this, we
-have good news: it's quite robust. The pipeline (which uses PETRARCH-1 as the coder) has been running more
-or less continuously (with the crashes largely due to our cloud services provider) for more than two years
-now. PETRARCH-2 has been used in some very large-scale applications, a recent one involving the coding of
-around 25-million sentences. While it is the case that real-world continues to throw ever-more-novel 
-examples of wild and crazy inputs (which, of course, we'd love to see entered as issues, or even better,
+have good news: it's quite robust. We're aware of at least the following large-scale applications:
+
+* The near-real-time [Phoenix](http://phoenixdata.org/data) dataset has been running  has been running more
+or less continuously (with the crashes largely due to our cloud services provider) for over two years working with 
+hypnos and PETRARCH-1
+
+* An on-going academic project is using hypnos and PETRARCH-2 to code more than 30,000 event per day in 
+near real time
+
+* An experimental project coded about 25-million sentences in batch mode with both PETRARCH 1 and 2
+
+* A project based in Amazon Web Services has integrated PETRARCH-2, CoreNLP and Mordecai into a system coding
+more than 1,000 stories per hour
+
+* At least two academic projects are using the system to code long-time-frame datasets which will go back to 
+around 1980; this data should be public in early 2017
+
+While it is the case that the world will continue to throw ever-more-novel 
+examples of wild and crazy source texts (which, of course, we'd love to see entered as issues, or even better,
 submitted as bug fixes), and it is quite possible one or more of these will come your way and
 crash either CoreNLP or PETRARCH, generally this is software that, indeed, works in the wild, not
-just in the lab.
+just in the lab. None of the major deployments above are simple "plug-and-play" -- all involve a certain
+amount of customization, particularly in the initial formating of source texts and getting all of the 
+various components working smoothly in various hardware environments -- but fundamentally, yes, it works.
 
 ##Installing
 If you do decide you want to work with PETRARCH-2 as a standalone program, it is possible to install:

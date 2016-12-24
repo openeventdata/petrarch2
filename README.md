@@ -22,7 +22,7 @@ For more information, please read the Petrarch2.pdf file in this directory and v
 
 It is possible to run PETRARCH-2 as a stand-alone program. Most of our
 development work has gone into incorporating PETRARCH-2 into a full pipeline of
-utilities, though, e.g., the [Phoenix pipeline](https://github.com/openeventdata/phoenix_pipeline).
+utilities, through, e.g., the [Phoenix pipeline](https://github.com/openeventdata/phoenix_pipeline).
 There's also a RESTful wrapper around PETRARCH and CoreNLP named
 [hypnos](https://github.com/caerusassociates/hypnos). It's probably worthwhile
 to explore those options before trying to use PETRARCH as a stand-alone. 
@@ -37,20 +37,20 @@ As with all open source projects, you are probably wondering whether this code r
 or merely just on enough cases to satisfy our overlords before we went on to something else. On this, we
 have good news: it's quite robust. We're aware of at least the following large-scale applications:
 
-* The near-real-time [Phoenix](http://phoenixdata.org/data) dataset has been running  has been running more
+* The near-real-time [Phoenix](http://phoenixdata.org/data) dataset has been running more
 or less continuously (with the crashes largely due to our cloud services provider) for over two years working with 
-hypnos and PETRARCH-1
+hypnos and PETRARCH-1.
 
-* An on-going academic project is using hypnos and PETRARCH-2 to code more than 30,000 event per day in 
-near real time
+* An ongoing academic project is using hypnos and PETRARCH-2 to code more than 30,000 events per day in 
+near real time.
 
-* An experimental project coded about 25-million sentences in batch mode with both PETRARCH 1 and 2
+* An experimental project coded about 25-million sentences in batch mode with both PETRARCH 1 and 2.
 
 * A project based in Amazon Web Services has integrated PETRARCH-2, CoreNLP and Mordecai into a system coding
-more than 1,000 stories per hour
+more than 1,000 stories per hour.
 
 * At least two academic projects are using the system to code long-time-frame datasets which will go back to 
-around 1980; this data should be public in early 2017
+around 1980; this data should be public in early 2017.
 
 While it is the case that the world will continue to throw ever-more-novel 
 examples of wild and crazy source texts (which, of course, we'd love to see entered as issues, or even better,
@@ -114,7 +114,7 @@ But seriously, if you are doing near-real-time coding and need geolocation, you 
 
 ##Unit tests
 
-Commits should always successfully complete the PyTest command
+Commits should always successfully complete the PyTest command:
 
 ``py.test``
 
@@ -154,21 +154,17 @@ involve the following steps
 
 1. Pull out the story texts from your inputs and create one text file per story.
 
-2. Pass a list of those files in CoreNLP: your command will end up looking something like
+2. Pass a list of those files in CoreNLP: your command will end up looking something like:
 
-```
-java -cp "*" -Xmx2g edu.stanford.nlp.pipeline.StanfordCoreNLP -sentences newline -annotators tokenize,cleanxml,ssplit,pos,lemma,ner,parse,dcoref -parse.model edu/stanford/nlp/models/srparser/englishSR.ser.gz  -filelist cline.files.txt -outputDirectory cline_exper1_output
-```
-
-   where "cline.files.txt" was just a simple list of the files, one per line.
-   
-   [and the .md formatter for some reason feels compelled to restart list numbering now...]
+        java -cp "*" -Xmx2g edu.stanford.nlp.pipeline.StanfordCoreNLP -sentences newline -annotators     tokenize,cleanxml,ssplit,pos,lemma,ner,parse,dcoref -parse.model edu/stanford/nlp/models/srparser/englishSR.ser.gz  -filelist cline.files.txt -outputDirectory cline_exper1_output
+    
+   Where "cline.files.txt" was just a simple list of the files, one per line.
 
 3.  CoreNLP then grinds through all of these, and puts the output in the directory "cline_exper1_output" (per the final command line option), using the original file name plus a ".out" suffix. This is an XML file, and the parses are in the field <parse> -- there is one for each sentence in the story.
 
 4. Take all of those files (or, more prudently, a series of subsets to keep the file sizes down) and convert these to the PETRARCH XML format, which looks like the follow (line feeds in the parse aren't significant but were added for readability)
 
-```
+    ```
     <Sentences>
  
     <Sentence date = "20150805" id ="NULL-1107c5f6-7a30-4aa8-8845-7db535b7504d_1" source = "en1_6-10_story+10+ISO:CHN" sentence = "True">
@@ -229,14 +225,14 @@ java -cp "*" -Xmx2g edu.stanford.nlp.pipeline.StanfordCoreNLP -sentences newline
     </Sentence>
  
     </Sentences>
-```
+    ```
  
-That is, all your "glue" program needs to do here is put the original text in the <Text> field and the parsed text in the <Parse> field, plus add a date and a unique identifier plus whatever else you want to pull in. 
+  That is, all your "glue" program needs to do here is put the original text in the `<Text>` field and the parsed text in the     `<Parse>` field, plus add a date and a unique identifier plus whatever else you want to pull in. 
 
-4.  Run that through PETRARCH-2: if you have a large number of files (which is typical when you're in a batch 
+5.  Run that through PETRARCH-2: if you have a large number of files (which is typical when you're in a batch 
 situation) you'll want to break these PETRARCH-2 inputs into multiple files, then run them using in a script or across multiple machines, finally combine the output files with the coded events (multiple-event filtering can also be done at this stage if you are so inclined).
 
-5. The Mordecai geolocation program is a separate process: run it on the original texts and then merge that with the events if you need geolocation.
+6. The Mordecai geolocation program is a separate process: run it on the original texts and then merge that with the events if you need geolocation.
 
 
 That's it: the downside of the file-based approach is you are left with a gadzillion little files in steps [1] and [3] and the disk-based rather than RAM-based approach is doubtlessly a bit slower, but CoreNLP is the main bottleneck. Upside is these are really basic discrete steps and easy to diagnose.

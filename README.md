@@ -66,14 +66,20 @@ If you do decide you want to work with PETRARCH-2 as a standalone program, it is
 
 ``pip install git+https://github.com/openeventdata/petrarch2.git``
 
+Some users may experience issues with this, which 
+
+``pip install git+https://github.com/openeventdata/petrarch2.git --ignore-installed``
+
+should clear up.
+
 
 This will install the program with a command-line hook. You can now run the program using:
 
-``petrarch <COMMAND NAME> [OPTIONS]``
+``petrarch2 <COMMAND NAME> [OPTIONS]``
 
 You can get more information using:
 
-``petrarch -h``
+``petrarch2 -h``
 
 **StanfordNLP:**
 

@@ -6,6 +6,7 @@ PETRARCH-2
 [![Documentation Status](https://readthedocs.org/projects/petrarch2/badge/?version=latest)](http://petrarch2.readthedocs.org/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/openeventdata/petrarch2.svg?branch=master)](https://travis-ci.org/openeventdata/petrarch2)
 [![Code Health](https://landscape.io/github/openeventdata/petrarch2/master/landscape.svg?style=flat)](https://landscape.io/github/openeventdata/petrarch2/master)
+[![status](http://joss.theoj.org/papers/78d3cb025a049782e7ea63a0c8ee79f6/status.svg)](http://joss.theoj.org/papers/78d3cb025a049782e7ea63a0c8ee79f6)
 
 [![Caerus logo](http://caerusassociates.com/wp-content/uploads/2012/03/Caerus_logo.png)](http://caerusassociates.com/wp-content/uploads/2012/03/Caerus_logo.png)
 

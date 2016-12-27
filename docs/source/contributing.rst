@@ -5,7 +5,7 @@ One of the primary goals of PETRARCH and PETRARCH2 is to be software useable
 by a broad community of researchers and end users. Towards this end, we welcome
 contributions from anyone and everyone. 
 
-The project and issue tracker are hosted on Github: https://github.com/openeventdata/petrarch2.
+The project and issue tracker are hosted on Github: https://github.com/openeventdata/petrarch2. Please feel free to open issues regarding the software on the Github page. Additionally, individuals may use our `gitter <https://gitter.im/openeventdata/petrarch2>`_ channel for more real-time communication.
 
 In general, we find the community values from `scikit-learn <http://scikit-learn.org/stable/developers/contributing.html>`_ to echo our own:
 

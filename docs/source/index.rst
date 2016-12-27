@@ -65,14 +65,20 @@ If you do decide you want to work with Petrarch as a standalone program, it is p
 
 1) Run ``pip install git+https://github.com/openeventdata/petrarch2.git``
 
+Some users may experience issues with this install command. Using
+
+``pip install git+https://github.com/openeventdata/petrarch2.git --ignore-installed``
+
+may work instead.
+
 
 This will install the program with a command-line hook. You can now run the program using:
 
-``petrarch <COMMAND NAME> [OPTIONS]``
+``petrarch2 <COMMAND NAME> [OPTIONS]``
 
 You can get more information using:
 
-``petrarch -h``
+``petrarch2 -h``
 
 **StanfordNLP:**
 
@@ -83,11 +89,11 @@ Running
 
 Currently, you can run PETRARCH using the following command if installed:
 
-``petrarch batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
+``petrarch2 batch [-i <INPUT FILE> ] [-o [<OUTPUT FILE>]``
 
 If not installed:
 
-``python petrarch.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
+``python petrarch2.py batch -i <INPUT FILE> -o <OUTPUT FILE>``
 
 You can see a sample of the input/output by running (assuming you're in the
 PETRARCH2 directory):

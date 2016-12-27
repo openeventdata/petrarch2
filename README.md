@@ -246,4 +246,11 @@ That's it: the downside of the file-based approach is you are left with a gadzil
 In terms of time required using this approach, a ca. 2013 iMac (3.2 Ghz Intel Core i5 with 16Gb RAM) processed about 2500 stories per hour in CoreNLP (using the shift-reduce parser), running two instances of the program, then roughly 900,000 sentences per hour with a single instance PETRARCH-2. These figures were from a largely unfiltered Lexis-Nexis corpus, and a small number of stories (typically those where sentence segmenting went awry) used a disproportionate amount of time because CoreNLP pursued a large number of dead-ends before giving up: pre-filtering to insure that sentences are typical of those which will generate events should increase the overall coding speed somewhat. We've yet to do speed checks on Amazon Web Services instances though they are probably roughly comparable (both CoreNLP and PETRARCH-2 work fine on AWS).
 
 
+##Contributing
 
+Detailed contribution guidlines can be found in the
+[documentation](https://petrarch2.readthedocs.io/en/latest/contributing.html).
+In general, we welcome contributions from anyone and everyone, be it in the
+form of pull requests, bug reports, or feature requests. If you would like to
+engage in more real-time conversation with us, please visit our
+[gitter](https://gitter.im/openeventdata/petrarch2) channel.

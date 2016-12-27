@@ -19,7 +19,7 @@ affiliations:
    index: 1
  - name: Parus Analytics
    index: 2
- - name: Human Language Technology Center of Excellence<br />Johns Hopkins University
+ - name: Human Language Technology Center of Excellence, Johns Hopkins University
    index: 3
 date: 1 November 2016
 bibliography: paper.bib
@@ -44,6 +44,13 @@ open source, and are included in the distribution.
 PETRARCH2 has primarily been run using Treebank output from the Stanford CoreNLP
 system. It can be integrated with other software on the https://github.com/openeventdata/ site
 to handle either continuous near-real-time coding or batch coding, as well as 
-auxiliary programs for geolocation and simple deduplication. 
+auxiliary programs for geolocation and simple deduplication.
+
+As noted above, PETRARCH2 extracts structured political events from news
+stories. This software is aimed at users in the social sciences for whom
+the extracted political events can serve as basis for research into phenomenon
+of interest. Additionally, other users, such as data journalists, data
+scientists, and other analysts, can make use of the data generated via
+PETRARCH2 as a structured, common representation of news stories.
 
 # References

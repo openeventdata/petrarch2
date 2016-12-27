@@ -1,13 +1,34 @@
 Contributing to PETRARCH
 ========================
 
-This page is still a bit of a work in progress.
+One of the primary goals of PETRARCH and PETRARCH2 is to be software useable
+by a broad community of researchers and end users. Towards this end, we welcome
+contributions from anyone and everyone. 
 
-Tutorial
---------
+The project and issue tracker are hosted on Github: https://github.com/openeventdata/petrarch2.
 
-Walk through how to contribute some code/a function to PETRARCH. Explain how
-the hooks work.
+In general, we find the community values from `scikit-learn <http://scikit-learn.org/stable/developers/contributing.html>`_ to echo our own:
+
+.. topic:: **Our community, our values**
+
+    We are a community based on openness and friendly, didactic,
+    discussions.
+
+    We aspire to treat everybody equally, and value their contributions.
+
+    Decisions are made based on technical merit and consensus.
+
+    Code is not the only way to help the project. Reviewing pull
+    requests, answering questions to help others on mailing lists or
+    issues, organizing and teaching tutorials, working on the website,
+    improving the documentation, are all priceless contributions.
+
+    We abide by the principles of openness, respect, and consideration of
+    others of the Python Software Foundation:
+    https://www.python.org/psf/codeofconduct/
+
+|
+
 
 Tests
 -----
@@ -31,7 +52,7 @@ repository using `git <http://git-scm.com/>`_.
 
 ::
 
-    git clone https://github.com/openeventdata/petrarch.git
+    git clone https://github.com/openeventdata/petrarch2.git
 
 To contribute to the phoenix pipeline you should fork the repository, 
 create a branch, add to or edit code, push your new branch to your 
@@ -40,7 +61,7 @@ See the example below:
 
 ::
 
-    git clone https://github.com/YOUR_USERNAME/petrarch.git
+    git clone https://github.com/YOUR_USERNAME/petrarch2.git
     git checkout -b my_feature
     git add... # stage the files you modified or added
     git commit... # commit the modified or added files
@@ -54,13 +75,13 @@ Since these comments are tied specifically to the code they refer to
 
 Note that ``origin`` (if you are cloning the forked the phoenix pipeline 
 repository to your local machine) refers to that fork on GitHub, *not* 
-the original (upstream) repository ``https://github.com/openeventdata/petrarch.git``.
+the original (upstream) repository ``https://github.com/openeventdata/petrarch2.git``.
 If the upstream repository has changed since you forked and cloned it you can
 set an upstream remote:
 
 ::
 
-    git remote add upstream https://github.com/eventdata/phoenix_piepline.git
+    git remote add upstream https://github.com/eventdata/petrarch2.git
 
 You can then pull changes from the upstream repository and rebasing
 against the desired branch (in this example, development). You should 

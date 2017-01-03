@@ -17,8 +17,26 @@ and the new CAMEO.2.0.txt verb dictionary incorporates more syntactic informatio
 simpler than the previous version.
 
 
-For more information, please read the Petrarch2.pdf file in this directory and visit the (work-in-progress)
-[documentation](http://petrarch2.readthedocs.org/en/latest/#).
+For more information, please read the Petrarch2.pdf file in this directory and visit the [documentation](http://petrarch2.readthedocs.org/en/latest/#).
+
+##Citation
+
+If you use PETRARCH2, please cite using the following BibTeX:
+
+```
+@article{Norris2017,
+  doi = {10.21105/joss.00133},
+  url = {http://dx.doi.org/10.21105/joss.00133},
+  year  = {2017},
+  month = {jan},
+  publisher = {The Open Journal},
+  volume = {2},
+  number = {9},
+  author = {Clayton Norris and Philip Schrodt and John Beieler},
+  title = {{PETRARCH}2: Another Event Coding Program},
+  journal = {The Journal of Open Source Software}
+}
+```
 
 ##First, a couple of notes...
 

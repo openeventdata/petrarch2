@@ -51,7 +51,7 @@ That said, there are a variety of situations -- most notably those where you hav
 stories -- where you will, in fact, want to run PETRARCH in a batch mode rather than as part of a pipeline.
 If you are in this situation, see the section "Processing stories outside the pipeline."
 
-##Does this work?
+## Does this work?
 
 As with all open source projects, you are probably wondering whether this code really works "in the wild" 
 or merely just on enough cases to satisfy our overlords before we went on to something else. On this, we
@@ -80,7 +80,7 @@ just in the lab. None of the major deployments above are simple "plug-and-play" 
 amount of customization, particularly in the initial formating of source texts and getting all of the 
 various components working smoothly in various hardware environments -- but fundamentally, yes, it works.
 
-##Installing
+## Installing
 If you do decide you want to work with PETRARCH-2 as a standalone program, it is possible to install:
 
 
@@ -112,7 +112,7 @@ syntactic parse in Treebank form. Or if you're not looking to edit Petrarch itse
 use its functionality, [hypnos](https://github.com/caerusassociates/hypnos) is an easier option.
 
 
-##Running PETRARCH-2
+## Running PETRARCH-2
 
 Currently, you can run PETRARCH-2 using the following command if installed:
 
@@ -138,7 +138,7 @@ files are being opened, and error messages.
 
 But seriously, if you are doing near-real-time coding and need geolocation, you should probably use [hypnos](https://github.com/caerusassociates/hypnos) rather than run PETRARCH as a standalone program.
 
-##Unit tests
+## Unit tests
 
 Commits should always successfully complete the PyTest command:
 
@@ -149,7 +149,7 @@ by TravisCI upon Pull Request to the master directory, and will tell us whether
 the version has passed the tests. If for whatever reason you need to change the 
 tests or add cases to the test file, state that in the PR description. 
 
-##PETRARCH-1 vs. PETRARCH-2
+## PETRARCH-1 vs. PETRARCH-2
 
 While these two programs share a name, actor dictionary formats and input formats, they are effectively
 two different programs:
@@ -168,7 +168,7 @@ TABARI and PETRARCH-1 implementations. In the PETRARCH-1 system, ontology implem
 
 Despite these differences, the aggregate distributions of events in CAMEO 2-digit categories produced by the two systems in a test against a large corpus consisting of a wide variety of source materials (that is, not just sources with well-edited English) are quite similar, even though the results on individual stories only coincide about 40% of the time.
 
-##Processing stories outside the pipeline
+## Processing stories outside the pipeline
 
 hypnos and the Phoenix pipeline more generally are designed for [near-real-time processing] (https://en.wikipedia.org/wiki/Real-time_computing#Near_real-time) and consequently involve both
 web scraping and dynamic storage of those results into a MongoDB database. While this is 
@@ -266,7 +266,7 @@ That's it: the downside of the file-based approach is you are left with a gadzil
 In terms of time required using this approach, a ca. 2013 iMac (3.2 Ghz Intel Core i5 with 16Gb RAM) processed about 2500 stories per hour in CoreNLP (using the shift-reduce parser), running two instances of the program, then roughly 900,000 sentences per hour with a single instance PETRARCH-2. These figures were from a largely unfiltered Lexis-Nexis corpus, and a small number of stories (typically those where sentence segmenting went awry) used a disproportionate amount of time because CoreNLP pursued a large number of dead-ends before giving up: pre-filtering to insure that sentences are typical of those which will generate events should increase the overall coding speed somewhat. We've yet to do speed checks on Amazon Web Services instances though they are probably roughly comparable (both CoreNLP and PETRARCH-2 work fine on AWS).
 
 
-##Contributing
+## Contributing
 
 Detailed contribution guidlines can be found in the
 [documentation](https://petrarch2.readthedocs.io/en/latest/contributing.html).

@@ -19,7 +19,7 @@ simpler than the previous version.
 
 For more information, please read the Petrarch2.pdf file in this directory and visit the [documentation](http://petrarch2.readthedocs.org/en/latest/#).
 
-##Citation
+## Citation
 
 If you use PETRARCH2, please cite using the following BibTeX:
 
@@ -38,7 +38,7 @@ If you use PETRARCH2, please cite using the following BibTeX:
 }
 ```
 
-##First, a couple of notes...
+## First, a couple of notes...
 
 It is possible to run PETRARCH-2 as a stand-alone program. Most of our
 development work has gone into incorporating PETRARCH-2 into a full pipeline of

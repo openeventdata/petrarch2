@@ -57,10 +57,6 @@ As with all open source projects, you are probably wondering whether this code r
 or merely just on enough cases to satisfy our overlords before we went on to something else. On this, we
 have good news: it's quite robust. We're aware of at least the following large-scale applications:
 
-* The near-real-time [Phoenix](http://phoenixdata.org/data) dataset has been running more
-or less continuously (with the crashes largely due to our cloud services provider) for over two years working with 
-hypnos and PETRARCH-1.
-
 * An ongoing academic project is using hypnos and PETRARCH-2 to code more than 30,000 events per day in 
 near real time.
 
@@ -70,7 +66,7 @@ near real time.
 more than 1,000 stories per hour.
 
 * At least two academic projects are using the system to code long-time-frame datasets which will go back to 
-around 1980; this data should be public in early 2017.
+around 1980; this data should be public in early 2018.
 
 While it is the case that the world will continue to throw ever-more-novel 
 examples of wild and crazy source texts (which, of course, we'd love to see entered as issues, or even better,
@@ -92,7 +88,6 @@ Some users may experience issues with this, which
 
 should clear up.
 
-
 This will install the program with a command-line hook. You can now run the program using:
 
 ``petrarch2 <COMMAND NAME> [OPTIONS]``
@@ -111,6 +106,8 @@ a CoreNLP parse into a script, or the Stanford website has a nice [web app](http
 syntactic parse in Treebank form. Or if you're not looking to edit Petrarch itself and just
 use its functionality, [hypnos](https://github.com/caerusassociates/hypnos) is an easier option.
 
+Petrarch2 only runs in Python 2. Unfortunately, Python 3 is not supported and
+will fail with an opaque message.
 
 ## Running PETRARCH-2
 

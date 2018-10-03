@@ -19,6 +19,10 @@ simpler than the previous version.
 
 For more information, please read the Petrarch2.pdf file in this directory and visit the [documentation](http://petrarch2.readthedocs.org/en/latest/#).
 
+For a step-by-step guide to running text through the complete Petrarch2
+processing pipeline, see our [intro
+guide](https://andrewhalterman.com/2017/05/08/making-event-data-from-scratch-a-step-by-step-guide/).
+
 ## Citation
 
 If you use PETRARCH2, please cite using the following BibTeX:
@@ -133,7 +137,12 @@ When you run the program, a ``PETRARCH.log`` file will be opened in the current
 working directory. This file will contain general information, e.g., which
 files are being opened, and error messages.
 
-But seriously, if you are doing near-real-time coding and need geolocation, you should probably use [hypnos](https://github.com/caerusassociates/hypnos) rather than run PETRARCH as a standalone program.
+If you are doing near-real-time coding and need geolocation, you should probably use [hypnos](https://github.com/caerusassociates/hypnos) rather than run PETRARCH as a standalone program.
+
+Alternatively, see this
+[guide](https://andrewhalterman.com/2017/05/08/making-event-data-from-scratch-a-step-by-step-guide/)
+on running the complete
+["phoenix_pipeline"](https://github.com/openeventdata/phoenix_pipeline).
 
 ## Unit tests
 

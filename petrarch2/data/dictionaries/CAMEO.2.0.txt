@@ -17,13 +17,18 @@
 #    verb block. At this point we are just trying to get this running: it could use a 
 #    lot of additional work.
 #
-# Major update <15.04.30>
+# Major update <PAS: 15.04.30>
 # Multi-word forms -- these have a '+' in them -- were not being handled consistently.
 # The program was revised to generate regular forms; all irregular forms were added;
 # assorted phrases, notably those involved 'RE_' (which is what 're-...' ends up as)
 # where the verb was the final word were correctly marked, and an assortment of 
 # multi-word noun phrases inherited from TABARI, which wasn't as picky about such 
 # things, were deleted.
+#
+# Major bug correction <PAS: 19.03.05>
+# Earlier versions of this dictionary had the auxiliary verbs WILL and WOULD as primary
+# verbs under WILL [030] (along with, incongruously, SCHEDULE) which, of course, resulted 
+# in massively over-coding this category. I've removed these.
 #
 # Dictionary development has been funded by the Political Science and Methods, 
 # Measurement and Statistics programs of the U.S. National Science Foundation through 
@@ -5134,20 +5139,10 @@ SIGNAL {SIGNALS SIGNALLED SIGNALLING}
 
 
 
-
 ---  STRIVE   [030]  ---
 ENDEAVOR 
 ENDEAVOUR 
 STRIVE {STRIVES STROVE STRIVED STRIVING}  # sls 18 Nov 2007
-
-
-
-
----  WILL   [030]  ---
-SCHEDULE
-WILL
-WOULD
-
 
 
 

@@ -9179,7 +9179,7 @@ TRANSGRESS
 ~ a (a b ATTACK) CLAIM = a b 015
 ~ a (b . ATTACK) SAY = a b 112
 ~ a (b . ATTACK) CLAIM = a b 112
-~ a (a b WILL_ATTACK) SAY = a b 138
+#~ a (a b WILL_ATTACK) SAY = a b 138  # this causes a key error unless WILL has been entered as a primary verb
 ~ a (a b Q) SAY = a b Q
 ~ a (_ b ATTACK) WANT = a b 138
 ~ a (b . ATTACK ) WANT = a b 021
